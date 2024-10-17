@@ -1,0 +1,23 @@
+.link {
+  font-weight: normal;
+  color: #000;
+  transition: transform 0.3s ease;
+
+  /* &.active {
+    font-weight: bold;
+    color: #ff4500;
+  } */
+  /* 
+  &.pending {
+    color: red;
+  }
+
+  &.transitioning {
+    transform: scale(1.05);
+  } */
+}
+
+.active {
+  font-weight: bold;
+  color: #ff4500;
+}
