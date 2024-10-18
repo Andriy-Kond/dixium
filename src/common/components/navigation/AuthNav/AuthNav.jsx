@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import css from "../Navigation.module.scss";
 import clsx from "clsx";
 import { StyledNavLink } from "../Navigation.styled";
