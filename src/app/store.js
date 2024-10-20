@@ -25,6 +25,8 @@ export const store = configureStore({
     [usersApi.reducerPath]: usersApi.reducer,
     [contactsApi.reducerPath]: contactsApi.reducer,
     filters: filtersSlice.reducer,
+
+    [tasksApi.reducerPath]: tasksApi.reducer,
   },
 
   middleware: getDefaultMiddleware => [
