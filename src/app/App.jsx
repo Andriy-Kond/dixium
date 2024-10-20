@@ -10,6 +10,9 @@ import PublicRoute from "common/components/navigation/PublicRoute";
 import { setIsLoggedIn } from "features/auth/authSlice";
 import { useGetUserByTokenQuery } from "features/users/usersSlice";
 
+import { players } from "resources/players";
+import { deck } from "resources/decks";
+
 const ContactsPage = lazy(() => import("common/pages/ContactsPage"));
 const RegisterPage = lazy(() => import("common/pages/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/LoginPage"));
@@ -30,6 +33,15 @@ export default function App() {
       dispatch(setIsLoggedIn(false));
     }
   }, [dispatch, isSuccess]);
+
+  const shuffleDeck = deck => {
+    return deck
+      .map(card => ({ card, sortIndex: Math.random() })) // Додати випадковий індекс
+      .sort((a, b) => a.sortIndex - b.sortIndex) // Сортування за цим індексом
+      .map(({ card }) => card); // Повертаю тільки карти
+  };
+
+  const newDeck = shuffleDeck(deck);
 
   return (
     <>
