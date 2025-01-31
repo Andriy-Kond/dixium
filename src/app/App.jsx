@@ -3,7 +3,9 @@ import { lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { selectUserToken } from "./selectors";
-import { HomePage, SharedLayout } from "common/pages";
+import HomePage from "common/pages/HomePage";
+import { SharedLayout } from "common/pages";
+
 import PrivateRoute from "common/components/navigation/PvivateRoute";
 import PublicRoute from "common/components/navigation/PublicRoute";
 

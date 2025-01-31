@@ -1,5 +1,5 @@
-const { default: styled } = require("@emotion/styled");
-const { NavLink } = require("react-router-dom");
+import styled from "@emotion/styled";
+import { NavLink } from "react-router-dom";
 
 export const StyledNavLink = styled(NavLink)`
   font-weight: normal;
