@@ -1,6 +1,4 @@
-import styled from "@emotion/styled";
-
-const Backdrop = styled.div`
+.backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,9 +7,9 @@ const Backdrop = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 
   transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
-`;
+}
 
-const ModalWindow = styled.div`
+.modalWindow {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -28,7 +26,4 @@ const ModalWindow = styled.div`
     0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 
   transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
-`;
-
-const Button = styled.button``;
-export { Backdrop, ModalWindow, Button };
+}

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Backdrop, Button, ModalWindow } from "./Modal.styled";
 import { createPortal } from "react-dom";
+import css from "./Modal.module.scss";
 
 const modalPortal = document.querySelector("#root-modal");
 
@@ -25,15 +25,18 @@ export default function Modal({ children, toggleModal }) {
     }
   };
 
+  // document.querySelector("#root-modal") може повернути null, якщо елемент ще не змонтований.
+  if (!modalPortal) return null; // Запобігає помилці, якщо #root-modal ще не існує
+
   return createPortal(
-    <Backdrop onClick={handleBackdropClick}>
-      <ModalWindow>
+    <div className={css.backdrop} onClick={handleBackdropClick}>
+      <div className={css.modalWindow}>
         {children}
-        <Button type="button" onClick={toggleModal}>
+        <button type="button" onClick={toggleModal}>
           Close modal
-        </Button>
-      </ModalWindow>
-    </Backdrop>,
+        </button>
+      </div>
+    </div>,
     modalPortal,
   );
 }

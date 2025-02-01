@@ -2,15 +2,6 @@ import { setUserToken } from "features/auth/authSlice";
 import { useSignupUserMutation } from "features/users/usersSlice";
 import { useDispatch } from "react-redux";
 
-import {
-  MainBg,
-  MainBgHeader,
-  ActionBar,
-  RegisterForm,
-  FormInput,
-  FormField,
-} from "./RegisterPage.styled";
-import { FormLabel } from "@mui/material";
 import css from "./RegisterPage.module.scss";
 
 export default function RegisterPage() {
@@ -42,68 +33,38 @@ export default function RegisterPage() {
 
   return (
     <>
-      <MainBg>
+      <div className={css.mainBg}>
         <h2>Register Page</h2>
-        <MainBgHeader>Вхід</MainBgHeader>
-        <ActionBar>
-          {/* <RegisterForm onSubmit={submitCredentials}>
-            <FormField>
-              <FormLabel htmlFor="name">Name</FormLabel>
-              <FormInput
-                id="name"
-                type="text"
-                name="name"
-                placeholder="Enter name"
-              />
-            </FormField>
-            <FormField>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <FormInput
-                id="email"
-                type="text"
-                name="email"
-                placeholder="Enter email"
-              />
-            </FormField>
-            <FormField>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <FormInput
-                id="password"
-                type="text"
-                name="password"
-                placeholder="Enter password"
-              />
-            </FormField>
-          </RegisterForm> */}
-
-          <form className={css.RegisterForm} onSubmit={submitCredentials}>
-            <label htmlFor="name" className={css.FormLabel}>
+        <p className={css.mainBgHeader}>Вхід</p>
+        <div className={css.actionBar}>
+          <form className={css.registerForm} onSubmit={submitCredentials}>
+            <label htmlFor="name" className={css.formLabel}>
               Name
             </label>
             <input
               id="name"
-              className={css.FormInput}
+              className={css.formInput}
               type="text"
               name="name"
               placeholder="Enter name"
             />
-            <label htmlFor="email" className={css.FormLabel}>
+            <label htmlFor="email" className={css.formLabel}>
               Email
             </label>
             <input
               id="email"
-              className={css.FormInput}
+              className={css.formInput}
               type="text"
               name="email"
               placeholder="Enter email"
             />
 
-            <label htmlFor="password" className={css.FormLabel}>
+            <label htmlFor="password" className={css.formLabel}>
               Password
             </label>
             <input
               id="password"
-              className={css.FormInput}
+              className={css.formInput}
               type="text"
               name="password"
               placeholder="Enter password"
@@ -111,8 +72,8 @@ export default function RegisterPage() {
 
             <button type="submit">Register</button>
           </form>
-        </ActionBar>
-      </MainBg>
+        </div>
+      </div>
     </>
   );
 }
