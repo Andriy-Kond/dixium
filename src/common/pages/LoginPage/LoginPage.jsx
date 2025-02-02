@@ -6,6 +6,9 @@ import {
 } from "features/users/usersSlice";
 import { setIsLoggedIn, setUserToken } from "features/auth/authSlice";
 
+import AuthForm from "common/components/AuthForm";
+import css from "common/components/AuthForm/AuthForm.module.scss";
+
 export default function LoginPage() {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
@@ -37,15 +40,19 @@ export default function LoginPage() {
 
   return (
     <>
-      <h2>Login Page</h2>
-
       {!isLoggedIn && !isFetching && (
-        <form onSubmit={submitCredentials}>
-          <input type="text" name="email" />
-          <input type="text" name="password" />
+        <div className={css.container}>
+          {/* <h2>Register Page</h2> */}
+          <div className={css.pageHeader}>
+            <p className={css.pageHeader_title}>Вхід</p>
+          </div>
 
-          <button type="submit">Login</button>
-        </form>
+          <div className={css.pageMain}>
+            <AuthForm isRegister={false} onSubmit={submitCredentials} />
+          </div>
+
+          <div className={css.pageFooter}></div>
+        </div>
       )}
 
       {isLoggedIn && !isFetching && <div>User: {data?.name}</div>}
