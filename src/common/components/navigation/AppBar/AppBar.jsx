@@ -12,7 +12,8 @@ export default function AppBar() {
     <nav
       style={{
         display: "flex",
-        gap: "20px",
+
+        width: "100%",
         justifyContent: "space-between",
       }}>
       <NavigationMenu />

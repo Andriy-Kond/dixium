@@ -1,5 +1,11 @@
-@import-normalize;
+/* ========== ЗАГАЛЬНІ СТИЛІ ==========  */
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
+body {
+  font-family: var(--font_family), serif;
+}
+
+/* ========== СКИДАННЯ СТИЛІВ ==========  */
 body.modal-open {
   overflow: hidden;
 }
@@ -21,6 +27,7 @@ img {
   height: auto;
 }
 
+/* Знімає стилізацію з ul */
 ul,
 ol {
   margin: 0;
@@ -28,15 +35,17 @@ ol {
   list-style: none;
 }
 
+/* Знімає стилізацію з <a> */
 a {
   text-decoration: none;
   color: inherit;
   vertical-align: bottom;
+
   /* deleted 4px in bottom of tag <a> */
   /* display: flex; або vertical-align:bottom; */
 }
 
-/* Заборона зміну розміру */
+/* Заборона зміну розміру в textarea */
 textarea {
   resize: none;
 }
@@ -45,3 +54,5 @@ textarea {
 address {
   font-style: normal;
 }
+
+/* ========== /СКИДАННЯ СТИЛІВ ========== */

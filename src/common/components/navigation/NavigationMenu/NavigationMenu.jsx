@@ -2,7 +2,7 @@ import { selectUserIsLoggedIn } from "app/selectors";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import css from "../Navigation.module.scss";
+import css from "../navigation.module.scss";
 
 export default function NavigationMenu() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
@@ -16,7 +16,15 @@ export default function NavigationMenu() {
           Home
         </NavLink>
 
-        {isLoggedIn && <NavLink to="/contacts">Contacts</NavLink>}
+        {isLoggedIn && (
+          <NavLink
+            to="/contacts"
+            className={({ isActive }) =>
+              clsx(css.link, isActive && css.active)
+            }>
+            Contacts
+          </NavLink>
+        )}
       </div>
     </>
   );

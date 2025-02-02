@@ -32,48 +32,51 @@ export default function RegisterPage() {
   };
 
   return (
-    <>
-      <div className={css.mainBg}>
-        <h2>Register Page</h2>
-        <p className={css.mainBgHeader}>Вхід</p>
-        <div className={css.actionBar}>
-          <form className={css.registerForm} onSubmit={submitCredentials}>
-            <label htmlFor="name" className={css.formLabel}>
-              Name
-            </label>
+    <div className={css.container}>
+      {/* <h2>Register Page</h2> */}
+      <div className={css.pageHeader}>
+        <p className={css.pageHeader_title}>Вхід</p>
+      </div>
+
+      <div className={css.pageMain}>
+        <form className={css.registerForm} onSubmit={submitCredentials}>
+          <label className={css.formLabel}>
+            Name
             <input
-              id="name"
               className={css.formInput}
               type="text"
               name="name"
               placeholder="Enter name"
             />
-            <label htmlFor="email" className={css.formLabel}>
-              Email
-            </label>
+          </label>
+
+          <label className={css.formLabel}>
+            Email
             <input
-              id="email"
               className={css.formInput}
               type="text"
               name="email"
               placeholder="Enter email"
             />
+          </label>
 
-            <label htmlFor="password" className={css.formLabel}>
-              Password
-            </label>
+          <label className={css.formLabel}>
+            Password
             <input
-              id="password"
               className={css.formInput}
               type="text"
               name="password"
               placeholder="Enter password"
             />
+          </label>
 
-            <button type="submit">Register</button>
-          </form>
-        </div>
+          <button className={css.buttonPrimary} type="submit">
+            REGISTER
+          </button>
+        </form>
       </div>
-    </>
+
+      <div className={css.pageFooter}></div>
+    </div>
   );
 }

@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import AppBar from "common/components/navigation/AppBar";
+import css from "./SharedLayout.module.scss";
 
 export default function SharedLayout() {
   return (
     <>
       <main>
-        <header>
+        <header className={css.navHeader}>
           <AppBar />
         </header>
 

@@ -1,0 +1,62 @@
+:root {
+  --primary_color: #5d7e9e;
+  --secondary_color: #ebf0f5;
+  --status_bar_color: #476078;
+
+  --bg_color: #aec2d6;
+  --disable_color: rgba(0, 0, 0, 0.24);
+  --header_active_color: #0f7dff;
+  --white_color: #fff;
+
+  --font_family: "Roboto";
+  --font_color: rgba(0, 0, 0, 0.87);
+  --font_size: 14px;
+  --font_line-height: 16px;
+  --font_weight: 400;
+
+  --btn-hover-bg-color: rgba(15, 125, 255, 0.12);
+}
+
+//% css-variables
+// :root {
+//   --primary-color: #3498db;
+//   --secondary-color: #2ecc71;
+//   --font-size-large: 18px;
+//   --font-size-small: 14px;
+//   --desktop: 1024px;
+//   --tablet: 768px;
+//   --mobile: 480px;
+// }
+
+// .button {
+//   background-color: var(--primary-color);
+//   font-size: var(--font-size-large);
+//   padding: 10px 20px;
+// }
+
+// @media (max-width: var(--tablet)) {
+//   .button {
+//     font-size: var(--font-size-small);
+//   }
+// }
+
+//% scss-variables
+// $primary-color: #3498db;
+// $secondary-color: #2ecc71;
+// $font-size-large: 18px;
+// $font-size-small: 14px;
+// $desktop: 1024px;
+// $tablet: 768px;
+// $mobile: 480px;
+
+// .button {
+//   background-color: $primary-color;
+//   font-size: $font-size-large;
+//   padding: 10px 20px;
+// }
+
+// @media (max-width: $tablet) {
+//   .button {
+//     font-size: $font-size-small;
+//   }
+// }

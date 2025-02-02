@@ -1,0 +1,45 @@
+// BUTTON
+@mixin buttonBase {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: none;
+
+  font-size: 14px;
+  line-height: 20px;
+
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+@mixin buttonPrimary {
+  @include buttonBase;
+  border: 1px solid #5d7e9e;
+  background-color: transparent;
+  color: #5d7e9e;
+
+  &:hover {
+    background-color: rgba(15, 125, 255, 0.12);
+  }
+
+  &:disabled {
+    border-color: rgba(0, 0, 0, 0.24);
+    color: rgba(0, 0, 0, 0.24);
+  }
+}
+
+@mixin buttonSecondary {
+  @include buttonBase;
+  background-color: transparent;
+  color: #5d7e9e;
+
+  &:hover {
+    background-color: rgba(15, 125, 255, 0.12);
+  }
+
+  &:disabled {
+    border-color: rgba(0, 0, 0, 0.24);
+    color: rgba(0, 0, 0, 0.24);
+  }
+}
