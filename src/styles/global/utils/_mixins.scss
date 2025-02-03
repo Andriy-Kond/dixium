@@ -6,40 +6,43 @@
   padding: 10px 16px;
   border: none;
 
+  background-color: transparent;
+  color: #5d7e9e;
+
   font-size: 14px;
   line-height: 20px;
 
   cursor: pointer;
   transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(15, 125, 255, 0.122);
+  }
+
+  &:disabled {
+    border-color: rgba(0, 0, 0, 0.24);
+    color: rgba(0, 0, 0, 0.24);
+  }
 }
 
 @mixin buttonPrimary {
   @include buttonBase;
   border: 1px solid #5d7e9e;
-  background-color: transparent;
-  color: #5d7e9e;
-
-  &:hover {
-    background-color: rgba(15, 125, 255, 0.12);
-  }
-
-  &:disabled {
-    border-color: rgba(0, 0, 0, 0.24);
-    color: rgba(0, 0, 0, 0.24);
-  }
 }
 
 @mixin buttonSecondary {
   @include buttonBase;
-  background-color: transparent;
-  color: #5d7e9e;
+}
 
+@mixin buttonBarMenu {
+  @include buttonBase;
+  color: var(--white_color);
+  border-radius: 2px;
   &:hover {
-    background-color: rgba(15, 125, 255, 0.12);
+    background-color: #aec2d6;
   }
 
   &:disabled {
-    border-color: rgba(0, 0, 0, 0.24);
-    color: rgba(0, 0, 0, 0.24);
+    background-color: rgba(0, 0, 0, 0.24);
   }
 }

@@ -26,43 +26,19 @@
   height: calc(100vh - 44px - 44px - 32px);
 }
 
-.authForm {
+.bottomBar {
   margin-top: auto;
-  padding: 16px;
 
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  gap: 2px;
+
+  padding: 2px;
 
   background-color: var(--white_color);
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
 }
 
-.formLabel {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-
-  font-size: 11px;
-  line-height: 13px;
-
-  color: rgba(0, 0, 0, 0.38);
-}
-.formInput {
-  font-size: 14px;
-  line-height: 16px;
-  border-bottom: 1px solid rgba(15, 125, 255, 0.24);
-
-  &::placeholder {
-    color: rgba(0, 0, 0, 0.24);
-  }
-}
-
 .buttonPrimary {
   @include buttonPrimary;
-}
-
-.pageFooter {
-  height: 32px;
-  background-color: var(--primary_color);
+  flex: 1;
 }

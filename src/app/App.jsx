@@ -15,9 +15,10 @@ import { useGetUserByTokenQuery } from "features/users/usersSlice";
 import { players } from "resources/players";
 import { deck } from "resources/decks";
 
-const ContactsPage = lazy(() => import("common/pages/ContactsPage"));
 const RegisterPage = lazy(() => import("common/pages/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/LoginPage"));
+const ContactsPage = lazy(() => import("common/pages/ContactsPage"));
+const GamePage = lazy(() => import("common/pages/GamePage"));
 const NotFoundPage = lazy(() => import("common/pages/NotFoundPage"));
 
 export default function App() {
@@ -55,9 +56,10 @@ export default function App() {
 
             <Route element={<PrivateRoute redirectTo="/login" />}>
               <Route path="/contacts" element={<ContactsPage />} />
+              <Route path="/game" element={<GamePage />} />
             </Route>
 
-            <Route element={<PublicRoute redirectTo="/contacts" />}>
+            <Route element={<PublicRoute redirectTo="/game" />}>
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/login" element={<LoginPage />} />
             </Route>

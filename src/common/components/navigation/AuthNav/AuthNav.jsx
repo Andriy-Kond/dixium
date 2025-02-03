@@ -4,12 +4,13 @@ import { NavLink } from "react-router-dom";
 
 export default function AuthNav() {
   return (
-    <div style={{ display: "flex", gap: "10px" }}>
+    <div className={css.navBar}>
       <NavLink
         to="/register"
         className={({ isActive }) => clsx(css.link, isActive && css.active)}>
         Register
       </NavLink>
+
       <NavLink
         to="/login"
         className={({ isActive }) => clsx(css.link, isActive && css.active)}>

@@ -31,10 +31,13 @@ export default function UserMenu() {
       {/* Умова userCredentials.name необхідно, щоб span не блимав при завантаженні користувача */}
       {userCredentials.name && (
         <div className={css.userCredentialsBox}>
-          <img src={avatar} alt="user avatar" width={32} />
+          <img className={css.avatar} src={avatar} alt="avatar" />
           <span className={css.text}>Welcome, {userCredentials.name}</span>
-          <button type="button" onClick={handleLogout}>
-            Logout
+          <button
+            type="button"
+            className={css.buttonBarMenu}
+            onClick={handleLogout}>
+            LOGOUT
           </button>
         </div>
       )}

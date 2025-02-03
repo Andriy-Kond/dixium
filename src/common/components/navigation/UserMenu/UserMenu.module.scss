@@ -1,8 +1,21 @@
+@import "styles/global/utils/_mixins.scss";
+
 .userCredentialsBox {
+  height: 100%; // to trigger the property "justify-content: space-between" in AppBar_navMenu
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 
 .text {
   color: var(--white_color);
+}
+
+.buttonBarMenu {
+  @include buttonBarMenu;
+}
+
+.avatar {
+  height: 100%;
+  object-fit: cover;
 }

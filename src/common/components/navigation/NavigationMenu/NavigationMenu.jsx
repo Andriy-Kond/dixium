@@ -8,15 +8,15 @@ export default function NavigationMenu() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
 
   return (
-    <>
-      <div style={{ display: "flex", gap: "10px" }}>
-        <NavLink
-          to="/"
-          className={({ isActive }) => clsx(css.link, isActive && css.active)}>
-          Home
-        </NavLink>
+    <div className={css.navBar}>
+      <NavLink
+        to="/"
+        className={({ isActive }) => clsx(css.link, isActive && css.active)}>
+        Home
+      </NavLink>
 
-        {isLoggedIn && (
+      {isLoggedIn && (
+        <>
           <NavLink
             to="/contacts"
             className={({ isActive }) =>
@@ -24,8 +24,16 @@ export default function NavigationMenu() {
             }>
             Contacts
           </NavLink>
-        )}
-      </div>
-    </>
+
+          <NavLink
+            to="/game"
+            className={({ isActive }) =>
+              clsx(css.link, isActive && css.active)
+            }>
+            Game
+          </NavLink>
+        </>
+      )}
+    </div>
   );
 }

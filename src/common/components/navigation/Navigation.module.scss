@@ -1,8 +1,15 @@
+.navBar {
+  display: flex;
+  gap: 10px;
+}
+
 .link {
-  font-weight: normal;
   color: var(--white_color);
   transition: transform 0.3s ease;
   text-decoration: none;
+
+  &:hover {
+  }
 }
 
 .active {
