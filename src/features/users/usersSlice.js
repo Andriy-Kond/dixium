@@ -3,7 +3,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const { REACT_APP_BASE_URL } = process.env;
 
 const baseQuery = fetchBaseQuery({
-  // baseUrl: "https://connections-api.goit.global",
   baseUrl: REACT_APP_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.userToken;
@@ -22,7 +21,6 @@ export const usersApi = createApi({
   endpoints: build => ({
     signupUser: build.mutation({
       query: user => ({
-        // url: `/users/signup`,
         url: `/api/auth/register`,
         method: "POST",
         body: user,
@@ -58,11 +56,8 @@ export const usersApi = createApi({
       query: () => ({
         url: `/api/auth/current`,
         method: "GET",
-        // transformResponse: response => response.data,
-        // transformErrorResponse: response => response.status,
       }),
 
-      // refetchOnReconnect: true,
       providesTags: ["User"],
     }),
 
@@ -71,9 +66,6 @@ export const usersApi = createApi({
         url: `/api/auth/avatars`,
         method: "PATCH",
       }),
-
-      // refetchOnReconnect: true,
-      // refetchOnMountOrArgChange: true,
 
       invalidatesTags: ["User"],
     }),

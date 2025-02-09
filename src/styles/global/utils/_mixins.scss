@@ -13,6 +13,8 @@
   line-height: 20px;
 
   cursor: pointer;
+  user-select: none; // prevents selection text
+  caret-color: transparent; // prevents show cursor on text
   transition: background-color 0.3s ease;
 
   &:hover {
@@ -22,6 +24,10 @@
   &:disabled {
     border-color: rgba(0, 0, 0, 0.24);
     color: rgba(0, 0, 0, 0.24);
+  }
+
+  &::selection {
+    background: transparent; // prevents accidental highlighting of text (for example if "user-select" is somehow bypassed)
   }
 }
 

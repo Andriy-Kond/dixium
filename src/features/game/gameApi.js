@@ -18,6 +18,11 @@ export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery,
   endpoints: builder => ({
+    getAllDecks: builder.query({
+      query: () => `dixium/decks`, // отримати масив карт
+      providesTags: ["Decks"],
+    }),
+
     getAllPlayers: builder.query({
       query: () => `/players`, // отримати масив гравців
       providesTags: ["Players"],

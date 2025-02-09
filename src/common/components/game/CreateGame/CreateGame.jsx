@@ -1,6 +1,8 @@
 import css from "../game.module.scss";
+import GameList from "common/components/game/GameList";
 
 export default function CreateGame() {
+  // const games =
   return (
     <>
       <div className={css.container}>
@@ -9,6 +11,8 @@ export default function CreateGame() {
         </div>
 
         <div className={css.pageMain}>
+          <GameList></GameList>
+
           <div className={css.bottomBar}>
             <button className={css.buttonPrimary} type="submit">
               CREATE GAME
