@@ -1,7 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const { REACT_APP_BASE_URL } = process.env;
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://connections-api.goit.global",
+  // baseUrl: "https://connections-api.goit.global",
+  baseUrl: REACT_APP_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.userToken;
 
@@ -19,7 +22,8 @@ export const usersApi = createApi({
   endpoints: build => ({
     signupUser: build.mutation({
       query: user => ({
-        url: `/users/signup`,
+        // url: `/users/signup`,
+        url: `/api/auth/register`,
         method: "POST",
         body: user,
       }),
@@ -29,7 +33,7 @@ export const usersApi = createApi({
 
     loginUser: build.mutation({
       query: user => ({
-        url: `/users/login`,
+        url: `/api/auth/login`,
         method: "POST",
         body: user,
       }),
@@ -39,7 +43,7 @@ export const usersApi = createApi({
 
     logoutUser: build.mutation({
       query: () => ({
-        url: `/users/logout`,
+        url: `/api/auth/logout`,
         method: "POST",
       }),
 
@@ -52,7 +56,7 @@ export const usersApi = createApi({
 
     getUserByToken: build.query({
       query: () => ({
-        url: `/users/current`,
+        url: `/api/auth/current`,
         method: "GET",
         // transformResponse: response => response.data,
         // transformErrorResponse: response => response.status,
@@ -60,6 +64,18 @@ export const usersApi = createApi({
 
       // refetchOnReconnect: true,
       providesTags: ["User"],
+    }),
+
+    uploadAvatar: build.mutation({
+      query: () => ({
+        url: `/api/auth/avatars`,
+        method: "PATCH",
+      }),
+
+      // refetchOnReconnect: true,
+      // refetchOnMountOrArgChange: true,
+
+      invalidatesTags: ["User"],
     }),
   }),
 });
@@ -69,4 +85,5 @@ export const {
   useLoginUserMutation,
   useLogoutUserMutation,
   useGetUserByTokenQuery,
+  useUploadAvatarMutation,
 } = usersApi;

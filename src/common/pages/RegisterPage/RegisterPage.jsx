@@ -4,10 +4,12 @@ import { useDispatch } from "react-redux";
 
 import AuthForm from "common/components/AuthForm";
 import css from "common/components/AuthForm/AuthForm.module.scss";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
   const [signupUser] = useSignupUserMutation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const submitCredentials = async e => {
     e.preventDefault();
@@ -20,14 +22,12 @@ export default function RegisterPage() {
     if (result.error) {
       if (result.error.data.message)
         console.log("result.error.message", result.error.data.message);
-
-      if (result.error.data?.keyValue?.email)
-        console.log(
-          `submitCredentials >> error problem::: email ${result.error.data.keyValue.email}already exist in this DB`,
-        );
-    } else {
-      dispatch(setUserToken(result.data.token));
+      return;
     }
+
+    dispatch(setUserToken(result.data.token));
+    form.reset();
+    navigate("/login");
   };
 
   return (

@@ -7,12 +7,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
 //% Connection to backend (to web-socket server)
-const URL = process.env.REACT_APP_BASE_URL; // address of web-socket server
+const { REACT_APP_BASE_URL } = process.env; // address of web-socket server
 // для тестів:
 // REACT_APP_BASE_URL=http://localhost:3001
 // для деплоя:
 // REACT_APP_BASE_URL=https://m3-full-rest-api-project-decorator-full.onrender.com
-const socket = io.connect(URL);
+const socket = io.connect(REACT_APP_BASE_URL);
 
 export default function ChatPage() {
   const [nickName, setNickName] = useState("");
