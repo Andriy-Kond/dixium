@@ -17,6 +17,11 @@ export const authSlice = createSlice({
     setIsLoggedIn: (state, action) => {
       state.isLoggedIn = action.payload;
     },
+
+    logoutUser: state => {
+      state.userToken = null;
+      state.isLoggedIn = false;
+    },
   },
 });
 
@@ -31,4 +36,4 @@ export const persistedUserAuthReducer = persistReducer(
   authSlice.reducer,
 );
 
-export const { setUserToken, setIsLoggedIn } = authSlice.actions;
+export const { setUserToken, setIsLoggedIn, logoutUser } = authSlice.actions;

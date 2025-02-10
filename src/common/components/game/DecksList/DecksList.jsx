@@ -1,4 +1,5 @@
 import {
+  // useCreateGameMutation,
   useGetAllDecksQuery,
   useGetCurrentDeckQuery,
 } from "features/game/gameApi.js";
@@ -25,6 +26,8 @@ export default function DecksList() {
   });
   console.log("DecksList >> currentDeck:::", currentDeck);
 
+  // const { data: newGame } = useCreateGameMutation();
+
   const pullDeck = deckId => {
     dispatch(setCurrentDeckId(deckId));
   };
@@ -33,7 +36,7 @@ export default function DecksList() {
     dispatch(setIsCreatingGame(false));
   };
 
-  const buttonText = "Create game";
+  const buttonText = "Select deck";
 
   return (
     <div className={css.container}>

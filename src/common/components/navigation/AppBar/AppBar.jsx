@@ -17,6 +17,7 @@ export default function AppBar() {
       <NavigationMenu />
 
       {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
+
       {isUserToken && isLoggedIn && <UserMenu />}
       {!isUserToken && <AuthNav />}
     </nav>

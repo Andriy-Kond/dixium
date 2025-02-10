@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { logoutUser } from "features/auth/authSlice.js";
 
 const { REACT_APP_BASE_URL } = process.env;
 
@@ -16,9 +17,22 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+// Handling when the token is invalid or expired.
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+
+  if (result.error && result.error.status === 401) {
+    console.log("❌ Токен недійсний або прострочений. Виконується вихід...");
+
+    api.dispatch(logoutUser()); // clear state
+  }
+
+  return result;
+};
+
 export const usersApi = createApi({
   reducerPath: "usersApi",
-  baseQuery,
+  baseQuery: baseQueryWithReauth,
   endpoints: build => ({
     signupUser: build.mutation({
       query: user => ({

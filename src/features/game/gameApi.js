@@ -29,7 +29,20 @@ export const gameApi = createApi({
       query: deckId => `dixium/decks/${deckId}`, // Get cards in current deck
       providesTags: ["Decks"],
     }),
+
+    createGame: builder.mutation({
+      query: game => ({
+        url: `dixium/games`, // Get cards in current deck
+        method: "POST",
+        body: game,
+        providesTags: ["Games"],
+      }),
+    }),
   }),
 });
 
-export const { useGetAllDecksQuery, useGetCurrentDeckQuery } = gameApi;
+export const {
+  useGetAllDecksQuery,
+  useGetCurrentDeckQuery,
+  useCreateGameMutation,
+} = gameApi;
