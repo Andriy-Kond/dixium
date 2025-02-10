@@ -1,15 +1,17 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: "https://dixium.com/api/v1", // поки так для прикладу
+const { REACT_APP_BASE_URL } = process.env;
 
-  // Для майбутньої роботи по токену:
+const baseQuery = fetchBaseQuery({
+  baseUrl: REACT_APP_BASE_URL,
+  // For works by token:
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.userToken;
 
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
     }
+
     return headers;
   },
 });
@@ -19,39 +21,10 @@ export const gameApi = createApi({
   baseQuery,
   endpoints: builder => ({
     getAllDecks: builder.query({
-      query: () => `dixium/decks`, // отримати масив карт
+      query: () => `dixium/decks`, // Get available decks
       providesTags: ["Decks"],
-    }),
-
-    getAllPlayers: builder.query({
-      query: () => `/players`, // отримати масив гравців
-      providesTags: ["Players"],
-    }),
-
-    getDeck: builder.query({
-      query: () => `/deck`, // отримати масив карт
-      providesTags: ["Deck"],
-    }),
-
-    dealCards: builder.mutation({
-      query: () => ({
-        url: `game/deal`,
-        method: "POST", // Перша роздача карт (по 6шт, сервер виконує логіку)
-      }),
-    }),
-
-    nextTurn: builder.mutation({
-      query: () => ({
-        url: `game/next-turn`,
-        method: "POST", // Наступний хід (гравці скидають карту і беруть нову)
-      }),
     }),
   }),
 });
 
-export const {
-  useGetAllPlayersQuery,
-  useGetDeckQuery,
-  useDealCardsMutation,
-  useNextTurnMutation,
-} = gameApi;
+export const { useGetAllDecksQuery } = gameApi;

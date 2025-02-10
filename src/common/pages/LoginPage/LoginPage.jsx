@@ -3,7 +3,7 @@ import { selectUserToken } from "app/selectors";
 import {
   useGetUserByTokenQuery,
   useLoginUserMutation,
-} from "features/users/usersSlice";
+} from "features/users/usersApi";
 import { setIsLoggedIn, setUserToken } from "features/auth/authSlice";
 
 import AuthForm from "common/components/AuthForm";
@@ -29,7 +29,7 @@ export default function LoginPage() {
 
     try {
       const result = await loginUser(userCredentials);
-      console.log("LoginPage >> result:::", result);
+
       dispatch(setUserToken(result?.data.token));
       dispatch(setIsLoggedIn(true));
       // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна

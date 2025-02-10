@@ -1,5 +1,5 @@
 import { setUserToken } from "features/auth/authSlice";
-import { useSignupUserMutation } from "features/users/usersSlice";
+import { useSignupUserMutation } from "features/users/usersApi";
 import { useDispatch } from "react-redux";
 
 import AuthForm from "common/components/AuthForm";

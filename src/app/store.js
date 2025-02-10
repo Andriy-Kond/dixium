@@ -12,12 +12,14 @@ import {
 } from "redux-persist";
 import { persistedUserAuthReducer } from "features/auth/authSlice";
 
-import { usersApi } from "features/users/usersSlice";
+import { usersApi } from "features/users/usersApi";
+import { gameApi } from "features/game/gameApi.js";
 
 export const store = configureStore({
   reducer: {
     auth: persistedUserAuthReducer,
     [usersApi.reducerPath]: usersApi.reducer,
+    [gameApi.reducerPath]: gameApi.reducer,
   },
 
   middleware: getDefaultMiddleware => [
@@ -28,6 +30,7 @@ export const store = configureStore({
     }),
 
     usersApi.middleware,
+    gameApi.middleware,
   ],
 });
 

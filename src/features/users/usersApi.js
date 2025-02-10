@@ -4,6 +4,7 @@ const { REACT_APP_BASE_URL } = process.env;
 
 const baseQuery = fetchBaseQuery({
   baseUrl: REACT_APP_BASE_URL,
+  // For works by token:
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.userToken;
 
@@ -55,7 +56,6 @@ export const usersApi = createApi({
     getUserByToken: build.query({
       query: () => ({
         url: `/api/auth/current`,
-        method: "GET",
       }),
 
       providesTags: ["User"],

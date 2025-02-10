@@ -10,7 +10,7 @@ import PrivateRoute from "common/components/navigation/PvivateRoute";
 import PublicRoute from "common/components/navigation/PublicRoute";
 
 import { setIsLoggedIn } from "features/auth/authSlice";
-import { useGetUserByTokenQuery } from "features/users/usersSlice";
+import { useGetUserByTokenQuery } from "features/users/usersApi";
 
 // import { players } from "resources/players";
 // import { deck } from "resources/decks";
