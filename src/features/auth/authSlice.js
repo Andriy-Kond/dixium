@@ -3,7 +3,7 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 export const authSlice = createSlice({
-  name: "auth",
+  name: "authSlice",
   initialState: {
     userToken: null,
     isLoggedIn: false,

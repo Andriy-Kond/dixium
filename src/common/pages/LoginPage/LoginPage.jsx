@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserToken } from "app/selectors";
+import { selectUserIsLoggedIn, selectUserToken } from "app/selectors";
 import {
   useGetUserByTokenQuery,
   useLoginUserMutation,
@@ -11,8 +11,7 @@ import css from "common/components/AuthForm/AuthForm.module.scss";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
-  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-
+  const isLoggedIn = useSelector(selectUserIsLoggedIn);
   const authUserToken = useSelector(selectUserToken);
 
   const [loginUser] = useLoginUserMutation();

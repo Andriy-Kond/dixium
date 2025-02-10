@@ -2,7 +2,7 @@
 
 .container {
   max-width: 414px;
-  margin: auto;
+  margin: auto; //?чи треба?
 }
 
 .pageHeader {
@@ -36,9 +36,4 @@
 
   background-color: var(--white_color);
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
-}
-
-.buttonPrimary {
-  @include buttonPrimary;
-  flex: 1;
 }

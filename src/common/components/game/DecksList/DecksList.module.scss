@@ -1,0 +1,72 @@
+@import "styles/global/utils/_mixins.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+}
+
+.deckHeader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: none;
+
+  background-color: transparent;
+  color: #5d7e9e;
+
+  font-size: 14px;
+  line-height: 20px;
+
+  background-color: rgba(15, 125, 255, 0.122);
+  caret-color: transparent; // prevents show cursor on text
+}
+
+.deckTitle {
+  padding: 14px 16px;
+  background-color: #fff;
+}
+
+.deckList {
+  display: flex;
+  margin-top: 20px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deck {
+  display: flex;
+}
+
+.currentDeck {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.card {
+  width: 60px;
+  height: 80px;
+}
+
+.img {
+  height: 100%;
+  width: 100%;
+
+  // object-fit: cover;
+}
+
+.bottomBar {
+  margin-top: auto;
+
+  display: flex;
+  gap: 2px;
+
+  padding: 2px;
+
+  background-color: var(--white_color);
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
+}

@@ -55,7 +55,7 @@ export default function App() {
             <Route index element={<HomePage />} />
 
             <Route element={<PrivateRoute redirectTo="/login" />}>
-              <Route path="/game" element={<GamePage />} />
+              <Route path="/game/*" element={<GamePage />} />
             </Route>
 
             <Route element={<PublicRoute redirectTo="/game" />}>

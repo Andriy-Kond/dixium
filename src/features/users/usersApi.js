@@ -6,7 +6,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: REACT_APP_BASE_URL,
   // For works by token:
   prepareHeaders: (headers, { getState }) => {
-    const token = getState().auth.userToken;
+    const token = getState().authSlice.userToken;
 
     if (token) {
       headers.set("authorization", `Bearer ${token}`);

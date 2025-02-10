@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { players } from "resources/players";
-import { deck } from "resources/decks";
+import { persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 const gameInitialState = {
-  deck,
-  players,
+  deck: [],
+  players: [],
+  isCreatingGame: false,
+  gameDeckId: null,
 };
 
 const shuffleDeck = deck => {
@@ -15,7 +17,7 @@ const shuffleDeck = deck => {
 };
 
 export const gameSlice = createSlice({
-  name: "game",
+  name: "gameSlice",
   initialState: gameInitialState,
   reducers: {
     distributeCards: (state, action) => {
@@ -28,5 +30,30 @@ export const gameSlice = createSlice({
 
       state.deck = shuffledDeck; // Оновлюємо колоду після роздачі
     },
+
+    setIsCreatingGame: (state, action) => {
+      state.isCreatingGame = action.payload;
+    },
+
+    getDeck: (state, action) => {
+      state.deck = action.payload;
+    },
+
+    setCurrentDeckId: (state, action) => {
+      state.gameDeckId = action.payload;
+    },
   },
 });
+
+const persistConfig = {
+  key: "gameSlice",
+  storage,
+};
+
+export const persistedGameReducer = persistReducer(
+  persistConfig,
+  gameSlice.reducer,
+);
+
+export const { distributeCards, setIsCreatingGame, getDeck, setCurrentDeckId } =
+  gameSlice.actions;

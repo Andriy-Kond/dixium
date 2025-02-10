@@ -1,10 +1,15 @@
-import CreateGame from "common/components/game/CreateGame";
+import GameInitial from "common/components/game/GameInitial/index.js";
+import { Route, Routes } from "react-router-dom";
 
 export default function GamePage() {
   return (
     <>
       <p>Game Page</p>
-      <CreateGame></CreateGame>
+      <GameInitial />
+      {/* <Routes>
+        <Route path="/" element={<GameInitial />} />
+        <Route path="/create" element={<CreateGame />} />
+      </Routes> */}
     </>
   );
 }
