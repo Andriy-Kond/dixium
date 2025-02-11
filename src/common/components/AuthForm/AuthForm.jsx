@@ -1,6 +1,6 @@
 import { useState } from "react";
 import css from "./AuthForm.module.scss";
-import { Button } from "@mui/material";
+import Button from "../Button/index.js";
 
 const initialState = {
   name: "",
@@ -16,6 +16,7 @@ export default function AuthForm({ isRegister, onSubmit }) {
   };
 
   const btnText = isRegister ? "Register" : "Login";
+  console.log("AuthForm >> isRegister:::", isRegister);
   return (
     <form className={css.authForm} onSubmit={onSubmit}>
       {isRegister && (

@@ -3,10 +3,11 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const gameInitialState = {
-  deck: [],
+  // deck: [],
   players: [],
   isCreatingGame: false,
   gameDeckId: null,
+  // gameId: null,
 };
 
 const shuffleDeck = deck => {

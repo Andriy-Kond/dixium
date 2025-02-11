@@ -28,7 +28,6 @@ export default function LoginPage() {
 
     try {
       const result = await loginUser(userCredentials);
-
       dispatch(setUserToken(result?.data.token));
       dispatch(setIsLoggedIn(true));
       // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна

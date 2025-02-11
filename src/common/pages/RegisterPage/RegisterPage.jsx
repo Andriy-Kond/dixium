@@ -1,4 +1,8 @@
-import { setUserToken } from "features/auth/authSlice";
+import {
+  setIsLoggedIn,
+  setUserCredentials,
+  setUserToken,
+} from "features/auth/authSlice";
 import { useSignupUserMutation } from "features/users/usersApi";
 import { useDispatch } from "react-redux";
 
@@ -17,17 +21,23 @@ export default function RegisterPage() {
     const formData = new FormData(form);
     const userCredentials = Object.fromEntries(formData);
 
-    const result = await signupUser(userCredentials);
+    try {
+      const result = await signupUser(userCredentials);
+      console.log("RegisterPage >> result:::", result);
 
-    if (result.error) {
-      if (result.error.data.message)
-        console.log("result.error.message", result.error.data.message);
-      return;
+      dispatch(setUserCredentials(result));
+      dispatch(setUserToken(result?.data.token));
+      // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна
+
+      form.reset();
+      // Here you can come to private route:
+      dispatch(setIsLoggedIn(true));
+      // Or switch to login page:
+      // navigate("/login");
+    } catch (err) {
+      dispatch(setIsLoggedIn(false));
+      console.log("RegisterPage >> err:::", err);
     }
-
-    dispatch(setUserToken(result.data.token));
-    form.reset();
-    navigate("/login");
   };
 
   return (

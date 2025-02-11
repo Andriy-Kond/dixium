@@ -1,5 +1,5 @@
 import {
-  // useCreateGameMutation,
+  useCreateGameMutation,
   useGetAllDecksQuery,
   useGetCurrentDeckQuery,
 } from "features/game/gameApi.js";
@@ -9,30 +9,46 @@ import {
   setCurrentDeckId,
   setIsCreatingGame,
 } from "features/game/gameSlice.js";
-import { selectGameDeckId } from "app/selectors.js";
+import {
+  // selectedDeck,
+  selectGameDeckId,
+  // selectGameId,
+  selectPlayers,
+} from "app/selectors.js";
 import Button from "common/components/Button";
+import { nanoid } from "@reduxjs/toolkit";
 
 export default function DecksList() {
   const dispatch = useDispatch();
 
   const gameDeckId = useSelector(selectGameDeckId);
-  console.log("DecksList >> gameDeckId:::", gameDeckId);
 
   const { data: allDecks } = useGetAllDecksQuery();
-  console.log("DecksList >> allDecks:::", allDecks);
 
   const { data: currentDeck } = useGetCurrentDeckQuery(gameDeckId, {
     skip: !gameDeckId,
   });
   console.log("DecksList >> currentDeck:::", currentDeck);
 
-  // const { data: newGame } = useCreateGameMutation();
+  const [createGame] = useCreateGameMutation();
 
   const pullDeck = deckId => {
     dispatch(setCurrentDeckId(deckId));
   };
+  // const gameId = useSelector(selectGameId);
+  // const deck = useSelector(selectedDeck);
+  const players = useSelector(selectPlayers);
 
-  const selectDeck = () => {
+  const selectDeck = async () => {
+    const game = {
+      gameId: nanoid(),
+      deck: currentDeck,
+      players,
+      startGame: true,
+      // gameCreator: userID
+    };
+
+    const result = await createGame(game);
     dispatch(setIsCreatingGame(false));
   };
 

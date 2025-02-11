@@ -28,7 +28,7 @@ export default function UserMenu() {
   };
 
   const btnText = "Logout";
-  const btnStyles = "btnBarMenu";
+  const btnStyle = "btnBarMenu";
 
   return (
     <>
@@ -40,7 +40,7 @@ export default function UserMenu() {
           <Button
             onClick={handleLogout}
             btnText={btnText}
-            btnStyles={btnStyles}
+            btnStyle={btnStyle}
           />
         </div>
       )}
