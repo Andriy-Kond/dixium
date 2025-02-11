@@ -10,7 +10,7 @@ import {
   setIsCreatingGame,
 } from "features/game/gameSlice.js";
 import { selectGameDeckId } from "app/selectors.js";
-import Button from "common/components/Button/Button.jsx";
+import Button from "common/components/Button";
 
 export default function DecksList() {
   const dispatch = useDispatch();
@@ -36,7 +36,7 @@ export default function DecksList() {
     dispatch(setIsCreatingGame(false));
   };
 
-  const buttonText = "Select deck";
+  const btnText = "Select deck";
 
   return (
     <div className={css.container}>
@@ -49,7 +49,7 @@ export default function DecksList() {
                 onClick={() => {
                   pullDeck(deck._id);
                 }}
-                buttonText={`Deck: ${deck.name}`}
+                btnText={`Deck: ${deck.name}`}
               />
             </li>
           );
@@ -71,7 +71,7 @@ export default function DecksList() {
       )}
 
       <div className={css.bottomBar}>
-        <Button onClick={selectDeck} buttonText={buttonText} />
+        <Button onClick={selectDeck} btnText={btnText} />
       </div>
     </div>
   );

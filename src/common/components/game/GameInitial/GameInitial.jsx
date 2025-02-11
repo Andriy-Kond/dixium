@@ -4,7 +4,7 @@ import css from "../game.module.scss";
 import { setIsCreatingGame } from "features/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import DecksList from "../DecksList/DecksList.jsx";
-import Button from "common/components/Button/Button.jsx";
+import Button from "common/components/Button";
 
 export default function GameInitial() {
   // const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function GameInitial() {
 
   const headerTitleText = isCreatingGame ? "Creating game" : "Available games";
 
-  const buttonText = "Create game";
+  const btnText = "Create game";
 
   return (
     <>
@@ -34,7 +34,7 @@ export default function GameInitial() {
 
           {!isCreatingGame && (
             <div className={css.bottomBar}>
-              <Button onClick={createGame} buttonText={buttonText} />
+              <Button onClick={createGame} btnText={btnText} />
             </div>
           )}
         </div>

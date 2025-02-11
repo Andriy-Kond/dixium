@@ -11,10 +11,6 @@
   color: var(--white_color);
 }
 
-.buttonBarMenu {
-  @include buttonBarMenu;
-}
-
 .avatar {
   height: 100%;
   object-fit: cover;

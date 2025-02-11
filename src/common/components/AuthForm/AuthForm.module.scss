@@ -58,10 +58,6 @@
   }
 }
 
-.buttonPrimary {
-  @include buttonPrimary;
-}
-
 .pageFooter {
   height: 32px;
   background-color: var(--primary_color);

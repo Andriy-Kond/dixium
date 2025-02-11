@@ -10,6 +10,7 @@ import css from "./UserMenu.module.scss";
 import avatar from "imgs/pending-cat.jpg";
 
 import { useDispatch, useSelector } from "react-redux";
+import Button from "common/components/Button";
 
 export default function UserMenu() {
   const dispatch = useDispatch();
@@ -26,6 +27,9 @@ export default function UserMenu() {
     dispatch(usersApi.util.resetApiState()); // очистити стан Redux від старих даних (user, email)
   };
 
+  const btnText = "Logout";
+  const btnStyles = "btnBarMenu";
+
   return (
     <>
       {/* Умова userCredentials.name необхідно, щоб span не блимав при завантаженні користувача */}
@@ -33,12 +37,11 @@ export default function UserMenu() {
         <div className={css.userCredentialsBox}>
           <img className={css.avatar} src={avatar} alt="avatar" />
           <span className={css.text}>Welcome, {userCredentials.name}</span>
-          <button
-            type="button"
-            className={css.buttonBarMenu}
-            onClick={handleLogout}>
-            LOGOUT
-          </button>
+          <Button
+            onClick={handleLogout}
+            btnText={btnText}
+            btnStyles={btnStyles}
+          />
         </div>
       )}
     </>

@@ -1,10 +1,10 @@
 import css from "./Button.module.scss";
 
-export default function Button({ buttonText, onClick }) {
+export default function Button({ btnText, onClick, btnStyles = "btnPrimary" }) {
   return (
     <>
-      <button className={css.buttonPrimary} type="submit" onClick={onClick}>
-        {buttonText.toUpperCase()}
+      <button className={css[btnStyles]} type="submit" onClick={onClick}>
+        {btnText.toUpperCase()}
       </button>
     </>
   );

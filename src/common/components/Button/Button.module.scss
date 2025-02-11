@@ -1,6 +1,10 @@
 @import "styles/global/utils/_mixins.scss";
 
-.buttonPrimary {
-  @include buttonPrimary;
+.btnPrimary {
+  @include btnPrimary;
   flex-grow: 1;
+}
+
+.btnBarMenu {
+  @include btnBarMenu;
 }

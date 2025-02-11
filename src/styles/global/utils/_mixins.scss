@@ -1,5 +1,5 @@
 // BUTTON
-@mixin buttonBase {
+@mixin btnBase {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -31,17 +31,17 @@
   }
 }
 
-@mixin buttonPrimary {
-  @include buttonBase;
+@mixin btnPrimary {
+  @include btnBase;
   border: 1px solid #5d7e9e;
 }
 
-@mixin buttonSecondary {
-  @include buttonBase;
+@mixin btnSecondary {
+  @include btnBase;
 }
 
-@mixin buttonBarMenu {
-  @include buttonBase;
+@mixin btnBarMenu {
+  @include btnBase;
   color: var(--white_color);
   border-radius: 2px;
   &:hover {

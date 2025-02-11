@@ -1,5 +1,6 @@
 import { useState } from "react";
 import css from "./AuthForm.module.scss";
+import { Button } from "@mui/material";
 
 const initialState = {
   name: "",
@@ -14,6 +15,7 @@ export default function AuthForm({ isRegister, onSubmit }) {
     setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
   };
 
+  const btnText = isRegister ? "Register" : "Login";
   return (
     <form className={css.authForm} onSubmit={onSubmit}>
       {isRegister && (
@@ -54,9 +56,7 @@ export default function AuthForm({ isRegister, onSubmit }) {
         />
       </label>
 
-      <button className={css.buttonPrimary} type="submit">
-        {isRegister ? "REGISTER" : "LOGIN"}
-      </button>
+      <Button btnText={btnText} />
     </form>
   );
 }
