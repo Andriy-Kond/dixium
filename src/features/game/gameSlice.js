@@ -43,6 +43,13 @@ export const gameSlice = createSlice({
     setCurrentDeckId: (state, action) => {
       state.gameDeckId = action.payload;
     },
+
+    clearGameInitialState: () => gameInitialState,
+    // not good option, because will copy only higher level of object:
+    // clearGameInitialState: () => {
+    //   return { ...gameInitialState };
+    // },
+    // if gameInitialState will have nested structure, they will not be copied to state
   },
 });
 
@@ -56,5 +63,10 @@ export const persistedGameReducer = persistReducer(
   gameSlice.reducer,
 );
 
-export const { distributeCards, setIsCreatingGame, getDeck, setCurrentDeckId } =
-  gameSlice.actions;
+export const {
+  distributeCards,
+  setIsCreatingGame,
+  getDeck,
+  setCurrentDeckId,
+  clearGameInitialState,
+} = gameSlice.actions;

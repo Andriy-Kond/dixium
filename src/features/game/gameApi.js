@@ -22,12 +22,12 @@ export const gameApi = createApi({
   endpoints: builder => ({
     getAllDecks: builder.query({
       query: () => `dixium/decks`, // Get available decks
-      providesTags: ["Decks"],
+      // providesTags: ["AllDecks"],
     }),
 
     getCurrentDeck: builder.query({
       query: deckId => `dixium/decks/${deckId}`, // Get cards in current deck
-      providesTags: ["Decks"],
+      // providesTags: ["Deck"],
     }),
 
     createGame: builder.mutation({
@@ -35,7 +35,7 @@ export const gameApi = createApi({
         url: `dixium/games`, // Get cards in current deck
         method: "POST",
         body: game,
-        providesTags: ["Games"],
+        // invalidatesTags: ["Games"],
       }),
     }),
   }),

@@ -11,6 +11,7 @@ import avatar from "imgs/pending-cat.jpg";
 
 import { useDispatch, useSelector } from "react-redux";
 import Button from "common/components/Button";
+import { clearGameInitialState } from "features/game/gameSlice.js";
 
 export default function UserMenu() {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ export default function UserMenu() {
 
   const handleLogout = async () => {
     await logoutUser();
+    dispatch(clearGameInitialState());
     dispatch(setUserToken(null));
     dispatch(setIsLoggedIn(false));
     dispatch(usersApi.util.resetApiState()); // очистити стан Redux від старих даних (user, email)

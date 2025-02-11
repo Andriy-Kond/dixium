@@ -24,7 +24,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   if (result.error && result.error.status === 401) {
     console.log("❌ Токен недійсний або прострочений. Виконується вихід...");
 
-    api.dispatch(logoutUser()); // clear state
+    api.dispatch(logoutUser()); // clear auth state
   }
 
   return result;
