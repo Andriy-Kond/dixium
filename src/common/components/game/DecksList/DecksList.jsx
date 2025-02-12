@@ -6,10 +6,15 @@ import {
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addPlayer,
   setCurrentDeckId,
   setIsCreatingGame,
 } from "features/game/gameSlice.js";
-import { selectGameDeckId, selectPlayers } from "app/selectors.js";
+import {
+  selectGameDeckId,
+  selectPlayers,
+  selectUserCredentials,
+} from "app/selectors.js";
 import Button from "common/components/Button";
 import { nanoid } from "@reduxjs/toolkit";
 
@@ -17,13 +22,12 @@ export default function DecksList() {
   const dispatch = useDispatch();
 
   const gameDeckId = useSelector(selectGameDeckId);
+  const userCredentials = useSelector(selectUserCredentials);
 
   const { data: allDecks } = useGetAllDecksQuery();
-
   const { data: currentDeck } = useGetCurrentDeckQuery(gameDeckId, {
     skip: !gameDeckId,
   });
-  console.log("DecksList >> currentDeck:::", currentDeck);
 
   const [createGame] = useCreateGameMutation();
 
@@ -34,15 +38,16 @@ export default function DecksList() {
   const players = useSelector(selectPlayers);
 
   const selectDeck = async () => {
+    console.log("DecksList >> currentDeck:::", currentDeck.cards);
     const game = {
-      gameId: nanoid(),
-      deck: currentDeck,
+      deck: currentDeck.cards,
       players,
       startGame: true,
-      // gameCreator: userID
+      hostPlayer: userCredentials.userId,
     };
 
     const result = await createGame(game);
+    console.log("selectDeck >> result:::", result);
     dispatch(setIsCreatingGame(false));
   };
 
@@ -77,7 +82,7 @@ export default function DecksList() {
           <ul className={css.currentDeck}>
             {currentDeck?.cards?.map(card => (
               <li className={css.card} key={card._id}>
-                {card.name}
+                <p>{card.public_id}</p>
                 <img className={css.img} src={card.url} alt="card" />
               </li>
             ))}
