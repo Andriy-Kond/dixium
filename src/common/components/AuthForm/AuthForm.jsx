@@ -16,7 +16,7 @@ export default function AuthForm({ isRegister, onSubmit }) {
   };
 
   const btnText = isRegister ? "Register" : "Login";
-  console.log("AuthForm >> isRegister:::", isRegister);
+
   return (
     <form className={css.authForm} onSubmit={onSubmit}>
       {isRegister && (
@@ -40,7 +40,7 @@ export default function AuthForm({ isRegister, onSubmit }) {
           type="text"
           name="email"
           placeholder="Enter email"
-          value={formData?.email.toLowerCase()}
+          value={formData?.email}
           onChange={handleChange}
         />
       </label>

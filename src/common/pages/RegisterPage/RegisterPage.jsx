@@ -20,19 +20,25 @@ export default function RegisterPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const userCredentials = Object.fromEntries(formData);
+    userCredentials.email = userCredentials.email.toLowerCase();
 
     try {
       const result = await signupUser(userCredentials);
       console.log("RegisterPage >> result:::", result);
 
-      dispatch(setUserCredentials(result));
+      dispatch(setUserCredentials(result?.data));
       dispatch(setUserToken(result?.data.token));
       // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна
 
       form.reset();
-      // Here you can come to private route:
+
+      // Here you can immediately come to private route:
       dispatch(setIsLoggedIn(true));
-      // Or switch to login page:
+      // and navigate to needed page:
+      // navigate("/somePrivatPage",  { replace: true });
+      // Якщо вказати значення true, то новий лист підмінить собою найвищий. Це використовується досить рідко, наприклад при логіні, щоб користувач не зміг повернутися кнопкою «назад» на сторінку логіна після входу, адже він уже в системі і робити йому там нічого.
+
+      // Or you can switch to login page after registration:
       // navigate("/login");
     } catch (err) {
       dispatch(setIsLoggedIn(false));
@@ -43,7 +49,7 @@ export default function RegisterPage() {
   return (
     <div className={css.container}>
       <div className={css.pageHeader}>
-        <p className={css.pageHeader_title}>Вхід</p>
+        <p className={css.pageHeader_title}>Реєстрація</p>
       </div>
 
       <div className={css.pageMain}>

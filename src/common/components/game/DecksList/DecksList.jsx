@@ -9,12 +9,7 @@ import {
   setCurrentDeckId,
   setIsCreatingGame,
 } from "features/game/gameSlice.js";
-import {
-  // selectedDeck,
-  selectGameDeckId,
-  // selectGameId,
-  selectPlayers,
-} from "app/selectors.js";
+import { selectGameDeckId, selectPlayers } from "app/selectors.js";
 import Button from "common/components/Button";
 import { nanoid } from "@reduxjs/toolkit";
 
@@ -35,8 +30,7 @@ export default function DecksList() {
   const pullDeck = deckId => {
     dispatch(setCurrentDeckId(deckId));
   };
-  // const gameId = useSelector(selectGameId);
-  // const deck = useSelector(selectedDeck);
+
   const players = useSelector(selectPlayers);
 
   const selectDeck = async () => {
@@ -52,7 +46,12 @@ export default function DecksList() {
     dispatch(setIsCreatingGame(false));
   };
 
-  const btnText = "Select deck";
+  const toPreviousPage = () => {
+    dispatch(setIsCreatingGame(false));
+  };
+
+  const btnTextSelect = "Select deck";
+  const btnTextBack = "Back";
 
   return (
     <div className={css.container}>
@@ -87,7 +86,8 @@ export default function DecksList() {
       )}
 
       <div className={css.bottomBar}>
-        <Button onClick={selectDeck} btnText={btnText} />
+        <Button onClick={toPreviousPage} btnText={btnTextBack} />
+        <Button onClick={selectDeck} btnText={btnTextSelect} />
       </div>
     </div>
   );

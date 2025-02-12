@@ -2,6 +2,7 @@
 
 .btnPrimary {
   @include btnPrimary;
+  flex-basis: 50%; // makes size 50% of parent width
   flex-grow: 1;
 }
 
