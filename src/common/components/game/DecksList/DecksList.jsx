@@ -16,7 +16,6 @@ import {
   selectUserCredentials,
 } from "app/selectors.js";
 import Button from "common/components/Button";
-import { nanoid } from "@reduxjs/toolkit";
 
 export default function DecksList() {
   const dispatch = useDispatch();
@@ -42,7 +41,7 @@ export default function DecksList() {
     const game = {
       deck: currentDeck.cards,
       players,
-      startGame: true,
+      isGameStarted: false,
       hostPlayer: userCredentials.userId,
     };
 
