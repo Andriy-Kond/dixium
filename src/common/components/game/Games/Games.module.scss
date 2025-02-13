@@ -1,0 +1,22 @@
+.item {
+  display: flex;
+  gap: 10px;
+  padding: 5px;
+}
+
+.img {
+  width: 50%;
+}
+
+.wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 10px;
+}
+
+.button {
+  flex-grow: 0;
+  margin-top: auto;
+  height: fit-content;
+}

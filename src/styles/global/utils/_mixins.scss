@@ -33,7 +33,9 @@
 
 @mixin btnPrimary {
   @include btnBase;
+  flex-grow: 1;
   border: 1px solid #5d7e9e;
+  border-radius: 2px;
 }
 
 @mixin btnSecondary {
@@ -42,6 +44,7 @@
 
 @mixin btnBarMenu {
   @include btnBase;
+
   color: var(--white_color);
   border-radius: 2px;
   &:hover {

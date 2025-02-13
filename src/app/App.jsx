@@ -12,9 +12,6 @@ import PublicRoute from "common/components/navigation/PublicRoute";
 import { setIsLoggedIn } from "features/auth/authSlice";
 import { useGetUserByTokenQuery } from "features/users/usersApi";
 
-// import { players } from "resources/players";
-// import { deck } from "resources/decks";
-
 const RegisterPage = lazy(() => import("common/pages/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/LoginPage"));
 

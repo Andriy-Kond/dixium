@@ -37,16 +37,17 @@ export default function DecksList() {
   const players = useSelector(selectPlayers);
 
   const selectDeck = async () => {
-    console.log("DecksList >> currentDeck:::", currentDeck.cards);
+    // console.log("DecksList >> currentDeck:::", currentDeck.cards);
     const game = {
       deck: currentDeck.cards,
       players,
       isGameStarted: false,
-      hostPlayer: userCredentials.userId,
+      hostPlayerId: userCredentials.userId,
+      hostPlayerName: userCredentials.name,
     };
 
     const result = await createGame(game);
-    console.log("selectDeck >> result:::", result);
+    // console.log("selectDeck >> result:::", result);
     dispatch(setIsCreatingGame(false));
   };
 
@@ -69,6 +70,7 @@ export default function DecksList() {
                   pullDeck(deck._id);
                 }}
                 btnText={`Deck: ${deck.name}`}
+                btnStyle={["twoBtnsInRow"]}
               />
             </li>
           );
@@ -81,7 +83,7 @@ export default function DecksList() {
           <ul className={css.currentDeck}>
             {currentDeck?.cards?.map(card => (
               <li className={css.card} key={card._id}>
-                <p>{card.public_id}</p>
+                {/* <p>{card.cardName}</p> */}
                 <img className={css.img} src={card.url} alt="card" />
               </li>
             ))}
@@ -90,8 +92,16 @@ export default function DecksList() {
       )}
 
       <div className={css.bottomBar}>
-        <Button onClick={toPreviousPage} btnText={btnTextBack} />
-        <Button onClick={selectDeck} btnText={btnTextSelect} />
+        <Button
+          onClick={toPreviousPage}
+          btnText={btnTextBack}
+          btnStyle={["twoBtnsInRow"]}
+        />
+        <Button
+          onClick={selectDeck}
+          btnText={btnTextSelect}
+          btnStyle={["twoBtnsInRow"]}
+        />
       </div>
     </div>
   );

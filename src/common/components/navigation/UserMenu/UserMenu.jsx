@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { selectUserToken } from "app/selectors";
 import { setIsLoggedIn, setUserToken } from "features/auth/authSlice";
 import {
@@ -30,7 +31,8 @@ export default function UserMenu() {
   };
 
   const btnText = "Logout";
-  const btnStyle = "btnBarMenu";
+  // const btnStyle = "btnBarMenu";
+  const btnStyle = ["btnBarMenu", "twoBtnsInRow"];
 
   return (
     <>

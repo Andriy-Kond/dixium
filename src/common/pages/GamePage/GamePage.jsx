@@ -1,5 +1,5 @@
 import GameInitial from "common/components/game/GameInitial/index.js";
-import { Route, Routes } from "react-router-dom";
+// import { Route, Routes } from "react-router-dom";
 
 export default function GamePage() {
   return (
@@ -13,3 +13,13 @@ export default function GamePage() {
     </>
   );
 }
+
+// import GameInitial from "common/components/game/GameInitial/index.js";
+// export default function GamePage() {
+//   return (
+//     <>
+//       <p>Game Page</p>
+//       <GameInitial />
+//     </>
+//   );
+// }

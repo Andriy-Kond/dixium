@@ -19,6 +19,7 @@ const baseQuery = fetchBaseQuery({
 export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery,
+
   endpoints: builder => ({
     getAllDecks: builder.query({
       query: () => `dixium/decks`, // Get available decks
@@ -40,8 +41,8 @@ export const gameApi = createApi({
         url: `dixium/games`,
         method: "POST", // add new game
         body: game,
-        invalidatesTags: ["AllGames"],
       }),
+      invalidatesTags: ["AllGames"],
     }),
   }),
 });

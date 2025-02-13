@@ -19,7 +19,7 @@ export default function GameInitial() {
 
   const headerTitleText = isCreatingGame ? "Creating game" : "Available games";
 
-  const btnTextCreate = "Create game";
+  const btnTextCreate = "Create new game";
 
   return (
     <>
@@ -29,14 +29,16 @@ export default function GameInitial() {
             {headerTitleText.toUpperCase()}
           </p>
         </div>
-        <Games />
         <div className={css.pageMain}>
           {isCreatingGame && <DecksList />}
 
           {!isCreatingGame && (
-            <div className={css.bottomBar}>
-              <Button onClick={createGame} btnText={btnTextCreate} />
-            </div>
+            <>
+              <Games />
+              <div className={css.bottomBar}>
+                <Button onClick={createGame} btnText={btnTextCreate} />
+              </div>
+            </>
           )}
         </div>
       </div>

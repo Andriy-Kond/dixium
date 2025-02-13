@@ -17,13 +17,13 @@ export default function NavigationMenu() {
 
       {isLoggedIn && (
         <>
-          <NavLink
+          {/* <NavLink
             to="/contacts"
             className={({ isActive }) =>
               clsx(css.link, isActive && css.active)
             }>
             Contacts
-          </NavLink>
+          </NavLink> */}
 
           <NavLink
             to="/game"

@@ -23,7 +23,7 @@
   flex-direction: column;
 
   background-color: var(--secondary_color);
-  height: calc(100vh - 44px - 44px - 32px);
+  min-height: calc(100vh - 44px - 44px - 32px);
 }
 
 .bottomBar {
