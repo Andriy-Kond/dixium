@@ -5,11 +5,22 @@ import { useDispatch, useSelector } from "react-redux";
 import css from "./Games.module.scss";
 import socket from "socket.js";
 import { useEffect } from "react";
-import { addGame } from "features/game/gameSlice.js";
+import {
+  addGame,
+  addGamesList,
+  removeGame,
+  updateGamesCollectionInMongoDb,
+} from "features/game/gameSlice.js";
 
 export default function Games() {
   const dispatch = useDispatch();
   const { data: allGames, refetch } = useGetAllGamesQuery();
+
+  useEffect(() => {
+    if (allGames) {
+      dispatch(addGamesList(allGames)); // Записуємо список доступних ігор у стейт
+    }
+  }, [allGames, dispatch]);
 
   useEffect(() => {
     socket.on("newGameCreated", async newGame => {
@@ -19,6 +30,37 @@ export default function Games() {
 
     return () => {
       socket.off("newGameCreated");
+    };
+  }, [dispatch, refetch]);
+
+  // useEffect(() => {
+  //   socket.on("dbUpdate", change => {
+  //     console.log("Отримано оновлення з БД:", change);
+  //     dispatch(updateGamesCollectionInMongoDb(change)); // Оновлення Redux-стану
+  //   });
+
+  //   refetch();
+  //   return () => {
+  //     socket.off("dbUpdate");
+  //   };
+  // }, [dispatch, refetch]);
+
+  useEffect(() => {
+    socket.on("dbUpdate", change => {
+      console.log("Отримано оновлення з БД:", change);
+
+      if (change.operationType === "delete") {
+        dispatch(removeGame(change.documentKey._id)); // Видаляємо гру за `_id`
+      }
+      // else {
+      //   dispatch(updateGamesCollectionInMongoDb(change)); // Оновлюємо список, якщо це не видалення
+      // }
+
+      refetch(); // Перезапитуємо дані
+    });
+
+    return () => {
+      socket.off("dbUpdate");
     };
   }, [dispatch, refetch]);
 

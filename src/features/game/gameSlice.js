@@ -65,16 +65,23 @@ export const gameSlice = createSlice({
       state.deck = shuffledDeck; // Оновлюємо колоду після роздачі
     },
 
-    setGames: (state, action) => {
+    updateGamesCollectionInMongoDb: (state, action) => {
+      state.games = action.payload;
+    },
+
+    addGamesList: (state, action) => {
       state.games = action.payload;
     },
     addGame: (state, action) => {
-      state.games = [...state.games, action.payload];
+      state.games.push(action.payload);
     },
     updateGame: (state, action) => {
       state.games = state.games.map(game =>
         game._id === action.payload._id ? action.payload : game,
       );
+    },
+    removeGame: (state, action) => {
+      state.games = state.games.filter(game => game._id !== action.payload);
     },
     setCurrentGame: (state, action) => {
       state.currentGame = action.payload;
@@ -107,9 +114,10 @@ export const {
   clearGameInitialState,
 
   distributeCards,
-
-  setGames,
+  updateGamesCollectionInMongoDb,
+  addGamesList,
   addGame,
+  removeGame,
   updateGame,
   setCurrentGame,
   addPlayerToGame,
