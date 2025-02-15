@@ -6,6 +6,7 @@ export default function Button({
   onClick,
   btnStyle = [],
   localClassName,
+  disabled = false,
 }) {
   const buttonClassNames = clsx(
     css.btnPrimary,
@@ -15,7 +16,11 @@ export default function Button({
 
   return (
     <>
-      <button className={buttonClassNames} type="submit" onClick={onClick}>
+      <button
+        className={buttonClassNames}
+        type="submit"
+        onClick={onClick}
+        disabled={disabled}>
         {btnText.toUpperCase()}
       </button>
     </>

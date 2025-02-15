@@ -36,14 +36,14 @@ export const gameApi = createApi({
       providesTags: ["AllGames"],
     }),
 
-    createGame: builder.mutation({
-      query: game => ({
-        url: `dixium/games`,
-        method: "POST", // add new game
-        body: game,
-      }),
-      invalidatesTags: ["AllGames"],
-    }),
+    // createGame: builder.mutation({
+    //   query: game => ({
+    //     url: `dixium/games`,
+    //     method: "POST", // add new game
+    //     body: game,
+    //   }),
+    //   invalidatesTags: ["AllGames"],
+    // }),
   }),
 });
 
@@ -52,5 +52,5 @@ export const {
   useGetCurrentDeckQuery,
 
   useGetAllGamesQuery,
-  useCreateGameMutation,
+  // useCreateGameMutation,
 } = gameApi;

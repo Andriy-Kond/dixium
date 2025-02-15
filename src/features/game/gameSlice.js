@@ -3,6 +3,8 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const gameInitialState = {
+  games: [],
+  currentGame: null,
   deck: [],
   players: [
     // {
@@ -12,6 +14,8 @@ const gameInitialState = {
     // },
   ],
   isCreatingGame: false,
+  startGame: false,
+  isGameStarted: false,
   gameDeckId: null,
   gameId: null,
 };
@@ -27,17 +31,6 @@ export const gameSlice = createSlice({
   name: "gameSlice",
   initialState: gameInitialState,
   reducers: {
-    distributeCards: (state, action) => {
-      const { cardsPerPlayer } = action.payload;
-      const shuffledDeck = shuffleDeck([...state.deck]);
-
-      state.players.map(player => {
-        return (player.hand = shuffledDeck.splice(0, cardsPerPlayer));
-      });
-
-      state.deck = shuffledDeck; // Оновлюємо колоду після роздачі
-    },
-
     setIsCreatingGame: (state, action) => {
       state.isCreatingGame = action.payload;
     },
@@ -51,7 +44,7 @@ export const gameSlice = createSlice({
     },
 
     addPlayer: (state, action) => {
-      state.players.push(action);
+      state.players.push(action.payload);
     },
 
     clearGameInitialState: () => gameInitialState,
@@ -60,6 +53,39 @@ export const gameSlice = createSlice({
     //   return { ...gameInitialState };
     // },
     // if gameInitialState will have nested structure, they will not be copied to state
+
+    distributeCards: (state, action) => {
+      const { cardsPerPlayer } = action.payload;
+      const shuffledDeck = shuffleDeck([...state.deck]);
+
+      state.players.map(player => {
+        return (player.hand = shuffledDeck.splice(0, cardsPerPlayer));
+      });
+
+      state.deck = shuffledDeck; // Оновлюємо колоду після роздачі
+    },
+
+    setGames: (state, action) => {
+      state.games = action.payload;
+    },
+    addGame: (state, action) => {
+      state.games.push(action.payload);
+    },
+    updateGame: (state, action) => {
+      state.games = state.games.map(game =>
+        game._id === action.payload._id ? action.payload : game,
+      );
+    },
+    setCurrentGame: (state, action) => {
+      state.currentGame = action.payload;
+    },
+    addPlayerToGame: (state, action) => {
+      const { gameId, player } = action.payload;
+      const game = state.games.find(g => g._id === gameId);
+      if (game) {
+        game.players.push(player);
+      }
+    },
   },
 });
 
@@ -74,10 +100,17 @@ export const persistedGameReducer = persistReducer(
 );
 
 export const {
-  distributeCards,
   setIsCreatingGame,
   getDeck,
   setCurrentDeckId,
   addPlayer,
   clearGameInitialState,
+
+  distributeCards,
+
+  setGames,
+  addGame,
+  updateGame,
+  setCurrentGame,
+  addPlayerToGame,
 } = gameSlice.actions;

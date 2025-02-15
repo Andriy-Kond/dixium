@@ -11,6 +11,7 @@ export default function Games() {
   const startGame = () => {};
 
   // const btnText = "Join to game";
+
   return (
     <ul>
       {allGames?.map(game => {
@@ -29,6 +30,7 @@ export default function Games() {
                     : `Join to ${game.hostPlayerName}'s game`
                 }
                 onClick={startGame}
+                disabled={false}
               />
             </div>
           </li>

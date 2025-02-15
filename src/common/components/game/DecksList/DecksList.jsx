@@ -1,5 +1,5 @@
 import {
-  useCreateGameMutation,
+  // useCreateGameMutation,
   useGetAllDecksQuery,
   useGetCurrentDeckQuery,
 } from "features/game/gameApi.js";
@@ -16,6 +16,7 @@ import {
   selectUserCredentials,
 } from "app/selectors.js";
 import Button from "common/components/Button";
+import socket from "socket.js";
 
 export default function DecksList() {
   const dispatch = useDispatch();
@@ -28,7 +29,7 @@ export default function DecksList() {
     skip: !gameDeckId,
   });
 
-  const [createGame] = useCreateGameMutation();
+  // const [createGame] = useCreateGameMutation();
 
   const pullDeck = deckId => {
     dispatch(setCurrentDeckId(deckId));
@@ -45,8 +46,8 @@ export default function DecksList() {
       hostPlayerId: userCredentials.userId,
       hostPlayerName: userCredentials.name,
     };
-
-    const result = await createGame(game);
+    socket.emit(game);
+    // const result = await createGame(game);
     // console.log("selectDeck >> result:::", result);
     dispatch(setIsCreatingGame(false));
   };
