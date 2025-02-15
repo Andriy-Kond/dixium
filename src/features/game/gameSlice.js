@@ -69,7 +69,7 @@ export const gameSlice = createSlice({
       state.games = action.payload;
     },
     addGame: (state, action) => {
-      state.games.push(action.payload);
+      state.games = [...state.games, action.payload];
     },
     updateGame: (state, action) => {
       state.games = state.games.map(game =>

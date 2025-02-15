@@ -1,16 +1,30 @@
 import { selectUserCredentials } from "app/selectors.js";
 import Button from "common/components/Button/index.js";
 import { useGetAllGamesQuery } from "features/game/gameApi.js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import css from "./Games.module.scss";
+import socket from "socket.js";
+import { useEffect } from "react";
+import { addGame } from "features/game/gameSlice.js";
 
 export default function Games() {
-  const { data: allGames } = useGetAllGamesQuery();
+  const dispatch = useDispatch();
+  const { data: allGames, refetch } = useGetAllGamesQuery();
+
+  useEffect(() => {
+    socket.on("newGameCreated", async newGame => {
+      dispatch(addGame(newGame));
+      refetch();
+    });
+
+    return () => {
+      socket.off("newGameCreated");
+    };
+  }, [dispatch, refetch]);
+
   const userCredentials = useSelector(selectUserCredentials);
 
   const startGame = () => {};
-
-  // const btnText = "Join to game";
 
   return (
     <ul>
