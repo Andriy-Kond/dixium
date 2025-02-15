@@ -1,20 +1,20 @@
 import { selectUserCredentials } from "app/selectors.js";
 import Button from "common/components/Button/index.js";
-import { useGetAllGamesQuery } from "features/game/gameApi.js";
+import {
+  useGetAllGamesQuery,
+  useRemoveGameByApiMutation,
+  useRemoveGameMutation,
+} from "features/game/gameApi.js";
 import { useDispatch, useSelector } from "react-redux";
 import css from "./Games.module.scss";
 import socket from "socket.js";
 import { useEffect } from "react";
-import {
-  addGame,
-  addGamesList,
-  removeGame,
-  updateGamesCollectionInMongoDb,
-} from "features/game/gameSlice.js";
+import { addGame, addGamesList, removeGame } from "features/game/gameSlice.js";
 
 export default function Games() {
   const dispatch = useDispatch();
   const { data: allGames, refetch } = useGetAllGamesQuery();
+  const [removeGameByApi] = useRemoveGameByApiMutation();
 
   useEffect(() => {
     if (allGames) {
@@ -68,6 +68,13 @@ export default function Games() {
 
   const startGame = () => {};
 
+  // dispatch(removeGame(gameId));
+  // refetch();
+  const removeCurrentGame = async gameId => {
+    console.log("Games >> gameId:::", gameId);
+    await removeGameByApi(gameId);
+  };
+
   return (
     <ul>
       {allGames?.map(game => {
@@ -77,7 +84,6 @@ export default function Games() {
             <div className={css.wrapper}>
               <p>{game.gameName}</p>
               <p>Host: {game.hostPlayerName}</p>
-
               <Button
                 localClassName={css.button}
                 btnText={
@@ -87,6 +93,12 @@ export default function Games() {
                 }
                 onClick={startGame}
                 disabled={false}
+              />
+              <Button
+                localClassName={css.button}
+                btnText="Delete game"
+                disabled={!(userCredentials.userId === game.hostPlayerId)}
+                onClick={() => removeCurrentGame(game._id)}
               />
             </div>
           </li>

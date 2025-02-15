@@ -36,6 +36,15 @@ export const gameApi = createApi({
       providesTags: ["AllGames"],
     }),
 
+    removeGameByApi: builder.mutation({
+      query: gameId => ({
+        url: `dixium/games/${gameId}`,
+        method: "DELETE", // add new game
+        body: gameId,
+      }),
+      invalidatesTags: ["AllGames"],
+    }),
+
     // createGame: builder.mutation({
     //   query: game => ({
     //     url: `dixium/games`,
@@ -52,5 +61,6 @@ export const {
   useGetCurrentDeckQuery,
 
   useGetAllGamesQuery,
+  useRemoveGameByApiMutation,
   // useCreateGameMutation,
 } = gameApi;
