@@ -5,13 +5,13 @@ export default function Button({
   btnText = "",
   onClick,
   btnStyle = [],
-  localClassName,
+  // localClassName,
   disabled = false,
 }) {
   const buttonClassNames = clsx(
     css.btnPrimary,
     btnStyle.map(className => css[className]),
-    localClassName,
+    // localClassName,
   );
 
   return (

@@ -5,7 +5,7 @@ import { setIsCreatingGame } from "features/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import DecksList from "../DecksList/DecksList.jsx";
 import Button from "common/components/Button";
-import Games from "../Games/Games.jsx";
+import GamesList from "../GamesList/GamesList.jsx";
 
 export default function GameInitial() {
   // const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function GameInitial() {
 
           {!isCreatingGame && (
             <>
-              <Games />
+              <GamesList />
               <div className={css.bottomBar}>
                 <Button onClick={createGame} btnText={btnTextCreate} />
               </div>

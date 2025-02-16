@@ -6,6 +6,8 @@
 
 .img {
   width: 50%;
+  height: 250px;
+  border-radius: 10px;
 }
 
 .wrapper {
@@ -15,8 +17,9 @@
   gap: 10px;
 }
 
-.button {
-  flex-grow: 0;
+.btnsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   margin-top: auto;
-  height: fit-content;
 }

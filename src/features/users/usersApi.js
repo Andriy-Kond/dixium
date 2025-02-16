@@ -19,7 +19,7 @@ const baseQuery = fetchBaseQuery({
 
 // Handling when the token is invalid or expired.
 const baseQueryWithReauth = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
+  const result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
     console.log("❌ Токен недійсний або прострочений. Виконується вихід...");

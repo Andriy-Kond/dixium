@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { selectUserToken } from "app/selectors";
+import { selectUserCredentials, selectUserToken } from "app/selectors";
 import { setIsLoggedIn, setUserToken } from "features/auth/authSlice";
 import {
   useGetUserByTokenQuery,
@@ -17,6 +17,7 @@ import { clearGameInitialState } from "features/game/gameSlice.js";
 export default function UserMenu() {
   const dispatch = useDispatch();
   const authUserToken = useSelector(selectUserToken);
+
   const { data: userCredentials = [] } = useGetUserByTokenQuery(null, {
     skip: !authUserToken,
   });
@@ -32,15 +33,20 @@ export default function UserMenu() {
 
   const btnText = "Logout";
   // const btnStyle = "btnBarMenu";
-  const btnStyle = ["btnBarMenu", "twoBtnsInRow"];
+  const btnStyle = ["btnBarMenu"];
+  console.log("UserMenu >> userCredentials:::", userCredentials);
 
   return (
     <>
       {/* Умова userCredentials.name необхідно, щоб span не блимав при завантаженні користувача */}
       {userCredentials.name && (
         <div className={css.userCredentialsBox}>
-          <img className={css.avatar} src={avatar} alt="avatar" />
-          <span className={css.text}>Welcome, {userCredentials.name}</span>
+          <img
+            className={css.avatar}
+            src={userCredentials.avatarURL}
+            alt="avatar"
+          />
+          <span className={css.text}>{`Welcome, ${userCredentials.name}`}</span>
           <Button
             onClick={handleLogout}
             btnText={btnText}
