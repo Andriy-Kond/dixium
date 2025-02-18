@@ -5,6 +5,7 @@ import {
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addGame,
   setCurrentDeckId,
   setIsCreatingGame,
 } from "features/game/gameSlice.js";
@@ -15,6 +16,7 @@ import {
 } from "app/selectors.js";
 import Button from "common/components/Button";
 import socket from "socket.js";
+import { useEffect } from "react";
 
 export default function DecksList() {
   const dispatch = useDispatch();
@@ -33,7 +35,7 @@ export default function DecksList() {
 
   const players = useSelector(selectPlayers);
 
-  const createGameBasedOnSelectedDeck = async () => {
+  const createNewGame = async () => {
     const game = {
       deck: currentDeck.cards,
       players,
@@ -45,6 +47,7 @@ export default function DecksList() {
     socket.emit("createGame", game);
     dispatch(setIsCreatingGame(false));
     dispatch(setCurrentDeckId(null));
+    dispatch(addGame(game));
   };
 
   const toPreviousPage = () => {
@@ -90,7 +93,7 @@ export default function DecksList() {
           btnStyle={["twoBtnsInRow"]}
         />
         <Button
-          onClick={createGameBasedOnSelectedDeck}
+          onClick={createNewGame}
           btnText={"Select deck"}
           btnStyle={["twoBtnsInRow"]}
           disabled={!currentDeck}

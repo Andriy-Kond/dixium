@@ -1,9 +1,6 @@
 import { selectUserCredentials } from "app/selectors.js";
 import Button from "common/components/Button/index.js";
-import {
-  useGetAllGamesQuery,
-  // useRemoveGameFromServerMutation,
-} from "features/game/gameApi.js";
+import { useGetAllGamesQuery } from "features/game/gameApi.js";
 import { useDispatch, useSelector } from "react-redux";
 import css from "./GamesList.module.scss";
 import socket from "socket.js";
@@ -13,7 +10,20 @@ import { addGame, addGamesList, removeGame } from "features/game/gameSlice.js";
 export default function GamesList() {
   const dispatch = useDispatch();
   const { data: allGames, refetch } = useGetAllGamesQuery();
-  // const [removeGameFromServer] = useRemoveGameFromServerMutation();
+
+  // Remove game from Redux if it was been deleted from server not in the app.
+  useEffect(() => {
+    socket.on("dbUpdateGamesColl", change => {
+      if (change.operationType === "delete") {
+        dispatch(removeGame(change.documentKey._id)); // Видаляємо гру з Redux
+        refetch(); // Перезапитуємо дані
+      }
+    });
+
+    return () => {
+      socket.off("dbUpdateGamesColl");
+    };
+  }, [dispatch, refetch]);
 
   useEffect(() => {
     if (allGames) {
@@ -32,29 +42,13 @@ export default function GamesList() {
     };
   }, [dispatch, refetch]);
 
-  // Remove game from Redux if it was been deleted from server not in the app.
   useEffect(() => {
-    socket.on("dbUpdate", change => {
-      console.log("useEffect >> change:::", change);
-      if (change.operationType === "delete") {
-        dispatch(removeGame(change.documentKey._id)); // Видаляємо гру з Redux
-        refetch(); // Перезапитуємо дані
-      }
+    socket.on("currentGameWasDeleted", async game => {
+      dispatch(removeGame(game._id));
     });
 
     return () => {
-      socket.off("dbUpdate");
-    };
-  }, [dispatch, refetch]);
-
-  useEffect(() => {
-    socket.on("gameDeleted", async game => {
-      console.log("useEffect >> game:::", game);
-      // dispatch(removeGame(game._id));
-    });
-
-    return () => {
-      socket.off("gameDeleted");
+      socket.off("currentGameWasDeleted");
     };
   }, [dispatch]);
 
@@ -63,7 +57,6 @@ export default function GamesList() {
   const startGame = () => {};
 
   const removeCurrentGame = async gameId => {
-    // await removeGameFromServer(gameId);
     socket.emit("deleteGame", gameId);
   };
 

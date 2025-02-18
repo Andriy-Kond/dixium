@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DecksList from "../DecksList/DecksList.jsx";
 import Button from "common/components/Button";
 import GamesList from "../GamesList/GamesList.jsx";
+import { useGetAllGamesQuery } from "features/game/gameApi.js";
 
 export default function GameInitial() {
   // const navigate = useNavigate();

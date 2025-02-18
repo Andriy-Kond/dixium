@@ -28,8 +28,9 @@ export default function RegisterPage() {
       if (result.error) {
         Notify.failure(result.error.data.message);
       } else {
-        dispatch(setUserCredentials(result?.data));
-        dispatch(setUserToken(result?.data.token));
+        const user = { ...result?.data, userId: result?.data._id };
+        dispatch(setUserCredentials(user));
+        dispatch(setUserToken(user.token));
 
         form.reset();
 
