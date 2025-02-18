@@ -18,12 +18,18 @@
   transition: background-color 0.3s ease;
 
   &:hover {
+    color: #5d7e9e;
     background-color: rgba(15, 125, 255, 0.122);
   }
 
   &:disabled {
     border-color: rgba(0, 0, 0, 0.24);
     color: rgba(0, 0, 0, 0.24);
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: transparent;
+    }
   }
 
   &::selection {

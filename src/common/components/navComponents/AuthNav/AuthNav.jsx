@@ -1,6 +1,6 @@
-import css from "../navigation.module.scss";
-import clsx from "clsx";
 import { NavLink } from "react-router-dom";
+import clsx from "clsx";
+import css from "common/components/navComponents/navigation.module.scss";
 
 export default function AuthNav() {
   return (
@@ -19,7 +19,3 @@ export default function AuthNav() {
     </div>
   );
 }
-
-// className={({ isActive }) => `${css.link} ${isActive ? css.active : ""}`.trim()}>
-// the same:
-// className={({ isActive }) => clsx(css.link, isActive && css.active)}>

@@ -1,5 +1,6 @@
+import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserIsLoggedIn, selectUserToken } from "app/selectors";
+
 import {
   useGetUserByTokenQuery,
   useLoginUserMutation,
@@ -9,20 +10,15 @@ import {
   setUserCredentials,
   setUserToken,
 } from "features/auth/authSlice";
-
+import { selectUserCredentials, selectUserIsLoggedIn } from "app/selectors";
 import AuthForm from "common/components/AuthForm";
 import css from "common/components/AuthForm/AuthForm.module.scss";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
-  const authUserToken = useSelector(selectUserToken);
-
+  const user = useSelector(selectUserCredentials);
   const [loginUser] = useLoginUserMutation();
-
-  const { data, isFetching, refetch } = useGetUserByTokenQuery(undefined, {
-    skip: !authUserToken,
-  });
 
   const submitCredentials = async e => {
     e.preventDefault();
@@ -35,14 +31,18 @@ export default function LoginPage() {
       const result = await loginUser(userCredentials);
       console.log("LoginPage >> result:::", result);
 
-      dispatch(setUserCredentials(result?.data));
-      dispatch(setUserToken(result?.data.token));
-      dispatch(setIsLoggedIn(true));
-      // Here you can navigate to needed page, if you have it:
-      // navigate("/somePrivatPage",  { replace: true });
-      // Якщо вказати значення true, то новий лист підмінить собою найвищий. Це використовується досить рідко, наприклад при логіні, щоб користувач не зміг повернутися кнопкою «назад» на сторінку логіна після входу, адже він уже в системі і робити йому там нічого.
+      if (result.error) {
+        Notify.failure(result.error.data.message);
+      } else {
+        dispatch(setUserCredentials(result?.data));
+        dispatch(setUserToken(result?.data.token));
+        dispatch(setIsLoggedIn(true));
 
-      // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна
+        // Here you can navigate to needed page, if you have it:
+        // navigate("/somePrivatPage",  { replace: true });
+
+        // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна
+      }
     } catch (err) {
       dispatch(setIsLoggedIn(false));
       console.log("submitCredentials >> err:::", err);
@@ -51,7 +51,7 @@ export default function LoginPage() {
 
   return (
     <>
-      {!isLoggedIn && !isFetching && (
+      {!isLoggedIn && (
         <div className={css.container}>
           <div className={css.pageHeader}>
             <p className={css.pageHeader_title}>Вхід</p>
@@ -64,8 +64,7 @@ export default function LoginPage() {
           <div className={css.pageFooter}></div>
         </div>
       )}
-
-      {isLoggedIn && !isFetching && <div>User: {data?.name}</div>}
+      {isLoggedIn && <div>User: {user.name}</div>}
     </>
   );
 }

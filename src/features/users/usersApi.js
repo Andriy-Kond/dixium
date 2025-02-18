@@ -65,10 +65,6 @@ export const usersApi = createApi({
       // refetchOnReconnect: true,
       // refetchOnMountOrArgChange: true,
       // refetchOnMountOrArgChange: false, // не робити новий запит при кожному монтуванні компонента, якщо дані вже є в кеші.
-      // extraOptions: {
-      //   refetchOnReconnect: true,
-      //   refetchOnMountOrArgChange: true,
-      // },
 
       // invalidatesTags: ["User"],
       // Після виходу (UserMenu - handleLogout) я очищую стан за допомогою resetApiState(). Тому інвалідувати залежність тут не потрібно. Вона лише викликає додаткові запити на сервер після виходу. А вони не потрібні.

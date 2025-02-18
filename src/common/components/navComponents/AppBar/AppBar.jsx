@@ -1,10 +1,9 @@
 import { useSelector } from "react-redux";
-
 import { selectUserIsLoggedIn, selectUserToken } from "app/selectors";
 
-import NavigationMenu from "common/components/navigation/NavigationMenu";
-import AuthNav from "common/components/navigation/AuthNav";
-import UserMenu from "common/components/navigation/UserMenu";
+import NavigationMenu from "common/components/navComponents/NavigationMenu";
+import AuthNav from "common/components/navComponents/AuthNav";
+import UserMenu from "common/components/navComponents/UserMenu";
 
 import css from "./AppBar.module.scss";
 
@@ -17,7 +16,6 @@ export default function AppBar() {
       <NavigationMenu />
 
       {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
-
       {isUserToken && isLoggedIn && <UserMenu />}
       {!isUserToken && <AuthNav />}
     </nav>

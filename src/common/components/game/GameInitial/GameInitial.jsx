@@ -19,8 +19,6 @@ export default function GameInitial() {
 
   const headerTitleText = isCreatingGame ? "Creating game" : "Available games";
 
-  const btnTextCreate = "Create new game";
-
   return (
     <>
       <div className={css.container}>
@@ -36,7 +34,7 @@ export default function GameInitial() {
             <>
               <GamesList />
               <div className={css.bottomBar}>
-                <Button onClick={createGame} btnText={btnTextCreate} />
+                <Button onClick={createGame} btnText={"Create new game"} />
               </div>
             </>
           )}

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
-import AppBar from "common/components/navigation/AppBar";
+import AppBar from "common/components/navComponents/AppBar";
 import css from "./SharedLayout.module.scss";
 
 export default function SharedLayout() {

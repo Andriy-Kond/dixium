@@ -1,19 +1,18 @@
+import { Notify } from "notiflix/build/notiflix-notify-aio";
+import { useDispatch } from "react-redux";
+import { useSignupUserMutation } from "features/users/usersApi";
 import {
   setIsLoggedIn,
   setUserCredentials,
   setUserToken,
 } from "features/auth/authSlice";
-import { useSignupUserMutation } from "features/users/usersApi";
-import { useDispatch } from "react-redux";
 
 import AuthForm from "common/components/AuthForm";
 import css from "common/components/AuthForm/AuthForm.module.scss";
-import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
-  const [signupUser] = useSignupUserMutation();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [signupUser] = useSignupUserMutation();
 
   const submitCredentials = async e => {
     e.preventDefault();
@@ -26,20 +25,23 @@ export default function RegisterPage() {
       const result = await signupUser(userCredentials);
       console.log("RegisterPage >> result:::", result);
 
-      dispatch(setUserCredentials(result?.data));
-      dispatch(setUserToken(result?.data.token));
-      // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна
+      if (result.error) {
+        Notify.failure(result.error.data.message);
+      } else {
+        dispatch(setUserCredentials(result?.data));
+        dispatch(setUserToken(result?.data.token));
 
-      form.reset();
+        form.reset();
 
-      // Here you can immediately come to private route:
-      dispatch(setIsLoggedIn(true));
-      // and navigate to needed page:
-      // navigate("/somePrivatPage",  { replace: true });
-      // Якщо вказати значення true, то новий лист підмінить собою найвищий. Це використовується досить рідко, наприклад при логіні, щоб користувач не зміг повернутися кнопкою «назад» на сторінку логіна після входу, адже він уже в системі і робити йому там нічого.
+        // Here you can immediately come to private route:
+        dispatch(setIsLoggedIn(true));
+        // and/or navigate to needed page:
+        // navigate("/somePrivatPage",  { replace: true });
+        // Якщо вказати значення true, то новий лист підмінить собою найвищий. Це використовується досить рідко, наприклад при логіні, щоб користувач не зміг повернутися кнопкою «назад» на сторінку логіна після входу, адже він уже в системі і робити йому там нічого.
 
-      // Or you can switch to login page after registration:
-      // navigate("/login");
+        // Or you can switch to login page after registration:
+        // navigate("/login");
+      }
     } catch (err) {
       dispatch(setIsLoggedIn(false));
       console.log("RegisterPage >> err:::", err);

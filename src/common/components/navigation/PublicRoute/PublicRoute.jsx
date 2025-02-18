@@ -1,7 +1,7 @@
-import { selectUserIsLoggedIn } from "app/selectors";
-
-import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import { selectUserIsLoggedIn } from "app/selectors";
 
 export default function PublicRoute({ redirectTo = "/contacts" }) {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);

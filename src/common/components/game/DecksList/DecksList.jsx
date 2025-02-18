@@ -1,5 +1,4 @@
 import {
-  // useCreateGameMutation,
   useGetAllDecksQuery,
   useGetCurrentDeckQuery,
 } from "features/game/gameApi.js";
@@ -10,7 +9,7 @@ import {
   setIsCreatingGame,
 } from "features/game/gameSlice.js";
 import {
-  selectGameDeckId,
+  selectDeckId,
   selectPlayers,
   selectUserCredentials,
 } from "app/selectors.js";
@@ -20,12 +19,12 @@ import socket from "socket.js";
 export default function DecksList() {
   const dispatch = useDispatch();
 
-  const gameDeckId = useSelector(selectGameDeckId);
+  const DeckId = useSelector(selectDeckId);
   const userCredentials = useSelector(selectUserCredentials);
 
   const { data: allDecks } = useGetAllDecksQuery();
-  const { data: currentDeck } = useGetCurrentDeckQuery(gameDeckId, {
-    skip: !gameDeckId,
+  const { data: currentDeck } = useGetCurrentDeckQuery(DeckId, {
+    skip: !DeckId,
   });
 
   const pullDeck = deckId => {
@@ -65,19 +64,18 @@ export default function DecksList() {
                 }}
                 btnText={`Deck: ${deck.name}`}
                 btnStyle={["twoBtnsInRow"]}
+                localClassName={currentDeck?._id === deck._id && css.btnActive}
               />
             </li>
           );
         })}
       </ul>
 
-      {gameDeckId && (
+      {DeckId && (
         <div>
-          <h3>Selected Deck: {currentDeck?.name}</h3>
           <ul className={css.currentDeck}>
             {currentDeck?.cards?.map(card => (
               <li className={css.card} key={card._id}>
-                {/* <p>{card.cardName}</p> */}
                 <img className={css.img} src={card.url} alt="card" />
               </li>
             ))}

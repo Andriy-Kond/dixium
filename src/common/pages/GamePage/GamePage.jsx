@@ -6,6 +6,7 @@ export default function GamePage() {
     <>
       <p>Game Page</p>
       <GameInitial />
+      {/* If use it as individual pages (without prop "isCreatingGame") */}
       {/* <Routes>
         <Route path="/" element={<GameInitial />} />
         <Route path="/create" element={<CreateGame />} />
@@ -13,13 +14,3 @@ export default function GamePage() {
     </>
   );
 }
-
-// import GameInitial from "common/components/game/GameInitial/index.js";
-// export default function GamePage() {
-//   return (
-//     <>
-//       <p>Game Page</p>
-//       <GameInitial />
-//     </>
-//   );
-// }
