@@ -19,7 +19,7 @@ const baseQuery = fetchBaseQuery({
 export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery,
-
+  keepUnusedDataFor: 0, // видаляє очікування 60 сек перед очищенням кешу
   endpoints: builder => ({
     getAllDecks: builder.query({
       query: () => `dixium/decks`, // Get available decks

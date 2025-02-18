@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { logoutUser } from "features/auth/authSlice.js";
+import { gameApi } from "features/game/gameApi.js";
 
 const { REACT_APP_BASE_URL } = process.env;
 
@@ -33,6 +34,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const usersApi = createApi({
   reducerPath: "usersApi",
   baseQuery: baseQueryWithReauth,
+  keepUnusedDataFor: 0, // видаляє очікування 60 сек перед очищенням кешу
   endpoints: build => ({
     signupUser: build.mutation({
       query: user => ({
@@ -60,11 +62,24 @@ export const usersApi = createApi({
         method: "POST",
       }),
 
-      refetchOnReconnect: true,
-      refetchOnMountOrArgChange: true,
+      // refetchOnReconnect: true,
+      // refetchOnMountOrArgChange: true,
+      // refetchOnMountOrArgChange: false, // не робити новий запит при кожному монтуванні компонента, якщо дані вже є в кеші.
+      // extraOptions: {
+      //   refetchOnReconnect: true,
+      //   refetchOnMountOrArgChange: true,
+      // },
 
       // invalidatesTags: ["User"],
       // Після виходу (UserMenu - handleLogout) я очищую стан за допомогою resetApiState(). Тому інвалідувати залежність тут не потрібно. Вона лише викликає додаткові запити на сервер після виходу. А вони не потрібні.
+
+      async queryFulfilled({ dispatch, queryFulfilled }) {
+        await queryFulfilled; // чекаємо завершення виконання мутації
+        // dispatch(usersApi.util.invalidateTags([])); // Інвалідовує всі теги
+        // dispatch(usersApi.util.unsubscribeQueries([])); // Відписка від запитів
+        dispatch(usersApi.util.resetApiState());
+        dispatch(gameApi.util.resetApiState());
+      },
     }),
 
     getUserByToken: build.query({

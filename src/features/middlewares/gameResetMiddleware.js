@@ -13,7 +13,7 @@
 // },
 
 import { logoutUser } from "features/auth/authSlice.js";
-import { clearGameInitialState } from "./gameSlice.js";
+import { clearGameInitialState } from "../game/gameSlice.js";
 
 export const gameResetMiddleware = store => next => action => {
   if (action.type === logoutUser.type) {

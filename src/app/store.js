@@ -15,7 +15,6 @@ import { persistedUserAuthReducer } from "features/auth/authSlice";
 import { usersApi } from "features/users/usersApi";
 import { gameApi } from "features/game/gameApi.js";
 import { persistedGameReducer } from "features/game/gameSlice.js";
-import { gameResetMiddleware } from "features/game/gameResetMiddleware.js";
 
 export const store = configureStore({
   reducer: {
@@ -34,7 +33,6 @@ export const store = configureStore({
 
     usersApi.middleware,
     gameApi.middleware,
-    gameResetMiddleware,
   ],
 });
 

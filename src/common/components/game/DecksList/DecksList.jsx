@@ -28,8 +28,6 @@ export default function DecksList() {
     skip: !gameDeckId,
   });
 
-  // const [createGame] = useCreateGameMutation();
-
   const pullDeck = deckId => {
     dispatch(setCurrentDeckId(deckId));
   };
@@ -37,7 +35,6 @@ export default function DecksList() {
   const players = useSelector(selectPlayers);
 
   const createGameBasedOnSelectedDeck = async () => {
-    // console.log("DecksList >> currentDeck:::", currentDeck.cards);
     const game = {
       deck: currentDeck.cards,
       players,
@@ -48,14 +45,12 @@ export default function DecksList() {
 
     socket.emit("createGame", game);
     dispatch(setIsCreatingGame(false));
+    dispatch(setCurrentDeckId(null));
   };
 
   const toPreviousPage = () => {
     dispatch(setIsCreatingGame(false));
   };
-
-  const btnTextSelect = "Select deck";
-  const btnTextBack = "Back";
 
   return (
     <div className={css.container}>
@@ -93,13 +88,14 @@ export default function DecksList() {
       <div className={css.bottomBar}>
         <Button
           onClick={toPreviousPage}
-          btnText={btnTextBack}
+          btnText={"Back"}
           btnStyle={["twoBtnsInRow"]}
         />
         <Button
           onClick={createGameBasedOnSelectedDeck}
-          btnText={btnTextSelect}
+          btnText={"Select deck"}
           btnStyle={["twoBtnsInRow"]}
+          disabled={!currentDeck}
         />
       </div>
     </div>

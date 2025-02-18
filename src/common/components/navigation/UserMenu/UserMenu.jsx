@@ -1,8 +1,12 @@
 import clsx from "clsx";
 import { selectUserCredentials, selectUserToken } from "app/selectors";
-import { setIsLoggedIn, setUserToken } from "features/auth/authSlice";
 import {
-  useGetUserByTokenQuery,
+  clearAuthInitialState,
+  // setIsLoggedIn,
+  // setUserToken,
+} from "features/auth/authSlice";
+import {
+  // useGetUserByTokenQuery,
   useLogoutUserMutation,
   usersApi,
 } from "features/users/usersApi";
@@ -18,23 +22,27 @@ export default function UserMenu() {
   const dispatch = useDispatch();
   const authUserToken = useSelector(selectUserToken);
 
-  const { data: userCredentials = [] } = useGetUserByTokenQuery(null, {
-    skip: !authUserToken,
-  });
+  // const { data: userCredentials = [] } = useGetUserByTokenQuery(null, {
+  //   skip: !authUserToken,
+  //   refetchOnMountOrArgChange: false, // не робити новий запит при кожному монтуванні компонента, якщо дані вже є в кеші.
+  // });
+
+  const userCredentials = useSelector(selectUserCredentials);
+
   const [logoutUser] = useLogoutUserMutation();
 
   const handleLogout = async () => {
     await logoutUser();
     dispatch(clearGameInitialState());
-    dispatch(setUserToken(null));
-    dispatch(setIsLoggedIn(false));
-    dispatch(usersApi.util.resetApiState()); // очистити стан Redux від старих даних (user, email)
+    dispatch(clearAuthInitialState());
+    // dispatch(setUserToken(null));
+    // dispatch(setIsLoggedIn(false));
+    // dispatch(usersApi.util.resetApiState()); // очистити стан Redux від старих даних (user, email)
   };
 
   const btnText = "Logout";
   // const btnStyle = "btnBarMenu";
   const btnStyle = ["btnBarMenu"];
-  console.log("UserMenu >> userCredentials:::", userCredentials);
 
   return (
     <>
