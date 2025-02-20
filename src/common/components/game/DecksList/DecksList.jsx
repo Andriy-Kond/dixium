@@ -5,28 +5,24 @@ import {
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addGame,
   setCurrentDeckId,
   setIsCreatingGame,
 } from "features/game/gameSlice.js";
 import {
-  selectDeckId,
+  selectCurrentDeckId,
   selectPlayers,
   selectUserCredentials,
 } from "app/selectors.js";
 import Button from "common/components/Button";
 import socket from "socket.js";
-import { useEffect } from "react";
 
 export default function DecksList() {
   const dispatch = useDispatch();
-
-  const DeckId = useSelector(selectDeckId);
+  const currentDeckId = useSelector(selectCurrentDeckId);
   const userCredentials = useSelector(selectUserCredentials);
-
   const { data: allDecks } = useGetAllDecksQuery();
-  const { data: currentDeck } = useGetCurrentDeckQuery(DeckId, {
-    skip: !DeckId,
+  const { data: currentDeck } = useGetCurrentDeckQuery(currentDeckId, {
+    skip: !currentDeckId,
   });
 
   const pullDeck = deckId => {
@@ -47,7 +43,6 @@ export default function DecksList() {
     socket.emit("createGame", game);
     dispatch(setIsCreatingGame(false));
     dispatch(setCurrentDeckId(null));
-    dispatch(addGame(game));
   };
 
   const toPreviousPage = () => {
@@ -58,33 +53,30 @@ export default function DecksList() {
     <div className={css.container}>
       <p className={css.deckTitle}>Select your deck</p>
       <ul className={css.deckList}>
-        {allDecks?.map(deck => {
-          return (
-            <li className={css.deck} key={deck._id}>
-              <Button
-                onClick={() => {
-                  pullDeck(deck._id);
-                }}
-                btnText={`Deck: ${deck.name}`}
-                btnStyle={["twoBtnsInRow"]}
-                localClassName={currentDeck?._id === deck._id && css.btnActive}
-              />
-            </li>
-          );
-        })}
-      </ul>
+        {allDecks?.map(deck => (
+          <li className={css.deck} key={deck._id}>
+            <Button
+              onClick={() => {
+                pullDeck(currentDeckId === deck._id ? null : deck._id);
+              }}
+              btnText={`Deck: ${deck.name}`}
+              btnStyle={["twoBtnsInRow"]}
+              localClassName={currentDeck?._id === deck._id && css.btnActive}
+            />
 
-      {DeckId && (
-        <div>
-          <ul className={css.currentDeck}>
-            {currentDeck?.cards?.map(card => (
-              <li className={css.card} key={card._id}>
-                <img className={css.img} src={card.url} alt="card" />
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+            <ul
+              className={`${css.currentDeck} ${
+                currentDeckId === deck._id && css.show
+              }`}>
+              {deck.cards?.map(card => (
+                <li className={css.card} key={card._id}>
+                  <img className={css.img} src={card.url} alt="card" />
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
 
       <div className={css.bottomBar}>
         <Button

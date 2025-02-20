@@ -1,10 +1,7 @@
 import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  useGetUserByTokenQuery,
-  useLoginUserMutation,
-} from "features/users/usersApi";
+import { useLoginUserMutation } from "features/users/usersApi";
 import {
   setIsLoggedIn,
   setUserCredentials,
@@ -29,7 +26,6 @@ export default function LoginPage() {
 
     try {
       const result = await loginUser(userCredentials);
-      console.log("LoginPage >> result:::", result);
 
       if (result.error) {
         Notify.failure(result.error.data.message);

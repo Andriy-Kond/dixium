@@ -3,20 +3,30 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const gameInitialState = {
-  games: [],
-  currentGame: null,
-  deck: [],
-  players: [
+  games: [
     // {
-    //   name: "",
-    //   hostPlayer: false,
-    //   avatar: "",
+    //   gameName: String,
+    //   players: [{
+    //     userId: String,
+    //     name: String,
+    //     avatar: String }],
+    //   deck: [
+    //     {
+    //       cardName: String,
+    //       public_id: String, // Public card id from Cloudinary
+    //       url: String, // Card url from Cloudinary
+    //       _id: Schema.Types.ObjectId, // Card id from MongoDB (like owner)
+    //     },
+    //   ], // Deck of cards
+    //   startGame: Boolean, // Triggers when
+    //   isGameStarted: Boolean,
+    //   hostPlayerId: Schema.Types.ObjectId,
+    //   hostPlayerName: String,
+    //   gameTitle: String,
     // },
   ],
   isCreatingGame: false,
-  startGame: false,
-  isGameStarted: false,
-  gameDeckId: null,
+  currentDeckId: null,
   gameId: null,
 };
 
@@ -35,24 +45,17 @@ export const gameSlice = createSlice({
       state.isCreatingGame = action.payload;
     },
 
-    getDeck: (state, action) => {
-      state.deck = action.payload;
-    },
-
     setCurrentDeckId: (state, action) => {
-      state.gameDeckId = action.payload;
+      state.currentDeckId = action.payload;
     },
 
-    addPlayer: (state, action) => {
-      state.players.push(action.payload);
-    },
-
-    clearGameInitialState: () => gameInitialState,
     // not good option, because will copy only higher level of object:
     // clearGameInitialState: () => {
     //   return { ...gameInitialState };
     // },
     // if gameInitialState will have nested structure, they will not be copied to state
+    // better option:
+    clearGameInitialState: () => gameInitialState,
 
     distributeCards: (state, action) => {
       const { cardsPerPlayer } = action.payload;
@@ -65,34 +68,32 @@ export const gameSlice = createSlice({
       state.deck = shuffledDeck; // Оновлюємо колоду після роздачі
     },
 
-    updateGamesCollectionInMongoDb: (state, action) => {
-      state.games = action.payload;
-    },
-
     addGamesList: (state, action) => {
       state.games = action.payload;
     },
+
     addGame: (state, action) => {
       state.games.push(action.payload);
     },
+
     updateGame: (state, action) => {
       state.games = state.games.map(game =>
         game._id === action.payload._id ? action.payload : game,
       );
     },
+
     removeGame: (state, action) => {
       state.games = state.games.filter(game => game._id !== action.payload);
     },
-    setCurrentGame: (state, action) => {
-      state.currentGame = action.payload;
-    },
-    addPlayerToGame: (state, action) => {
-      const { gameId, player } = action.payload;
-      const game = state.games.find(g => g._id === gameId);
-      if (game) {
-        game.players.push(player);
-      }
-    },
+
+    // addPlayerToGame: (state, action) => {
+    //   const { gameId, player } = action.payload;
+    //   const game = state.games.find(game => game._id === gameId);
+
+    //   if (game) {
+    //     game.players.push(player);
+    //   }
+    // },
   },
 });
 
@@ -108,9 +109,8 @@ export const persistedGameReducer = persistReducer(
 
 export const {
   setIsCreatingGame,
-  getDeck,
   setCurrentDeckId,
-  addPlayer,
+
   clearGameInitialState,
 
   distributeCards,

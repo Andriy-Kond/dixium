@@ -34,29 +34,13 @@
   display: flex;
   margin-top: 20px;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 }
 
 .deck {
   display: flex;
-}
-
-.currentDeck {
-  display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 5px;
-}
-
-.card {
-  width: 60px;
-  height: 80px;
-}
-
-.img {
-  height: 100%;
-  width: 100%;
-
-  // object-fit: cover;
 }
 
 .bottomBar {
@@ -74,4 +58,37 @@
 .btnActive {
   color: #fff;
   background-color: #5d7e9e;
+}
+
+// ========================= Current deck cards list ============
+.card {
+  width: 60px;
+  height: 80px;
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+}
+
+.currentDeck {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 5px;
+
+  // styles for accordion:
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, transform 0.3s ease-in-out;
+
+  &.show {
+    max-height: 600px;
+    transform: translateY(0);
+  }
+
+  &.closing {
+    transform: translateY(100%);
+  }
 }
