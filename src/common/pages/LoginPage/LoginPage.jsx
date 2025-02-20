@@ -1,4 +1,3 @@
-import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useLoginUserMutation } from "features/users/usersApi";
@@ -10,6 +9,7 @@ import {
 import { selectUserCredentials, selectUserIsLoggedIn } from "app/selectors";
 import AuthForm from "common/components/AuthForm";
 import css from "common/components/AuthForm/AuthForm.module.scss";
+import { Notify } from "notiflix";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -30,7 +30,7 @@ export default function LoginPage() {
       if (result.error) {
         Notify.failure(result.error.data.message);
       } else {
-        const user = { ...result?.data, userId: result?.data._id };
+        const user = { ...result?.data };
         dispatch(setUserCredentials(user));
         dispatch(setUserToken(user.token));
         dispatch(setIsLoggedIn(true));

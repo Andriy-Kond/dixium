@@ -11,6 +11,11 @@ import PublicRoute from "common/components/navigation/PublicRoute";
 
 import { setIsLoggedIn } from "features/auth/authSlice";
 import { useGetUserByTokenQuery } from "features/users/usersApi";
+import Notiflix from "notiflix";
+
+Notiflix.Notify.init({
+  clickToClose: true,
+});
 
 const RegisterPage = lazy(() => import("common/pages/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/LoginPage"));

@@ -1,4 +1,3 @@
-import { Notify } from "notiflix/build/notiflix-notify-aio";
 import { useDispatch } from "react-redux";
 import { useSignupUserMutation } from "features/users/usersApi";
 import {
@@ -9,6 +8,7 @@ import {
 
 import AuthForm from "common/components/AuthForm";
 import css from "common/components/AuthForm/AuthForm.module.scss";
+import { Notify } from "notiflix";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
@@ -23,12 +23,11 @@ export default function RegisterPage() {
 
     try {
       const result = await signupUser(userCredentials);
-      console.log("RegisterPage >> result:::", result);
 
       if (result.error) {
         Notify.failure(result.error.data.message);
       } else {
-        const user = { ...result?.data, userId: result?.data._id };
+        const user = { ...result?.data };
         dispatch(setUserCredentials(user));
         dispatch(setUserToken(user.token));
 

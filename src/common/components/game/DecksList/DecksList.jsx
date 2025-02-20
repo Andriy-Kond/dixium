@@ -36,7 +36,7 @@ export default function DecksList() {
       deck: currentDeck.cards,
       players,
       isGameStarted: false,
-      hostPlayerId: userCredentials.userId,
+      hostPlayerId: userCredentials._id,
       hostPlayerName: userCredentials.name,
     };
 

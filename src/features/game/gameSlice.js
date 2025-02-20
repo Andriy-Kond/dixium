@@ -7,7 +7,6 @@ const gameInitialState = {
     // {
     //   gameName: String,
     //   players: [{
-    //     userId: String,
     //     name: String,
     //     avatar: String }],
     //   deck: [

@@ -83,7 +83,7 @@ export default function GamesList() {
               <div className={css.btnsContainer}>
                 <Button
                   btnText={
-                    userCredentials.userId === game.hostPlayerId
+                    userCredentials._id === game.hostPlayerId
                       ? "Start game"
                       : `Join to ${game.hostPlayerName}'s game`
                   }
@@ -92,7 +92,7 @@ export default function GamesList() {
                   }}
                   disabled={false}
                 />
-                {userCredentials.userId === game.hostPlayerId && (
+                {userCredentials._id === game.hostPlayerId && (
                   <Button
                     btnText="Delete game"
                     onClick={() => removeCurrentGame(game._id)}
