@@ -19,8 +19,8 @@ Notiflix.Notify.init({
 
 const RegisterPage = lazy(() => import("common/pages/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/LoginPage"));
-
-const GamePage = lazy(() => import("common/pages/GamePage"));
+const GameInitialPage = lazy(() => import("common/pages/GameInitialPage"));
+const GameStartedPage = lazy(() => import("common/pages/GameStartedPage"));
 const NotFoundPage = lazy(() => import("common/pages/NotFoundPage"));
 
 export default function App() {
@@ -39,15 +39,6 @@ export default function App() {
     }
   }, [dispatch, isSuccess]);
 
-  // const shuffleDeck = deck => {
-  //   return deck
-  //     .map(card => ({ card, sortIndex: Math.random() })) // Додати випадковий індекс
-  //     .sort((a, b) => a.sortIndex - b.sortIndex) // Сортування за цим індексом
-  //     .map(({ card }) => card); // Повертаю тільки карти
-  // };
-
-  // const newDeck = shuffleDeck(deck);
-
   return (
     <>
       {/* Перевірка !isFetching && - щоб при залогіненому користувачі не мигала спочатку сторінка Login і потім Contacts */}
@@ -57,7 +48,8 @@ export default function App() {
             <Route index element={<HomePage />} />
 
             <Route element={<PrivateRoute redirectTo="/login" />}>
-              <Route path="/game/*" element={<GamePage />} />
+              <Route path="/game/*" element={<GameInitialPage />} />
+              <Route path="/game/:currentGame" element={<GameStartedPage />} />
             </Route>
 
             <Route element={<PublicRoute redirectTo="/game" />}>

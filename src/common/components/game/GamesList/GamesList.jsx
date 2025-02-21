@@ -22,34 +22,43 @@ export default function GamesList() {
     const handleError = err => Notify.failure(err.message);
 
     const handleDbUpdate = change => {
+      console.log("useEffect >> change.operationType:::", change.operationType);
+      if (change.operationType === "insert") {
+        console.log("useEffect >> change:::", change.fullDocument);
+      }
       // Remove game from Redux if it was been deleted from server not in the app.
       if (change.operationType === "delete") {
         dispatch(removeGame(change.documentKey._id)); // Видаляємо гру з Redux
         refetch(); // Перезапитуємо дані
       }
     };
+
     const handleNewGame = newGame => {
       dispatch(addGame(newGame));
       refetch();
     };
-    const handleGameDeleted = game => {
-      if (game?._id) dispatch(removeGame(game._id));
-    };
+
+    // const handleGameDeleted = game => {
+    //   console.log("handleGameDeleted >> game:::", game);
+    //   // if (game?._id) dispatch(removeGame(game._id));
+    // };
+
     const handleUpdateGame = game => {
+      console.log("handleUpdateGame >> game:::", game);
       dispatch(updateGame(game));
     };
 
     socket.on("error", handleError);
     socket.on("dbUpdateGamesColl", handleDbUpdate);
     socket.on("newGameCreated", handleNewGame);
-    socket.on("currentGameWasDeleted", handleGameDeleted);
+    // socket.on("currentGameWasDeleted", handleGameDeleted);
     socket.on("updateGame", handleUpdateGame);
 
     return () => {
       socket.off("error", handleError);
       socket.off("dbUpdateGamesColl", handleDbUpdate);
       socket.off("newGameCreated", handleNewGame);
-      socket.off("currentGameWasDeleted", handleGameDeleted);
+      // socket.off("currentGameWasDeleted", handleGameDeleted);
       socket.off("updateGame", handleUpdateGame);
     };
   }, [dispatch, refetch]);

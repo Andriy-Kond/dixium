@@ -1,14 +1,13 @@
 // import { useNavigate } from "react-router-dom";
 import { selectIsCreatingGame } from "app/selectors.js";
-import css from "../game.module.scss";
+import css from "./GameInitialPage.module.scss";
 import { setIsCreatingGame } from "features/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
-import DecksList from "../DecksList/DecksList.jsx";
+import DecksList from "../../components/game/DecksList/DecksList.jsx";
 import Button from "common/components/Button";
-import GamesList from "../GamesList/GamesList.jsx";
-import { useGetAllGamesQuery } from "features/game/gameApi.js";
+import GamesList from "../../components/game/GamesList/GamesList.jsx";
 
-export default function GameInitial() {
+export default function GameInitialPage() {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
   const isCreatingGame = useSelector(selectIsCreatingGame);
@@ -44,3 +43,9 @@ export default function GameInitial() {
     </>
   );
 }
+
+//  If use it as individual pages (without prop "isCreatingGame")
+//  <Routes>
+//    <Route path="/" element={<GameInitial />} />
+//    <Route path="/create" element={<CreateGame />} />
+//  </Routes>
