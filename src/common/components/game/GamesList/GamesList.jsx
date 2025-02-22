@@ -1,28 +1,20 @@
-import { selectCurrentGameId, selectUserCredentials } from "app/selectors.js";
+import { selectUserCredentials } from "app/selectors.js";
 import Button from "common/components/Button/index.js";
-import {
-  gameApi,
-  useGetAllGamesQuery,
-  useUpdateCurrentGameQuery,
-} from "features/game/gameApi.js";
+import { useGetAllGamesQuery } from "features/game/gameApi.js";
 import { useDispatch, useSelector } from "react-redux";
 import css from "./GamesList.module.scss";
 import socket from "socket.js";
 import { useEffect } from "react";
 import {
-  // addGame,
   addGamesList,
-  // setCurrentGame,
   setCurrentGameId,
-  // removeGame,
   updateGame,
 } from "features/game/gameSlice.js";
 import { Notify } from "notiflix";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function GamesList() {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
   // const currentGameId = useSelector(selectCurrentGameId);
   const userCredentials = useSelector(selectUserCredentials);
@@ -30,14 +22,6 @@ export default function GamesList() {
 
   useEffect(() => {
     const handleError = err => Notify.failure(err.message);
-
-    // const handleDbUpdate = change => {
-    //   // Remove game from Redux if it was been deleted from server not in the app.
-    //   if (change.operationType === "delete") {
-    //     dispatch(removeGame(change.documentKey._id)); // Видаляємо гру з Redux
-    //     refetchAllGames(); // Перезапитуємо дані
-    //   }
-    // };
 
     const handleNewGame = () => {
       refetchAllGames();
@@ -49,7 +33,6 @@ export default function GamesList() {
     };
 
     const handleUpdateGame = game => {
-      console.log("useEffect >> game:::", game);
       if (game) {
         dispatch(updateGame(game));
 
@@ -74,10 +57,6 @@ export default function GamesList() {
       if (data) navigate(`/game/${data.game._id}`);
       // navigate(`/game/${data.game._id}`, { replace: true });
     };
-
-    socket.on("playersOrderUpdated", game => {
-      console.log("Received playersOrderUpdated event", game);
-    });
 
     socket.on("error", handleError);
     // socket.on("dbUpdateGamesColl", handleDbUpdate);

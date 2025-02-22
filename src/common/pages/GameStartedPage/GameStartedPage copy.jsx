@@ -1,9 +1,9 @@
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import css from "./GameStartedPage.module.scss";
+import { motion } from "framer-motion";
 
 import socket from "socket.js";
 import { Notify } from "notiflix";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectGames, selectUserCredentials } from "app/selectors.js";
@@ -16,6 +16,13 @@ export default function GameStartedPage() {
   const games = useSelector(selectGames);
   const { _id: currentUserId } = useSelector(selectUserCredentials);
   const currentGame = games.find(game => game._id === currentGameId);
+
+  const [localPlayers, setLocalPlayers] = useState(currentGame?.players || []);
+  const prevPlayersRef = useRef(localPlayers);
+
+  useEffect(() => {
+    setLocalPlayers(currentGame?.players || []);
+  }, [currentGame?.players]);
 
   useEffect(() => {
     const handleNewPlayerJoined = ({ game, message }) => {
@@ -46,15 +53,30 @@ export default function GameStartedPage() {
     if (currentGame.hostPlayerId !== currentUserId) return; // dnd дозволяємо лише хосту
     if (!result.destination) return; // Якщо елемент не перетягнули в нове місце
 
-    const newPlayersOrder = Array.from(currentGame.players); // Поверхнева копія масиву. Те саме що і  const newPlayersOrder = [...currentGame.players]; -
+    // const newPlayersOrder = Array.from(currentGame.players); // Поверхнева копія масиву. Те саме що і  const newPlayersOrder = [...currentGame.players]; -
+    const newPlayersOrder = [...localPlayers];
     const [movedPlayer] = newPlayersOrder.splice(result.source.index, 1);
     newPlayersOrder.splice(result.destination.index, 0, movedPlayer);
 
+    // Зберігаємо попередній стан перед зміною
+    prevPlayersRef.current = localPlayers;
+    // Оновлюємо локальний стан негайно (щоб не було "миготіння")
+    setLocalPlayers(newPlayersOrder);
+
     // Оновлення стану гри
-    socket.emit("newPlayersOrder", {
-      gameId: currentGameId,
-      players: newPlayersOrder,
-    });
+    socket.emit(
+      "newPlayersOrder",
+      { gameId: currentGameId, players: newPlayersOrder },
+      response => {
+        console.log("GameStartedPage >> response:::", response);
+        if (response.error) {
+          // Якщо сервер повернув помилку — відкочуємо зміни назад
+          // setLocalPlayers(currentGame?.players || []);
+          setLocalPlayers(prevPlayersRef.current);
+          Notify.failure("Server Error: Cannot update players order");
+        }
+      },
+    );
   };
 
   return (
@@ -65,46 +87,48 @@ export default function GameStartedPage() {
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="players-list">
           {provided => (
-            <ul
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className={css.list}>
+            <ul {...provided.droppableProps} ref={provided.innerRef}>
               {currentGame?.players.map((player, index) => (
                 <Draggable
                   key={player._id}
                   draggableId={player._id}
-                  index={index} // позиція елемента у списку
+                  index={index}
                   // Блокування перетягування:
                   isDragDisabled={currentGame.hostPlayerId !== currentUserId}>
-                  {(provided, snapshot) => (
-                    <li
-                      className={`${css.item} 
-                        ${
-                          currentGame.hostPlayerId === currentUserId && css.host
-                        } 
-                        ${
-                          currentUserId !== currentGame?.hostPlayerId &&
-                          css.inactive
-                        }`}
+                  {provided => (
+                    <motion.li
+                      layout
+                      initial={{ opacity: 0.8, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
                       ref={provided.innerRef}
                       {...provided.draggableProps}
+                      // {...provided.dragHandleProps}
                       // Заборона перетягування:
                       {...(currentGame.hostPlayerId === currentUserId
-                        ? provided.dragHandleProps // Якщо не вказати, то елемент можна тягнути будь-де. Якщо вказати – перетягування працює лише на певній частині.
+                        ? provided.dragHandleProps
                         : {})}
-                      // <li {...provided.draggableProps}> // варіант без обмежень
-                      // <div {...provided.dragHandleProps}>☰</div> // Варіант, де тягнути можна лише за певну область
-
-                      // Вбудовані стилі, які керують анімацією руху під час перетягування:
                       style={{
+                        transition: "transform 0.2s ease-in-out",
+                        opacity:
+                          currentUserId !== currentGame?.hostPlayerId ? 0.5 : 1, // Візуально затемнюємо недоступні елементи
+                        padding: "10px",
+                        margin: "5px",
+                        backgroundColor: "#f0f0f0",
+                        borderRadius: "5px",
+                        // cursor: "grab",
+                        // Візуальне відображення лише хосту:
+                        cursor:
+                          currentGame.hostPlayerId === currentUserId
+                            ? "grab"
+                            : "default",
                         ...provided.draggableProps.style,
                       }}>
                       {player.name}
-                    </li>
+                    </motion.li>
                   )}
                 </Draggable>
               ))}
-              {/*provided.placeholder - віртуальне місце, яке зберігає висоту контейнера під час перетягування */}
               {provided.placeholder}
             </ul>
           )}
