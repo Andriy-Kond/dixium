@@ -4,29 +4,27 @@ import storage from "redux-persist/lib/storage";
 
 const gameInitialState = {
   games: [
-    // {
-    //   gameName: String,
-    //   players: [{
-    //     name: String,
-    //     avatar: String }],
-    //   deck: [
     //     {
-    //       cardName: String,
-    //       public_id: String, // Public card id from Cloudinary
-    //       url: String, // Card url from Cloudinary
-    //       _id: Schema.Types.ObjectId, // Card id from MongoDB (like owner)
-    //     },
-    //   ], // Deck of cards
-    //   startGame: Boolean, // Triggers when
-    //   isGameStarted: Boolean,
-    //   hostPlayerId: Schema.Types.ObjectId,
-    //   hostPlayerName: String,
-    //   gameTitle: String,
-    // },
+    // gameName: String, // Game name
+    // players: [{ name: String, avatar: String }], // List of players
+    // deck: [
+    //   {
+    //     cardName: String,
+    //     public_id: String, // Public card id from Cloudinary
+    //     url: String, // Card url from Cloudinary
+    //     _id: Schema.Types.ObjectId, // Card id from MongoDB (like owner)
+    //   },
+    // ], // Deck of cards
+    // isGameRun: Boolean, // game started and running (players cannot join)
+    // isGameStarted: Boolean, // game started but not running (players can join)
+    // hostPlayerId: String,
+    // hostPlayerName: String,
+    // gameTitle: String,
+    // }
   ],
   isCreatingGame: false,
   currentDeckId: null,
-  gameId: null,
+  currentGameId: null,
 };
 
 const shuffleDeck = deck => {
@@ -46,6 +44,10 @@ export const gameSlice = createSlice({
 
     setCurrentDeckId: (state, action) => {
       state.currentDeckId = action.payload;
+    },
+
+    setCurrentGameId: (state, action) => {
+      state.currentGameId = action.payload;
     },
 
     // not good option, because will copy only higher level of object:
@@ -71,9 +73,9 @@ export const gameSlice = createSlice({
       state.games = action.payload;
     },
 
-    addGame: (state, action) => {
-      state.games.push(action.payload);
-    },
+    // addGame: (state, action) => {
+    //   state.games.push(action.payload);
+    // },
 
     updateGame: (state, action) => {
       state.games = state.games.map(game =>
@@ -81,9 +83,9 @@ export const gameSlice = createSlice({
       );
     },
 
-    removeGame: (state, action) => {
-      state.games = state.games.filter(game => game._id !== action.payload);
-    },
+    // removeGame: (state, action) => {
+    //   state.games = state.games.filter(game => game._id !== action.payload);
+    // },
 
     // addPlayerToGame: (state, action) => {
     //   const { gameId, player } = action.payload;
@@ -109,14 +111,15 @@ export const persistedGameReducer = persistReducer(
 export const {
   setIsCreatingGame,
   setCurrentDeckId,
+  setCurrentGameId,
 
   clearGameInitialState,
 
   distributeCards,
   updateGamesCollectionInMongoDb,
   addGamesList,
-  addGame,
-  removeGame,
+  // addGame,
+  // removeGame,
   updateGame,
   setCurrentGame,
   addPlayerToGame,

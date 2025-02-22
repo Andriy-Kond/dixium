@@ -6,4 +6,6 @@ export const selectedDeck = state => state.gameSlice.deck;
 export const selectPlayers = state => state.gameSlice.players;
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
-export const selectGameId = state => state.gameSlice.gameId;
+export const selectCurrentGameId = state => state.gameSlice.currentGameId;
+
+export const selectGames = state => state.gameSlice.games;

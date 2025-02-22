@@ -30,14 +30,17 @@ export default function App() {
   const { isSuccess, isFetching } = useGetUserByTokenQuery(undefined, {
     skip: !authUserToken, // Пропускає запит, якщо токен відсутній
   });
+  console.log("App >> isSuccess:::", isSuccess);
+  console.log("App >> isFetching:::", isFetching);
 
   useEffect(() => {
-    if (isSuccess) {
-      dispatch(setIsLoggedIn(true));
-    } else {
-      dispatch(setIsLoggedIn(false));
-    }
-  }, [dispatch, isSuccess]);
+    if (!isFetching)
+      if (isSuccess) {
+        dispatch(setIsLoggedIn(true));
+      } else {
+        dispatch(setIsLoggedIn(false));
+      }
+  }, [dispatch, isFetching, isSuccess]);
 
   return (
     <>
@@ -48,8 +51,11 @@ export default function App() {
             <Route index element={<HomePage />} />
 
             <Route element={<PrivateRoute redirectTo="/login" />}>
-              <Route path="/game/*" element={<GameInitialPage />} />
-              <Route path="/game/:currentGame" element={<GameStartedPage />} />
+              <Route
+                path="/game/:currentGameId"
+                element={<GameStartedPage />}
+              />
+              <Route path="/game" element={<GameInitialPage />} />
             </Route>
 
             <Route element={<PublicRoute redirectTo="/game" />}>

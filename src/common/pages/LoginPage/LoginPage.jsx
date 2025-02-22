@@ -10,12 +10,15 @@ import { selectUserCredentials, selectUserIsLoggedIn } from "app/selectors";
 import AuthForm from "common/components/AuthForm";
 import css from "common/components/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
   const user = useSelector(selectUserCredentials);
   const [loginUser] = useLoginUserMutation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const submitCredentials = async e => {
     e.preventDefault();
@@ -34,6 +37,9 @@ export default function LoginPage() {
         dispatch(setUserCredentials(user));
         dispatch(setUserToken(user.token));
         dispatch(setIsLoggedIn(true));
+
+        // const redirectTo = location.state?.from?.pathname || "/game";
+        // navigate(redirectTo);
 
         // Here you can navigate to needed page, if you have it:
         // navigate("/somePrivatPage",  { replace: true });

@@ -19,7 +19,8 @@ const baseQuery = fetchBaseQuery({
 export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery,
-  keepUnusedDataFor: 0, // видаляє очікування 60 сек перед очищенням кешу
+  keepUnusedDataFor: 5, // видаляє очікування 60 сек перед очищенням кешу
+  tagTypes: ["AllGames", "CurrentGame"],
   endpoints: builder => ({
     getAllDecks: builder.query({
       query: () => `dixium/decks`, // Get available decks
@@ -34,6 +35,21 @@ export const gameApi = createApi({
     getAllGames: builder.query({
       query: () => `dixium/games`, // Get available games
       providesTags: ["AllGames"],
+    }),
+
+    getCurrentGame: builder.query({
+      query: gameId => `dixium/games/${gameId}`, // Get available games
+      providesTags: ["AllGames"],
+    }),
+
+    updateCurrentGame: builder.mutation({
+      query: ({ gameId, data }) => ({
+        url: `dixium/games/${gameId}`,
+        method: "PATCH",
+        body: data,
+      }),
+
+      providesTags: ["AllGames"], // Після оновлення, всі ігри будуть оновлені
     }),
 
     // removeGameFromServer: builder.mutation({
@@ -61,6 +77,6 @@ export const {
   useGetCurrentDeckQuery,
 
   useGetAllGamesQuery,
-  // useRemoveGameFromServerMutation,
-  // useCreateGameMutation,
+  useGetCurrentGameQuery,
+  useUpdateCurrentGameMutation,
 } = gameApi;
