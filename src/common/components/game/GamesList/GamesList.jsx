@@ -75,6 +75,10 @@ export default function GamesList() {
       // navigate(`/game/${data.game._id}`, { replace: true });
     };
 
+    socket.on("playersOrderUpdated", game => {
+      console.log("Received playersOrderUpdated event", game);
+    });
+
     socket.on("error", handleError);
     // socket.on("dbUpdateGamesColl", handleDbUpdate);
     socket.on("newGameCreated", handleNewGame);
