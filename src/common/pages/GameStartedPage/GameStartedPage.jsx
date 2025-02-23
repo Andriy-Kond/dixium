@@ -1,13 +1,59 @@
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import css from "./GameStartedPage.module.scss";
+import { DndContext, closestCenter, useDndContext } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-import socket from "socket.js";
-import { Notify } from "notiflix";
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectGames, selectUserCredentials } from "app/selectors.js";
 import { updateGame } from "features/game/gameSlice.js";
+import socket from "socket.js";
+import css from "./GameStartedPage.module.scss";
+import { Notify } from "notiflix";
+import { useNavigate, useParams } from "react-router-dom";
+import { selectGames, selectUserCredentials } from "app/selectors.js";
+
+// Компонент для кожного гравця, що додає drag-and-drop функціонал
+const SortablePlayer = ({ player, styles, active }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: player._id,
+      animateLayoutChanges: () => false, // Вимикає перехід після зміни DOM (прибере різкі стрибки після оновлення стану)
+    });
+
+  // attributes – атрибути для коректної роботи 'aria-*' (доступність).
+  // listeners – обробники подій для початку перетягування.
+  // setNodeRef – функція для прив'язки DOM-елемента (щоб бібліотека знала, що цей елемент можна перетягувати).
+  // transform – містить координати зміщення елемента під час перетягування.
+  // transition – CSS-трансформації, які бібліотека додає для анімації перетягування.
+
+  // Вбудовані inline-стилі
+  // transform – перетворення (переміщення, масштабування тощо).
+  // transition – визначає, як швидко буде відбуватись анімація.
+  const style = {
+    // opt.1
+    transform: CSS.Transform.toString(transform),
+    transition,
+    // transition: "transform 1s",
+
+    // will-change — це CSS-властивість, яка підказує браузеру, що певний елемент найближчим часом зміниться (наприклад, його transform, opacity або top). Це дозволяє браузеру заздалегідь оптимізувати рендеринг і зробити анімацію або зміни плавнішими.
+    // willChange: "transform", // може зменшити "мерехтіння"
+  };
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={styles}>
+      {player.name}
+    </li>
+  );
+};
 
 export default function GameStartedPage() {
   const navigate = useNavigate();
@@ -29,6 +75,9 @@ export default function GameStartedPage() {
 
     const handleNewPlayerUpdated = game => {
       if (game) dispatch(updateGame(game));
+      else {
+        Notify.failure("Server error: players order not changed");
+      }
     };
 
     socket.on("playerJoined", handleNewPlayerJoined);
@@ -42,74 +91,80 @@ export default function GameStartedPage() {
     };
   }, [dispatch, navigate]);
 
-  const handleDragEnd = result => {
-    if (currentGame.hostPlayerId !== currentUserId) return; // dnd дозволяємо лише хосту
-    if (!result.destination) return; // Якщо елемент не перетягнули в нове місце
+  // Оновлює порядок гравців і надсилає зміни через сокети.
+  const handleDragEnd = event => {
+    if (currentGame.hostPlayerId !== currentUserId) return; // dnd can do the host player only
 
-    const newPlayersOrder = Array.from(currentGame.players); // Поверхнева копія масиву. Те саме що і  const newPlayersOrder = [...currentGame.players]; -
-    const [movedPlayer] = newPlayersOrder.splice(result.source.index, 1);
-    newPlayersOrder.splice(result.destination.index, 0, movedPlayer);
+    const { active, over } = event;
 
-    // Оновлення стану гри
+    // Щоб зайвий раз не змінювати порядок масиву, якщо фактично нічого не змінилося:
+    if (!over || active.id === over.id) return;
+    // Якщо over дорівнює null або undefined, то це означає, що елемент не був перетягнутий на інший елемент.
+    // Якщо active.id === over.id означає, що елемент перетягнули на те ж саме місце, де він і був.
+
+    const oldIndex = currentGame.players.findIndex(p => p._id === active.id);
+    const newIndex = currentGame.players.findIndex(p => p._id === over.id);
+
+    // Зміна порядку елементів у масиві
+    // arrayMove — це функція з @dnd-kit/sortable, яка бере масив і повертає новий масив із переміщеним елементом.
+    const newPlayersOrder = arrayMove(currentGame.players, oldIndex, newIndex); // переміщує елемент з oldIndex на newIndex
+
+    const updatedGame = { ...currentGame, players: newPlayersOrder };
+    dispatch(updateGame(updatedGame));
     socket.emit("newPlayersOrder", {
       gameId: currentGameId,
       players: newPlayersOrder,
     });
   };
 
+  const { active } = useDndContext();
+
   return (
     <>
       <p>Game Started Page</p>
       <p>{currentGame?.gameName}</p>
-
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="players-list">
-          {provided => (
-            <ul
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className={css.list}>
-              {currentGame?.players.map((player, index) => (
-                <Draggable
-                  key={player._id}
-                  draggableId={player._id}
-                  index={index} // позиція елемента у списку
-                  // Блокування перетягування:
-                  isDragDisabled={currentGame.hostPlayerId !== currentUserId}>
-                  {(provided, snapshot) => (
-                    <li
-                      className={`${css.item} 
+      {/* DndContext контролює процес перетягування */}
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext // Дозволяє сортувати список гравців.
+          items={currentGame?.players.map(p => p._id)}
+          strategy={verticalListSortingStrategy}
+          // strategy визначає, як відбувається сортування перетягуваних елементів.
+          // verticalListSortingStrategy працює для вертикальних списків (коли елементи розташовані зверху вниз).
+          // Інші стратегії:
+          // rectSortingStrategy — працює для сіткових (grid) структур.
+          // horizontalListSortingStrategy — підходить для горизонтального списку.
+          // verticalListSortingStrategy — для звичайних вертикальних списків.
+          // sortableKeyboardCoordinates — використовується для керування перетягуванням через клавіатуру.
+          // Кожна з цих стратегій впливає на поведінку перетягування: як переміщуються елементи, як обчислюється їхній порядок, чи змінюється простір між ними тощо.
+        >
+          <ul>
+            {currentGame?.players.map(player => (
+              <SortablePlayer
+                active={active}
+                key={player._id}
+                player={player}
+                styles={`${css.item} 
                         ${
                           currentGame.hostPlayerId === currentUserId && css.host
-                        } 
-                        ${
-                          currentUserId !== currentGame?.hostPlayerId &&
-                          css.inactive
                         }`}
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      // Заборона перетягування:
-                      {...(currentGame.hostPlayerId === currentUserId
-                        ? provided.dragHandleProps // Якщо не вказати, то елемент можна тягнути будь-де. Якщо вказати – перетягування працює лише на певній частині.
-                        : {})}
-                      // <li {...provided.draggableProps}> // варіант без обмежень
-                      // <div {...provided.dragHandleProps}>☰</div> // Варіант, де тягнути можна лише за певну область
-
-                      // Вбудовані стилі, які керують анімацією руху під час перетягування:
-                      style={{
-                        ...provided.draggableProps.style,
-                      }}>
-                      {player.name}
-                    </li>
-                  )}
-                </Draggable>
-              ))}
-              {/*provided.placeholder - віртуальне місце, яке зберігає висоту контейнера під час перетягування */}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
+              />
+            ))}
+          </ul>
+        </SortableContext>
+      </DndContext>
+      {/* <ul>
+        {currentGame?.players.map(player => {
+          const { hostPlayerId } = currentGame;
+          return (
+            <li
+              key={player._id}
+              className={`${css.item} 
+                        ${hostPlayerId === currentUserId && css.host}`}>
+              {player.name}
+            </li>
+          );
+        })}
+      </ul> */}
     </>
   );
 }

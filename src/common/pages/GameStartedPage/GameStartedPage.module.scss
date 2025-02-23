@@ -1,6 +1,4 @@
 .list {
-  // display: flex;
-  // flex-direction: row;
 }
 .item {
   padding: 10px;
@@ -9,18 +7,10 @@
   border-radius: 5px;
   user-select: none;
   caret-color: transparent;
-
-  // Бібліотека @hello-pangea/dnd автоматично додає transform, тому можна змінити стилі за допомогою CSS:
-  // transition: transform 1s ease-in-out;
-  // transition: transform 0.5s ease-in-out, opacity 0.3s;
-  // opacity: 0.5;
-  // transform: scale(1.1);
+  opacity: 0.5;
 }
 
 .host {
+  opacity: 1;
   cursor: grab; /* Для хоста */
-}
-
-.inactive {
-  opacity: 0.5; /* Якщо не хост */
 }
