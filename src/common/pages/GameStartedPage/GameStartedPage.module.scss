@@ -1,9 +1,36 @@
+.container {
+  max-width: 414px;
+  margin: auto;
+}
+
+.pageHeader {
+  height: 44px;
+
+  background-color: var(--primary_color);
+  padding: 11px 16px;
+}
+
+.pageHeader_title {
+  font-size: 16px;
+  line-height: 22px;
+  color: #ffffff;
+}
+
+.pageMain {
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--secondary_color);
+  min-height: calc(100vh - 44px - 44px - 32px);
+}
+
 .list {
 }
+
 .item {
   padding: 10px;
   margin: 5px;
-  background-color: #f0f0f0;
+  background-color: #d4d4d4;
   border-radius: 5px;
   user-select: none;
   caret-color: transparent;
@@ -13,4 +40,16 @@
 .host {
   opacity: 1;
   cursor: grab; /* Для хоста */
+}
+
+.bottomBar {
+  margin-top: auto;
+
+  display: flex;
+  gap: 2px;
+
+  padding: 2px;
+
+  background-color: var(--white_color);
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
 }

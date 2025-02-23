@@ -15,6 +15,7 @@ import {
 } from "app/selectors.js";
 import Button from "common/components/Button";
 import socket from "socket.js";
+import { shuffleDeck } from "features/utils/shuffleDeck.js";
 
 export default function DecksList() {
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ export default function DecksList() {
 
   const createNewGame = async () => {
     const game = {
-      deck: currentDeck.cards,
+      deck: shuffleDeck(currentDeck.cards),
       players,
       isGameStarted: false,
       hostPlayerId: userCredentials._id,

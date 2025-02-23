@@ -1,4 +1,8 @@
-import { DndContext, closestCenter, useDndContext } from "@dnd-kit/core";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Notify } from "notiflix";
+import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -6,18 +10,14 @@ import {
 } from "@dnd-kit/sortable";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { updateGame } from "features/game/gameSlice.js";
 import socket from "socket.js";
-import css from "./GameStartedPage.module.scss";
-import { Notify } from "notiflix";
-import { useNavigate, useParams } from "react-router-dom";
+import { updateGame } from "features/game/gameSlice.js";
 import { selectGames, selectUserCredentials } from "app/selectors.js";
+import Button from "common/components/Button/index.js";
+import css from "./GameStartedPage.module.scss";
 
 // Компонент для кожного гравця, що додає drag-and-drop функціонал
-const SortablePlayer = ({ player, styles, active }) => {
+const SortablePlayer = ({ player, styles }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: player._id,
@@ -60,7 +60,7 @@ export default function GameStartedPage() {
   const dispatch = useDispatch();
   const { currentGameId } = useParams();
   const games = useSelector(selectGames);
-  const { _id: currentUserId } = useSelector(selectUserCredentials);
+  const userCredentials = useSelector(selectUserCredentials);
   const currentGame = games.find(game => game._id === currentGameId);
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export default function GameStartedPage() {
 
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
-    if (currentGame.hostPlayerId !== currentUserId) return; // dnd can do the host player only
+    if (currentGame.hostPlayerId !== userCredentials._id) return; // dnd can do the host player only
 
     const { active, over } = event;
 
@@ -117,41 +117,76 @@ export default function GameStartedPage() {
     });
   };
 
-  const { active } = useDndContext();
+  const toPreviousPage = () => {
+    navigate(`/game`);
+  };
+
+  const runGame = () => {};
 
   return (
     <>
       <p>Game Started Page</p>
-      <p>{currentGame?.gameName}</p>
-      {/* DndContext контролює процес перетягування */}
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext // Дозволяє сортувати список гравців.
-          items={currentGame?.players.map(p => p._id)}
-          strategy={verticalListSortingStrategy}
-          // strategy визначає, як відбувається сортування перетягуваних елементів.
-          // verticalListSortingStrategy працює для вертикальних списків (коли елементи розташовані зверху вниз).
-          // Інші стратегії:
-          // rectSortingStrategy — працює для сіткових (grid) структур.
-          // horizontalListSortingStrategy — підходить для горизонтального списку.
-          // verticalListSortingStrategy — для звичайних вертикальних списків.
-          // sortableKeyboardCoordinates — використовується для керування перетягуванням через клавіатуру.
-          // Кожна з цих стратегій впливає на поведінку перетягування: як переміщуються елементи, як обчислюється їхній порядок, чи змінюється простір між ними тощо.
-        >
-          <ul>
-            {currentGame?.players.map(player => (
-              <SortablePlayer
-                active={active}
-                key={player._id}
-                player={player}
-                styles={`${css.item} 
+
+      <div className={css.container}>
+        <div className={css.pageHeader}>
+          <p className={css.pageHeader_title}>
+            {`Game "${currentGame?.gameName}"`.toUpperCase()}
+          </p>
+        </div>
+        <div className={css.pageMain}>
+          {/* DndContext контролює процес перетягування */}
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}>
+            <SortableContext // Дозволяє сортувати список гравців.
+              items={currentGame?.players.map(p => p._id)}
+              strategy={verticalListSortingStrategy}
+              // strategy визначає, як відбувається сортування перетягуваних елементів.
+              // verticalListSortingStrategy працює для вертикальних списків (коли елементи розташовані зверху вниз).
+              // Інші стратегії:
+              // rectSortingStrategy — працює для сіткових (grid) структур.
+              // horizontalListSortingStrategy — підходить для горизонтального списку.
+              // verticalListSortingStrategy — для звичайних вертикальних списків.
+              // sortableKeyboardCoordinates — використовується для керування перетягуванням через клавіатуру.
+              // Кожна з цих стратегій впливає на поведінку перетягування: як переміщуються елементи, як обчислюється їхній порядок, чи змінюється простір між ними тощо.
+            >
+              <ul>
+                {currentGame?.players.map(player => (
+                  <SortablePlayer
+                    key={player._id}
+                    player={player}
+                    styles={`${css.item} 
                         ${
-                          currentGame.hostPlayerId === currentUserId && css.host
+                          currentGame.hostPlayerId === userCredentials._id &&
+                          css.host
                         }`}
+                  />
+                ))}
+              </ul>
+            </SortableContext>
+          </DndContext>
+
+          <div className={css.bottomBar}>
+            <Button
+              onClick={toPreviousPage}
+              btnText={"Back"}
+              btnStyle={["twoBtnsInRow"]}
+            />
+            {userCredentials._id === currentGame?.hostPlayerId && (
+              <Button
+                onClick={runGame}
+                btnText={"Run game"}
+                btnStyle={["twoBtnsInRow"]}
+                disabled={
+                  currentGame.players.length < 3 ||
+                  currentGame.players.length > 12
+                }
               />
-            ))}
-          </ul>
-        </SortableContext>
-      </DndContext>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* <ul>
         {currentGame?.players.map(player => {
           const { hostPlayerId } = currentGame;
