@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 export default function GamesList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const currentGameId = useSelector(selectCurrentGameId);
+
   const userCredentials = useSelector(selectUserCredentials);
   const { data: allGames, refetch: refetchAllGames } = useGetAllGamesQuery();
 
@@ -36,10 +36,9 @@ export default function GamesList() {
       if (game) {
         dispatch(updateGame(game));
 
-        // updata Redux state:
+        // update Redux state:
         refetchAllGames();
-        // or:
-        // handle change of gameApi without refetchAllGames()
+        // or handle change of gameApi without refetchAllGames():
         // dispatch(
         //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
         //     const index = draft.findIndex(g => g._id === game._id);

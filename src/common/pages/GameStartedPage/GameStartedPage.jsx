@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Notify } from "notiflix";
@@ -12,9 +12,11 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import socket from "socket.js";
 import { updateGame } from "features/game/gameSlice.js";
-import { selectGames, selectUserCredentials } from "app/selectors.js";
+import { selectGame, selectUserCredentials } from "app/selectors.js";
 import Button from "common/components/Button/index.js";
 import css from "./GameStartedPage.module.scss";
+
+import { distributeCards } from "features/utils/distributeCards.js";
 
 // Компонент для кожного гравця, що додає drag-and-drop функціонал
 const SortablePlayer = ({ player, styles }) => {
@@ -59,9 +61,10 @@ export default function GameStartedPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentGameId } = useParams();
-  const games = useSelector(selectGames);
   const userCredentials = useSelector(selectUserCredentials);
-  const currentGame = games.find(game => game._id === currentGameId);
+  const currentGame = useSelector(selectGame(currentGameId));
+  const previousGameStateRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const handleNewPlayerJoined = ({ game, message }) => {
@@ -80,14 +83,32 @@ export default function GameStartedPage() {
       }
     };
 
+    const handleGameRunning = runningGame => {
+      clearTimeout(timeoutRef.current); // clear timeout because server respondes just now
+
+      // If there is a message, then it is an error, rollback of the state
+      if (runningGame.message) {
+        dispatch(updateGame(previousGameStateRef.current));
+        previousGameStateRef.current = null;
+        Notify.failure(runningGame.message);
+      } else {
+        // Server response late (more then 5 sec) -> state update
+        dispatch(updateGame(runningGame));
+        previousGameStateRef.current = null;
+      }
+    };
+
     socket.on("playerJoined", handleNewPlayerJoined);
     socket.on("currentGameWasDeleted", handleGameDeleted); // return to gamesList
     socket.on("playersOrderUpdated", handleNewPlayerUpdated);
+    socket.on("currentGame:running", handleGameRunning);
 
     return () => {
       socket.off("playerJoined", handleNewPlayerJoined);
       socket.off("currentGameWasDeleted", handleGameDeleted);
       socket.off("playersOrderUpdated", handleNewPlayerUpdated);
+      socket.off("currentGame:running", handleGameRunning);
+      clearTimeout(timeoutRef.current); // if client runout from page (unmount component) before server responding
     };
   }, [dispatch, navigate]);
 
@@ -121,7 +142,23 @@ export default function GameStartedPage() {
     navigate(`/game`);
   };
 
-  const runGame = () => {};
+  const runGame = () => {
+    const updatedGame = distributeCards(currentGame);
+
+    dispatch(updateGame(updatedGame));
+    previousGameStateRef.current = previousGameStateRef.current || updatedGame;
+
+    // Timer for waiting of server response (5 sec). If server not respond within 5 sec:
+    timeoutRef.current = setTimeout(() => {
+      if (previousGameStateRef.current) {
+        Notify.failure("No response from server. Reverting game state.");
+        dispatch(updateGame(previousGameStateRef.current));
+        previousGameStateRef.current = null;
+      }
+    }, 5000); // 5 секунд таймаут
+
+    socket.emit("currentGame:run", updatedGame);
+  };
 
   return (
     <>

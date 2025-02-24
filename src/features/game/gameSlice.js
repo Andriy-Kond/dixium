@@ -1,18 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import socket from "socket.js";
 
 const gameInitialState = {
   games: [
     //     {
+    // _id: Schema.Types.ObjectId
     // gameName: String, // Game name
-    // players: [{ name: String, avatar: String }], // List of players
+    // players: [
+    //   {
+    //     _id: String,
+    //     name: String,
+    //     avatarURL: String,
+    //     hand: Array,
+    //   },
+    // ], // List of players
     // deck: [
     //   {
     //     cardName: String,
     //     public_id: String, // Public card id from Cloudinary
     //     url: String, // Card url from Cloudinary
     //     _id: Schema.Types.ObjectId, // Card id from MongoDB (like owner)
+    //     isCardPlayed: Boolean,
     //   },
     // ], // Deck of cards
     // isGameRun: Boolean, // game started and running (players cannot join)
@@ -29,7 +39,7 @@ const gameInitialState = {
 
 const shuffleDeck = deck => {
   return deck
-    .map(card => ({ card, idx: Math.floor(Math.random() * 64) + 1 })) // Додати випадковий індекс
+    .map(card => ({ card, idx: Math.random() })) // Додати випадковий індекс
     .sort((a, b) => a.idx - b.idx) // Сортування за цим індексом
     .map(({ card }) => card); // Повертаю тільки карти
 };
@@ -57,17 +67,6 @@ export const gameSlice = createSlice({
     // if gameInitialState will have nested structure, they will not be copied to state
     // better option:
     clearGameInitialState: () => gameInitialState,
-
-    distributeCards: (state, action) => {
-      const { cardsPerPlayer } = action.payload;
-      const shuffledDeck = shuffleDeck([...state.deck]);
-
-      state.players.map(player => {
-        return (player.hand = shuffledDeck.splice(0, cardsPerPlayer));
-      });
-
-      state.deck = shuffledDeck; // Оновлюємо колоду після роздачі
-    },
 
     addGamesList: (state, action) => {
       state.games = action.payload;
