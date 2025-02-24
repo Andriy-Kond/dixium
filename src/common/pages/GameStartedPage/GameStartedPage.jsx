@@ -63,54 +63,88 @@ export default function GameStartedPage() {
   const { currentGameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const currentGame = useSelector(selectGame(currentGameId));
-  const previousGameStateRef = useRef(null);
-  const timeoutRef = useRef(null);
+
+  const prevRunGameStateRef = useRef(null);
+  const timeoutRunGameRef = useRef(null);
+
+  const prevDnDGameStateRef = useRef(null);
+  const timeoutDnDRef = useRef(null);
 
   useEffect(() => {
-    const handleNewPlayerJoined = ({ game, message }) => {
+    const handlePlayerJoined = ({ game, message }) => {
       dispatch(updateGame(game)); // update gameSlice state
       Notify.success(message); // Notify about new player
     };
 
-    const handleGameDeleted = () => {
-      navigate(`/game`, { replace: true });
+    const handleGameDeleted = data => {
+      if (data.message) {
+        Notify.failure(data.message);
+      } else {
+        navigate(`/game`, { replace: true });
+      }
     };
 
     const handleNewPlayerUpdated = game => {
-      if (game) dispatch(updateGame(game));
-      else {
-        Notify.failure("Server error: players order not changed");
+      clearTimeout(timeoutDnDRef.current);
+      if (game.message) {
+        dispatch(updateGame(prevDnDGameStateRef.current));
+        prevDnDGameStateRef.current = null;
+        Notify.failure(game.message);
+      } else {
+        dispatch(updateGame(game));
+        prevDnDGameStateRef.current = null;
       }
     };
 
-    const handleGameRunning = runningGame => {
-      clearTimeout(timeoutRef.current); // clear timeout because server respondes just now
+    const handleGameRunning = game => {
+      clearTimeout(timeoutRunGameRef.current); // clear timeout because server responded just now
 
       // If there is a message, then it is an error, rollback of the state
-      if (runningGame.message) {
-        dispatch(updateGame(previousGameStateRef.current));
-        previousGameStateRef.current = null;
-        Notify.failure(runningGame.message);
+      if (game.message) {
+        dispatch(updateGame(prevRunGameStateRef.current));
+        prevRunGameStateRef.current = null;
+        Notify.failure(game.message);
       } else {
-        // Server response late (more then 5 sec) -> state update
-        dispatch(updateGame(runningGame));
-        previousGameStateRef.current = null;
+        // Server response or response late (more then 5 sec) -> state update
+        dispatch(updateGame(game));
+        prevRunGameStateRef.current = null;
       }
     };
 
-    socket.on("playerJoined", handleNewPlayerJoined);
+    socket.on("playerJoined", handlePlayerJoined);
     socket.on("currentGameWasDeleted", handleGameDeleted); // return to gamesList
     socket.on("playersOrderUpdated", handleNewPlayerUpdated);
     socket.on("currentGame:running", handleGameRunning);
 
     return () => {
-      socket.off("playerJoined", handleNewPlayerJoined);
+      socket.off("playerJoined", handlePlayerJoined);
       socket.off("currentGameWasDeleted", handleGameDeleted);
       socket.off("playersOrderUpdated", handleNewPlayerUpdated);
       socket.off("currentGame:running", handleGameRunning);
-      clearTimeout(timeoutRef.current); // if client runout from page (unmount component) before server responding
+      clearTimeout(timeoutDnDRef.current);
+      clearTimeout(timeoutRunGameRef.current); // if client runout from page (unmount component) before server responding
     };
   }, [dispatch, navigate]);
+
+  const runGame = () => {
+    const updatedGame = distributeCards(currentGame);
+    if (updatedGame.message) return Notify.failure(updatedGame.message); // "Not enough cards in the deck"
+
+    dispatch(updateGame(updatedGame)); // optimistic update
+    prevRunGameStateRef.current = prevRunGameStateRef.current || updatedGame;
+
+    socket.emit("currentGame:run", updatedGame);
+
+    // Timer for waiting of server response (5 sec)
+    timeoutRunGameRef.current = setTimeout(() => {
+      // If server not respond within 5 sec:
+      if (prevRunGameStateRef.current) {
+        Notify.failure("No response from server. Reverting game state.");
+        dispatch(updateGame(prevRunGameStateRef.current));
+        prevRunGameStateRef.current = null;
+      }
+    }, 5000); // 5 секунд таймаут
+  };
 
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
@@ -131,33 +165,24 @@ export default function GameStartedPage() {
     const newPlayersOrder = arrayMove(currentGame.players, oldIndex, newIndex); // переміщує елемент з oldIndex на newIndex
 
     const updatedGame = { ...currentGame, players: newPlayersOrder };
-    dispatch(updateGame(updatedGame));
-    socket.emit("newPlayersOrder", {
-      gameId: currentGameId,
-      players: newPlayersOrder,
-    });
+    dispatch(updateGame(updatedGame)); // optimistic update
+    prevDnDGameStateRef.current = prevDnDGameStateRef.current || updatedGame;
+
+    socket.emit("newPlayersOrder", updatedGame);
+
+    // Timer for waiting of server response (5 sec)
+    timeoutDnDRef.current = setTimeout(() => {
+      // If server not respond within 5 sec:
+      if (prevDnDGameStateRef.current) {
+        Notify.failure("No response from server. Reverting players order.");
+        dispatch(updateGame(prevDnDGameStateRef.current));
+        prevDnDGameStateRef.current = null;
+      }
+    }, 5000); // 5 секунд таймаут
   };
 
   const toPreviousPage = () => {
     navigate(`/game`);
-  };
-
-  const runGame = () => {
-    const updatedGame = distributeCards(currentGame);
-
-    dispatch(updateGame(updatedGame));
-    previousGameStateRef.current = previousGameStateRef.current || updatedGame;
-
-    // Timer for waiting of server response (5 sec). If server not respond within 5 sec:
-    timeoutRef.current = setTimeout(() => {
-      if (previousGameStateRef.current) {
-        Notify.failure("No response from server. Reverting game state.");
-        dispatch(updateGame(previousGameStateRef.current));
-        previousGameStateRef.current = null;
-      }
-    }, 5000); // 5 секунд таймаут
-
-    socket.emit("currentGame:run", updatedGame);
   };
 
   return (

@@ -15,15 +15,22 @@ export const distributeCards = currentGame => {
 
   // Роздаємо карти гравцям
   if (updatedDeck.length >= cardsPerPlayer * players.length) {
-    players.forEach(player => {
-      player.hand = updatedDeck.splice(0, cardsPerPlayer);
-    });
+    const updatePlayers = players.map(player => ({
+      ...player,
+      hand: updatedDeck.splice(0, cardsPerPlayer),
+    }));
+
+    return {
+      ...currentGame,
+      deck: updatedDeck,
+      discardPile: updatedDiscardPile,
+      players: updatePlayers,
+    };
   }
 
+  // Якщо карт недостатньо для роздачі (незалежно від того, що ми додали з відбою), можемо повернути поточний стан гри або іншу обробку
   return {
     ...currentGame,
-    deck: updatedDeck,
-    discardPile: updatedDiscardPile,
-    players,
+    message: "Not enough cards in the deck",
   };
 };

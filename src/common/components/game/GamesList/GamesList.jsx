@@ -50,11 +50,8 @@ export default function GamesList() {
       }
     };
 
-    const handlePlayerJoined = data => {
-      // dispatch(setCurrentGameId(data.game._id));
-      // console.log("handlePlayerJoined >> data:::", data);
-      if (data) navigate(`/game/${data.game._id}`);
-      // navigate(`/game/${data.game._id}`, { replace: true });
+    const handlePlayerJoined = ({ game }) => {
+      if (game) navigate(`/game/${game._id}`);
     };
 
     socket.on("error", handleError);
