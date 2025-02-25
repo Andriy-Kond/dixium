@@ -1,17 +1,18 @@
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Notify } from "notiflix";
+
+import { useGetAllGamesQuery } from "features/game/gameApi.js";
 import { selectUserCredentials } from "app/selectors.js";
 import Button from "common/components/Button/index.js";
-import { useGetAllGamesQuery } from "features/game/gameApi.js";
-import { useDispatch, useSelector } from "react-redux";
-import css from "./GamesList.module.scss";
-import socket from "socket.js";
-import { useEffect } from "react";
 import {
   addGamesList,
   setCurrentGameId,
   updateGame,
 } from "features/game/gameSlice.js";
-import { Notify } from "notiflix";
-import { useNavigate } from "react-router-dom";
+import socket from "socket.js";
+import css from "./GamesList.module.scss";
 
 export default function GamesList() {
   const navigate = useNavigate();

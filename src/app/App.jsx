@@ -13,6 +13,8 @@ import { setIsLoggedIn } from "features/auth/authSlice";
 import { useGetUserByTokenQuery } from "features/users/usersApi";
 import Notiflix from "notiflix";
 
+import { useSetupSocketListeners } from "features/hooks/setupSocketListeners.js";
+
 Notiflix.Notify.init({
   clickToClose: true,
 });
@@ -25,13 +27,13 @@ const NotFoundPage = lazy(() => import("common/pages/NotFoundPage"));
 
 export default function App() {
   const dispatch = useDispatch();
-  const authUserToken = useSelector(selectUserToken);
 
+  const authUserToken = useSelector(selectUserToken);
   const { isSuccess, isFetching } = useGetUserByTokenQuery(undefined, {
     skip: !authUserToken, // Пропускає запит, якщо токен відсутній
   });
-  console.log("App >> isSuccess:::", isSuccess);
-  console.log("App >> isFetching:::", isFetching);
+
+  useSetupSocketListeners(); // Підписка на всі слухачі сокетів
 
   useEffect(() => {
     if (!isFetching)

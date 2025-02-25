@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import socket from "socket.js";
 
 const gameInitialState = {
   games: [
@@ -9,21 +8,21 @@ const gameInitialState = {
     // _id: Schema.Types.ObjectId
     // gameName: String, // Game name
     // players: [
-    //   {
-    //     _id: String,
-    //     name: String,
-    //     avatarURL: String,
-    //     hand: Array,
-    //   },
+    // {
+    //   _id: String,
+    //   name: String,
+    //   avatarURL: String,
+    //   hand: Array,
+    // },
     // ], // List of players
     // deck: [
-    //   {
-    //     cardName: String,
-    //     public_id: String, // Public card id from Cloudinary
-    //     url: String, // Card url from Cloudinary
-    //     _id: Schema.Types.ObjectId, // Card id from MongoDB (like owner)
-    //     isCardPlayed: Boolean,
-    //   },
+    // {
+    //   cardName: String,
+    //   public_id: String, // Public card id from Cloudinary
+    //   url: String, // Card url from Cloudinary
+    //   _id: Schema.Types.ObjectId, // Card id from MongoDB (like owner)
+    //   isCardPlayed: Boolean,
+    // },
     // ], // Deck of cards
     // isGameRun: Boolean, // game started and running (players cannot join)
     // isGameStarted: Boolean, // game started but not running (players can join)
@@ -35,13 +34,6 @@ const gameInitialState = {
   isCreatingGame: false,
   currentDeckId: null,
   currentGameId: null,
-};
-
-const shuffleDeck = deck => {
-  return deck
-    .map(card => ({ card, idx: Math.random() })) // Додати випадковий індекс
-    .sort((a, b) => a.idx - b.idx) // Сортування за цим індексом
-    .map(({ card }) => card); // Повертаю тільки карти
 };
 
 export const gameSlice = createSlice({
@@ -82,6 +74,15 @@ export const gameSlice = createSlice({
       );
     },
 
+    // If game arr is huge (100+ games) this option will be better, but it is mutate option:
+    // updateGame2: (state, action) => {
+    //   const updatedGame = action.payload;
+    //   const index = state.games.findIndex(game => game._id === updatedGame._id);
+    //   if (index !== -1) {
+    //     state.games[index] = updatedGame;
+    //   }
+    // },
+
     // removeGame: (state, action) => {
     //   state.games = state.games.filter(game => game._id !== action.payload);
     // },
@@ -94,6 +95,26 @@ export const gameSlice = createSlice({
     //     game.players.push(player);
     //   }
     // },
+
+    setFirstStoryteller: (state, action) => {
+      const { gameId, playerId } = action.payload;
+      const game = state.games.find(game => game._id === gameId);
+      if (game && !game.currentStorytellerId) {
+        game.currentStorytellerId = playerId;
+      }
+    },
+
+    nextStoryteller: (state, action) => {
+      const { gameId } = action.payload;
+      const game = state.games.find(game => game._id === gameId);
+      if (game) {
+        const currentIndex = game.players.findIndex(
+          player => player._id === game.currentStorytellerId,
+        );
+        const nextIndex = (currentIndex + 1) % game.players.length;
+        game.currentStorytellerId = game.players[nextIndex]._id;
+      }
+    },
   },
 });
 
@@ -122,4 +143,6 @@ export const {
   updateGame,
   setCurrentGame,
   addPlayerToGame,
+  setFirstStoryteller,
+  nextStoryteller,
 } = gameSlice.actions;

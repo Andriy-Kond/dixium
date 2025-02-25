@@ -1,1 +1,1 @@
-export { default } from "./DecksList.jsx";
+export { default } from "./DecksList";
