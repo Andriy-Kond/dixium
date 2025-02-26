@@ -10,3 +10,5 @@ export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
 // export const selectGames = state => state.gameSlice.games;
 export const selectGame = currentGameId => state =>
   state.gameSlice.games.find(g => g._id === currentGameId);
+
+export const selectRefs = state => state.gameSlice.refs;

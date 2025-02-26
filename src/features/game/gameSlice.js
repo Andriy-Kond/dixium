@@ -34,6 +34,8 @@ const gameInitialState = {
   isCreatingGame: false,
   currentDeckId: null,
   currentGameId: null,
+
+  refs: {},
 };
 
 export const gameSlice = createSlice({
@@ -115,6 +117,15 @@ export const gameSlice = createSlice({
         game.currentStorytellerId = game.players[nextIndex]._id;
       }
     },
+
+    setRef: (state, action) => {
+      const { key, value } = action.payload;
+      state.refs[key] = value;
+    },
+
+    clearRef: (state, action) => {
+      state.refs[action.payload] = null;
+    },
   },
 });
 
@@ -145,4 +156,7 @@ export const {
   addPlayerToGame,
   setFirstStoryteller,
   nextStoryteller,
+
+  setRef,
+  clearRef,
 } = gameSlice.actions;

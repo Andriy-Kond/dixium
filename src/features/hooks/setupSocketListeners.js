@@ -1,20 +1,23 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Notify } from "notiflix";
-import { updateGame } from "features/game/gameSlice.js";
-import { useGameRefs } from "features/hooks/useGameRefs.js";
+import { clearRef, setRef, updateGame } from "features/game/gameSlice.js";
+
 import socket from "socket.js";
+
+import { selectRefs } from "app/selectors.js";
+import {
+  PREV_RUN_GAME_STATE,
+  TIMEOUT_RUN_GAME,
+  PREV_DND_GAME_STATE,
+  TIMEOUT_DND,
+} from "features/constants/constants.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {
-    prevRunGameStateRef,
-    timeoutRunGameRef,
-    prevDnDGameStateRef,
-    timeoutDnDRef,
-  } = useGameRefs();
+  const refs = useSelector(selectRefs);
 
   useEffect(() => {
     const handlePlayerJoined = ({ game, message }) => {
@@ -32,29 +35,32 @@ export const useSetupSocketListeners = () => {
     };
 
     const handleNewPlayerUpdated = game => {
-      clearTimeout(timeoutDnDRef.current);
+      clearTimeout(refs.TIMEOUT_DND);
+      dispatch(clearRef(TIMEOUT_DND));
+
       if (game.message) {
-        dispatch(updateGame(prevDnDGameStateRef.current));
-        prevDnDGameStateRef.current = null;
+        dispatch(updateGame(refs.PREV_DND_GAME_STATE));
+        dispatch(setRef({ key: PREV_DND_GAME_STATE, value: null }));
         Notify.failure(game.message);
       } else {
         dispatch(updateGame(game));
-        prevDnDGameStateRef.current = null;
+        dispatch(setRef({ key: PREV_DND_GAME_STATE, value: null }));
       }
     };
 
     const handleGameRunning = game => {
-      clearTimeout(timeoutRunGameRef.current);
+      clearTimeout(refs.TIMEOUT_RUN_GAME);
+      dispatch(clearRef(TIMEOUT_RUN_GAME));
 
       // If there is a message, then it is an error, rollback of the state
       if (game.message) {
-        dispatch(updateGame(prevRunGameStateRef.current));
-        prevRunGameStateRef.current = null;
+        dispatch(updateGame(refs.PREV_RUN_GAME_STATE));
+        dispatch(setRef({ key: PREV_RUN_GAME_STATE, value: null }));
         Notify.failure(game.message);
       } else {
-        // Server response or response late (more then 5 sec) -> state update
+        // Server response or response late (more then 10 sec) -> state update
         dispatch(updateGame(game));
-        prevRunGameStateRef.current = null;
+        dispatch(setRef({ key: PREV_RUN_GAME_STATE, value: null }));
       }
     };
 
@@ -68,15 +74,15 @@ export const useSetupSocketListeners = () => {
       socket.off("currentGameWasDeleted", handleGameDeleted);
       socket.off("playersOrderUpdated", handleNewPlayerUpdated);
       socket.off("currentGame:running", handleGameRunning);
-      clearTimeout(timeoutDnDRef.current);
-      clearTimeout(timeoutRunGameRef.current); // if client runout from page (unmount component) before server responding
+      clearTimeout(refs.TIMEOUT_DND);
+      clearTimeout(refs.TIMEOUT_RUN_GAME); // if client runout from page (unmount component) before server responding
     };
   }, [
     dispatch,
     navigate,
-    prevDnDGameStateRef,
-    prevRunGameStateRef,
-    timeoutDnDRef,
-    timeoutRunGameRef,
+    refs.PREV_DND_GAME_STATE,
+    refs.PREV_RUN_GAME_STATE,
+    refs.TIMEOUT_DND,
+    refs.TIMEOUT_RUN_GAME,
   ]);
 };

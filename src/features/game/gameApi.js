@@ -19,7 +19,7 @@ const baseQuery = fetchBaseQuery({
 export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery,
-  keepUnusedDataFor: 5, // видаляє очікування 60 сек перед очищенням кешу
+  // keepUnusedDataFor: 5, // видаляє очікування 60 сек перед очищенням кешу
   tagTypes: ["AllGames", "CurrentGame"],
   endpoints: builder => ({
     getAllDecks: builder.query({
@@ -38,8 +38,9 @@ export const gameApi = createApi({
     }),
 
     getCurrentGame: builder.query({
-      query: gameId => `dixium/games/${gameId}`, // Get available games
-      providesTags: ["AllGames"],
+      query: gameId => `dixium/games/${gameId}`, // Get current game
+      // providesTags: ["Game"],
+      providesTags: (result, error, gameId) => [{ type: "Game", id: gameId }],
     }),
 
     updateCurrentGame: builder.mutation({
@@ -49,7 +50,14 @@ export const gameApi = createApi({
         body: data,
       }),
 
-      providesTags: ["AllGames"], // Після оновлення, всі ігри будуть оновлені
+      // Після оновлення, всі ігри будуть оновлені
+      // invalidatesTags: ["AllGames"],
+
+      // Оновити конкретну гру, а не всі ігри:
+      invalidatesTags: (result, error, { gameId }) => [
+        { type: "Game", id: gameId }, // Оновлюється конкретна гра
+        // { type: "AllGames" }, // Оновлюється всі ігри
+      ],
     }),
 
     // removeGameFromServer: builder.mutation({
