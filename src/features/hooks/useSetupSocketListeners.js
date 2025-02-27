@@ -30,6 +30,7 @@ export const useSetupSocketListeners = () => {
   const { data: allGames, refetch: refetchAllGames } = useGetAllGamesQuery();
 
   useEffect(() => {
+    // console.log("Setting up socket listeners");
     // if (currentGameId) {
     //   socket.emit("joinGame", currentGameId);
     // }
@@ -103,6 +104,7 @@ export const useSetupSocketListeners = () => {
     socket.on("currentGame:running", handleGameRunning);
 
     return () => {
+      // console.log("Cleaning up socket listeners");
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("currentGameWasDeleted", handleGameDeleted);
 
@@ -117,8 +119,7 @@ export const useSetupSocketListeners = () => {
     currentGameId,
     dispatch,
     navigate,
-    // refetchAllGames,
-
+    refetchAllGames,
     refs.PREV_DND_GAME_STATE,
     refs.PREV_RUN_GAME_STATE,
     refs.TIMEOUT_DND,
