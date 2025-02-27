@@ -25,8 +25,8 @@ import {
   TIMEOUT_RUN_GAME,
   PREV_DND_GAME_STATE,
   TIMEOUT_DND,
-} from "features/constants/constants.js";
-import { useUpdateCurrentGameMutation } from "features/game/gameApi.js";
+} from "features/utils/constants.js";
+// import { useUpdateCurrentGameMutation } from "features/game/gameApi.js";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
@@ -36,10 +36,10 @@ export default function PrepareGame() {
   const { currentGameId } = useParams();
   const currentGame = useSelector(selectGame(currentGameId));
   const userCredentials = useSelector(selectUserCredentials);
-  const [
-    updateCurrentGame,
-    { isLoading, isUninitialized, data, error, isError, isSuccess, reset },
-  ] = useUpdateCurrentGameMutation();
+  // const [
+  //   updateCurrentGame,
+  //   { isLoading, isUninitialized, data, error, isError, isSuccess, reset },
+  // ] = useUpdateCurrentGameMutation();
 
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
@@ -68,8 +68,8 @@ export default function PrepareGame() {
       }),
     );
 
-    // socket.emit("newPlayersOrder", updatedGame);
-    updateCurrentGame({ gameId: updatedGame._id, data: updatedGame });
+    socket.emit("newPlayersOrder", updatedGame);
+    // updateCurrentGame({ gameId: updatedGame._id, data: updatedGame });
 
     // Timer for waiting of server response (2 sec)
     const timeoutDnD = setTimeout(() => {
@@ -100,6 +100,7 @@ export default function PrepareGame() {
     );
 
     socket.emit("currentGame:run", updatedGame);
+    // updateCurrentGame({ gameId: updatedGame._id, data: updatedGame });
 
     // Timer for waiting of server response (1 sec)
     const timeoutRunGame = setTimeout(() => {

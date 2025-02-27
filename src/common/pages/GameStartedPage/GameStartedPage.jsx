@@ -1,15 +1,28 @@
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-
-import { selectGame } from "app/selectors.js";
 import PrepareGame from "common/components/game/PrepareGame";
 import Game from "common/components/game/Game";
 import css from "./GameStartedPage.module.scss";
 
+import { useDispatch, useSelector } from "react-redux";
+import { selectGame } from "app/selectors.js";
+import { useGetCurrentGameQuery } from "features/game/gameApi.js";
+import { useEffect } from "react";
+import { updateGame } from "features/game/gameSlice.js";
+
 export default function GameStartedPage() {
+  const dispatch = useDispatch();
   const { currentGameId } = useParams();
-  const currentGame = useSelector(selectGame(currentGameId));
-  const isCurrentGameRunning = currentGame.isGameRunning;
+
+  // const { data: currentGame, refetch: refetchCurrentGame } =
+  //   useGetCurrentGameQuery(currentGameId, { skip: !currentGameId });
+
+  // useEffect(() => {
+  //   if (currentGame) {
+  //     dispatch(updateGame(currentGame));
+  //   }
+  // }, [currentGame, dispatch]);
+
+  const { isGameRunning, gameName } = useSelector(selectGame(currentGameId));
 
   return (
     <>
@@ -18,12 +31,12 @@ export default function GameStartedPage() {
       <div className={css.container}>
         <div className={css.pageHeader}>
           <p className={css.pageHeader_title}>
-            {`Game "${currentGame?.gameName}"`.toUpperCase()}
+            {`Game "${gameName}"`.toUpperCase()}
           </p>
         </div>
         <div className={css.pageMain}>
-          {!isCurrentGameRunning && <PrepareGame />}
-          {isCurrentGameRunning && <Game />}
+          {!isGameRunning && <PrepareGame />}
+          {isGameRunning && <Game />}
         </div>
       </div>
     </>

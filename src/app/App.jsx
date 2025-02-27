@@ -13,7 +13,7 @@ import { setIsLoggedIn } from "features/auth/authSlice";
 import { useGetUserByTokenQuery } from "features/users/usersApi";
 import Notiflix from "notiflix";
 
-import { useSetupSocketListeners } from "features/hooks/setupSocketListeners.js";
+import { useSetupSocketListeners } from "features/hooks/useSetupSocketListeners.js";
 
 Notiflix.Notify.init({
   clickToClose: true,
