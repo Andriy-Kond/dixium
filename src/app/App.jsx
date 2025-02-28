@@ -1,8 +1,8 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { selectUserToken } from "./selectors";
+import { selectUserCredentials, selectUserToken } from "./selectors";
 import HomePage from "common/pages/HomePage";
 import SharedLayout from "common/pages/SharedLayout";
 
@@ -14,6 +14,7 @@ import { useGetUserByTokenQuery } from "features/users/usersApi";
 import Notiflix from "notiflix";
 
 import { useSetupSocketListeners } from "features/hooks/useSetupSocketListeners.js";
+import socket from "socket.js";
 
 Notiflix.Notify.init({
   clickToClose: true,
@@ -27,6 +28,11 @@ const NotFoundPage = lazy(() => import("common/pages/NotFoundPage"));
 
 export default function App() {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const match = location.pathname.match(/game\/([\w\d]+)/);
+  const currentGameId = match ? match[1] : null;
+
+  const userCredentials = useSelector(selectUserCredentials);
 
   const authUserToken = useSelector(selectUserToken);
   const { isSuccess, isFetching } = useGetUserByTokenQuery(undefined, {
@@ -34,6 +40,40 @@ export default function App() {
   });
 
   useSetupSocketListeners(); // Підписка на всі слухачі сокетів
+
+  // useEffect(() => {
+  //   // При підключенні або оновленні сторінки приєднуємося до кімнати
+  //   if (socket.connected && currentGameId && userCredentials._id) {
+  //     socket.emit("joinGameRoom", {
+  //       gameId: currentGameId,
+  //       userId: userCredentials._id,
+  //     });
+  //   }
+
+  //   // Логування для дебагу
+  //   socket.on("connect", () => {
+  //     console.log("Connected to socket, joining room:", currentGameId);
+  //     if (socket.connected && currentGameId && userCredentials._id) {
+  //       socket.emit("joinGameRoom", {
+  //         gameId: currentGameId,
+  //         userId: userCredentials._id,
+  //       });
+  //     }
+  //   });
+
+  //   socket.on("reconnect", () => {
+  //     console.log("Reconnected to socket, rejoining room:", currentGameId);
+  //     socket.emit("joinGameRoom", {
+  //       gameId: currentGameId,
+  //       userId: userCredentials._id,
+  //     });
+  //   });
+
+  //   return () => {
+  //     // Опціонально: залишити кімнату при розмонтуванні (якщо потрібно)
+  //     // socket.emit("leaveGameRoom", { gameId: currentGameId, userId: userCredentials._id });
+  //   };
+  // }, [currentGameId, userCredentials._id]);
 
   useEffect(() => {
     if (!isFetching)

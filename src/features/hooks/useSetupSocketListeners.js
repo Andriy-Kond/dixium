@@ -9,7 +9,7 @@ import {
   updateGame,
 } from "features/game/gameSlice.js";
 import socket from "socket.js";
-import { selectRefs } from "app/selectors.js";
+import { selectRefs, selectUserCredentials } from "app/selectors.js";
 import {
   PREV_RUN_GAME_STATE,
   TIMEOUT_RUN_GAME,
@@ -22,6 +22,7 @@ export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const refs = useSelector(selectRefs);
+  const userCredentials = useSelector(selectUserCredentials);
   const location = useLocation();
 
   const match = location.pathname.match(/game\/([\w\d]+)/);
@@ -97,6 +98,33 @@ export const useSetupSocketListeners = () => {
       }
     };
 
+    const joinGameRoom = () => {
+      if (socket.connected && currentGameId && userCredentials._id) {
+        socket.emit("joinGameRoom", {
+          gameId: currentGameId,
+          userId: userCredentials._id,
+        });
+      }
+    };
+
+    // Виконуємо при початковому підключенні
+    joinGameRoom();
+
+    // Обробка події "connect"
+    const handleConnect = () => {
+      console.log("Connected to socket, joining room:", currentGameId);
+      joinGameRoom();
+    };
+
+    // Обробка події "reconnect"
+    const handleReconnect = () => {
+      console.log("Reconnected to socket, rejoining room:", currentGameId);
+      joinGameRoom();
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("reconnect", handleReconnect);
+
     socket.on("playerJoined", handlePlayerJoined); //* checked
     socket.on("currentGameWasDeleted", handleGameDeleted); //* checked
 
@@ -105,6 +133,9 @@ export const useSetupSocketListeners = () => {
 
     return () => {
       // console.log("Cleaning up socket listeners");
+      socket.off("connect", handleConnect);
+      socket.off("reconnect", handleReconnect);
+
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("currentGameWasDeleted", handleGameDeleted);
 
@@ -124,5 +155,6 @@ export const useSetupSocketListeners = () => {
     refs.PREV_RUN_GAME_STATE,
     refs.TIMEOUT_DND,
     refs.TIMEOUT_RUN_GAME,
+    userCredentials._id,
   ]);
 };

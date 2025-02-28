@@ -26,17 +26,10 @@ import {
   PREV_DND_GAME_STATE,
   TIMEOUT_DND,
 } from "features/utils/constants.js";
-import { useEffect } from "react";
+
 // import { useUpdateCurrentGameMutation } from "features/game/gameApi.js";
 
 export default function PrepareGame() {
-  useEffect(() => {
-    console.log(
-      "Socket status in PrepareGame:",
-      socket.connected ? "Connected" : "Disconnected",
-    );
-  }, []);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const refs = useSelector(selectRefs);
