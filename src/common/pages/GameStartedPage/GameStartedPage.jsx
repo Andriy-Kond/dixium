@@ -3,24 +3,11 @@ import PrepareGame from "common/components/game/PrepareGame";
 import Game from "common/components/game/Game";
 import css from "./GameStartedPage.module.scss";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectGame } from "app/selectors.js";
-import { useGetCurrentGameQuery } from "features/game/gameApi.js";
-import { useEffect } from "react";
-import { updateGame } from "features/game/gameSlice.js";
 
 export default function GameStartedPage() {
-  const dispatch = useDispatch();
   const { currentGameId } = useParams();
-
-  // const { data: currentGame, refetch: refetchCurrentGame } =
-  //   useGetCurrentGameQuery(currentGameId, { skip: !currentGameId });
-
-  // useEffect(() => {
-  //   if (currentGame) {
-  //     dispatch(updateGame(currentGame));
-  //   }
-  // }, [currentGame, dispatch]);
 
   const { isGameRunning, gameName } = useSelector(selectGame(currentGameId));
 

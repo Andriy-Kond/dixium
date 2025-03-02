@@ -1,4 +1,4 @@
 export const PREV_RUN_GAME_STATE = "PREV_RUN_GAME_STATE";
-export const TIMEOUT_RUN_GAME = "TIMEOUT_RUN_GAME";
+export const TIMER_RUN_GAME = "TIMER_RUN_GAME";
 export const PREV_DND_GAME_STATE = "PREV_DND_GAME_STATE";
-export const TIMEOUT_DND = "TIMEOUT_DND";
+export const TIMER_DND = "TIMER_DND";

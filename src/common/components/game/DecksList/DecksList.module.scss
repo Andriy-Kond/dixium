@@ -67,13 +67,14 @@
 }
 
 .img {
+  border-radius: 10px;
   width: 100%;
   height: 100%;
 }
 
 .currentDeck {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   flex-wrap: wrap;
   gap: 5px;
   padding: 0 5px;

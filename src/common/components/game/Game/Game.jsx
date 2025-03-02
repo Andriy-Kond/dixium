@@ -1,17 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { selectGame, selectUserCredentials } from "app/selectors.js";
+import {
+  selectCurrentStorytellerId,
+  selectGame,
+  selectUserCredentials,
+} from "app/selectors.js";
 import css from "./Game.module.scss";
 import { useState } from "react";
 import Button from "common/components/Button/index.js";
 import { setFirstStoryteller } from "features/game/gameSlice.js";
-import { useUpdateCurrentGameMutation } from "features/game/gameApi.js";
+import socket from "socket.js";
 
 export default function Game() {
   const dispatch = useDispatch();
   const { currentGameId } = useParams();
-  const [updateCurrentGame] = useUpdateCurrentGameMutation(); // todo
-
+  const currentStorytellerId = useSelector(selectCurrentStorytellerId);
   const currentGame = useSelector(selectGame(currentGameId));
   const userCredentials = useSelector(selectUserCredentials);
   const currentPlayer = currentGame.players.find(
@@ -29,13 +32,20 @@ export default function Game() {
   };
 
   const vote = () => {
-    // optimistic update
-    dispatch(
-      setFirstStoryteller({
-        gameId: currentGameId,
-        playerId: userCredentials._id,
-      }),
-    );
+    if (!currentStorytellerId) {
+      // optimistic update
+      dispatch(
+        setFirstStoryteller({
+          gameId: currentGameId,
+          playerId: userCredentials._id,
+        }),
+      );
+
+      socket.emit("setFirstStoryteller", {
+        currentGame,
+        player: userCredentials,
+      });
+    }
   };
 
   return (
@@ -51,9 +61,13 @@ export default function Game() {
           <li
             className={css.card}
             key={card._id}
-            onClick={() => {
-              onSelectCard(card._id);
-            }}>
+            onClick={
+              !currentStorytellerId
+                ? () => {
+                    onSelectCard(card._id);
+                  }
+                : undefined
+            }>
             <img
               className={`${css.img} ${
                 selectedCard && selectedCard !== card._id && css.imgInactive

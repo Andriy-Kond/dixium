@@ -22,12 +22,10 @@ import css from "./PrepareGame.module.scss";
 import socket from "socket.js";
 import {
   PREV_RUN_GAME_STATE,
-  TIMEOUT_RUN_GAME,
+  TIMER_RUN_GAME,
   PREV_DND_GAME_STATE,
-  TIMEOUT_DND,
+  TIMER_DND,
 } from "features/utils/constants.js";
-
-// import { useUpdateCurrentGameMutation } from "features/game/gameApi.js";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
@@ -37,10 +35,6 @@ export default function PrepareGame() {
   const { currentGameId } = useParams();
   const currentGame = useSelector(selectGame(currentGameId));
   const userCredentials = useSelector(selectUserCredentials);
-  // const [
-  //   updateCurrentGame,
-  //   { isLoading, isUninitialized, data, error, isError, isSuccess, reset },
-  // ] = useUpdateCurrentGameMutation();
 
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
@@ -61,19 +55,21 @@ export default function PrepareGame() {
     const newPlayersOrder = arrayMove(currentGame.players, oldIndex, newIndex); // переміщує елемент з oldIndex на newIndex
 
     const updatedGame = { ...currentGame, players: newPlayersOrder };
-    dispatch(updateGame(updatedGame)); // optimistic update
+
+    // optimistic update:
     dispatch(
       setRef({
-        key: PREV_DND_GAME_STATE,
-        value: refs.PREV_DND_GAME_STATE || updatedGame,
+        key: PREV_DND_GAME_STATE, // key of previous game state for dnd event
+        value: refs.PREV_DND_GAME_STATE || currentGame, // previous game state
       }),
     );
+    dispatch(updateGame(updatedGame)); // update local state
 
-    socket.emit("newPlayersOrder", updatedGame);
-    // updateCurrentGame({ gameId: updatedGame._id, data: updatedGame });
+    socket.emit("newPlayersOrder", updatedGame); // send update data to server by socket.io
+    // updateCurrentGame({ gameId: updatedGame._id, data: updatedGame }); // send update data to server by gameApi
 
-    // Timer for waiting of server response (2 sec)
-    const timeoutDnD = setTimeout(() => {
+    // Timer for waiting server response (2 sec)
+    const timerDnd = setTimeout(() => {
       // If server not respond within 2 sec:
       if (refs.PREV_DND_GAME_STATE) {
         Notify.failure(
@@ -83,28 +79,29 @@ export default function PrepareGame() {
         dispatch(clearRef(PREV_DND_GAME_STATE));
       }
     }, 2000); // 2 sec timeout
-    dispatch(setRef({ key: TIMEOUT_DND, value: timeoutDnD }));
+    dispatch(setRef({ key: TIMER_DND, value: timerDnd }));
   };
 
   const runGame = () => {
     const game = distributeCards(currentGame);
     if (game.message) return Notify.failure(game.message); // "Not enough cards in the deck"
 
-    // optimistic update
     const updatedGame = { ...game, isGameRunning: true }; // todo при закінченні гри зробити false
-    dispatch(updateGame(updatedGame));
+    // optimistic update
     dispatch(
       setRef({
-        key: PREV_RUN_GAME_STATE,
-        value: refs.PREV_RUN_GAME_STATE || updatedGame,
+        key: PREV_RUN_GAME_STATE, // key of previous game state for run function
+        value: refs.PREV_RUN_GAME_STATE || currentGame, // previous game state
       }),
     );
 
-    socket.emit("currentGame:run", updatedGame);
-    // updateCurrentGame({ gameId: updatedGame._id, data: updatedGame });
+    dispatch(updateGame(updatedGame)); // update local state
 
-    // Timer for waiting of server response (1 sec)
-    const timeoutRunGame = setTimeout(() => {
+    socket.emit("currentGame:run", updatedGame); // send update data to server by socket.io
+    // updateCurrentGame({ gameId: updatedGame._id, data: updatedGame }); // send update data to server by gameApi
+
+    // Timer for waiting server response (1 sec)
+    const timerRunGame = setTimeout(() => {
       // If server not respond within 1 sec:
       if (refs.PREV_RUN_GAME_STATE) {
         Notify.failure(
@@ -114,7 +111,7 @@ export default function PrepareGame() {
         dispatch(clearRef(PREV_RUN_GAME_STATE));
       }
     }, 1000); // 1 sec timeout
-    dispatch(setRef({ key: TIMEOUT_RUN_GAME, value: timeoutRunGame }));
+    dispatch(setRef({ key: TIMER_RUN_GAME, value: timerRunGame }));
   };
 
   const toGamePage = () => {
@@ -128,6 +125,7 @@ export default function PrepareGame() {
         <SortableContext // Дозволяє сортувати список гравців.
           items={currentGame?.players.map(p => p._id)}
           strategy={verticalListSortingStrategy}
+          disabled={currentGame.hostPlayerId !== userCredentials._id}
           // strategy визначає, як відбувається сортування перетягуваних елементів.
           // verticalListSortingStrategy працює для вертикальних списків (коли елементи розташовані зверху вниз).
           // Інші стратегії:

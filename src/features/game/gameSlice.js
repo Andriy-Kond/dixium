@@ -34,6 +34,7 @@ const gameInitialState = {
   isCreatingGame: false,
   currentDeckId: null,
   currentGameId: null,
+  currentStorytellerId: null,
 
   refs: {},
 };
