@@ -74,7 +74,6 @@ export const useSetupSocketListeners = () => {
 
     const handleReconnect = () => {
       // Обробка події "reconnect" // Обробка перепідключення після втрати з'єднання (наприклад, через мережеві проблеми)
-      console.log("Reconnected to socket, rejoining room:", currentGameId);
       joinGameRoom();
     };
 
@@ -133,28 +132,31 @@ export const useSetupSocketListeners = () => {
     };
 
     const handlePlayersOrderUpdated = ({ game, message }) => {
-      console.log(" handlePlayersOrderUpdated >> game:::", game);
-
       const relatedAction = Object.values(activeActions).find(
         action => action.payload.updatedGame._id === game._id,
       );
 
-      if (!relatedAction) return; // Якщо немає відповідного action, виходимо
-
-      const { eventName } = relatedAction.payload;
-
-      const key = `${eventName}-${game._id}`;
-
-      if (message) {
-        dispatch(updateGame(relatedAction.meta.previousGameState));
-        Notify.failure(message);
+      if (relatedAction) {
+        // Логіка для ініціатора
+        const { eventName } = relatedAction.payload;
+        const key = `${eventName}-${game._id}`;
+        if (message) {
+          dispatch(updateGame(relatedAction.meta.previousGameState));
+          Notify.failure(message);
+        } else {
+          dispatch(updateGame(game));
+        }
+        if (relatedAction?.meta?.timer) {
+          clearTimeout(relatedAction.meta.timer);
+          dispatch(clearActiveAction(key));
+        }
       } else {
-        dispatch(updateGame(game));
-      }
-
-      if (relatedAction?.meta?.timer) {
-        clearTimeout(relatedAction.meta.timer);
-        dispatch(clearActiveAction(key));
+        // Логіка для інших гравців
+        if (message) {
+          Notify.failure(message);
+        } else {
+          dispatch(updateGame(game));
+        }
       }
     };
 
@@ -162,22 +164,32 @@ export const useSetupSocketListeners = () => {
       const relatedAction = Object.values(activeActions).find(
         action => action.payload.updatedGame._id === game._id,
       );
-      if (!relatedAction) return; // Якщо немає відповідного action, виходимо
-      const { eventName } = relatedAction.payload;
-      const key = `${eventName}-${game._id}`;
 
-      // If there is a message, then it is an error, rollback of the state
-      if (message) {
-        dispatch(updateGame(relatedAction.meta.previousGameState));
-        Notify.failure(message);
+      if (relatedAction) {
+        // Логіка для ініціатора
+        const { eventName } = relatedAction.payload;
+        const key = `${eventName}-${game._id}`;
+
+        // If there is a message, then it is an error, rollback of the state
+        if (message) {
+          dispatch(updateGame(relatedAction.meta.previousGameState));
+          Notify.failure(message);
+        } else {
+          // Server response or response late (more then 10 sec) -> state update
+          dispatch(updateGame(game));
+        }
+
+        if (relatedAction?.meta?.timer) {
+          clearTimeout(relatedAction.meta.timer);
+          dispatch(clearActiveAction(key));
+        }
       } else {
-        // Server response or response late (more then 10 sec) -> state update
-        dispatch(updateGame(game));
-      }
-
-      if (relatedAction?.meta?.timer) {
-        clearTimeout(relatedAction.meta.timer);
-        dispatch(clearActiveAction(key));
+        // Логіка для інших гравців
+        if (message) {
+          Notify.failure(message);
+        } else {
+          dispatch(updateGame(game));
+        }
       }
     };
 
