@@ -14,3 +14,5 @@ export const selectGame = currentGameId => state =>
   state.gameSlice.games.find(g => g._id === currentGameId);
 
 export const selectRefs = state => state.gameSlice.refs;
+
+export const selectActiveActions = state => state.gameSlice.activeActions;

@@ -3,28 +3,23 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Notify } from "notiflix";
 import {
-  clearRef,
+  clearActiveAction,
   setCurrentGameId,
   updateGame,
 } from "features/game/gameSlice.js";
 import socket from "socket.js";
-import { selectRefs, selectUserCredentials } from "app/selectors.js";
-import {
-  PREV_RUN_GAME_STATE,
-  TIMER_RUN_GAME,
-  PREV_DND_GAME_STATE,
-  TIMER_DND,
-} from "features/utils/constants.js";
+import { selectActiveActions, selectUserCredentials } from "app/selectors.js";
+
 import { gameApi, useGetAllGamesQuery } from "features/game/gameApi.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const refs = useSelector(selectRefs);
   const userCredentials = useSelector(selectUserCredentials);
   const location = useLocation();
   const match = location.pathname.match(/game\/([\w\d]+)/);
   const currentGameId = match ? match[1] : null;
+  const activeActions = useSelector(selectActiveActions);
 
   const {
     data: allGames,
@@ -73,7 +68,7 @@ export const useSetupSocketListeners = () => {
 
     const handleConnect = () => {
       // Обробка події "connect" // Обробка підключення (перше або повторне) - після оновлення сторінки
-      console.log("Connected to socket, joining room:", currentGameId);
+
       joinGameRoom();
     };
 
@@ -123,6 +118,7 @@ export const useSetupSocketListeners = () => {
       } else {
         refetchAllGames();
         dispatch(setCurrentGameId(null));
+        dispatch(clearActiveAction({}));
 
         if (currentGameId === _id) {
           navigate(`/game`, { replace: true });
@@ -137,30 +133,52 @@ export const useSetupSocketListeners = () => {
     };
 
     const handlePlayersOrderUpdated = ({ game, message }) => {
+      console.log(" handlePlayersOrderUpdated >> game:::", game);
+
+      const relatedAction = Object.values(activeActions).find(
+        action => action.payload.updatedGame._id === game._id,
+      );
+
+      if (!relatedAction) return; // Якщо немає відповідного action, виходимо
+
+      const { eventName } = relatedAction.payload;
+
+      const key = `${eventName}-${game._id}`;
+
       if (message) {
-        dispatch(updateGame(refs.PREV_DND_GAME_STATE));
+        dispatch(updateGame(relatedAction.meta.previousGameState));
         Notify.failure(message);
       } else {
         dispatch(updateGame(game));
       }
 
-      clearTimeout(refs.TIMER_DND);
-      dispatch(clearRef(TIMER_DND));
-      dispatch(clearRef(PREV_DND_GAME_STATE));
+      if (relatedAction?.meta?.timer) {
+        clearTimeout(relatedAction.meta.timer);
+        dispatch(clearActiveAction(key));
+      }
     };
 
     const handleGameRunning = ({ game, message }) => {
+      const relatedAction = Object.values(activeActions).find(
+        action => action.payload.updatedGame._id === game._id,
+      );
+      if (!relatedAction) return; // Якщо немає відповідного action, виходимо
+      const { eventName } = relatedAction.payload;
+      const key = `${eventName}-${game._id}`;
+
       // If there is a message, then it is an error, rollback of the state
       if (message) {
-        dispatch(updateGame(refs.PREV_RUN_GAME_STATE));
+        dispatch(updateGame(relatedAction.meta.previousGameState));
         Notify.failure(message);
       } else {
         // Server response or response late (more then 10 sec) -> state update
         dispatch(updateGame(game));
       }
-      clearTimeout(refs.TIMER_RUN_GAME);
-      dispatch(clearRef(TIMER_RUN_GAME));
-      dispatch(clearRef(PREV_RUN_GAME_STATE));
+
+      if (relatedAction?.meta?.timer) {
+        clearTimeout(relatedAction.meta.timer);
+        dispatch(clearActiveAction(key));
+      }
     };
 
     // For reconnect group
@@ -195,18 +213,41 @@ export const useSetupSocketListeners = () => {
 
       socket.off("getCurrentGame", handleGetCurrentGame);
 
-      clearTimeout(refs.TIMER_DND);
-      clearTimeout(refs.TIMER_RUN_GAME); // if client runout from page (unmount component) before server responding
+      // if client runout from page (unmount component) before server responding
+      // setActiveActions({}); // очистити все
+      // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
+
+      // Очищення таймерів при розмонтуванні
+      // Object.values(activeActions).forEach(action => {
+      //   if (action?.meta?.timer) {
+      //     clearTimeout(action.meta.timer); // Очищаємо таймер
+
+      //     // Оновлюємо action.meta, щоб видалити timer
+      //     setActiveActions(prev => ({
+      //       ...prev,
+      //       [`${action.payload.eventName}-${action.payload.updatedGame._id}`]: {
+      //         ...action,
+      //         meta: { ...action.meta, timer: null },
+      //       },
+      //     }));
+      //   }
+      // });
+
+      // Очищення всіх таймерів при розмонтуванні
+      Object.values(activeActions).forEach(action => {
+        if (action?.meta?.timer) {
+          clearTimeout(action.meta.timer); // Очищаємо таймер
+          const key = `${action.payload.eventName}-${action.payload.updatedGame._id}`;
+          dispatch(clearActiveAction(key)); // Видаляємо дію зі стану Redux
+        }
+      });
     };
   }, [
+    activeActions,
     currentGameId,
     dispatch,
     navigate,
     refetchAllGames,
-    refs.PREV_DND_GAME_STATE,
-    refs.PREV_RUN_GAME_STATE,
-    refs.TIMER_DND,
-    refs.TIMER_RUN_GAME,
     userCredentials,
   ]);
 };

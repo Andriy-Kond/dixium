@@ -37,6 +37,7 @@ const gameInitialState = {
   currentStorytellerId: null,
 
   refs: {},
+  activeActions: {},
 };
 
 export const gameSlice = createSlice({
@@ -72,19 +73,18 @@ export const gameSlice = createSlice({
     // },
 
     updateGame: (state, action) => {
-      state.games = state.games.map(game =>
-        game._id === action.payload._id ? action.payload : game,
-      );
-    },
+      // If game arr is huge (100+ games) this option will be better, but it is mutate option:
+      const updatedGame = action.payload;
+      const gameIndex = state.games.findIndex(g => g._id === updatedGame._id);
+      if (gameIndex !== -1) {
+        state.games[gameIndex] = updatedGame;
+      }
 
-    // If game arr is huge (100+ games) this option will be better, but it is mutate option:
-    // updateGame2: (state, action) => {
-    //   const updatedGame = action.payload;
-    //   const index = state.games.findIndex(game => game._id === updatedGame._id);
-    //   if (index !== -1) {
-    //     state.games[index] = updatedGame;
-    //   }
-    // },
+      // non mutation, but slower:
+      // state.games = state.games.map(game =>
+      //   game._id === action.payload._id ? action.payload : game,
+      // );
+    },
 
     // removeGame: (state, action) => {
     //   state.games = state.games.filter(game => game._id !== action.payload);
@@ -127,6 +127,15 @@ export const gameSlice = createSlice({
     clearRef: (state, action) => {
       state.refs[action.payload] = null;
     },
+
+    setActiveAction(state, action) {
+      const { key, value } = action.payload;
+      state.activeActions[key] = value;
+    },
+
+    clearActiveAction(state, action) {
+      delete state.activeActions[action.payload];
+    },
   },
 });
 
@@ -141,6 +150,8 @@ export const persistedGameReducer = persistReducer(
 );
 
 export const {
+  setActiveAction,
+  clearActiveAction,
   setIsCreatingGame,
   setCurrentDeckId,
   setCurrentGameId,

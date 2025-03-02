@@ -15,6 +15,7 @@ import { persistedUserAuthReducer } from "features/auth/authSlice";
 import { usersApi } from "features/users/usersApi";
 import { gameApi } from "features/game/gameApi.js";
 import { persistedGameReducer } from "features/game/gameSlice.js";
+import optimisticUpdateMiddleware from "features/redux/optimisticUpdateMiddleware.js";
 
 export const store = configureStore({
   reducer: {
@@ -33,6 +34,9 @@ export const store = configureStore({
 
     usersApi.middleware,
     gameApi.middleware,
+    optimisticUpdateMiddleware,
+    // Перевірка серіалізації
+    // optimisticUpdateMiddleware додає action.meta = { timer }, де timer — це ID таймера (число), що є еріалізованим типом. Тому проблем із serializableCheck не буде. Але якщо ти додаси несеріалізовані об’єкти (наприклад, функції), тобі доведеться додати свій type у ignoredActions.
   ],
 });
 

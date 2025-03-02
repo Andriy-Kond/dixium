@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
@@ -8,30 +8,17 @@ import {
 } from "@dnd-kit/sortable";
 import { Notify } from "notiflix";
 
-import { clearRef, setRef, updateGame } from "features/game/gameSlice.js";
 import SortablePlayer from "common/components/dnd/SortablePlayer";
 import { distributeCards } from "features/utils/distributeCards.js";
 import Button from "common/components/Button/index.js";
-import {
-  selectGame,
-  selectRefs,
-  selectUserCredentials,
-} from "app/selectors.js";
+import { selectGame, selectUserCredentials } from "app/selectors.js";
 import css from "./PrepareGame.module.scss";
 
-import socket from "socket.js";
-import {
-  PREV_RUN_GAME_STATE,
-  TIMER_RUN_GAME,
-  PREV_DND_GAME_STATE,
-  TIMER_DND,
-} from "features/utils/constants.js";
+import { useOptimisticDispatch } from "features/hooks/useOptimisticDispatch.js";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const refs = useSelector(selectRefs);
-
+  const { customDispatch } = useOptimisticDispatch();
   const { currentGameId } = useParams();
   const currentGame = useSelector(selectGame(currentGameId));
   const userCredentials = useSelector(selectUserCredentials);
@@ -57,29 +44,14 @@ export default function PrepareGame() {
     const updatedGame = { ...currentGame, players: newPlayersOrder };
 
     // optimistic update:
-    dispatch(
-      setRef({
-        key: PREV_DND_GAME_STATE, // key of previous game state for dnd event
-        value: refs.PREV_DND_GAME_STATE || currentGame, // previous game state
-      }),
-    );
-    dispatch(updateGame(updatedGame)); // update local state
-
-    socket.emit("newPlayersOrder", updatedGame); // send update data to server by socket.io
-    // updateCurrentGame({ gameId: updatedGame._id, data: updatedGame }); // send update data to server by gameApi
-
-    // Timer for waiting server response (2 sec)
-    const timerDnd = setTimeout(() => {
-      // If server not respond within 2 sec:
-      if (refs.PREV_DND_GAME_STATE) {
-        Notify.failure(
-          "No response from server by 2 seconds. Reverting players order.",
-        );
-        dispatch(updateGame(refs.PREV_DND_GAME_STATE));
-        dispatch(clearRef(PREV_DND_GAME_STATE));
-      }
-    }, 2000); // 2 sec timeout
-    dispatch(setRef({ key: TIMER_DND, value: timerDnd }));
+    customDispatch({
+      type: "game/performOptimisticUpdate",
+      payload: {
+        eventName: "newPlayersOrder",
+        updatedGame,
+        timeout: 2000,
+      },
+    });
   };
 
   const runGame = () => {
@@ -87,31 +59,15 @@ export default function PrepareGame() {
     if (game.message) return Notify.failure(game.message); // "Not enough cards in the deck"
 
     const updatedGame = { ...game, isGameRunning: true }; // todo при закінченні гри зробити false
-    // optimistic update
-    dispatch(
-      setRef({
-        key: PREV_RUN_GAME_STATE, // key of previous game state for run function
-        value: refs.PREV_RUN_GAME_STATE || currentGame, // previous game state
-      }),
-    );
 
-    dispatch(updateGame(updatedGame)); // update local state
-
-    socket.emit("currentGame:run", updatedGame); // send update data to server by socket.io
-    // updateCurrentGame({ gameId: updatedGame._id, data: updatedGame }); // send update data to server by gameApi
-
-    // Timer for waiting server response (1 sec)
-    const timerRunGame = setTimeout(() => {
-      // If server not respond within 1 sec:
-      if (refs.PREV_RUN_GAME_STATE) {
-        Notify.failure(
-          "No response from server by 1 seconds. Reverting game state.",
-        );
-        dispatch(updateGame(refs.PREV_RUN_GAME_STATE));
-        dispatch(clearRef(PREV_RUN_GAME_STATE));
-      }
-    }, 1000); // 1 sec timeout
-    dispatch(setRef({ key: TIMER_RUN_GAME, value: timerRunGame }));
+    customDispatch({
+      type: "game/performOptimisticUpdate",
+      payload: {
+        eventName: "currentGame:run",
+        updatedGame,
+        timeout: 2000,
+      },
+    });
   };
 
   const toGamePage = () => {
