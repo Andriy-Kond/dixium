@@ -1,7 +1,12 @@
 import { Notify } from "notiflix";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
-export const playersOrderUpdated = (game, message, dispatch, activeActions) => {
+export const playersOrderUpdated = (
+  game,
+  errorMessage,
+  dispatch,
+  activeActions,
+) => {
   const relatedAction = Object.values(activeActions).find(
     action => action.payload.updatedGame._id === game._id,
   );
@@ -10,9 +15,9 @@ export const playersOrderUpdated = (game, message, dispatch, activeActions) => {
     // Логіка для ініціатора
     const { eventName } = relatedAction.payload;
     const key = `${eventName}-${game._id}`;
-    if (message) {
+    if (errorMessage) {
       dispatch(updateGame(relatedAction.meta.previousGameState));
-      Notify.failure(message);
+      Notify.failure(errorMessage);
     } else {
       dispatch(updateGame(game));
     }
@@ -22,8 +27,8 @@ export const playersOrderUpdated = (game, message, dispatch, activeActions) => {
     }
   } else {
     // Логіка для інших гравців
-    if (message) {
-      Notify.failure(message);
+    if (errorMessage) {
+      Notify.failure(errorMessage);
     } else {
       dispatch(updateGame(game));
     }

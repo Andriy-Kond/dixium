@@ -2,11 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Notify } from "notiflix";
-import {
-  clearActiveAction,
-  setCurrentGameId,
-  updateGame,
-} from "redux/game/gameSlice.js";
+import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 import socket from "servises/socket.js";
 import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
 
@@ -79,8 +75,18 @@ export const useSetupSocketListeners = () => {
 
     const handleError = err => Notify.failure(err.message);
 
-    const handleNewGame = () => {
-      refetchAllGames();
+    // todo: об'єднати створення нової гри і оновлення гри!
+    const handleNewGame = newGame => {
+      dispatch(
+        gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+          const index = draft.findIndex(g => g._id === newGame._id);
+          if (index !== -1) {
+            draft[index] = newGame; // Оновлюємо гру, якщо вона вже існує
+          } else {
+            draft.push(newGame); // Додаємо нову гру, якщо її ще немає
+          }
+        }),
+      );
     };
 
     const handleUpdateGame = game => {
@@ -102,7 +108,6 @@ export const useSetupSocketListeners = () => {
     };
 
     const handlePlayerJoined = ({ game, player, message }) => {
-      // dispatch(updateGame(game)); // update gameSlice state
       message && Notify.success(message); // Notify about new player
 
       if (player._id === userCredentials._id && currentGameId !== game._id) {
@@ -116,16 +121,14 @@ export const useSetupSocketListeners = () => {
       }
     };
 
-    const handleGameDeleted = ({ game, message }) => {
-      gameDelete(game, message, dispatch, currentGameId, navigate);
-    };
+    const handleGameDeleted = ({ game, message }) =>
+      gameDelete(game, message, dispatch, currentGameId, navigate); //* OK
 
     const handlePlayersOrderUpdated = ({ game, message }) =>
       playersOrderUpdated(game, message, dispatch, activeActions); //* OK
 
-    const handleGameRunning = ({ game, message }) => {
+    const handleGameRunning = ({ game, message }) =>
       gameRunning(game, message, dispatch, activeActions); //* OK
-    };
 
     // For reconnect group
     joinGameRoom(); // Handle in initial connection
@@ -137,7 +140,7 @@ export const useSetupSocketListeners = () => {
     socket.on("updateGame", handleUpdateGame);
 
     socket.on("playerJoined", handlePlayerJoined);
-    socket.on("currentGameWasDeleted", handleGameDeleted);
+    socket.on("currentGameWasDeleted", handleGameDeleted); //* OK
 
     // socket.on("playersOrderUpdated", handlePlayersOrderUpdated);
     socket.on("playersOrderUpdated", handlePlayersOrderUpdated); //* OK
@@ -153,7 +156,7 @@ export const useSetupSocketListeners = () => {
       socket.off("updateGame", handleUpdateGame);
 
       socket.off("playerJoined", handlePlayerJoined);
-      socket.off("currentGameWasDeleted", handleGameDeleted);
+      socket.off("currentGameWasDeleted", handleGameDeleted); //* OK
 
       socket.off("playersOrderUpdated", handlePlayersOrderUpdated); //* OK
       socket.off("currentGame:running", handleGameRunning); //* OK
