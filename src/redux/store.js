@@ -15,7 +15,7 @@ import { persistedUserAuthReducer } from "features/auth/authSlice";
 import { usersApi } from "features/users/usersApi";
 import { gameApi } from "features/game/gameApi.js";
 import { persistedGameReducer } from "features/game/gameSlice.js";
-import optimisticUpdateMiddleware from "features/redux/optimisticUpdateMiddleware.js";
+import optimisticUpdateMiddleware from "redux/optimisticUpdateMiddleware.js";
 
 export const store = configureStore({
   reducer: {

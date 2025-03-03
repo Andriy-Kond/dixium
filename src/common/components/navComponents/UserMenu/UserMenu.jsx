@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLogoutUserMutation } from "features/users/usersApi";
 import { clearAuthInitialState } from "features/auth/authSlice";
 import { clearGameInitialState } from "features/game/gameSlice.js";
-import { selectUserCredentials } from "app/selectors";
+import { selectUserCredentials } from "redux/selectors";
 import Button from "common/components/Button";
 
 import css from "./UserMenu.module.scss";

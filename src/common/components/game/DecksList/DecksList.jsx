@@ -12,9 +12,9 @@ import {
   selectCurrentDeckId,
   selectPlayers,
   selectUserCredentials,
-} from "app/selectors.js";
+} from "redux/selectors.js";
 import Button from "common/components/Button";
-import socket from "socket.js";
+import socket from "servises/socket.js";
 import { shuffleDeck } from "features/utils/shuffleDeck.js";
 
 export default function DecksList() {

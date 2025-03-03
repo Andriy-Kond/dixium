@@ -1,19 +1,18 @@
 import { useDispatch } from "react-redux";
-import { setActiveAction } from "features/game/gameSlice.js";
 
 export const useOptimisticDispatch = () => {
   const dispatch = useDispatch();
 
-  const customDispatch = action => {
-    if (action.type === "game/performOptimisticUpdate") {
-      const { eventName, updatedGame } = action.payload;
-      const key = `${eventName}-${updatedGame._id}`;
+  const optimisticUpdateDispatch = payload => {
+    const action = {
+      type: "game/performOptimisticUpdate",
+      payload,
+    };
 
-      dispatch(setActiveAction({ key, value: { ...action, meta: {} } }));
-    }
+    action.payload.timeout = payload.timeout || 2000;
 
     dispatch(action);
   };
 
-  return { customDispatch };
+  return { optimisticUpdateDispatch };
 };

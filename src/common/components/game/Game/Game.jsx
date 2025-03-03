@@ -4,12 +4,12 @@ import {
   selectCurrentStorytellerId,
   selectGame,
   selectUserCredentials,
-} from "app/selectors.js";
+} from "redux/selectors.js";
 import css from "./Game.module.scss";
 import { useState } from "react";
 import Button from "common/components/Button/index.js";
 import { setFirstStoryteller } from "features/game/gameSlice.js";
-import socket from "socket.js";
+import socket from "servises/socket.js";
 
 export default function Game() {
   const dispatch = useDispatch();

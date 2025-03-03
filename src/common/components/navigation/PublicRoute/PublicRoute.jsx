@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectUserIsLoggedIn } from "app/selectors";
+import { selectUserIsLoggedIn } from "redux/selectors";
 
 export default function PublicRoute({ redirectTo = "/game" }) {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);

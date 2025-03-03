@@ -9,7 +9,7 @@ import HomePage from "common/pages/HomePage";
 import SharedLayout from "common/pages/SharedLayout";
 import { useGetUserByTokenQuery } from "features/users/usersApi";
 import { setIsLoggedIn } from "features/auth/authSlice";
-import { selectUserToken } from "./selectors";
+import { selectUserToken } from "./redux/selectors";
 import { useSetupSocketListeners } from "features/hooks/useSetupSocketListeners.js";
 
 Notiflix.Notify.init({

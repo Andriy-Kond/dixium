@@ -6,7 +6,7 @@ import {
   setUserCredentials,
   setUserToken,
 } from "features/auth/authSlice";
-import { selectUserCredentials, selectUserIsLoggedIn } from "app/selectors";
+import { selectUserCredentials, selectUserIsLoggedIn } from "redux/selectors";
 import AuthForm from "common/components/AuthForm";
 import css from "common/components/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";

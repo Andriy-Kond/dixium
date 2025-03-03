@@ -7,8 +7,8 @@ import {
   setCurrentGameId,
   updateGame,
 } from "features/game/gameSlice.js";
-import socket from "socket.js";
-import { selectActiveActions, selectUserCredentials } from "app/selectors.js";
+import socket from "servises/socket.js";
+import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
 
 import { gameApi, useGetAllGamesQuery } from "features/game/gameApi.js";
 
@@ -68,7 +68,6 @@ export const useSetupSocketListeners = () => {
 
     const handleConnect = () => {
       // Обробка події "connect" // Обробка підключення (перше або повторне) - після оновлення сторінки
-
       joinGameRoom();
     };
 

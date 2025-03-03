@@ -4,7 +4,7 @@ import Game from "common/components/game/Game";
 import css from "./GameStartedPage.module.scss";
 
 import { useSelector } from "react-redux";
-import { selectGame } from "app/selectors.js";
+import { selectGame } from "redux/selectors.js";
 
 export default function GameStartedPage() {
   const { currentGameId } = useParams();
