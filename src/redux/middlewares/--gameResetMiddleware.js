@@ -12,7 +12,7 @@
 //   return { ...state, gameSlice: gameInitialState }; // Скидаємо стан гри
 // },
 
-import { logoutUser } from "features/auth/authSlice.js";
+import { logoutUser } from "redux/auth/authSlice.js";
 import { clearGameInitialState } from "../game/gameSlice.js";
 
 export const gameResetMiddleware = store => next => action => {

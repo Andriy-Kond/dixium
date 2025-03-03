@@ -1,14 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 
-import { useLoginUserMutation } from "features/users/usersApi";
+import { useLoginUserMutation } from "redux/auth/authApi";
 import {
   setIsLoggedIn,
   setUserCredentials,
   setUserToken,
-} from "features/auth/authSlice";
+} from "redux/auth/authSlice";
 import { selectUserCredentials, selectUserIsLoggedIn } from "redux/selectors";
-import AuthForm from "common/components/AuthForm";
-import css from "common/components/AuthForm/AuthForm.module.scss";
+import AuthForm from "common/components/ui/AuthForm";
+import css from "common/components/ui/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
 import { useLocation, useNavigate } from "react-router-dom";
 

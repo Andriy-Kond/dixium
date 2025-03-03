@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { logoutUser } from "features/auth/authSlice.js";
-import { gameApi } from "features/game/gameApi.js";
+import { logoutUser } from "redux/auth/authSlice.js";
+import { gameApi } from "redux/game/gameApi.js";
 
 const { REACT_APP_BASE_URL } = process.env;
 

@@ -1,13 +1,13 @@
 import { useDispatch } from "react-redux";
-import { useSignupUserMutation } from "features/users/usersApi";
+import { useSignupUserMutation } from "redux/auth/authApi";
 import {
   setIsLoggedIn,
   setUserCredentials,
   setUserToken,
-} from "features/auth/authSlice";
+} from "redux/auth/authSlice";
 
-import AuthForm from "common/components/AuthForm";
-import css from "common/components/AuthForm/AuthForm.module.scss";
+import AuthForm from "common/components/ui/AuthForm";
+import css from "common/components/ui/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
 
 export default function RegisterPage() {

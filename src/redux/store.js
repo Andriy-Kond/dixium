@@ -10,12 +10,12 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import { persistedUserAuthReducer } from "features/auth/authSlice";
+import { persistedUserAuthReducer } from "redux/auth/authSlice";
 
-import { usersApi } from "features/users/usersApi";
-import { gameApi } from "features/game/gameApi.js";
-import { persistedGameReducer } from "features/game/gameSlice.js";
-import optimisticUpdateMiddleware from "redux/optimisticUpdateMiddleware.js";
+import { usersApi } from "redux/auth/authApi";
+import { gameApi } from "redux/game/gameApi.js";
+import { persistedGameReducer } from "redux/game/gameSlice.js";
+import optimisticUpdateMiddleware from "redux/middlewares/optimisticUpdateMiddleware.js";
 
 export const store = configureStore({
   reducer: {

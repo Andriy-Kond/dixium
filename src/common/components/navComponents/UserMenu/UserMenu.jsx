@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 
-import { useLogoutUserMutation } from "features/users/usersApi";
-import { clearAuthInitialState } from "features/auth/authSlice";
-import { clearGameInitialState } from "features/game/gameSlice.js";
+import { useLogoutUserMutation } from "redux/auth/authApi";
+import { clearAuthInitialState } from "redux/auth/authSlice";
+import { clearGameInitialState } from "redux/game/gameSlice.js";
 import { selectUserCredentials } from "redux/selectors";
-import Button from "common/components/Button";
+import Button from "common/components/ui/Button";
 
 import css from "./UserMenu.module.scss";
 

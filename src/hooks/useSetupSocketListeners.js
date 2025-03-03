@@ -6,11 +6,11 @@ import {
   clearActiveAction,
   setCurrentGameId,
   updateGame,
-} from "features/game/gameSlice.js";
+} from "redux/game/gameSlice.js";
 import socket from "servises/socket.js";
 import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
 
-import { gameApi, useGetAllGamesQuery } from "features/game/gameApi.js";
+import { gameApi, useGetAllGamesQuery } from "redux/game/gameApi.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();

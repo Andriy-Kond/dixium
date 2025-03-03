@@ -1,4 +1,4 @@
-import { setActiveAction, updateGame } from "features/game/gameSlice.js";
+import { setActiveAction, updateGame } from "redux/game/gameSlice.js";
 import { Notify } from "notiflix";
 import socket from "servises/socket.js";
 

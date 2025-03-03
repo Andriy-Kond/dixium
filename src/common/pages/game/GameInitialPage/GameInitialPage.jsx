@@ -1,11 +1,11 @@
 // import { useNavigate } from "react-router-dom";
 import { selectIsCreatingGame } from "redux/selectors.js";
 import css from "./GameInitialPage.module.scss";
-import { setIsCreatingGame } from "features/game/gameSlice.js";
+import { setIsCreatingGame } from "redux/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
-import DecksList from "../../components/game/DecksList/DecksList.jsx";
-import Button from "common/components/Button";
-import GamesList from "../../components/game/GamesList/GamesList.jsx";
+import DecksList from "../../../components/game/DecksList/DecksList.jsx";
+import Button from "common/components/ui/Button";
+import GamesList from "../../../components/game/GamesList/GamesList.jsx";
 
 export default function GameInitialPage() {
   // const navigate = useNavigate();

@@ -1,21 +1,18 @@
 import {
   useGetAllDecksQuery,
   useGetCurrentDeckQuery,
-} from "features/game/gameApi.js";
+} from "redux/game/gameApi.js";
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setCurrentDeckId,
-  setIsCreatingGame,
-} from "features/game/gameSlice.js";
+import { setCurrentDeckId, setIsCreatingGame } from "redux/game/gameSlice.js";
 import {
   selectCurrentDeckId,
   selectPlayers,
   selectUserCredentials,
 } from "redux/selectors.js";
-import Button from "common/components/Button";
+import Button from "common/components/ui/Button";
 import socket from "servises/socket.js";
-import { shuffleDeck } from "features/utils/shuffleDeck.js";
+import { shuffleDeck } from "utils/game/shuffleDeck.js";
 
 export default function DecksList() {
   const dispatch = useDispatch();

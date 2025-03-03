@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { useGetAllGamesQuery } from "features/game/gameApi.js";
+import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import { selectUserCredentials } from "redux/selectors.js";
-import Button from "common/components/Button/index.js";
-import { addGamesList } from "features/game/gameSlice.js";
+import Button from "common/components/ui/Button/index.js";
+import { addGamesList } from "redux/game/gameSlice.js";
 import socket from "servises/socket.js";
 import css from "./GamesList.module.scss";
 

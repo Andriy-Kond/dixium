@@ -8,12 +8,12 @@ import {
 } from "@dnd-kit/sortable";
 import { Notify } from "notiflix";
 
-import SortablePlayer from "common/components/dnd/SortablePlayer";
-import { distributeCards } from "features/utils/distributeCards.js";
-import Button from "common/components/Button/index.js";
+import SortablePlayer from "common/components/game/SortablePlayer";
+import { distributeCards } from "utils/game/distributeCards.js";
+import Button from "common/components/ui/Button/index.js";
 import { selectGame, selectUserCredentials } from "redux/selectors.js";
 import css from "./PrepareGame.module.scss";
-import { useOptimisticDispatch } from "features/hooks/useOptimisticDispatch.js";
+import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
