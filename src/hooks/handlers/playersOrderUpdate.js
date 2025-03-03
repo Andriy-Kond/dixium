@@ -1,7 +1,7 @@
 import { Notify } from "notiflix";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
-export const playersOrderUpdated = (
+export const playersOrderUpdate = (
   game,
   errorMessage,
   dispatch,

@@ -1,7 +1,7 @@
 import { Notify } from "notiflix";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
-export const gameRunning = (game, message, dispatch, activeActions) => {
+export const gameRun = (game, message, dispatch, activeActions) => {
   const relatedAction = Object.values(activeActions).find(
     action => action.payload.updatedGame._id === game._id,
   );
