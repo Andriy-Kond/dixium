@@ -11,6 +11,7 @@ import socket from "servises/socket.js";
 import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
 
 import { gameApi, useGetAllGamesQuery } from "redux/game/gameApi.js";
+import { gameDelete, gameRunning, playersOrderUpdated } from "./handlers";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -100,27 +101,12 @@ export const useSetupSocketListeners = () => {
       }
     };
 
-    const handlePlayerJoined = ({ game, message }) => {
+    const handlePlayerJoined = ({ game, player, message }) => {
       // dispatch(updateGame(game)); // update gameSlice state
       message && Notify.success(message); // Notify about new player
 
-      if (currentGameId !== game._id) {
+      if (player._id === userCredentials._id && currentGameId !== game._id) {
         navigate(`/game/${game._id}`);
-      }
-    };
-
-    const handleGameDeleted = ({ game, message }) => {
-      const { _id } = game;
-      if (message) {
-        Notify.failure(message);
-      } else {
-        refetchAllGames();
-        dispatch(setCurrentGameId(null));
-        dispatch(clearActiveAction({}));
-
-        if (currentGameId === _id) {
-          navigate(`/game`, { replace: true });
-        }
       }
     };
 
@@ -130,66 +116,15 @@ export const useSetupSocketListeners = () => {
       }
     };
 
-    const handlePlayersOrderUpdated = ({ game, message }) => {
-      const relatedAction = Object.values(activeActions).find(
-        action => action.payload.updatedGame._id === game._id,
-      );
-
-      if (relatedAction) {
-        // Логіка для ініціатора
-        const { eventName } = relatedAction.payload;
-        const key = `${eventName}-${game._id}`;
-        if (message) {
-          dispatch(updateGame(relatedAction.meta.previousGameState));
-          Notify.failure(message);
-        } else {
-          dispatch(updateGame(game));
-        }
-        if (relatedAction?.meta?.timer) {
-          clearTimeout(relatedAction.meta.timer);
-          dispatch(clearActiveAction(key));
-        }
-      } else {
-        // Логіка для інших гравців
-        if (message) {
-          Notify.failure(message);
-        } else {
-          dispatch(updateGame(game));
-        }
-      }
+    const handleGameDeleted = ({ game, message }) => {
+      gameDelete(game, message, dispatch, currentGameId, navigate);
     };
 
+    const handlePlayersOrderUpdated = ({ game, message }) =>
+      playersOrderUpdated(game, message, dispatch, activeActions); //* OK
+
     const handleGameRunning = ({ game, message }) => {
-      const relatedAction = Object.values(activeActions).find(
-        action => action.payload.updatedGame._id === game._id,
-      );
-
-      if (relatedAction) {
-        // Логіка для ініціатора
-        const { eventName } = relatedAction.payload;
-        const key = `${eventName}-${game._id}`;
-
-        // If there is a message, then it is an error, rollback of the state
-        if (message) {
-          dispatch(updateGame(relatedAction.meta.previousGameState));
-          Notify.failure(message);
-        } else {
-          // Server response or response late (more then 10 sec) -> state update
-          dispatch(updateGame(game));
-        }
-
-        if (relatedAction?.meta?.timer) {
-          clearTimeout(relatedAction.meta.timer);
-          dispatch(clearActiveAction(key));
-        }
-      } else {
-        // Логіка для інших гравців
-        if (message) {
-          Notify.failure(message);
-        } else {
-          dispatch(updateGame(game));
-        }
-      }
+      gameRunning(game, message, dispatch, activeActions); //* OK
     };
 
     // For reconnect group
@@ -201,11 +136,12 @@ export const useSetupSocketListeners = () => {
     socket.on("newGameCreated", handleNewGame);
     socket.on("updateGame", handleUpdateGame);
 
-    socket.on("playerJoined", handlePlayerJoined); //* checked
-    socket.on("currentGameWasDeleted", handleGameDeleted); //* checked
+    socket.on("playerJoined", handlePlayerJoined);
+    socket.on("currentGameWasDeleted", handleGameDeleted);
 
-    socket.on("playersOrderUpdated", handlePlayersOrderUpdated);
-    socket.on("currentGame:running", handleGameRunning);
+    // socket.on("playersOrderUpdated", handlePlayersOrderUpdated);
+    socket.on("playersOrderUpdated", handlePlayersOrderUpdated); //* OK
+    socket.on("currentGame:running", handleGameRunning); //* OK
 
     return () => {
       // console.log("Cleaning up socket listeners");
@@ -219,8 +155,8 @@ export const useSetupSocketListeners = () => {
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("currentGameWasDeleted", handleGameDeleted);
 
-      socket.off("playersOrderUpdated", handlePlayersOrderUpdated);
-      socket.off("currentGame:running", handleGameRunning);
+      socket.off("playersOrderUpdated", handlePlayersOrderUpdated); //* OK
+      socket.off("currentGame:running", handleGameRunning); //* OK
 
       socket.off("getCurrentGame", handleGetCurrentGame);
 
