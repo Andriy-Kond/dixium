@@ -38,7 +38,7 @@ export default function GamesList() {
             return (
               <li key={game._id} className={css.item}>
                 <img
-                  src={game.gameTitle}
+                  src={game.gamePoster}
                   alt="Game title"
                   className={css.img}
                 />

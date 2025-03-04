@@ -77,3 +77,10 @@ const getStorytellerPoints = (correctVotes, totalPlayers) => {
 const getPlayerPoints = (isCorrect, receivedVotes) => {
   return (isCorrect ? 3 : 0) + receivedVotes;
 };
+
+// votes: Об’єкт, де ключ — ID гравця, значення — ID карти, за яку він проголосував.
+// submitVote: (state, action) => {
+//     state.game.votes[action.payload.playerId] = action.payload.cardId;
+//   },
+// scores: Бали гравців для відображення результатів.
+// state.game.scores = action.payload.scores;

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
-  selectCurrentStorytellerId,
+  selectStorytellerId,
   selectGame,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -14,7 +14,7 @@ import socket from "servises/socket.js";
 export default function Game() {
   const dispatch = useDispatch();
   const { currentGameId } = useParams();
-  const currentStorytellerId = useSelector(selectCurrentStorytellerId);
+  const storytellerId = useSelector(selectStorytellerId);
   const currentGame = useSelector(selectGame(currentGameId));
   const userCredentials = useSelector(selectUserCredentials);
   const currentPlayer = currentGame.players.find(
@@ -32,7 +32,7 @@ export default function Game() {
   };
 
   const vote = () => {
-    if (!currentStorytellerId) {
+    if (!storytellerId) {
       // optimistic update
       dispatch(
         setFirstStoryteller({
@@ -62,7 +62,7 @@ export default function Game() {
             className={css.card}
             key={card._id}
             onClick={
-              !currentStorytellerId
+              !storytellerId
                 ? () => {
                     onSelectCard(card._id);
                   }

@@ -50,7 +50,7 @@ export const useSetupSocketListeners = () => {
         userCredentials,
         currentGameId,
         navigate,
-      );
+      ); //* OK
 
     const handleGameDeleted = ({ game, message }) =>
       gameDelete(game, message, dispatch, currentGameId, navigate); //* OK

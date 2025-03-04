@@ -28,13 +28,13 @@ const gameInitialState = {
     // isGameStarted: Boolean, // game started but not running (players can join)
     // hostPlayerId: String,
     // hostPlayerName: String,
-    // gameTitle: String,
+    // gamePoster: String,
     // }
   ],
   isCreatingGame: false,
   currentDeckId: null,
   currentGameId: null,
-  currentStorytellerId: null,
+  storytellerId: null,
 
   refs: {},
   activeActions: {},
@@ -102,8 +102,8 @@ export const gameSlice = createSlice({
     setFirstStoryteller: (state, action) => {
       const { gameId, playerId } = action.payload;
       const game = state.games.find(game => game._id === gameId);
-      if (game && !game.currentStorytellerId) {
-        game.currentStorytellerId = playerId;
+      if (game && !game.storytellerId) {
+        game.storytellerId = playerId;
       }
     },
 
@@ -112,10 +112,10 @@ export const gameSlice = createSlice({
       const game = state.games.find(game => game._id === gameId);
       if (game) {
         const currentIndex = game.players.findIndex(
-          player => player._id === game.currentStorytellerId,
+          player => player._id === game.storytellerId,
         );
         const nextIndex = (currentIndex + 1) % game.players.length;
-        game.currentStorytellerId = game.players[nextIndex]._id;
+        game.storytellerId = game.players[nextIndex]._id;
       }
     },
 
