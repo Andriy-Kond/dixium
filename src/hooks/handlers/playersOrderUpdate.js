@@ -7,6 +7,10 @@ export const playersOrderUpdate = (
   dispatch,
   activeActions,
 ) => {
+  if (!game) {
+    throw new Error(`The game is ${game}`);
+  }
+
   const relatedAction = Object.values(activeActions).find(
     action => action.payload.updatedGame._id === game._id,
   );

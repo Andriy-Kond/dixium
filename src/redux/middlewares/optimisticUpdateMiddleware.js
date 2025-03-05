@@ -1,4 +1,8 @@
-import { setActiveAction, updateGame } from "redux/game/gameSlice.js";
+import {
+  clearActiveAction,
+  setActiveAction,
+  updateGame,
+} from "redux/game/gameSlice.js";
 import { Notify } from "notiflix";
 import socket from "servises/socket.js";
 
@@ -8,6 +12,7 @@ const optimisticUpdateMiddleware =
   action => {
     if (action.type === "game/performOptimisticUpdate") {
       const { eventName, updatedGame, timeout } = action.payload;
+      const key = `${eventName}-${updatedGame._id}`;
 
       // Зберігаємо попередній стан гри:
       const previousGameState = getState().gameSlice.games.find(
@@ -20,7 +25,7 @@ const optimisticUpdateMiddleware =
       dispatch(updateGame(updatedGame));
 
       // Відправка на сервер
-      socket.emit(eventName, updatedGame);
+      socket.emit(eventName, { updatedGame });
 
       // Таймер для відкатування
       const timer = setTimeout(() => {
@@ -28,6 +33,7 @@ const optimisticUpdateMiddleware =
           `No response from server for ${eventName}. Reverting state.`,
         );
         dispatch(updateGame(previousGameState));
+        dispatch(clearActiveAction(key));
       }, timeout);
 
       // Зберігання таймера в action.meta для слухачів сокетів
@@ -46,9 +52,7 @@ const optimisticUpdateMiddleware =
       //! console.log("Is action extensible?", Object.isExtensible(action)); // false - не розширюваний
       //! console.log("Is action sealed?", Object.isSealed(action)); // true - запечатаний
       //! console.log("Is action frozen?", Object.isFrozen(action)); // true - є замороженим (frozen), тобто він не дозволяє ні додавання нових властивостей, ні зміни існуючих. Redux Toolkit заморожує об’єкти дій за допомогою Object.freeze() для забезпечення імутабельності та виявлення випадкових мутацій.
-
       // Тому записую стан activeActions даними із meta:
-      const key = `${eventName}-${updatedGame._id}`;
       dispatch(
         setActiveAction({
           key,

@@ -40,7 +40,7 @@ export const useSetupSocketListeners = () => {
 
     const handleError = err => Notify.failure(err.message);
 
-    const handleGameChange = ({ game }) => gameCreateOrUpdate(game, dispatch); //* OK
+    const handleGameChange = ({ game }) => gameCreateOrUpdate(game, dispatch);
 
     const handlePlayerJoined = ({ game, player, message }) =>
       playerJoined(
@@ -50,26 +50,26 @@ export const useSetupSocketListeners = () => {
         userCredentials,
         currentGameId,
         navigate,
-      ); //* OK
+      );
 
     const handleGameDeleted = ({ game, message }) =>
-      gameDelete(game, message, dispatch, currentGameId, navigate); //* OK
+      gameDelete(game, message, dispatch, currentGameId, navigate);
 
     const handlePlayersOrderUpdate = ({ game, message }) =>
-      playersOrderUpdate(game, message, dispatch, activeActions); //* OK
+      playersOrderUpdate(game, message, dispatch, activeActions);
 
     const handleGameRun = ({ game, message }) =>
-      gameRun(game, message, dispatch, activeActions); //* OK
+      gameRun(game, message, dispatch, activeActions);
 
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
 
     socket.on("gameChange", handleGameChange);
     socket.on("playerJoined", handlePlayerJoined);
-    socket.on("gameWasDeleted", handleGameDeleted); //* OK
+    socket.on("gameWasDeleted", handleGameDeleted);
 
-    socket.on("playersOrderUpdated", handlePlayersOrderUpdate); //* OK
-    socket.on("currentGame:running", handleGameRun); //* OK
+    socket.on("playersOrderUpdated", handlePlayersOrderUpdate);
+    socket.on("currentGame:running", handleGameRun);
 
     socket.on("error", handleError);
 
@@ -80,10 +80,10 @@ export const useSetupSocketListeners = () => {
 
       socket.off("gameChange", handleGameChange);
       socket.off("playerJoined", handlePlayerJoined);
-      socket.off("gameWasDeleted", handleGameDeleted); //* OK
+      socket.off("gameWasDeleted", handleGameDeleted);
 
-      socket.off("playersOrderUpdated", handlePlayersOrderUpdate); //* OK
-      socket.off("currentGame:running", handleGameRun); //* OK
+      socket.off("playersOrderUpdated", handlePlayersOrderUpdate);
+      socket.off("currentGame:running", handleGameRun);
 
       socket.off("error", handleError);
 

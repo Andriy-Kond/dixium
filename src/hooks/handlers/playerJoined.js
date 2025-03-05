@@ -8,6 +8,10 @@ export const playerJoined = (
   currentGameId,
   navigate,
 ) => {
+  if (!game) {
+    throw new Error(`The game is ${game}`);
+  }
+
   message && Notify.success(message); // Notify about new player
 
   if (player._id === userCredentials._id && currentGameId !== game._id)

@@ -30,7 +30,7 @@ export default function DecksList() {
   const players = useSelector(selectPlayers);
 
   const createNewGame = async () => {
-    const game = {
+    const gameData = {
       deck: shuffleDeck(currentDeck.cards),
       players,
       isGameStarted: false,
@@ -38,7 +38,7 @@ export default function DecksList() {
       hostPlayerName: userCredentials.name,
     };
 
-    socket.emit("createGame", game);
+    socket.emit("createGame", { gameData });
     dispatch(setIsCreatingGame(false));
     dispatch(setCurrentDeckId(null));
   };

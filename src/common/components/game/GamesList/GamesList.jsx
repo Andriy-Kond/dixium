@@ -27,7 +27,7 @@ export default function GamesList() {
   };
 
   const removeCurrentGame = async gameId => {
-    socket.emit("deleteGame", gameId);
+    socket.emit("deleteGame", { gameId });
   };
 
   return (

@@ -9,6 +9,10 @@ export const gameDelete = (
   currentGameId,
   navigate,
 ) => {
+  if (!game) {
+    throw new Error(`The game is ${game}`);
+  }
+
   dispatch(
     gameApi.util.updateQueryData("getAllGames", undefined, draft => {
       return draft.filter(g => g._id !== game._id);

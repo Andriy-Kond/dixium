@@ -119,15 +119,6 @@ export const gameSlice = createSlice({
       }
     },
 
-    setRef: (state, action) => {
-      const { key, value } = action.payload;
-      state.refs[key] = value;
-    },
-
-    clearRef: (state, action) => {
-      state.refs[action.payload] = null;
-    },
-
     setActiveAction(state, action) {
       const { key, value } = action.payload;
       state.activeActions[key] = value;
@@ -168,7 +159,4 @@ export const {
   addPlayerToGame,
   setFirstStoryteller,
   nextStoryteller,
-
-  setRef,
-  clearRef,
 } = gameSlice.actions;

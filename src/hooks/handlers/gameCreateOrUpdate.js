@@ -5,6 +5,10 @@ export const gameCreateOrUpdate = (game, dispatch) => {
   // update Redux state:
   // refetchAllGames(); // призводить до оновлення всієї сторінки
   // or handle change of gameApi without refetchAllGames():
+  if (!game) {
+    throw new Error(`The game is ${game}`);
+  }
+
   dispatch(
     gameApi.util.updateQueryData("getAllGames", undefined, draft => {
       const index = draft.findIndex(g => g._id === game._id);
