@@ -64,12 +64,12 @@ export const useSetupSocketListeners = () => {
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
 
-    socket.on("gameChange", handleGameChange);
+    socket.on("gameCreatedOrUpdated", handleGameChange);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("gameWasDeleted", handleGameDeleted);
 
     socket.on("playersOrderUpdated", handlePlayersOrderUpdate);
-    socket.on("currentGame:running", handleGameRun);
+    socket.on("gameRunning", handleGameRun);
 
     socket.on("error", handleError);
 
@@ -78,12 +78,12 @@ export const useSetupSocketListeners = () => {
       socket.off("connect", handleConnect);
       socket.off("reconnect", handleReconnect);
 
-      socket.off("gameChange", handleGameChange);
+      socket.off("gameCreatedOrUpdated", handleGameChange);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("gameWasDeleted", handleGameDeleted);
 
       socket.off("playersOrderUpdated", handlePlayersOrderUpdate);
-      socket.off("currentGame:running", handleGameRun);
+      socket.off("gameRunning", handleGameRun);
 
       socket.off("error", handleError);
 
