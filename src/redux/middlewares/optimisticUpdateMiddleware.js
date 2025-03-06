@@ -15,9 +15,13 @@ const optimisticUpdateMiddleware =
       const key = `${eventName}-${updatedGame._id}`;
 
       // Зберігаємо попередній стан гри:
-      const previousGameState = getState().gameSlice.games.find(
-        g => g._id === updatedGame._id,
-      );
+      //# якщо games - це об'єкт:
+      const previousGameState = getState().gameSlice.games[updatedGame._id];
+
+      //# якщо games - це масив
+      // const previousGameState = getState().gameSlice.games.find(
+      //   g => g._id === updatedGame._id,
+      // );
 
       // Оптимістичне оновлення
       // dispatch({ type: "game/updateGame", payload: updatedGame }); // запускає редюсер updateGame у gameSlice

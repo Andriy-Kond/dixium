@@ -9,14 +9,27 @@ export const gameCreateOrUpdate = (game, dispatch) => {
     throw new Error(`The game is ${game}`);
   }
 
+  //# якщо games (draft === gameSlice.games) - це масив
+  // dispatch(
+  //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+  //     const index = draft.findIndex(g => g._id === game._id);
+  //     if (index === -1) {
+  //       draft.push(game); // Додаємо нову гру, якщо її ще немає
+  //     } else {
+  //       dispatch(updateGame(game));
+  //       draft[index] = game; // Оновлюємо гру, якщо вона вже існує
+  //     }
+  //   }),
+  // );
+
+  //# якщо games (draft === gameSlice.games) - це об'єкт
   dispatch(
     gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-      const index = draft.findIndex(g => g._id === game._id);
-      if (index === -1) {
-        draft.push(game); // Додаємо нову гру, якщо її ще немає
+      if (!(game._id in draft)) {
+        draft[game._id] = game; // Якщо гри немає в об’єкті, додаємо її
       } else {
         dispatch(updateGame(game));
-        draft[index] = game; // Оновлюємо гру, якщо вона вже існує
+        draft[game._id] = game; // Якщо гра вже є, оновлюємо її
       }
     }),
   );

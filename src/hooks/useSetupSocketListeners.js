@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Notify } from "notiflix";
-import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
+import { clearActiveAction } from "redux/game/gameSlice.js";
 import socket from "servises/socket.js";
 import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
 
@@ -40,7 +40,8 @@ export const useSetupSocketListeners = () => {
 
     const handleError = err => Notify.failure(err.message);
 
-    const handleGameChange = ({ game }) => gameCreateOrUpdate(game, dispatch);
+    const handleGameCreateOrUpdate = ({ game }) =>
+      gameCreateOrUpdate(game, dispatch);
 
     const handlePlayerJoined = ({ game, player, message }) =>
       playerJoined(
@@ -61,31 +62,35 @@ export const useSetupSocketListeners = () => {
     const handleGameRun = ({ game, message }) =>
       gameRun(game, message, dispatch, activeActions);
 
+    const handleFirstStorytellerUpdated = () => {};
+
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
+    socket.on("error", handleError);
 
-    socket.on("gameCreatedOrUpdated", handleGameChange);
+    socket.on("gameCreatedOrUpdated", handleGameCreateOrUpdate);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("gameWasDeleted", handleGameDeleted);
 
     socket.on("playersOrderUpdated", handlePlayersOrderUpdate);
     socket.on("gameRunning", handleGameRun);
 
-    socket.on("error", handleError);
+    socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
 
     return () => {
       // console.log("Cleaning up socket listeners");
       socket.off("connect", handleConnect);
       socket.off("reconnect", handleReconnect);
+      socket.off("error", handleError);
 
-      socket.off("gameCreatedOrUpdated", handleGameChange);
+      socket.off("gameCreatedOrUpdated", handleGameCreateOrUpdate);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("gameWasDeleted", handleGameDeleted);
 
       socket.off("playersOrderUpdated", handlePlayersOrderUpdate);
       socket.off("gameRunning", handleGameRun);
 
-      socket.off("error", handleError);
+      socket.off("firstStorytellerUpdated", handleFirstStorytellerUpdated);
 
       // if client runout from page (unmount component) before server responding
       // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)

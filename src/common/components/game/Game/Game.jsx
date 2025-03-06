@@ -4,6 +4,7 @@ import {
   selectStorytellerId,
   selectGame,
   selectUserCredentials,
+  selectGameStatus,
 } from "redux/selectors.js";
 import css from "./Game.module.scss";
 import { useState } from "react";
@@ -21,6 +22,8 @@ export default function Game() {
     p => p._id === userCredentials._id,
   );
 
+  const gameStatus = useSelector(selectGameStatus);
+
   const [selectedCard, setSelectedCard] = useState(null);
 
   const onSelectCard = cardId => {
@@ -33,7 +36,6 @@ export default function Game() {
 
   const vote = () => {
     if (!storytellerId) {
-      // optimistic update
       dispatch(
         setFirstStoryteller({
           gameId: currentGameId,
@@ -41,47 +43,57 @@ export default function Game() {
         }),
       );
 
+      const updatedGame = {
+        ...currentGame,
+        storytellerId: userCredentials._id,
+        gameStatus: "makingTurn",
+      };
+
       socket.emit("setFirstStoryteller", {
-        currentGame,
-        player: userCredentials,
+        currentGame: updatedGame,
+        playerId: userCredentials._id,
       });
     }
   };
 
   return (
     <>
-      <p>Game</p>
-      <p>
-        Be the first to think of an association for one of your cards. Choose it
-        and make a move. Tell us about your association.
-      </p>
+      {gameStatus === "lobby" && (
+        <>
+          <p>Game</p>
+          <p>
+            Be the first to think of an association for one of your cards.
+            Choose it and make a move. Tell us about your association.
+          </p>
 
-      <ul className={`${css.currentDeck}`}>
-        {currentPlayer.hand.map(card => (
-          <li
-            className={css.card}
-            key={card._id}
-            onClick={
-              !storytellerId
-                ? () => {
-                    onSelectCard(card._id);
-                  }
-                : undefined
-            }>
-            <img
-              className={`${css.img} ${
-                selectedCard && selectedCard !== card._id && css.imgInactive
-              }`}
-              src={card.url}
-              alt="card"
-            />
-          </li>
-        ))}
-      </ul>
+          <ul className={`${css.currentDeck}`}>
+            {currentPlayer.hand.map(card => (
+              <li
+                className={css.card}
+                key={card._id}
+                onClick={
+                  !storytellerId
+                    ? () => {
+                        onSelectCard(card._id);
+                      }
+                    : undefined
+                }>
+                <img
+                  className={`${css.img} ${
+                    selectedCard && selectedCard !== card._id && css.imgInactive
+                  }`}
+                  src={card.url}
+                  alt="card"
+                />
+              </li>
+            ))}
+          </ul>
 
-      <div className={css.bottomBar}>
-        <Button btnText={"Vote"} onClick={vote} disabled={!selectedCard} />
-      </div>
+          <div className={css.bottomBar}>
+            <Button btnText={"Vote"} onClick={vote} disabled={!selectedCard} />
+          </div>
+        </>
+      )}
     </>
   );
 }

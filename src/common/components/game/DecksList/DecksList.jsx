@@ -5,11 +5,7 @@ import {
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentDeckId, setIsCreatingGame } from "redux/game/gameSlice.js";
-import {
-  selectCurrentDeckId,
-  selectPlayers,
-  selectUserCredentials,
-} from "redux/selectors.js";
+import { selectCurrentDeckId, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button";
 import socket from "servises/socket.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
@@ -27,13 +23,10 @@ export default function DecksList() {
     dispatch(setCurrentDeckId(deckId));
   };
 
-  const players = useSelector(selectPlayers);
-
   const createNewGame = async () => {
     const gameData = {
       deck: shuffleDeck(currentDeck.cards),
-      players,
-      isGameStarted: false,
+
       hostPlayerId: userCredentials._id,
       hostPlayerName: userCredentials.name,
     };

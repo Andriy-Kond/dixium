@@ -4,39 +4,36 @@ import storage from "redux-persist/lib/storage";
 
 const gameInitialState = {
   games: [
+    // {
+    //   gameName: String, // Game name
+    //   gamePoster: String,
+    //   gameStatus: String, // "lobby" | "makingMove" | "voting" | "results" | "finished"
+    //   isGameRunning: Boolean, // game started and running (players can't join anymore)
+    //   isGameStarted: Boolean, // game started but not running (players can join)
+    //   hostPlayerId: String, // id творця гри
+    //   hostPlayerName: String, // Ім'я творця гри
+    //   storytellerId: String, // ID гравця, який зараз розповідає (той, хто робить перший хід)
+    //   currentTurn: Number, // 0
+    //   cardsOnTable: [CardSchema], // Карти, які поклали на стіл під час голосування
+    //   votes: { type: Map, of: String }, // Голоси гравців { playerId: cardId }
+    //   scores: { type: Map, of: Number }, // Бали гравців { playerId: score }
+    //   players: [
     //     {
-    // _id: Schema.Types.ObjectId
-    // gameName: String, // Game name
-    // players: [
-    // {
-    //   _id: String,
-    //   name: String,
-    //   avatarURL: String,
-    //   hand: Array,
+    //       _id: String,
+    //       name: String,
+    //       avatarURL: String,
+    //       hand: [CardSchema],
+    //       isStoryteller: Boolean, // false - Чи є цей гравець "розповідачем" на поточному ході
+    //     },
+    //   ], // List of players
+    //   deck: [CardSchema], // Deck of cards
+    //   discardPile: [CardSchema],
     // },
-    // ], // List of players
-    // deck: [
-    // {
-    //   cardName: String,
-    //   public_id: String, // Public card id from Cloudinary
-    //   url: String, // Card url from Cloudinary
-    //   _id: Schema.Types.ObjectId, // Card id from MongoDB (like owner)
-    //   isCardPlayed: Boolean,
-    // },
-    // ], // Deck of cards
-    // isGameRun: Boolean, // game started and running (players cannot join)
-    // isGameStarted: Boolean, // game started but not running (players can join)
-    // hostPlayerId: String,
-    // hostPlayerName: String,
-    // gamePoster: String,
-    // }
   ],
+
   isCreatingGame: false,
   currentDeckId: null,
-  currentGameId: null,
-  storytellerId: null,
 
-  refs: {},
   activeActions: {},
 };
 
@@ -52,8 +49,8 @@ export const gameSlice = createSlice({
       state.currentDeckId = action.payload;
     },
 
-    setCurrentGameId: (state, action) => {
-      state.currentGameId = action.payload;
+    setGameStatus: (state, action) => {
+      state.gameStatus = action.payload;
     },
 
     // not good option, because will copy only higher level of object:
@@ -68,55 +65,19 @@ export const gameSlice = createSlice({
       state.games = action.payload;
     },
 
-    // addGame: (state, action) => {
-    //   state.games.push(action.payload);
-    // },
-
     updateGame: (state, action) => {
       // If game arr is huge (100+ games) this option will be better, but it is mutate option:
       const updatedGame = action.payload;
-      const gameIndex = state.games.findIndex(g => g._id === updatedGame._id);
-      if (gameIndex !== -1) {
-        state.games[gameIndex] = updatedGame;
-      }
+      //# якщо games - це масив
+      // const gameIndex = state.games.findIndex(g => g._id === updatedGame._id);
+
+      //# якщо games - це об'єкт
+      state.games[updatedGame._id] = updatedGame;
 
       // non mutation, but slower:
       // state.games = state.games.map(game =>
       //   game._id === action.payload._id ? action.payload : game,
       // );
-    },
-
-    // removeGame: (state, action) => {
-    //   state.games = state.games.filter(game => game._id !== action.payload);
-    // },
-
-    // addPlayerToGame: (state, action) => {
-    //   const { gameId, player } = action.payload;
-    //   const game = state.games.find(game => game._id === gameId);
-
-    //   if (game) {
-    //     game.players.push(player);
-    //   }
-    // },
-
-    setFirstStoryteller: (state, action) => {
-      const { gameId, playerId } = action.payload;
-      const game = state.games.find(game => game._id === gameId);
-      if (game && !game.storytellerId) {
-        game.storytellerId = playerId;
-      }
-    },
-
-    nextStoryteller: (state, action) => {
-      const { gameId } = action.payload;
-      const game = state.games.find(game => game._id === gameId);
-      if (game) {
-        const currentIndex = game.players.findIndex(
-          player => player._id === game.storytellerId,
-        );
-        const nextIndex = (currentIndex + 1) % game.players.length;
-        game.storytellerId = game.players[nextIndex]._id;
-      }
     },
 
     setActiveAction(state, action) {
@@ -126,6 +87,36 @@ export const gameSlice = createSlice({
 
     clearActiveAction(state, action) {
       delete state.activeActions[action.payload];
+    },
+
+    setFirstStoryteller: (state, action) => {
+      const { gameId, playerId } = action.payload;
+
+      //# якщо games - це об'єкт:
+      const game = state.games[gameId];
+      //# якщо games - це масив:
+      // const game = state.games.find(game => game._id === gameId);
+
+      if (game && !game.storytellerId) {
+        game.storytellerId = playerId;
+      }
+    },
+
+    nextStoryteller: (state, action) => {
+      const { gameId } = action.payload;
+
+      //# якщо games - це об'єкт:
+      const game = state.games[gameId];
+      //# якщо games - це масив:
+      // const game = state.games.find(game => game._id === gameId);
+
+      if (game) {
+        const currentIndex = game.players.findIndex(
+          player => player._id === game.storytellerId,
+        );
+        const nextIndex = (currentIndex + 1) % game.players.length;
+        game.storytellerId = game.players[nextIndex]._id;
+      }
     },
   },
 });
@@ -145,18 +136,13 @@ export const {
   clearActiveAction,
   setIsCreatingGame,
   setCurrentDeckId,
-  setCurrentGameId,
 
   clearGameInitialState,
 
-  distributeCards,
-  updateGamesCollectionInMongoDb,
   addGamesList,
-  // addGame,
-  // removeGame,
+
   updateGame,
-  setCurrentGame,
-  addPlayerToGame,
+
   setFirstStoryteller,
   nextStoryteller,
 } = gameSlice.actions;
