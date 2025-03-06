@@ -26,3 +26,6 @@ export const selectStorytellerId = currentGameId => state =>
 
 export const selectGameStatus = currentGameId => state =>
   state.gameSlice.games[currentGameId].gameStatus;
+
+export const selectGamePlayers = currentGameId => state =>
+  state.gameSlice.games[currentGameId].players;

@@ -1,98 +1,70 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import {
-  selectStorytellerId,
-  selectGame,
-  selectUserCredentials,
-  selectGameStatus,
-} from "redux/selectors.js";
-import css from "./Game.module.scss";
-import { useState } from "react";
-import Button from "common/components/ui/Button/index.js";
-import { setFirstStoryteller } from "redux/game/gameSlice.js";
-import socket from "servises/socket.js";
+import { selectGameStatus } from "redux/selectors.js";
+
+import Lobby from "../gameStatus/Lobby/Lobby.jsx";
 
 export default function Game() {
-  const dispatch = useDispatch();
   const { currentGameId } = useParams();
-  const currentGame = useSelector(selectGame(currentGameId));
-  const storytellerId = useSelector(selectStorytellerId(currentGameId));
   const gameStatus = useSelector(selectGameStatus(currentGameId));
-  const userCredentials = useSelector(selectUserCredentials);
-  const currentPlayer = currentGame.players.find(
-    p => p._id === userCredentials._id,
-  );
 
-  const [selectedCard, setSelectedCard] = useState(null);
-
-  const onSelectCard = cardId => {
-    if (cardId === selectedCard) {
-      setSelectedCard(null);
-    } else {
-      setSelectedCard(cardId);
-    }
-  };
-
-  const vote = () => {
-    if (!storytellerId) {
-      dispatch(
-        setFirstStoryteller({
-          gameId: currentGameId,
-          playerId: userCredentials._id,
-        }),
-      );
-
-      const updatedGame = {
-        ...currentGame,
-        storytellerId: userCredentials._id,
-        gameStatus: "makingTurn",
-      };
-
-      socket.emit("setFirstStoryteller", {
-        currentGame: updatedGame,
-        playerId: userCredentials._id,
-      });
-    }
+  //% mapping method:
+  const statusComponents = {
+    lobby: <Lobby />,
+    // makingTurn: <MakingTurn />,
+    // voting: <Voting />,
+    // results: <Results />,
+    // finished: <Finished />,
   };
 
   return (
     <>
-      {gameStatus === "lobby" && (
-        <>
-          <p>Game</p>
-          <p>
-            Be the first to think of an association for one of your cards.
-            Choose it and make a move. Tell us about your association.
-          </p>
-
-          <ul className={`${css.currentDeck}`}>
-            {currentPlayer.hand.map(card => (
-              <li
-                className={css.card}
-                key={card._id}
-                onClick={
-                  !storytellerId
-                    ? () => {
-                        onSelectCard(card._id);
-                      }
-                    : undefined
-                }>
-                <img
-                  className={`${css.img} ${
-                    selectedCard && selectedCard !== card._id && css.imgInactive
-                  }`}
-                  src={card.url}
-                  alt="card"
-                />
-              </li>
-            ))}
-          </ul>
-
-          <div className={css.bottomBar}>
-            <Button btnText={"Vote"} onClick={vote} disabled={!selectedCard} />
-          </div>
-        </>
-      )}
+      <p>Game</p>
+      {statusComponents[gameStatus] || <p>Unknown status</p>}
     </>
   );
 }
+
+//% switch method:
+// const renderContent = () => {
+//     switch (gameStatus) {
+//       case "lobby":
+//         return <Lobby />;
+//       case "makingMove":
+//         return <MakingMove />;
+//       case "voting":
+//         return <Voiting />;
+//       case "results":
+//         return <Results />;
+//       case "finished":
+//         return <Finished />;
+//       default:
+//         return null; // або можна додати дефолтний компонент, наприклад, <p>Unknown status</p>
+//     }
+//   };
+
+//   return (
+//     <>
+//       <p>Game</p>
+//       {renderContent()}
+//     </>
+//   );
+// }
+
+//% fn method:
+// const getContent = () => {
+//     if (gameStatus === "lobby") return <Lobby />;
+//     if (gameStatus === "makingMove") return <MakingMove />;
+//     if (gameStatus === "voting") return <Voiting />;
+//     if (gameStatus === "results") return <Results />;
+//     if (gameStatus === "finished") return <Finished />;
+//     return null;
+//   };
+
+//   return (
+//     <>
+//       <p>Game</p>
+//       {getContent()}
+//     </>
+//   );
+// }
