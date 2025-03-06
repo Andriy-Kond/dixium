@@ -1,6 +1,10 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { selectGameStatus } from "redux/selectors.js";
+import {
+  selectGameStatus,
+  selectStorytellerId,
+  selectUserCredentials,
+} from "redux/selectors.js";
 
 import Lobby from "../gameStatus/Lobby/Lobby.jsx";
 import {
@@ -16,20 +20,27 @@ export default function Game() {
   const gameStatus = useSelector(selectGameStatus(currentGameId));
   console.log(" Game >> gameStatus:::", gameStatus);
 
+  const storytellerId = useSelector(selectStorytellerId(currentGameId));
+  const userCredentials = useSelector(selectUserCredentials);
+
   //% mapping method:
   const statusComponents = {
-    [LOBBY]: <Lobby />,
+    // [LOBBY]: <Lobby />,
     // [MAKING_TURN]: <MakingTurn />,
     // [VOTING]: <Voting />,
     // [RESULTS]: <Results />,
     // [FINISHED]: <Finished />,
   };
 
+  const isShowLobby =
+    gameStatus === LOBBY ||
+    (gameStatus === MAKING_TURN && storytellerId !== userCredentials._id);
+
   return (
     <>
       <p>Game</p>
-
-      {statusComponents[gameStatus] || <p>Unknown status</p>}
+      {/* {statusComponents[gameStatus] || <p>Unknown status</p>} */}
+      {isShowLobby && <Lobby />}
     </>
   );
 }
