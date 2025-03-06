@@ -28,8 +28,9 @@ export const gameCreateOrUpdate = (game, dispatch) => {
       if (!(game._id in draft)) {
         draft[game._id] = game; // Якщо гри немає в об’єкті, додаємо її
       } else {
-        dispatch(updateGame(game));
-        draft[game._id] = game; // Якщо гра вже є, оновлюємо її
+        // Якщо гра вже є, оновлюємо її
+        dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
+        draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
       }
     }),
   );

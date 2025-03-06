@@ -3,7 +3,7 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const gameInitialState = {
-  games: [
+  games: {
     // {
     //   gameName: String, // Game name
     //   gamePoster: String,
@@ -29,7 +29,7 @@ const gameInitialState = {
     //   deck: [CardSchema], // Deck of cards
     //   discardPile: [CardSchema],
     // },
-  ],
+  },
 
   isCreatingGame: false,
   currentDeckId: null,
@@ -50,7 +50,9 @@ export const gameSlice = createSlice({
     },
 
     setGameStatus: (state, action) => {
-      state.gameStatus = action.payload;
+      const { gameId, status } = action.payload;
+      const game = state.games[gameId];
+      if (game) state.games[gameId].gameStatus = status;
     },
 
     // not good option, because will copy only higher level of object:
@@ -118,6 +120,12 @@ export const gameSlice = createSlice({
         game.storytellerId = game.players[nextIndex]._id;
       }
     },
+
+    setCardsOnTable(state, action) {
+      const { gameId, card } = action.payload;
+      const game = state.games[gameId];
+      if (game) state.games[gameId].cardsOnTable.push(card);
+    },
   },
 });
 
@@ -136,6 +144,7 @@ export const {
   clearActiveAction,
   setIsCreatingGame,
   setCurrentDeckId,
+  setGameStatus,
 
   clearGameInitialState,
 
@@ -145,4 +154,5 @@ export const {
 
   setFirstStoryteller,
   nextStoryteller,
+  setCardsOnTable,
 } = gameSlice.actions;

@@ -38,6 +38,8 @@ export default function GamesList() {
           {/* {allGames?.map(game => { */}
           {/* //# якщо games - це об'єкт: */}
           {Object.values(allGames)?.map(game => {
+            console.log(" {Object.values >> game:::", game.isGameStarted);
+
             return (
               <li key={game._id} className={css.item}>
                 <img

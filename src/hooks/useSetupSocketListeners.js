@@ -2,12 +2,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Notify } from "notiflix";
-import { clearActiveAction } from "redux/game/gameSlice.js";
+import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 import socket from "servises/socket.js";
 import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
 
 import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import {
+  firstStorytellerUpdated,
   gameCreateOrUpdate,
   gameDelete,
   gameRun,
@@ -62,7 +63,8 @@ export const useSetupSocketListeners = () => {
     const handleGameRun = ({ game, message }) =>
       gameRun(game, message, dispatch, activeActions);
 
-    const handleFirstStorytellerUpdated = () => {};
+    const handleFirstStorytellerUpdated = ({ game }) =>
+      firstStorytellerUpdated(game, dispatch);
 
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);

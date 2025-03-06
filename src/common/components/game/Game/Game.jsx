@@ -3,23 +3,32 @@ import { useParams } from "react-router-dom";
 import { selectGameStatus } from "redux/selectors.js";
 
 import Lobby from "../gameStatus/Lobby/Lobby.jsx";
+import {
+  FINISHED,
+  LOBBY,
+  MAKING_TURN,
+  RESULTS,
+  VOTING,
+} from "utils/generals/constants.js";
 
 export default function Game() {
   const { currentGameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(currentGameId));
+  console.log(" Game >> gameStatus:::", gameStatus);
 
   //% mapping method:
   const statusComponents = {
-    lobby: <Lobby />,
-    // makingTurn: <MakingTurn />,
-    // voting: <Voting />,
-    // results: <Results />,
-    // finished: <Finished />,
+    [LOBBY]: <Lobby />,
+    // [MAKING_TURN]: <MakingTurn />,
+    // [VOTING]: <Voting />,
+    // [RESULTS]: <Results />,
+    // [FINISHED]: <Finished />,
   };
 
   return (
     <>
       <p>Game</p>
+
       {statusComponents[gameStatus] || <p>Unknown status</p>}
     </>
   );

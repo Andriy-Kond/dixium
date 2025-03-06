@@ -29,3 +29,18 @@ export const selectGameStatus = currentGameId => state =>
 
 export const selectGamePlayers = currentGameId => state =>
   state.gameSlice.games[currentGameId].players;
+
+export const selectCardsOnTable = currentGameId => state =>
+  state.gameSlice.games[currentGameId].cardsOnTable;
+
+export const selectPlayerHand = (currentGameId, playerId) => state => {
+  const game = state.gameSlice.games[currentGameId];
+  const player = game.players.find(p => p._id === playerId);
+  return player.hand;
+};
+
+export const selectGameDeck = currentGameId => state =>
+  state.gameSlice.games[currentGameId].deck;
+
+export const selectGameDiscardPile = currentGameId => state =>
+  state.gameSlice.games[currentGameId].discardPile;

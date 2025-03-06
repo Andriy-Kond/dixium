@@ -9,6 +9,7 @@ import { selectCurrentDeckId, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button";
 import socket from "servises/socket.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
+import { LOBBY } from "utils/generals/constants.js";
 
 export default function DecksList() {
   const dispatch = useDispatch();
@@ -25,10 +26,19 @@ export default function DecksList() {
 
   const createNewGame = async () => {
     const gameData = {
-      deck: shuffleDeck(currentDeck.cards),
-      gameStatus: "lobby",
+      gameStatus: LOBBY,
+      isGameRunning: false,
+      isGameStarted: false,
       hostPlayerId: userCredentials._id,
       hostPlayerName: userCredentials.name,
+      storytellerId: null,
+      currentTurn: 0,
+      cardsOnTable: [],
+      votes: {},
+      scores: {},
+      players: [],
+      deck: shuffleDeck(currentDeck.cards),
+      discardPile: [],
     };
 
     socket.emit("createGame", { gameData });

@@ -1,4 +1,5 @@
-export const PREV_RUN_GAME_STATE = "PREV_RUN_GAME_STATE";
-export const TIMER_RUN_GAME = "TIMER_RUN_GAME";
-export const PREV_DND_GAME_STATE = "PREV_DND_GAME_STATE";
-export const TIMER_DND = "TIMER_DND";
+export const LOBBY = "LOBBY";
+export const MAKING_TURN = "MAKING_TURN";
+export const VOTING = "VOTING";
+export const RESULTS = "RESULTS";
+export const FINISHED = "FINISHED";

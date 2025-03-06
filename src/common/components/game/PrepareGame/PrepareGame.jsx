@@ -51,7 +51,7 @@ export default function PrepareGame() {
 
     // optimistic update:
     optimisticUpdateDispatch({
-      eventName: "currentGame:run",
+      eventName: "gameRun",
       updatedGame,
     });
   };
