@@ -26,7 +26,7 @@ export default function DecksList() {
   const createNewGame = async () => {
     const gameData = {
       deck: shuffleDeck(currentDeck.cards),
-
+      gameStatus: "lobby",
       hostPlayerId: userCredentials._id,
       hostPlayerName: userCredentials.name,
     };

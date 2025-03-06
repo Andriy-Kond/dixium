@@ -15,14 +15,13 @@ import socket from "servises/socket.js";
 export default function Game() {
   const dispatch = useDispatch();
   const { currentGameId } = useParams();
-  const storytellerId = useSelector(selectStorytellerId);
   const currentGame = useSelector(selectGame(currentGameId));
+  const storytellerId = useSelector(selectStorytellerId(currentGameId));
+  const gameStatus = useSelector(selectGameStatus(currentGameId));
   const userCredentials = useSelector(selectUserCredentials);
   const currentPlayer = currentGame.players.find(
     p => p._id === userCredentials._id,
   );
-
-  const gameStatus = useSelector(selectGameStatus);
 
   const [selectedCard, setSelectedCard] = useState(null);
 

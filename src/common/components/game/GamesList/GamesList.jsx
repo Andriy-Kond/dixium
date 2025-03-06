@@ -34,9 +34,9 @@ export default function GamesList() {
     <>
       {!isFetching && (
         <ul>
-          {/* //# якщо games - це масив */}
+          {/* //# якщо games - це масив: */}
           {/* {allGames?.map(game => { */}
-          {/* //# якщо games - це об'єкт */}
+          {/* //# якщо games - це об'єкт: */}
           {Object.values(allGames)?.map(game => {
             return (
               <li key={game._id} className={css.item}>

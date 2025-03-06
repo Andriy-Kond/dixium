@@ -10,15 +10,15 @@ import { selectUserCredentials, selectUserIsLoggedIn } from "redux/selectors";
 import AuthForm from "common/components/ui/AuthForm";
 import css from "common/components/ui/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
-import { useLocation, useNavigate } from "react-router-dom";
+// import { useLocation, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
   const user = useSelector(selectUserCredentials);
   const [loginUser] = useLoginUserMutation();
-  const navigate = useNavigate();
-  const location = useLocation();
+  // const navigate = useNavigate();
+  // const location = useLocation();
 
   const submitCredentials = async e => {
     e.preventDefault();
