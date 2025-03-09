@@ -1,10 +1,12 @@
 import { Notify } from "notiflix";
+import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
 export const gameRun = (game, message, dispatch, activeActions) => {
   if (!game) {
     throw new Error(`The game is ${game}`);
   }
+
   const relatedAction = Object.values(activeActions).find(
     action => action.payload.updatedGame._id === game._id,
   );
@@ -32,7 +34,17 @@ export const gameRun = (game, message, dispatch, activeActions) => {
     if (message) {
       Notify.failure(message);
     } else {
-      dispatch(updateGame(game));
+      dispatch(
+        gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+          if (game._id in draft) {
+            // Якщо гра вже є, оновлюємо її
+            dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
+            draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
+          }
+        }),
+      );
+
+      // dispatch(updateGame(game));
     }
   }
 };

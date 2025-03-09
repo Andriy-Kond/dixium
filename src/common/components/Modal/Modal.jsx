@@ -1,10 +1,30 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 import css from "./Modal.module.scss";
 
+import { useSelector } from "react-redux";
+import { selectGame } from "redux/selectors.js";
+import socket from "servises/socket.js";
+
 const modalPortal = document.querySelector("#root-modal");
 
-export default function Modal({ children, toggleModal }) {
+export default function Modal({ children, currentGameId }) {
+  const currentGame = useSelector(selectGame(currentGameId));
+  console.log(" Modal >> currentGame:::", currentGame);
+
+  const toggleModal = useCallback(() => {
+    const updatedGame = {
+      ...currentGame,
+      isFirstTurn: false,
+    };
+
+    socket.emit("gameUpdateFirstTurn", { updatedGame }, response => {
+      if (response?.error) {
+        console.error("Failed to update game:", response.error);
+      }
+    });
+  }, []);
+
   useEffect(() => {
     const handleKeydownEsc = e => {
       if (e.code === "Escape") {

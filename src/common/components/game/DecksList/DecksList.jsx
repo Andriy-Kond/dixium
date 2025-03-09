@@ -39,6 +39,7 @@ export default function DecksList() {
       players: [],
       deck: shuffleDeck(currentDeck.cards),
       discardPile: [],
+      isFirstTurn: false,
     };
 
     socket.emit("createGame", { gameData });

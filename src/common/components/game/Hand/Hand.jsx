@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import socket from "servises/socket.js";
 
@@ -19,7 +19,7 @@ import css from "./Hand.module.scss";
 import { MAKING_TURN } from "utils/generals/constants.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
 
-export default function Hand({ isActive, setMiddleButton, activeScreen }) {
+export default function Hand({ isActive, setMiddleButton }) {
   const { currentGameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const storytellerId = useSelector(selectStorytellerId(currentGameId));
@@ -92,6 +92,7 @@ export default function Hand({ isActive, setMiddleButton, activeScreen }) {
         players: updatedPlayers,
         deck: updatedDeck,
         discardPile: updatedDiscardPile,
+        isFirstTurn: true,
       };
 
       socket.emit(
@@ -128,14 +129,21 @@ export default function Hand({ isActive, setMiddleButton, activeScreen }) {
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
   useEffect(() => {
-    // console.log( "Hand >> isActive:::", isActive, "activeScreen:::", activeScreen);
-    if (isActive && activeScreen === 0) {
-      // console.log("Hand >> Setting middle button");
+    // console.log( "Hand >> isActive:::", isActive);
+    if (isActive && isCurrentPlayerStoryteller) {
+      setMiddleButton(null);
+    } else
       setMiddleButton(
         <Button btnText={btnText} onClick={vote} disabled={!selectedCardId} />,
       );
-    }
-  }, [isActive, activeScreen, btnText, selectedCardId, vote, setMiddleButton]);
+  }, [
+    btnText,
+    isActive,
+    isCurrentPlayerStoryteller,
+    selectedCardId,
+    setMiddleButton,
+    vote,
+  ]);
 
   return (
     <>

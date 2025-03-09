@@ -12,6 +12,7 @@ import {
   gameCreateOrUpdate,
   gameDelete,
   gameRun,
+  gameFirstTurnUpdate,
   joinToGameRoom,
   playerJoined,
   playersOrderUpdate,
@@ -39,7 +40,10 @@ export const useSetupSocketListeners = () => {
     const handleReconnect = () =>
       joinToGameRoom(socket, currentGameId, userCredentials);
 
-    const handleError = err => Notify.failure(err.message);
+    const handleError = err => Notify.failure(err.errorMessage);
+
+    const handleGameFirstTurnUpdate = ({ game }) =>
+      gameFirstTurnUpdate(game, dispatch);
 
     const handleGameCreateOrUpdate = ({ game }) =>
       gameCreateOrUpdate(game, dispatch);
@@ -70,6 +74,7 @@ export const useSetupSocketListeners = () => {
     socket.on("reconnect", handleReconnect);
     socket.on("error", handleError);
 
+    socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
     socket.on("gameCreatedOrUpdated", handleGameCreateOrUpdate);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("gameWasDeleted", handleGameDeleted);
@@ -85,6 +90,7 @@ export const useSetupSocketListeners = () => {
       socket.off("reconnect", handleReconnect);
       socket.off("error", handleError);
 
+      socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
       socket.off("gameCreatedOrUpdated", handleGameCreateOrUpdate);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("gameWasDeleted", handleGameDeleted);

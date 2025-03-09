@@ -1,7 +1,6 @@
 import { updateGame } from "redux/game/gameSlice.js";
 
 export const firstStorytellerUpdated = (game, dispatch) => {
-  console.log(" firstStorytellerUpdated >> game:::", game);
   if (!game) {
     throw new Error(`The game is ${game}`);
   }

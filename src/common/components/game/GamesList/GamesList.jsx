@@ -53,14 +53,20 @@ export default function GamesList() {
                       btnText={
                         userCredentials._id === game.hostPlayerId
                           ? "Start game"
+                          : game.isGameRunning
+                          ? `Game running`
                           : `Join to ${game.hostPlayerName}'s game`
                       }
                       onClick={() => {
                         startOrJoinToGame(game);
                       }}
                       disabled={
-                        !game.isGameStarted &&
-                        userCredentials._id !== game.hostPlayerId // disabled when it is not creator button (i.e. Join to) and game not started
+                        (game.isGameRunning &&
+                          !game.players.find(
+                            p => p._id === userCredentials._id,
+                          )) ||
+                        (!game.isGameStarted &&
+                          userCredentials._id !== game.hostPlayerId) // disabled when it is not creator button (i.e. Join to) and game not started
                       }
                     />
                     {userCredentials._id === game.hostPlayerId && (

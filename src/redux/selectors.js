@@ -45,4 +45,8 @@ export const selectGameDeck = currentGameId => state =>
 export const selectGameDiscardPile = currentGameId => state =>
   state.gameSlice.games[currentGameId].discardPile;
 
-export const selectMiddleButton = state => state.gameSlice.middleButton;
+export const selectIsFirstTurn = currentGameId => state =>
+  state.gameSlice.games[currentGameId].isFirstTurn;
+
+export const selectIsGameRunning = currentGameId => state =>
+  state.gameSlice.games[currentGameId].isGameRunning;

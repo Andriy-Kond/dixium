@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 
-export default function Players({ isActive, setMiddleButton, activeScreen }) {
+export default function Players({ isActive, setMiddleButton }) {
   useEffect(() => {
-    // console.log("Players >> isActive:::", isActive, "activeScreen:::", activeScreen, );
-    if (isActive && activeScreen === 1) {
+    // console.log("Players >> isActive:::", isActive );
+    if (isActive) {
       // console.log("Players >> Clearing middle button");
       setMiddleButton(null);
     }
-  }, [isActive, activeScreen, setMiddleButton]);
+  }, [isActive, setMiddleButton]);
 
   return (
     <>
