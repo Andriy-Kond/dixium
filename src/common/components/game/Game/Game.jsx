@@ -1,6 +1,6 @@
 import useEmblaCarousel from "embla-carousel-react";
 
-import { cloneElement, useCallback, useEffect, useState } from "react";
+import { cloneElement, useEffect, useState } from "react";
 import Hand from "common/components/game/Hand";
 import Players from "common/components/game/Players";
 import Table from "common/components/game/Table";
@@ -10,6 +10,8 @@ import GameNavigationBar from "common/components/game/GameNavigationBar";
 
 export default function Game() {
   const [activeScreen, setActiveScreen] = useState(0);
+  const [middleButton, setMiddleButton] = useState(null);
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     align: "start", // Вирівнювання слайдів:
@@ -26,26 +28,12 @@ export default function Game() {
       "(min-width: 768px)": { loop: true }, // увімкнути зациклення на екранах ширше 768px.
     },
   });
-  const [middleButton, setMiddleButton] = useState(null); // Стан для середньої кнопки
 
   const screens = [<Hand />, <Players />, <Table />];
 
   useEffect(() => {
     if (emblaApi) emblaApi.scrollTo(activeScreen);
   }, [activeScreen, emblaApi]);
-
-  // // Memoized fn for useEffect:
-  // // Перейти до наступного екрану, якщо не останній
-  // const nextScreenSimple = useCallback(() => {
-  //   setActiveScreen(prev => (prev < screens.length - 1 ? prev + 1 : prev));
-  //   setMiddleButton(null); // Очищаємо кнопку при зміні екрану
-  // }, [screens.length]);
-
-  // // Перейти до попереднього екрану, якщо не перший
-  // const prevScreenSimple = useCallback(() => {
-  //   setActiveScreen(prev => (prev > 0 ? prev - 1 : prev));
-  //   setMiddleButton(null); // Очищаємо кнопку при зміні екрану
-  // }, []);
 
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
@@ -86,16 +74,15 @@ export default function Game() {
     <>
       <p>Game</p>
 
-      <div
-        className={css.swipeWrapper}
-        ref={emblaRef}
-        style={{ overflow: "hidden" }}>
+      <div className={css.swipeWrapper} ref={emblaRef}>
         <div className={css.screenWrapper}>
           {screens.map((screen, index) => (
             <div className={css.screenContainer} key={index}>
               {cloneElement(screen, {
-                setMiddleButton, // Передаємо функцію для оновлення кнопки
                 isActive: getActiveScreen() === index, // Актуальний індекс
+                setActiveScreen,
+                setMiddleButton,
+                activeScreen,
               })}
             </div>
           ))}

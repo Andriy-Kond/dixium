@@ -19,7 +19,7 @@ import css from "./Hand.module.scss";
 import { MAKING_TURN } from "utils/generals/constants.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
 
-export default function Hand({ setMiddleButton, isActive }) {
+export default function Hand({ isActive, setMiddleButton, activeScreen }) {
   const { currentGameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const storytellerId = useSelector(selectStorytellerId(currentGameId));
@@ -128,30 +128,14 @@ export default function Hand({ setMiddleButton, isActive }) {
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
   useEffect(() => {
-    if (isActive) {
-      // Оновлюємо середню кнопку лише для активного екрану
-      if (!isCurrentPlayerStoryteller) {
-        setMiddleButton(
-          <Button
-            btnText={btnText}
-            onClick={vote}
-            disabled={!selectedCardId}
-          />,
-        );
-      } else {
-        setMiddleButton(null);
-      }
-    } else {
-      setMiddleButton(null); // Скидаємо кнопку, якщо екран неактивний
+    // console.log( "Hand >> isActive:::", isActive, "activeScreen:::", activeScreen);
+    if (isActive && activeScreen === 0) {
+      // console.log("Hand >> Setting middle button");
+      setMiddleButton(
+        <Button btnText={btnText} onClick={vote} disabled={!selectedCardId} />,
+      );
     }
-  }, [
-    btnText,
-    isActive,
-    isCurrentPlayerStoryteller,
-    selectedCardId,
-    setMiddleButton,
-    vote,
-  ]);
+  }, [isActive, activeScreen, btnText, selectedCardId, vote, setMiddleButton]);
 
   return (
     <>

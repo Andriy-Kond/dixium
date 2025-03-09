@@ -6,9 +6,11 @@ export default function GameNavigationBar({
   screensLength,
   onPrevScreen,
   onNextScreen,
-  middleButton, // Пропс для специфічної кнопки по середині між вліво-вправо
+  middleButton,
 }) {
-  console.log(" activeScreen:::", activeScreen);
+  // console.log("GameNavigationBar >> activeScreen:::", activeScreen);
+  // console.log("GameNavigationBar >> middleButton:::", middleButton);
+
   return (
     <div className={css.bottomBar}>
       <Button

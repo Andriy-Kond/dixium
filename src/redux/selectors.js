@@ -44,3 +44,5 @@ export const selectGameDeck = currentGameId => state =>
 
 export const selectGameDiscardPile = currentGameId => state =>
   state.gameSlice.games[currentGameId].discardPile;
+
+export const selectMiddleButton = state => state.gameSlice.middleButton;
