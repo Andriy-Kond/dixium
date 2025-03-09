@@ -34,16 +34,6 @@ export default function Game() {
     if (emblaApi) emblaApi.scrollTo(activeScreen);
   }, [activeScreen, emblaApi]);
 
-  // // Навігація через Embla API
-  // const nextScreen = () => {
-  //   emblaApi?.scrollNext();
-  //   setMiddleButton(null); // Очищаємо кнопку при зміні екрану
-  // };
-  // const prevScreen = () => {
-  //   emblaApi?.scrollPrev();
-  //   setMiddleButton(null); // Очищаємо кнопку при зміні екрану
-  // };
-
   // // Memoized fn for useEffect:
   // // Перейти до наступного екрану, якщо не останній
   // const nextScreenSimple = useCallback(() => {
@@ -60,7 +50,6 @@ export default function Game() {
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
     if (!emblaApi) return;
-
     const onSelect = () => setActiveScreen(emblaApi.selectedScrollSnap());
 
     emblaApi.on("select", onSelect); // Слухаємо подію зміни слайду
@@ -68,11 +57,11 @@ export default function Game() {
   }, [emblaApi]);
 
   // Навігація через Embla API
-  const nextScreen = () => {
-    emblaApi?.scrollNext();
-  };
   const prevScreen = () => {
     emblaApi?.scrollPrev();
+  };
+  const nextScreen = () => {
+    emblaApi?.scrollNext();
   };
 
   // Отримання поточного індексу слайду для пропсів
