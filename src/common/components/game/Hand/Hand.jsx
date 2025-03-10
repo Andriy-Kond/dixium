@@ -200,31 +200,34 @@ export default function Hand({
                 display: "flex",
                 flexDirection: "row",
               }}>
-              <Button
-                name="firstBtn"
-                btnText="★"
-                onClick={() => toggleCardSelection(0)}
-                disabled={
-                  selectedCards.length === 2 &&
-                  (gamePlayers.length > 3
-                    ? false
-                    : !isFirstStarSelected &&
-                      selectedCards[0]?._id !== currentCard?._id)
-                }
-              />
-
-              <Button
-                name="secondBtn"
-                btnText="★"
-                onClick={() => toggleCardSelection(1)}
-                disabled={
-                  selectedCards.length === 2 &&
-                  (gamePlayers.length > 3
-                    ? false
-                    : !isSecondStarSelected &&
-                      selectedCards[1]?._id !== currentCard?._id)
-                }
-              />
+              {!isCurrentPlayerStoryteller && (
+                <>
+                  <Button
+                    name="firstBtn"
+                    btnText="★"
+                    onClick={() => toggleCardSelection(0)}
+                    disabled={
+                      selectedCards.length === 2 &&
+                      (gamePlayers.length > 3
+                        ? false
+                        : !isFirstStarSelected &&
+                          selectedCards[0]?._id !== currentCard?._id)
+                    }
+                  />
+                  <Button
+                    name="secondBtn"
+                    btnText="★"
+                    onClick={() => toggleCardSelection(1)}
+                    disabled={
+                      selectedCards.length === 2 &&
+                      (gamePlayers.length > 3
+                        ? false
+                        : !isSecondStarSelected &&
+                          selectedCards[1]?._id !== currentCard?._id)
+                    }
+                  />
+                </>
+              )}
             </div>
           </>,
         );
