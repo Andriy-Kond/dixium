@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Button from "common/components/ui/Button/index.js";
 import css from "./CardCarousel.module.scss";
@@ -15,21 +15,24 @@ export default function CardCarousel({
     align: "center",
   });
 
-  const toggleCardSelection = starIndex => {
-    const currentCardIndex = emblaApiCards?.selectedScrollSnap();
-    const currentCard = playerHand[currentCardIndex];
-    if (!currentCard) return;
+  const toggleCardSelection = useCallback(
+    starIndex => {
+      const currentCardIndex = emblaApiCards?.selectedScrollSnap();
+      const currentCard = playerHand[currentCardIndex];
+      if (!currentCard) return;
 
-    setSelectedCards(prev => {
-      const isSelected = prev.some(card => card._id === currentCard._id);
-      if (isSelected) {
-        return prev.filter(card => card._id !== currentCard._id);
-      } else if (prev.length < 2) {
-        return [...prev, currentCard];
-      }
-      return prev;
-    });
-  };
+      setSelectedCards(prev => {
+        const isSelected = prev.some(card => card._id === currentCard._id);
+        if (isSelected) {
+          return prev.filter(card => card._id !== currentCard._id);
+        } else if (prev.length < 2) {
+          return [...prev, currentCard];
+        }
+        return prev;
+      });
+    },
+    [emblaApiCards, playerHand],
+  );
 
   useEffect(() => {
     const currentCardIndex = emblaApiCards?.selectedScrollSnap() || 0;
@@ -62,12 +65,13 @@ export default function CardCarousel({
       </div>,
     );
   }, [
-    selectedCards,
     emblaApiCards,
-    playerHand,
-    setMiddleButton,
-    onVote,
     onExit,
+    onVote,
+    playerHand,
+    selectedCards,
+    setMiddleButton,
+    toggleCardSelection,
   ]);
 
   return (

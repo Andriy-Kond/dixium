@@ -7,14 +7,12 @@ import Table from "common/components/game/Table";
 
 import css from "./Game.module.scss";
 import GameNavigationBar from "common/components/game/GameNavigationBar";
-import CardCarousel from "../CardCarousel/CardCarousel.jsx";
-import { useSelector } from "react-redux";
-import { selectPlayerHand, selectUserCredentials } from "redux/selectors.js";
-import { useLocation } from "react-router-dom";
 
 export default function Game() {
   const [activeScreen, setActiveScreen] = useState(0);
   const [middleButton, setMiddleButton] = useState(null);
+
+  const [isCarouselMode, setIsCarouselMode] = useState(false);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -35,15 +33,6 @@ export default function Game() {
 
   // Отримання поточного індексу слайду для пропсів
   const getActiveScreen = () => emblaApi?.selectedScrollSnap() || 0;
-  const [isCarouselMode, setIsCarouselMode] = useState(false); // Режим каруселі для збільшених карт
-
-  const location = useLocation();
-  const match = location.pathname.match(/game\/([\w\d]+)/);
-  const currentGameId = match ? match[1] : null;
-  const userCredentials = useSelector(selectUserCredentials);
-  const playerHand = useSelector(
-    selectPlayerHand(currentGameId, userCredentials._id),
-  );
 
   const screens = [<Hand />, <Players />, <Table />];
 
@@ -86,18 +75,20 @@ export default function Game() {
   return (
     <>
       <p>Game</p>
-      <div className={css.swipeWrapper} ref={emblaRef}>
-        <div className={css.screenWrapper}>
+      <div className={css.swipeWrapper} ref={isCarouselMode ? null : emblaRef}>
+        <ul className={css.screenWrapper}>
           {screens.map((screen, index) => (
-            <div className={css.screenContainer} key={index}>
+            <li className={css.screenContainer} key={index}>
               {cloneElement(screen, {
                 isActive: getActiveScreen() === index, // Актуальний індекс
                 setActiveScreen,
                 setMiddleButton,
+                isCarouselMode,
+                setIsCarouselMode,
               })}
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
 
       <GameNavigationBar
@@ -106,6 +97,7 @@ export default function Game() {
         onPrevScreen={prevScreen}
         onNextScreen={nextScreen}
         middleButton={middleButton}
+        sidesButtons={!isCarouselMode}
       />
     </>
   );
