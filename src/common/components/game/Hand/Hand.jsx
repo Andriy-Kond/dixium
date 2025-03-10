@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import socket from "servises/socket.js";
 
@@ -9,6 +9,7 @@ import {
   selectGameDeck,
   selectGameDiscardPile,
   selectGamePlayers,
+  selectIsFirstTurn,
   selectPlayerHand,
   selectStorytellerId,
   selectUserCredentials,
@@ -18,9 +19,12 @@ import Button from "common/components/ui/Button";
 import css from "./Hand.module.scss";
 import { MAKING_TURN } from "utils/generals/constants.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
+import Mask from "../Mask/Mask.jsx";
 
 export default function Hand({ isActive, setMiddleButton }) {
   const { currentGameId } = useParams();
+  const isFirstTurn = useSelector(selectIsFirstTurn(currentGameId));
+
   const userCredentials = useSelector(selectUserCredentials);
   const storytellerId = useSelector(selectStorytellerId(currentGameId));
   const gamePlayers = useSelector(selectGamePlayers(currentGameId));
@@ -128,18 +132,46 @@ export default function Hand({ isActive, setMiddleButton }) {
     ? "You have told your story. Waiting for other players to choose their associations"
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
+  const returnToHand = useCallback(() => {
+    const updatedGame = {
+      ...currentGame,
+      isFirstTurn: false,
+    };
+
+    socket.emit("gameUpdateFirstTurn", { updatedGame }, response => {
+      if (response?.error) {
+        console.error("Failed to update game:", response.error);
+      }
+    });
+  }, [currentGame]);
+
   useEffect(() => {
-    // console.log( "Hand >> isActive:::", isActive);
     if (isActive && isCurrentPlayerStoryteller) {
       setMiddleButton(null);
-    } else
-      setMiddleButton(
-        <Button btnText={btnText} onClick={vote} disabled={!selectedCardId} />,
-      );
+    } else {
+      isFirstTurn
+        ? setMiddleButton(
+            <Button
+              btnStyle={["btnFlexGrow"]}
+              btnText={"Close mask"}
+              onClick={returnToHand}
+            />,
+          )
+        : setMiddleButton(
+            <Button
+              btnStyle={["btnFlexGrow"]}
+              btnText={btnText}
+              onClick={vote}
+              disabled={!selectedCardId}
+            />,
+          );
+    }
   }, [
     btnText,
     isActive,
     isCurrentPlayerStoryteller,
+    isFirstTurn,
+    returnToHand,
     selectedCardId,
     setMiddleButton,
     vote,
@@ -147,28 +179,32 @@ export default function Hand({ isActive, setMiddleButton }) {
 
   return (
     <>
-      <div>
-        <p>Hand</p>
-        <p>{paragraphText}</p>
-        <ul className={`${css.currentDeck}`}>
-          {currentPlayer.hand.map(card => (
-            <li
-              className={css.card}
-              key={card._id}
-              onClick={() => onSelectCard(card._id)}>
-              <img
-                className={`${css.img} ${
-                  selectedCardId &&
-                  selectedCardId !== card._id &&
-                  css.imgInactive
-                }`}
-                src={card.url}
-                alt="card"
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
+      {isFirstTurn && !isCurrentPlayerStoryteller ? (
+        <Mask />
+      ) : (
+        <div>
+          <p>Hand</p>
+          <p>{paragraphText}</p>
+          <ul className={`${css.currentDeck}`}>
+            {currentPlayer.hand.map(card => (
+              <li
+                className={css.card}
+                key={card._id}
+                onClick={() => onSelectCard(card._id)}>
+                <img
+                  className={`${css.img} ${
+                    selectedCardId &&
+                    selectedCardId !== card._id &&
+                    css.imgInactive
+                  }`}
+                  src={card.url}
+                  alt="card"
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
   );
 }

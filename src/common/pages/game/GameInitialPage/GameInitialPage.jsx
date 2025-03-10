@@ -34,7 +34,11 @@ export default function GameInitialPage() {
             <>
               <GamesList />
               <div className={css.bottomBar}>
-                <Button onClick={createGame} btnText={"Create new game"} />
+                <Button
+                  onClick={createGame}
+                  btnText={"Create new game"}
+                  btnStyle={["btnFlexGrow"]}
+                />
               </div>
             </>
           )}

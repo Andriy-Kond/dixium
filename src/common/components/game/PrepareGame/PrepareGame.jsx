@@ -87,7 +87,7 @@ export default function PrepareGame() {
         <Button
           onClick={toGamePage}
           btnText={"Back"}
-          btnStyle={["twoBtnsInRow"]}
+          btnStyle={["twoBtnsInRow", "btnFlexGrow"]}
         />
         {userCredentials._id === currentGame?.hostPlayerId && (
           <Button

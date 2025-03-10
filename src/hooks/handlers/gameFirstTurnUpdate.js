@@ -2,7 +2,6 @@ import { gameApi } from "redux/game/gameApi.js";
 import { updateGame } from "redux/game/gameSlice.js";
 
 export const gameFirstTurnUpdate = (game, dispatch) => {
-  console.log(" gameUpdate >> game:::", game);
   if (!game) {
     throw new Error(`The game is ${game}`);
   }

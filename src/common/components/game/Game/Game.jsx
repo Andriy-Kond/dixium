@@ -7,19 +7,8 @@ import Table from "common/components/game/Table";
 
 import css from "./Game.module.scss";
 import GameNavigationBar from "common/components/game/GameNavigationBar";
-import { useDispatch, useSelector } from "react-redux";
-import { selectIsFirstTurn, selectStorytellerId } from "redux/selectors.js";
-import { useParams } from "react-router-dom";
-import Modal from "common/components/Modal";
-import { setFirstTurn } from "redux/game/gameSlice.js";
 
 export default function Game() {
-  const dispatch = useDispatch();
-  const { currentGameId } = useParams();
-  const storytellerId = useSelector(selectStorytellerId(currentGameId));
-  const isFirstTurn = useSelector(selectIsFirstTurn(currentGameId));
-  console.log(" Game >> isFirstTurn:::", isFirstTurn);
-
   const [activeScreen, setActiveScreen] = useState(0);
   const [middleButton, setMiddleButton] = useState(null);
 
@@ -83,14 +72,6 @@ export default function Game() {
 
   return (
     <>
-      {isFirstTurn && (
-        <Modal
-          currentGameId={currentGameId}
-          toggleModal={() => {
-            dispatch(setFirstTurn({ gameId: currentGameId, value: false }));
-          }}
-        />
-      )}
       <p>Game</p>
       <div className={css.swipeWrapper} ref={emblaRef}>
         <div className={css.screenWrapper}>

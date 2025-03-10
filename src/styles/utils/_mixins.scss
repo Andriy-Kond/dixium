@@ -39,13 +39,9 @@
 
 @mixin btnPrimary {
   @include btnBase;
-  flex-grow: 1;
+
   border: 1px solid #5d7e9e;
   border-radius: 2px;
-}
-
-@mixin btnSecondary {
-  @include btnBase;
 }
 
 @mixin btnBarMenu {

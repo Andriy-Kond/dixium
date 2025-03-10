@@ -16,6 +16,7 @@ export default function GameNavigationBar({
       <Button
         btnText={"<"}
         onClick={onPrevScreen}
+        btnStyle={["btnTransparentBorder"]}
         // disabled={activeScreen === 0}
       />
 
@@ -24,6 +25,7 @@ export default function GameNavigationBar({
       <Button
         btnText={">"}
         onClick={onNextScreen}
+        btnStyle={["btnTransparentBorder"]}
         // disabled={activeScreen === screensLength - 1}
       />
     </div>

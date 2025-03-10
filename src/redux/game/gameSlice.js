@@ -126,13 +126,6 @@ export const gameSlice = createSlice({
       const game = state.games[gameId];
       if (game) state.games[gameId].cardsOnTable.push(card);
     },
-
-    setFirstTurn(state, action) {
-      const { gameId, value } = action.payload;
-      const game = state.games[gameId];
-
-      if (game) state.games[gameId].isFirstTurn = value;
-    },
   },
 });
 
@@ -162,5 +155,4 @@ export const {
   setFirstStoryteller,
   nextStoryteller,
   setCardsOnTable,
-  setFirstTurn,
 } = gameSlice.actions;

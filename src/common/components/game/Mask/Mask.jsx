@@ -1,4 +1,5 @@
 import css from "./Mask.module.scss";
+
 export default function Mask() {
   return (
     <>

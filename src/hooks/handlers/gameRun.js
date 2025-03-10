@@ -38,13 +38,11 @@ export const gameRun = (game, message, dispatch, activeActions) => {
         gameApi.util.updateQueryData("getAllGames", undefined, draft => {
           if (game._id in draft) {
             // Якщо гра вже є, оновлюємо її
-            dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
+            dispatch(updateGame(game)); // оновлення gameSlice (для актуального локального стейту)
             draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
           }
         }),
       );
-
-      // dispatch(updateGame(game));
     }
   }
 };
