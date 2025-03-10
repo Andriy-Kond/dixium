@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import socket from "servises/socket.js";
+import socket from "services/socket.js";
 
 import {
   selectCardsOnTable,
@@ -24,17 +24,15 @@ import Mask from "../Mask/Mask.jsx";
 export default function Hand({ isActive, setMiddleButton }) {
   const { currentGameId } = useParams();
   const isFirstTurn = useSelector(selectIsFirstTurn(currentGameId));
-
   const userCredentials = useSelector(selectUserCredentials);
   const storytellerId = useSelector(selectStorytellerId(currentGameId));
-  const gamePlayers = useSelector(selectGamePlayers(currentGameId));
   const playerHand = useSelector(
     selectPlayerHand(currentGameId, userCredentials._id),
   );
-
   const currentGame = useSelector(selectGame(currentGameId));
   const cardsOnTable = useSelector(selectCardsOnTable(currentGameId));
   const gameDeck = useSelector(selectGameDeck(currentGameId));
+  const gamePlayers = useSelector(selectGamePlayers(currentGameId));
   const gameDiscardPile = useSelector(selectGameDiscardPile(currentGameId));
 
   const storyteller = gamePlayers.find(p => p._id === storytellerId);

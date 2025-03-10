@@ -4,7 +4,7 @@ import {
   updateGame,
 } from "redux/game/gameSlice.js";
 import { Notify } from "notiflix";
-import socket from "servises/socket.js";
+import socket from "services/socket.js";
 
 const optimisticUpdateMiddleware =
   ({ dispatch, getState }) =>

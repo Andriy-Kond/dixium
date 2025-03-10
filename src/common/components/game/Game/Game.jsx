@@ -7,6 +7,10 @@ import Table from "common/components/game/Table";
 
 import css from "./Game.module.scss";
 import GameNavigationBar from "common/components/game/GameNavigationBar";
+import CardCarousel from "../CardCarousel/CardCarousel.jsx";
+import { useSelector } from "react-redux";
+import { selectPlayerHand, selectUserCredentials } from "redux/selectors.js";
+import { useLocation } from "react-router-dom";
 
 export default function Game() {
   const [activeScreen, setActiveScreen] = useState(0);
@@ -28,6 +32,18 @@ export default function Game() {
       "(min-width: 768px)": { loop: true }, // увімкнути зациклення на екранах ширше 768px.
     },
   });
+
+  // Отримання поточного індексу слайду для пропсів
+  const getActiveScreen = () => emblaApi?.selectedScrollSnap() || 0;
+  const [isCarouselMode, setIsCarouselMode] = useState(false); // Режим каруселі для збільшених карт
+
+  const location = useLocation();
+  const match = location.pathname.match(/game\/([\w\d]+)/);
+  const currentGameId = match ? match[1] : null;
+  const userCredentials = useSelector(selectUserCredentials);
+  const playerHand = useSelector(
+    selectPlayerHand(currentGameId, userCredentials._id),
+  );
 
   const screens = [<Hand />, <Players />, <Table />];
 
@@ -51,9 +67,6 @@ export default function Game() {
   const nextScreen = () => {
     emblaApi?.scrollNext();
   };
-
-  // Отримання поточного індексу слайду для пропсів
-  const getActiveScreen = () => emblaApi?.selectedScrollSnap() || 0;
 
   // KB events handler
   useEffect(() => {

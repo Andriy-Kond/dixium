@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Notify } from "notiflix";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
-import socket from "servises/socket.js";
+import socket from "services/socket.js";
 import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
 
 import { useGetAllGamesQuery } from "redux/game/gameApi.js";
