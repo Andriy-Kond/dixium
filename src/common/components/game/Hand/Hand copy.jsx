@@ -56,11 +56,7 @@ export default function Hand({
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
 
-  const [cardsSet, setCardsSet] = useState({
-    firstCard: null,
-    secondCard: null,
-  });
-
+  const [cardsSet, setCardsSet] = useState([]);
   const [emblaRefCards, emblaApiCards] = useEmblaCarousel({
     loop: true,
     align: "center",
@@ -68,8 +64,9 @@ export default function Hand({
   });
 
   const toggleCardSelection = useCallback(
-    btnKey => {
-      const currentCardIndex = emblaApiCards?.selectedScrollSnap() || 0;
+    btnStarIdx => {
+      const currentCardIndex =
+        selectedCardIdx || emblaApiCards?.selectedScrollSnap();
       const currentCard = playerHand[currentCardIndex];
 
       if (!currentCard) {
@@ -77,33 +74,57 @@ export default function Hand({
         return;
       }
 
-      setCardsSet(prev => {
-        const isSelected =
-          prev.firstCard?._id === currentCard._id ||
-          prev.secondCard?._id === currentCard._id;
+      const isCurrentCardInArray = cardsSet.some(
+        c => c._id === currentCard._id,
+      );
 
-        if (isSelected && prev[btnKey]?._id === currentCard._id) {
-          // Якщо карта вже обрана цією кнопкою, знімаємо вибір
-          return { ...prev, [btnKey]: null };
-        } else if (
-          !prev.firstCard ||
-          !prev.secondCard ||
-          prev[btnKey]?._id === currentCard._id
-        ) {
-          // Якщо є вільне місце або це скасування
-          const otherCard =
-            btnKey === "firstCard" ? prev.secondCard : prev.firstCard;
-          // if (otherCard?._id === currentCard._id) {
-          if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
-            console.log("error: cards must be different");
-            return prev;
-          }
-          return { ...prev, [btnKey]: currentCard };
+      // Не можна кілкати на кнопку, якщо в ній інша карта:
+      if (
+        (btnStarIdx === 0 &&
+          cardsSet[0] &&
+          cardsSet[0]._id !== currentCard._id) ||
+        (btnStarIdx === 1 && cardsSet[1] && cardsSet[1]._id !== currentCard._id)
+      ) {
+        console.log("error: this btn already reserved for other card");
+        return;
+      } else {
+        if (!playersMoreThanThree) {
+          // Якщо гравців троє - треба обирати дві різних карти
+          setCardsSet(prev => {
+            const isSelected = prev.some(card => card._id === currentCard._id);
+            if (isSelected) {
+              // return prev.filter(card => card._id !== currentCard._id);
+              const newCards = [...prev];
+              newCards[btnStarIdx] = null;
+              return newCards;
+            } else if (prev.length < 2) {
+              // Карти мають бути різні:
+              if (isCurrentCardInArray) {
+                console.log("error: cards must be different");
+                return;
+              } else {
+                return [...prev, (prev[btnStarIdx] = currentCard)];
+              }
+            }
+          });
+        } else {
+          // Якщо гравців більше трьох - можна на одну карту ставити дві позначки
+          setCardsSet(prev => {
+            if (prev.length < 2) {
+              // Можна ставити на одну карту дві позначки:
+              return [...prev, (prev[btnStarIdx] = currentCard)];
+            }
+          });
         }
-        return prev; // Якщо обидва слоти зайняті іншими картами
-      });
+      }
     },
-    [emblaApiCards, playerHand, playersMoreThanThree],
+    [
+      cardsSet,
+      emblaApiCards,
+      playerHand,
+      playersMoreThanThree,
+      selectedCardIdx,
+    ],
   );
 
   const exitCarouselMode = useCallback(() => {
@@ -206,47 +227,73 @@ export default function Hand({
     ? "You have told your story. Waiting for other players to choose their associations"
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
+  // Отримання індексу активної карти
   useEffect(() => {
-    if (!emblaApiCards) return;
-    const onSelect = () => setActiveCardIdx(emblaApiCards.selectedScrollSnap());
+    if (!emblaApiCards) return; // Перевірка на наявність API
+
+    const onSelect = () => {
+      const idx = emblaApiCards.selectedScrollSnap();
+      setActiveCardIdx(idx);
+    };
+
+    // Підписка на подію зміни слайда
     emblaApiCards.on("select", onSelect);
-    return () => emblaApiCards.off("select", onSelect);
+
+    // Очищення підписки при розмонтуванні компонента
+    return () => {
+      emblaApiCards.off("select", onSelect);
+    };
   }, [emblaApiCards]);
 
   useEffect(() => {
     if (isActiveScreen) {
       if (isCarouselMode) {
+        // const activeCardIndex = emblaApiCards?.selectedScrollSnap() || 0;
         const activeCard = playerHand[activeCardIdx];
-        if (!activeCard) return;
 
+        if (!activeCard) {
+          console.log("error: card not found");
+          return;
+        }
+
+        const isActiveCardSelectedByFirstBtnStar =
+          cardsSet[0]?._id === activeCard?._id;
+        const isActiveCardSelectedBySecondBtnStar =
+          cardsSet[1]?._id === activeCard?._id;
+
+        //fore !playersMoreThanThree;
         const isDisabledFirstBtn =
-          (cardsSet.firstCard && cardsSet.firstCard._id !== activeCard._id) ||
-          (cardsSet.secondCard &&
-            cardsSet.secondCard._id === activeCard._id &&
-            !cardsSet.firstCard);
+          (cardsSet[0] && activeCard._id !== cardsSet[0]._id) ||
+          cardsSet.length === 2
+            ? cardsSet[0] && !isActiveCardSelectedByFirstBtnStar
+            : cardsSet[1] && activeCard._id === cardsSet[1]._id;
 
         const isDisabledSecondBtn =
-          (cardsSet.secondCard && cardsSet.secondCard._id !== activeCard._id) ||
-          (cardsSet.firstCard &&
-            cardsSet.firstCard._id === activeCard._id &&
-            !cardsSet.secondCard);
+          (cardsSet[1] && activeCard._id !== cardsSet[1]._id) ||
+          cardsSet.length === 2
+            ? cardsSet[1] && !isActiveCardSelectedBySecondBtnStar
+            : cardsSet[0] && activeCard._id === cardsSet[0]._id;
 
         setMiddleButton(
           <>
             <Button btnText="Back" onClick={exitCarouselMode} />
-            <div style={{ display: "flex", flexDirection: "row" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+              }}>
               {!isCurrentPlayerStoryteller && (
                 <>
                   <Button
                     name="firstBtn"
-                    btnText="★1"
-                    onClick={() => toggleCardSelection("firstCard")}
+                    btnText="★"
+                    onClick={() => toggleCardSelection(0)}
                     disabled={isDisabledFirstBtn}
                   />
                   <Button
                     name="secondBtn"
-                    btnText="★2"
-                    onClick={() => toggleCardSelection("secondCard")}
+                    btnText="★"
+                    onClick={() => toggleCardSelection(1)}
                     disabled={isDisabledSecondBtn}
                   />
                 </>
@@ -256,6 +303,7 @@ export default function Hand({
         );
       } else if (isFirstTurn) {
         isCurrentPlayerStoryteller && returnToHand();
+
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -277,6 +325,8 @@ export default function Hand({
   }, [
     emblaApiCards,
     exitCarouselMode,
+    gamePlayers.length,
+    selectedCardIdx,
     isActiveScreen,
     isCarouselMode,
     isCurrentPlayerStoryteller,
@@ -302,19 +352,16 @@ export default function Hand({
   useEffect(() => {
     const handleKeyPress = event => {
       if (!emblaApiCards) return;
-      if (event.key === "ArrowLeft") emblaApiCards.scrollPrev();
-      else if (event.key === "ArrowRight") emblaApiCards.scrollNext();
+      if (event.key === "ArrowLeft") {
+        emblaApiCards.scrollPrev();
+      } else if (event.key === "ArrowRight") {
+        emblaApiCards.scrollNext();
+      }
     };
+
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCards]);
-
-  // Допоміжна функція для визначення типу зірочки
-  const getStarMark = cardId => {
-    if (cardsSet.firstCard?._id === cardId) return "★1";
-    if (cardsSet.secondCard?._id === cardId) return "★2";
-    return null;
-  };
 
   if (isFirstTurn && !isCurrentPlayerStoryteller) {
     return <Mask />;
@@ -331,15 +378,8 @@ export default function Hand({
             {playerHand.map(card => (
               <div className={css.carouselSlide} key={card._id}>
                 <img src={card.url} alt="card" className={css.carouselImage} />
-                {/* {cardsSet.some(sc => sc._id === card._id) && (
+                {cardsSet.some(sc => sc._id === card._id) && (
                   <span className={css.checkbox}>★</span>
-                )} */}
-                {/* {cardsSet.firstCard?._id === card._id && (
-                  <span className={css.checkbox}>★</span>
-                )} */}
-
-                {getStarMark(card._id) && (
-                  <span className={css.checkbox}>{getStarMark(card._id)}</span>
                 )}
               </div>
             ))}
@@ -366,16 +406,8 @@ export default function Hand({
                   src={card.url}
                   alt="card"
                 />
-
-                {/* {cardsSet.some(sc => sc._id === card._id) && (
+                {cardsSet.some(sc => sc._id === card._id) && (
                   <span className={css.checkbox}>★</span>
-                )} */}
-                {/* {cardsSet.secondCard?._id === card._id && (
-                  <span className={css.checkbox}>★</span>
-                )} */}
-
-                {getStarMark(card._id) && (
-                  <span className={css.checkbox}>{getStarMark(card._id)}</span>
                 )}
               </li>
             ))}

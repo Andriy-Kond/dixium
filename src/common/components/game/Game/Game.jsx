@@ -80,7 +80,7 @@ export default function Game() {
           {screens.map((screen, index) => (
             <li className={css.screenContainer} key={index}>
               {cloneElement(screen, {
-                isActive: getActiveScreen() === index, // Актуальний індекс
+                isActiveScreen: getActiveScreen() === index, // Актуальний індекс
                 setActiveScreen,
                 setMiddleButton,
                 isCarouselMode,
