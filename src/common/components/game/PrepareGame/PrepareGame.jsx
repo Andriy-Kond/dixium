@@ -60,6 +60,11 @@ export default function PrepareGame() {
     navigate(`/game`);
   };
 
+  // todo select game rules (set these keys into gameSlice state)
+  // - 3 гравця - default (isManyCardModeWithoutDoubling)
+  // - більше 3 гравців: isSingleCardMode;
+  // - більше 3 гравців: isManyCardModeWithDoubling;
+
   return (
     <>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

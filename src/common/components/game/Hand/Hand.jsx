@@ -28,6 +28,7 @@ export default function Hand({
   setMiddleButton,
   isCarouselMode,
   setIsCarouselMode,
+  isSingleCardMode,
 }) {
   const { currentGameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(currentGameId));
@@ -61,6 +62,8 @@ export default function Hand({
     secondCard: null,
   });
 
+  const { firstCard, secondCard } = cardsSet;
+
   const [emblaRefCards, emblaApiCards] = useEmblaCarousel({
     loop: true,
     align: "center",
@@ -69,6 +72,11 @@ export default function Hand({
 
   const toggleCardSelection = useCallback(
     btnKey => {
+      if (isSingleCardMode && btnKey === "secondCard") {
+        console.log("error: only one card allowed");
+        return;
+      }
+
       const currentCardIndex = emblaApiCards?.selectedScrollSnap() || 0;
       const currentCard = playerHand[currentCardIndex];
 
@@ -82,28 +90,33 @@ export default function Hand({
           prev.firstCard?._id === currentCard._id ||
           prev.secondCard?._id === currentCard._id;
 
+        // Якщо поточна картка є в об'єкті:
         if (isSelected && prev[btnKey]?._id === currentCard._id) {
           // Якщо карта вже обрана цією кнопкою, знімаємо вибір
           return { ...prev, [btnKey]: null };
         } else if (
+          // Якщо поточної картки немає в об'єкті:
+          // Якщо одна з комірок вільна, або якщо обрана картка у поточній комірці
           !prev.firstCard ||
           !prev.secondCard ||
           prev[btnKey]?._id === currentCard._id
         ) {
           // Якщо є вільне місце або це скасування
           const otherCard =
-            btnKey === "firstCard" ? prev.secondCard : prev.firstCard;
-          // if (otherCard?._id === currentCard._id) {
+            btnKey === "firstCard" ? prev.secondCard : prev.firstCard; // визначення яка комірка об'єкту "інша"
+          // Якщо гравців троє, і якщо "інша" комірка вже має в собі поточну картку
           if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
             console.log("error: cards must be different");
             return prev;
           }
+          // Якщо поточної картки немає у натиснутій кнопці-комірки, то вставляємо її туди:
           return { ...prev, [btnKey]: currentCard };
         }
+
         return prev; // Якщо обидва слоти зайняті іншими картами
       });
     },
-    [emblaApiCards, playerHand, playersMoreThanThree],
+    [emblaApiCards, isSingleCardMode, playerHand, playersMoreThanThree],
   );
 
   const exitCarouselMode = useCallback(() => {
@@ -206,10 +219,11 @@ export default function Hand({
     ? "You have told your story. Waiting for other players to choose their associations"
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
+  // Отримання індексу активної карти
   useEffect(() => {
-    if (!emblaApiCards) return;
+    if (!emblaApiCards) return; // Перевірка на наявність API
     const onSelect = () => setActiveCardIdx(emblaApiCards.selectedScrollSnap());
-    emblaApiCards.on("select", onSelect);
+    emblaApiCards.on("select", onSelect); // Підписка на подію зміни слайда
     return () => emblaApiCards.off("select", onSelect);
   }, [emblaApiCards]);
 
@@ -217,45 +231,60 @@ export default function Hand({
     if (isActiveScreen) {
       if (isCarouselMode) {
         const activeCard = playerHand[activeCardIdx];
-        if (!activeCard) return;
+        if (!activeCard) {
+          console.log("error: card not found");
+          return;
+        }
 
-        const isDisabledFirstBtn =
-          (cardsSet.firstCard && cardsSet.firstCard._id !== activeCard._id) ||
-          (cardsSet.secondCard &&
-            cardsSet.secondCard._id === activeCard._id &&
-            !cardsSet.firstCard);
+        // // for !playersMoreThanThree;
+        // const isDisabledFirstBtn =
+        //   (firstCard && firstCard._id !== activeCard._id) ||
+        //   (!firstCard && secondCard && secondCard._id === activeCard._id);
 
-        const isDisabledSecondBtn =
-          (cardsSet.secondCard && cardsSet.secondCard._id !== activeCard._id) ||
-          (cardsSet.firstCard &&
-            cardsSet.firstCard._id === activeCard._id &&
-            !cardsSet.secondCard);
+        // const isDisabledSecondBtn =
+        //   (secondCard && secondCard._id !== activeCard._id) ||
+        //   (!secondCard && firstCard && firstCard._id === activeCard._id);
+
+        const isDisabledFirstBtn = playersMoreThanThree
+          ? firstCard && firstCard._id !== activeCard._id
+          : (firstCard && firstCard._id !== activeCard._id) ||
+            (!firstCard && secondCard && secondCard._id === activeCard._id);
+
+        const isDisabledSecondBtn = playersMoreThanThree
+          ? secondCard && secondCard._id !== activeCard._id
+          : (secondCard && secondCard._id !== activeCard._id) ||
+            (!secondCard && firstCard && firstCard._id === activeCard._id);
 
         setMiddleButton(
           <>
             <Button btnText="Back" onClick={exitCarouselMode} />
+
             <div style={{ display: "flex", flexDirection: "row" }}>
               {!isCurrentPlayerStoryteller && (
                 <>
                   <Button
-                    name="firstBtn"
                     btnText="★1"
                     onClick={() => toggleCardSelection("firstCard")}
                     disabled={isDisabledFirstBtn}
+                    localClassName={cardsSet.firstCard && css.btnActive}
                   />
-                  <Button
-                    name="secondBtn"
-                    btnText="★2"
-                    onClick={() => toggleCardSelection("secondCard")}
-                    disabled={isDisabledSecondBtn}
-                  />
+                  {!isSingleCardMode && (
+                    <Button
+                      btnText="★2"
+                      onClick={() => toggleCardSelection("secondCard")}
+                      disabled={isDisabledSecondBtn}
+                      localClassName={cardsSet.secondCard && css.btnActive}
+                    />
+                  )}
                 </>
               )}
             </div>
           </>,
         );
       } else if (isFirstTurn) {
-        isCurrentPlayerStoryteller && returnToHand();
+        // Якщо це не карусуль-режим і одразу після першого ходу
+        isCurrentPlayerStoryteller && returnToHand(); // для сторітеллера автоматично
+        // Для інших гравців - екран-маска:
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -264,6 +293,7 @@ export default function Hand({
           />,
         );
       } else {
+        // Якщо це не карусель-режим і закритий екран-маска - до голосування за карти
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -275,21 +305,25 @@ export default function Hand({
       }
     }
   }, [
-    emblaApiCards,
+    activeCardIdx,
+    cardsSet.firstCard,
+    cardsSet.secondCard,
     exitCarouselMode,
+    firstCard,
+    firstStory,
     isActiveScreen,
     isCarouselMode,
     isCurrentPlayerStoryteller,
     isFirstTurn,
+    isSingleCardMode,
     playerHand,
+    playersMoreThanThree,
     returnToHand,
+    secondCard,
     selectedCardId,
-    cardsSet,
     setMiddleButton,
     storytellerId,
     toggleCardSelection,
-    firstStory,
-    activeCardIdx,
   ]);
 
   const carouselModeOn = idx => {
@@ -309,11 +343,19 @@ export default function Hand({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCards]);
 
-  // Допоміжна функція для визначення типу зірочки
-  const getStarMark = cardId => {
-    if (cardsSet.firstCard?._id === cardId) return "★1";
-    if (cardsSet.secondCard?._id === cardId) return "★2";
-    return null;
+  // Функція для визначення типу зірочки
+  // const getStarMark = cardId => {
+  //   if (firstCard?._id === cardId) return "★1";
+  //   if (secondCard?._id === cardId) return "★2";
+  //   return null;
+  // };
+
+  // Для двох зірочок:
+  const getStarMarks = cardId => {
+    const marks = [];
+    if (firstCard?._id === cardId) marks.push("★1");
+    if (secondCard?._id === cardId) marks.push("★2");
+    return marks;
   };
 
   if (isFirstTurn && !isCurrentPlayerStoryteller) {
@@ -327,23 +369,20 @@ export default function Hand({
 
       {isCarouselMode ? (
         <div className={css.carouselWrapper} ref={emblaRefCards}>
-          <div className={css.carouselContainer}>
+          <ul className={css.carouselContainer}>
             {playerHand.map(card => (
-              <div className={css.carouselSlide} key={card._id}>
+              <li className={css.carouselSlide} key={card._id}>
                 <img src={card.url} alt="card" className={css.carouselImage} />
-                {/* {cardsSet.some(sc => sc._id === card._id) && (
-                  <span className={css.checkbox}>★</span>
-                )} */}
-                {/* {cardsSet.firstCard?._id === card._id && (
-                  <span className={css.checkbox}>★</span>
-                )} */}
-
-                {getStarMark(card._id) && (
-                  <span className={css.checkbox}>{getStarMark(card._id)}</span>
-                )}
-              </div>
+                <div className={css.checkboxContainer}>
+                  {getStarMarks(card._id).map((mark, index) => (
+                    <span key={index} className={css.checkboxCarousel}>
+                      {mark}
+                    </span>
+                  ))}
+                </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ) : (
         <div>
@@ -366,17 +405,13 @@ export default function Hand({
                   src={card.url}
                   alt="card"
                 />
-
-                {/* {cardsSet.some(sc => sc._id === card._id) && (
-                  <span className={css.checkbox}>★</span>
-                )} */}
-                {/* {cardsSet.secondCard?._id === card._id && (
-                  <span className={css.checkbox}>★</span>
-                )} */}
-
-                {getStarMark(card._id) && (
-                  <span className={css.checkbox}>{getStarMark(card._id)}</span>
-                )}
+                <div className={css.checkboxContainer}>
+                  {getStarMarks(card._id).map((mark, index) => (
+                    <span key={index} className={css.checkboxCard}>
+                      {mark}
+                    </span>
+                  ))}
+                </div>
               </li>
             ))}
           </ul>

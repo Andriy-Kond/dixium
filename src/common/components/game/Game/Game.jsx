@@ -85,6 +85,7 @@ export default function Game() {
                 setMiddleButton,
                 isCarouselMode,
                 setIsCarouselMode,
+                // isSingleCardMode, // todo - set this key into gameSlice state
               })}
             </li>
           ))}

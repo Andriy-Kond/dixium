@@ -7,24 +7,40 @@
 }
 
 .carouselSlide {
+  position: relative;
   flex-grow: 0;
   flex-shrink: 0;
   // flex-basis: 100%; // In chrome-browser set wrong behaviour
-  position: relative;
 }
 
 .carouselImage {
   width: 100%;
   height: auto;
+  // object-fit: cover;
 }
 
-.checkbox {
-  position: absolute;
-  top: 0px;
-  right: 10px;
-  font-size: 40px;
+.checkboxContainer {
+  position: absolute; /* Позиціонування відносно картки */
+  top: 10px; /* Відступ від низу картки */
+  right: 10px; /* Відступ зліва */
+  display: flex; /* Горизонтальне розташування зірочок */
+  gap: 5px; /* Відстань між зірочками */
+}
+
+.checkboxBase {
   color: gold;
 }
+
+.checkboxCard {
+  @extend .checkboxBase;
+  font-size: 14px; /* Розмір для .card */
+}
+
+.checkboxCarousel {
+  @extend .checkboxBase;
+  font-size: 40px; /* Розмір для .carouselSlide */
+}
+
 .currentDeck {
   display: flex;
   justify-content: left;
@@ -48,4 +64,8 @@
 
 .imgInactive {
   opacity: 50%;
+}
+
+.btnActive {
+  background-color: #0f7dff1f;
 }
