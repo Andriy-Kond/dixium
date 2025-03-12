@@ -30,6 +30,12 @@ export default function PrepareGame() {
     p => p._id === userCredentials._id,
   );
 
+  const [isSingleCardModeCheckbox, setIsSingleCardModeCheckbox] =
+    useState(false);
+
+  const isDisabledCheckbox =
+    !isCurrentPlayerIsHost || currentGame.players.length < 4;
+
   useEffect(() => {
     if (!isCurrentPlayerInGame) {
       navigate("/game");
@@ -60,7 +66,11 @@ export default function PrepareGame() {
     const game = distributeCards(currentGame);
     if (game.message) return Notify.failure(game.message); // "Not enough cards in the deck"
 
-    const updatedGame = { ...game, isGameRunning: true }; // todo при закінченні гри зробити false
+    const updatedGame = {
+      ...game,
+      isGameRunning: true,
+      isSingleCardMode: isSingleCardModeCheckbox,
+    }; // todo при закінченні гри зробити false
 
     // optimistic update:
     optimisticUpdateDispatch({
@@ -72,17 +82,6 @@ export default function PrepareGame() {
   const toGamePage = () => {
     navigate(`/game`);
   };
-
-  // todo select game rules (set these keys into gameSlice state)
-  // - 3 гравця - default (isManyCardModeWithoutDoubling)
-  // - більше 3 гравців: isSingleCardMode;
-  // - більше 3 гравців: isManyCardModeWithDoubling;
-
-  const [isSingleCardModeCheckbox, setIsSingleCardModeCheckbox] =
-    useState(false);
-
-  const isDisabledCheckbox =
-    !isCurrentPlayerIsHost || currentGame.players.length < 3;
 
   return (
     <>

@@ -50,3 +50,6 @@ export const selectIsFirstTurn = currentGameId => state =>
 
 export const selectIsGameRunning = currentGameId => state =>
   state.gameSlice.games[currentGameId].isGameRunning;
+
+export const selectIsSingleCardMode = currentGameId => state =>
+  state.gameSlice.games[currentGameId].isSingleCardMode;

@@ -11,6 +11,7 @@ import {
   selectGamePlayers,
   selectGameStatus,
   selectIsFirstTurn,
+  selectIsSingleCardMode,
   selectPlayerHand,
   selectStorytellerId,
   selectUserCredentials,
@@ -28,7 +29,6 @@ export default function Hand({
   setMiddleButton,
   isCarouselMode,
   setIsCarouselMode,
-  isSingleCardMode,
 }) {
   const { currentGameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(currentGameId));
@@ -49,6 +49,7 @@ export default function Hand({
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
 
   const playersMoreThanThree = gamePlayers.length > 3;
+  const isSingleCardMode = useSelector(selectIsSingleCardMode(currentGameId));
 
   const [selectedCardId, setSelectedCardId] = useState(null);
 
