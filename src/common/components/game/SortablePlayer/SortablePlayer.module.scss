@@ -1,0 +1,73 @@
+.item {
+  position: relative;
+  display: flex;
+  // justify-content: space-between;
+  justify-content: end;
+  align-items: center;
+  // padding: 10px;
+  margin: 5px;
+  background-color: #d4d4d4;
+  border-radius: 5px;
+  user-select: none;
+  caret-color: transparent;
+  opacity: 0.5;
+}
+
+.host {
+  opacity: 1;
+  cursor: grab; /* Для хоста */
+}
+
+.dragHandle {
+  position: absolute;
+  align-self: stretch;
+  // розтягнути на всю площину li.item:
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  flex-grow: 1;
+  align-items: center; /* Вирівнювання тексту по вертикалі */
+  align-self: stretch;
+  padding: 10px;
+}
+
+.removePlayerBtn {
+  padding: 0;
+  z-index: 1; /* Щоб кнопка була поверх .dragHandle */
+  padding: 10px;
+  // transition: transform 1s ease, color 0.3s ease;
+
+  font-size: 24px;
+
+  // &:hover:not(:disabled) {
+  //   // animation: wiggle 0.5s infinite; /* Запуск анімації при ховері */
+  //   // color: red;
+  // }
+
+  &:focus {
+    outline: 1px solid #000; /* Контур при фокусі */
+  }
+
+  &:disabled {
+    // перевизначення для більшої специфічності (disabled за замовчуванням у btnBase з обводкою)
+    border: 1px solid transparent; /* Зберігаємо прозору обводку */
+  }
+}
+
+// @keyframes wiggle {
+//   0% {
+//     transform: rotate(0deg);
+//   }
+//   25% {
+//     transform: rotate(5deg);
+//   }
+//   75% {
+//     transform: rotate(-5deg);
+//   }
+//   100% {
+//     transform: rotate(0deg);
+//   }
+// }

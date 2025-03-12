@@ -7,10 +7,11 @@ export default function Button({
   btnStyle = [],
   localClassName,
   disabled = false,
+  children,
 }) {
   const buttonClassNames = clsx(
     css.btnPrimary,
-    btnStyle.map(className => css[className]),
+    Object.values(btnStyle).map(key => css[key]),
     localClassName,
   );
 
@@ -21,6 +22,7 @@ export default function Button({
         type="submit"
         onClick={onClick}
         disabled={disabled}>
+        {children}
         {btnText.toUpperCase()}
       </button>
     </>

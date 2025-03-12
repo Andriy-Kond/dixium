@@ -15,6 +15,8 @@ import { selectGame, selectUserCredentials } from "redux/selectors.js";
 import css from "./PrepareGame.module.scss";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 
+import { useEffect, useState } from "react";
+
 export default function PrepareGame() {
   const navigate = useNavigate();
 
@@ -22,10 +24,21 @@ export default function PrepareGame() {
   const { currentGameId } = useParams();
   const currentGame = useSelector(selectGame(currentGameId));
   const userCredentials = useSelector(selectUserCredentials);
+  const isCurrentPlayerIsHost =
+    currentGame.hostPlayerId === userCredentials._id;
+  const isCurrentPlayerInGame = currentGame.players.find(
+    p => p._id === userCredentials._id,
+  );
+
+  useEffect(() => {
+    if (!isCurrentPlayerInGame) {
+      navigate("/game");
+    }
+  }, [isCurrentPlayerInGame, navigate]);
 
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
-    if (currentGame.hostPlayerId !== userCredentials._id) return; // dnd can do the host player only
+    if (!isCurrentPlayerIsHost) return; // dnd can do the host player only
 
     const { active, over } = event;
 
@@ -65,8 +78,34 @@ export default function PrepareGame() {
   // - більше 3 гравців: isSingleCardMode;
   // - більше 3 гравців: isManyCardModeWithDoubling;
 
+  const [isSingleCardModeCheckbox, setIsSingleCardModeCheckbox] =
+    useState(false);
+
+  const isDisabledCheckbox =
+    !isCurrentPlayerIsHost || currentGame.players.length < 3;
+
   return (
     <>
+      <div className={css.checkboxWrapper}>
+        <label
+          //# для нових браузерів:
+          // className={css.checkboxLabel}
+          //# для старих браузерів:
+          className={`${css.checkboxLabel} ${
+            isSingleCardModeCheckbox ? css.checked : ""
+          } ${isDisabledCheckbox ? css.disabled : ""}`}>
+          <input
+            disabled={isDisabledCheckbox}
+            className={css.checkboxInput}
+            type="checkbox"
+            name="isSingleCardMode"
+            onChange={() => setIsSingleCardModeCheckbox(prev => !prev)}
+            checked={isSingleCardModeCheckbox}
+          />
+          {"Single Card Mode".toUpperCase()}
+        </label>
+      </div>
+
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={currentGame?.players.map(p => p._id)}
@@ -74,15 +113,7 @@ export default function PrepareGame() {
           disabled={currentGame.hostPlayerId !== userCredentials._id}>
           <ul>
             {currentGame?.players.map(player => (
-              <SortablePlayer
-                key={player._id}
-                player={player}
-                styles={`${css.item} 
-                        ${
-                          currentGame.hostPlayerId === userCredentials._id &&
-                          css.host
-                        }`}
-              />
+              <SortablePlayer key={player._id} player={player} />
             ))}
           </ul>
         </SortableContext>
@@ -92,7 +123,7 @@ export default function PrepareGame() {
         <Button
           onClick={toGamePage}
           btnText={"Back"}
-          btnStyle={["twoBtnsInRow", "btnFlexGrow"]}
+          btnStyle={[["twoBtnsInRow"], ["btnFlexGrow"]]}
         />
         {userCredentials._id === currentGame?.hostPlayerId && (
           <Button

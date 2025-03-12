@@ -1,18 +1,3 @@
-.item {
-  padding: 10px;
-  margin: 5px;
-  background-color: #d4d4d4;
-  border-radius: 5px;
-  user-select: none;
-  caret-color: transparent;
-  opacity: 0.5;
-}
-
-.host {
-  opacity: 1;
-  cursor: grab; /* Для хоста */
-}
-
 .bottomBar {
   margin-top: auto;
 
@@ -23,4 +8,80 @@
 
   background-color: var(--white_color);
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
+}
+
+// checkbox
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkboxInput {
+  display: none; // hide the standard checkbox
+}
+
+.checkboxLabel {
+  position: relative;
+  padding: 10px;
+  padding-left: 26px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+
+  // Базовий стиль
+  &::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #000; // Чорний за замовчуванням
+    border-radius: 4px;
+    background-color: transparent;
+  }
+
+  //# Для нових браузерів можна використовувати :has
+  // &:has(.checkboxInput:checked)::after {
+  //# для старих браузерів - варіант з умовним класом:
+  // Показуємо галочку, коли input всередині label має стан :checked
+  &.checked::after {
+    content: "✔";
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #000; // Чорний за замовчуванням
+    opacity: 1;
+  }
+
+  // За замовчуванням галочка прихована
+  &::after {
+    content: "✔";
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #000; // Чорний за замовчуванням
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &.disabled {
+    cursor: auto;
+    color: #0000003d;
+
+    &::before {
+      border-color: #0000003d;
+    }
+
+    &::after {
+      color: #0000003d;
+    }
+  }
 }

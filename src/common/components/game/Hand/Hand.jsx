@@ -51,6 +51,7 @@ export default function Hand({
   const playersMoreThanThree = gamePlayers.length > 3;
 
   const [selectedCardId, setSelectedCardId] = useState(null);
+
   const onSelectCard = cardId =>
     setSelectedCardId(cardId === selectedCardId ? null : cardId);
 
@@ -227,6 +228,11 @@ export default function Hand({
     return () => emblaApiCards.off("select", onSelect);
   }, [emblaApiCards]);
 
+  const isCanVote =
+    playersMoreThanThree && isSingleCardMode
+      ? !!firstCard?._id
+      : !!firstCard?._id && !!secondCard?._id;
+
   useEffect(() => {
     if (isActiveScreen) {
       if (isCarouselMode) {
@@ -235,15 +241,6 @@ export default function Hand({
           console.log("error: card not found");
           return;
         }
-
-        // // for !playersMoreThanThree;
-        // const isDisabledFirstBtn =
-        //   (firstCard && firstCard._id !== activeCard._id) ||
-        //   (!firstCard && secondCard && secondCard._id === activeCard._id);
-
-        // const isDisabledSecondBtn =
-        //   (secondCard && secondCard._id !== activeCard._id) ||
-        //   (!secondCard && firstCard && firstCard._id === activeCard._id);
 
         const isDisabledFirstBtn = playersMoreThanThree
           ? firstCard && firstCard._id !== activeCard._id
@@ -283,25 +280,32 @@ export default function Hand({
         );
       } else if (isFirstTurn) {
         // Якщо це не карусуль-режим і одразу після першого ходу
-        isCurrentPlayerStoryteller && returnToHand(); // для сторітеллера автоматично
-        // Для інших гравців - екран-маска:
-        setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={"Close mask"}
-            onClick={returnToHand}
-          />,
-        );
+        isCurrentPlayerStoryteller
+          ? returnToHand() // для сторітеллера автоматично
+          : // Для інших гравців - екран-маска:
+            setMiddleButton(
+              <Button
+                btnStyle={["btnFlexGrow"]}
+                btnText={"Close mask"}
+                onClick={returnToHand}
+              />,
+            );
       } else {
         // Якщо це не карусель-режим і закритий екран-маска - до голосування за карти
-        setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={!storytellerId ? "Tell your story" : "Vote"}
-            onClick={firstStory}
-            disabled={!selectedCardId}
-          />,
-        );
+        // !isCurrentPlayerStoryteller &&
+
+        if (isCurrentPlayerStoryteller) {
+          setMiddleButton(null); // Очищаємо кнопку для сторітеллера
+        } else {
+          setMiddleButton(
+            <Button
+              btnStyle={["btnFlexGrow"]}
+              btnText={!storytellerId ? "Tell your story" : "Vote"}
+              onClick={gameStatus === VOTING ? voting : firstStory}
+              disabled={gameStatus === VOTING ? !isCanVote : !selectedCardId}
+            />,
+          );
+        }
       }
     }
   }, [
@@ -311,7 +315,9 @@ export default function Hand({
     exitCarouselMode,
     firstCard,
     firstStory,
+    gameStatus,
     isActiveScreen,
+    isCanVote,
     isCarouselMode,
     isCurrentPlayerStoryteller,
     isFirstTurn,
@@ -343,20 +349,15 @@ export default function Hand({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCards]);
 
-  // Функція для визначення типу зірочки
-  // const getStarMark = cardId => {
-  //   if (firstCard?._id === cardId) return "★1";
-  //   if (secondCard?._id === cardId) return "★2";
-  //   return null;
-  // };
-
-  // Для двох зірочок:
+  // Set star(s) to card(s):
   const getStarMarks = cardId => {
     const marks = [];
     if (firstCard?._id === cardId) marks.push("★1");
     if (secondCard?._id === cardId) marks.push("★2");
     return marks;
   };
+
+  const voting = () => {}; // todo
 
   if (isFirstTurn && !isCurrentPlayerStoryteller) {
     return <Mask />;

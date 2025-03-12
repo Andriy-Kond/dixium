@@ -25,7 +25,7 @@
   &:disabled {
     border-color: rgba(0, 0, 0, 0.24);
     color: rgba(0, 0, 0, 0.24);
-    cursor: not-allowed;
+    cursor: auto;
 
     &:hover {
       background-color: transparent;

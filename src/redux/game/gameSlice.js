@@ -10,6 +10,7 @@ const gameInitialState = {
     //   gameStatus: String, // "lobby" | "makingTurn" | "voting" | "results" | "finished"
     //   isGameRunning: Boolean, // game started and running (players can't join anymore)
     //   isGameStarted: Boolean, // game started but not running (players can join)
+    //   isSingleCardMode,
     //   hostPlayerId: String, // id творця гри
     //   hostPlayerName: String, // Ім'я творця гри
     //   storytellerId: String, // ID гравця, який зараз розповідає (той, хто робить перший хід)

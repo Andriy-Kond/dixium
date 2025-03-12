@@ -29,6 +29,8 @@ export default function DecksList() {
       gameStatus: LOBBY,
       isGameRunning: false,
       isGameStarted: false,
+      isFirstTurn: false,
+      isSingleCardMode: false,
       hostPlayerId: userCredentials._id,
       hostPlayerName: userCredentials.name,
       storytellerId: null,
@@ -39,7 +41,6 @@ export default function DecksList() {
       players: [],
       deck: shuffleDeck(currentDeck.cards),
       discardPile: [],
-      isFirstTurn: false,
     };
 
     socket.emit("createGame", { gameData });

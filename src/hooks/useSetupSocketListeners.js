@@ -16,6 +16,7 @@ import {
   joinToGameRoom,
   playerJoined,
   playersOrderUpdate,
+  userDeletedFromGame,
 } from "./handlers";
 
 export const useSetupSocketListeners = () => {
@@ -70,6 +71,9 @@ export const useSetupSocketListeners = () => {
     const handleFirstStorytellerUpdated = ({ game }) =>
       firstStorytellerUpdated(game, dispatch);
 
+    const handleUserDeletedFromGame = ({ game }) =>
+      userDeletedFromGame(game, dispatch);
+
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
     socket.on("error", handleError);
@@ -83,6 +87,7 @@ export const useSetupSocketListeners = () => {
     socket.on("gameRunning", handleGameRun);
 
     socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
+    socket.on("userDeletedFromGame", handleUserDeletedFromGame);
 
     return () => {
       // console.log("Cleaning up socket listeners");
@@ -99,6 +104,7 @@ export const useSetupSocketListeners = () => {
       socket.off("gameRunning", handleGameRun);
 
       socket.off("firstStorytellerUpdated", handleFirstStorytellerUpdated);
+      socket.off("userDeletedFromGame", handleUserDeletedFromGame);
 
       // if client runout from page (unmount component) before server responding
       // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
