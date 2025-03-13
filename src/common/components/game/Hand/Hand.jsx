@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import useEmblaCarousel from "embla-carousel-react";
 import socket from "services/socket.js";
 
 import {
-  selectCardsOnTable,
   selectGame,
-  selectGameDeck,
-  selectGameDiscardPile,
   selectGamePlayers,
   selectGameStatus,
   selectIsFirstTurn,
@@ -17,12 +15,13 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 
-import Button from "common/components/ui/Button";
-import css from "./Hand.module.scss";
 import { VOTING } from "utils/generals/constants.js";
-import { shuffleDeck } from "utils/game/shuffleDeck.js";
+import Button from "common/components/ui/Button";
 import Mask from "../Mask/Mask.jsx";
-import useEmblaCarousel from "embla-carousel-react";
+
+import css from "./Hand.module.scss";
+import { useTellStory } from "hooks/useTellStory.js";
+import { useVote } from "hooks/useVote.js";
 
 export default function Hand({
   isActiveScreen,
@@ -39,10 +38,7 @@ export default function Hand({
     selectPlayerHand(currentGameId, userCredentials._id),
   );
   const currentGame = useSelector(selectGame(currentGameId));
-  const cardsOnTable = useSelector(selectCardsOnTable(currentGameId));
-  const gameDeck = useSelector(selectGameDeck(currentGameId));
   const gamePlayers = useSelector(selectGamePlayers(currentGameId));
-  const gameDiscardPile = useSelector(selectGameDiscardPile(currentGameId));
 
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
@@ -65,6 +61,14 @@ export default function Hand({
   });
 
   const { firstCard, secondCard } = cardsSet;
+
+  const tellStory = useTellStory(
+    currentGameId,
+    selectedCardId,
+    setSelectedCardId,
+  );
+
+  const vote = useVote(cardsSet, currentGameId);
 
   const [emblaRefCards, emblaApiCards] = useEmblaCarousel({
     loop: true,
@@ -92,26 +96,18 @@ export default function Hand({
           prev.firstCard?._id === currentCard._id ||
           prev.secondCard?._id === currentCard._id;
 
-        // Якщо поточна картка є в об'єкті:
-        if (isSelected && prev[btnKey]?._id === currentCard._id) {
-          // Якщо карта вже обрана цією кнопкою, знімаємо вибір
+        if (isSelected && prev[btnKey]?._id === currentCard._id)
           return { ...prev, [btnKey]: null };
-        } else if (
-          // Якщо поточної картки немає в об'єкті:
-          // Якщо одна з комірок вільна, або якщо обрана картка у поточній комірці
-          !prev.firstCard ||
-          !prev.secondCard ||
-          prev[btnKey]?._id === currentCard._id
-        ) {
-          // Якщо є вільне місце або це скасування
-          const otherCard =
-            btnKey === "firstCard" ? prev.secondCard : prev.firstCard; // визначення яка комірка об'єкту "інша"
-          // Якщо гравців троє, і якщо "інша" комірка вже має в собі поточну картку
+
+        const otherCard =
+          btnKey === "firstCard" ? prev.secondCard : prev.firstCard;
+
+        if (!prev.firstCard || !prev.secondCard) {
           if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
             console.log("error: cards must be different");
             return prev;
           }
-          // Якщо поточної картки немає у натиснутій кнопці-комірки, то вставляємо її туди:
+
           return { ...prev, [btnKey]: currentCard };
         }
 
@@ -136,84 +132,6 @@ export default function Hand({
 
     setSelectedCardId(null);
   }, [currentGame]);
-
-  const firstStory = useCallback(() => {
-    if (!selectedCardId) {
-      console.warn("No card selected!");
-      return;
-    }
-
-    const movedCard = playerHand.find(c => c._id === selectedCardId);
-    if (!movedCard) {
-      console.warn("Selected card not found in hand!");
-      return;
-    }
-
-    // If storyteller not defined, the player becomes the first storyteller
-    if (!storytellerId) {
-      const updatedPlayerHand = playerHand.filter(
-        card => card._id !== selectedCardId,
-      );
-      const updatedDeck = [...gameDeck];
-      const updatedDiscardPile = [...gameDiscardPile];
-
-      if (updatedDeck.length === 0) {
-        if (updatedDiscardPile.length === 0) {
-          console.warn("No cards left in deck or discard pile!");
-          return;
-        }
-        updatedDeck.push(...shuffleDeck([...updatedDiscardPile]));
-        updatedDiscardPile.length = 0;
-      }
-
-      const newCard = updatedDeck.shift(); // shift returns first element and remove it from array
-      updatedPlayerHand.push(newCard);
-
-      // Add card to table
-      const updatedCardsOnTable = [...cardsOnTable, movedCard];
-
-      // update players
-      const updatedPlayers = gamePlayers.map(player =>
-        player._id === userCredentials._id
-          ? { ...player, hand: updatedPlayerHand }
-          : player,
-      );
-
-      const updatedGame = {
-        ...currentGame,
-        storytellerId: userCredentials._id,
-        gameStatus: VOTING,
-        cardsOnTable: updatedCardsOnTable,
-        players: updatedPlayers,
-        deck: updatedDeck,
-        discardPile: updatedDiscardPile,
-        isFirstTurn: true,
-      };
-
-      socket.emit(
-        "setFirstStoryteller",
-        { currentGame: updatedGame },
-        response => {
-          if (response?.error) {
-            console.error("Failed to update game:", response.error);
-          }
-        },
-      );
-
-      // Очищаємо вибір
-      setSelectedCardId(null);
-    }
-  }, [
-    cardsOnTable,
-    currentGame,
-    gameDeck,
-    gameDiscardPile,
-    gamePlayers,
-    playerHand,
-    selectedCardId,
-    storytellerId,
-    userCredentials._id,
-  ]);
 
   const paragraphText = !storytellerId
     ? "Be the first to think of an association for one of your cards. Choose it and make a move. Tell us about your association."
@@ -302,7 +220,7 @@ export default function Hand({
             <Button
               btnStyle={["btnFlexGrow"]}
               btnText={!storytellerId ? "Tell your story" : "Vote"}
-              onClick={gameStatus === VOTING ? voting : firstStory}
+              onClick={() => (gameStatus === VOTING ? vote() : tellStory())}
               disabled={gameStatus === VOTING ? !isCanVote : !selectedCardId}
             />,
           );
@@ -315,7 +233,6 @@ export default function Hand({
     cardsSet.secondCard,
     exitCarouselMode,
     firstCard,
-    firstStory,
     gameStatus,
     isActiveScreen,
     isCanVote,
@@ -330,7 +247,9 @@ export default function Hand({
     selectedCardId,
     setMiddleButton,
     storytellerId,
+    tellStory,
     toggleCardSelection,
+    vote,
   ]);
 
   const carouselModeOn = idx => {
@@ -357,8 +276,6 @@ export default function Hand({
     if (secondCard?._id === cardId) marks.push("★2");
     return marks;
   };
-
-  const voting = () => {}; // todo
 
   if (isFirstTurn && !isCurrentPlayerStoryteller) {
     return <Mask />;
