@@ -14,6 +14,7 @@ import {
 import { refreshDeck } from "utils/game/refreshDeck.js";
 import { updatePlayerHandAndTable } from "utils/game/updatePlayerHandAndTable.js";
 import { updatePlayers } from "utils/game/updatePlayers.js";
+import { useCallback } from "react";
 
 export const useTellStory = (
   currentGameId,
@@ -31,7 +32,7 @@ export const useTellStory = (
   const cardsOnTable = useSelector(selectCardsOnTable(currentGameId));
   const gamePlayers = useSelector(selectGamePlayers(currentGameId));
 
-  const tellStory = () => {
+  const tellStory = useCallback(() => {
     if (!selectedCardId) {
       console.warn("No card selected!");
       return;
@@ -95,7 +96,18 @@ export const useTellStory = (
 
       setSelectedCardId(null); // clear
     }
-  };
+  }, [
+    cardsOnTable,
+    currentGame,
+    gameDeck,
+    gameDiscardPile,
+    gamePlayers,
+    playerHand,
+    selectedCardId,
+    setSelectedCardId,
+    storytellerId,
+    userCredentials._id,
+  ]);
 
   return tellStory;
 };

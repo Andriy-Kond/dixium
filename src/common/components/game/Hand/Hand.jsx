@@ -153,78 +153,78 @@ export default function Hand({
       : !!firstCard?._id && !!secondCard?._id;
 
   useEffect(() => {
-    if (isActiveScreen) {
-      if (isCarouselMode) {
-        const activeCard = playerHand[activeCardIdx];
-        if (!activeCard) {
-          console.log("error: card not found");
-          return;
-        }
+    if (!isActiveScreen) return;
 
-        const isDisabledFirstBtn = playersMoreThanThree
-          ? firstCard && firstCard._id !== activeCard._id
-          : (firstCard && firstCard._id !== activeCard._id) ||
-            (!firstCard && secondCard && secondCard._id === activeCard._id);
+    if (isCarouselMode) {
+      const activeCard = playerHand[activeCardIdx];
+      if (!activeCard) {
+        console.log("error: card not found");
+        return;
+      }
 
-        const isDisabledSecondBtn = playersMoreThanThree
-          ? secondCard && secondCard._id !== activeCard._id
-          : (secondCard && secondCard._id !== activeCard._id) ||
-            (!secondCard && firstCard && firstCard._id === activeCard._id);
+      const isDisabledFirstBtn = playersMoreThanThree
+        ? firstCard && firstCard._id !== activeCard._id
+        : (firstCard && firstCard._id !== activeCard._id) ||
+          (!firstCard && secondCard && secondCard._id === activeCard._id);
 
-        setMiddleButton(
-          <>
-            <Button btnText="Back" onClick={exitCarouselMode} />
+      const isDisabledSecondBtn = playersMoreThanThree
+        ? secondCard && secondCard._id !== activeCard._id
+        : (secondCard && secondCard._id !== activeCard._id) ||
+          (!secondCard && firstCard && firstCard._id === activeCard._id);
 
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              {!isCurrentPlayerStoryteller && (
-                <>
+      setMiddleButton(
+        <>
+          <Button btnText="Back" onClick={exitCarouselMode} />
+
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {!isCurrentPlayerStoryteller && (
+              <>
+                <Button
+                  btnText="★1"
+                  onClick={() => toggleCardSelection("firstCard")}
+                  disabled={isDisabledFirstBtn}
+                  localClassName={cardsSet.firstCard && css.btnActive}
+                />
+                {!isSingleCardMode && (
                   <Button
-                    btnText="★1"
-                    onClick={() => toggleCardSelection("firstCard")}
-                    disabled={isDisabledFirstBtn}
-                    localClassName={cardsSet.firstCard && css.btnActive}
+                    btnText="★2"
+                    onClick={() => toggleCardSelection("secondCard")}
+                    disabled={isDisabledSecondBtn}
+                    localClassName={cardsSet.secondCard && css.btnActive}
                   />
-                  {!isSingleCardMode && (
-                    <Button
-                      btnText="★2"
-                      onClick={() => toggleCardSelection("secondCard")}
-                      disabled={isDisabledSecondBtn}
-                      localClassName={cardsSet.secondCard && css.btnActive}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-          </>,
-        );
-      } else if (isFirstTurn) {
-        // Якщо це не карусуль-режим і одразу після першого ходу
-        isCurrentPlayerStoryteller
-          ? returnToHand() // для сторітеллера автоматично
-          : // Для інших гравців - екран-маска:
-            setMiddleButton(
-              <Button
-                btnStyle={["btnFlexGrow"]}
-                btnText={"Close mask"}
-                onClick={returnToHand}
-              />,
-            );
-      } else {
-        // Якщо це не карусель-режим і закритий екран-маска - до голосування за карти
-        // !isCurrentPlayerStoryteller &&
-
-        if (isCurrentPlayerStoryteller) {
-          setMiddleButton(null); // Очищаємо кнопку для сторітеллера
-        } else {
+                )}
+              </>
+            )}
+          </div>
+        </>,
+      );
+    } else if (isFirstTurn) {
+      // Якщо це не карусуль-режим і одразу після першого ходу
+      isCurrentPlayerStoryteller
+        ? returnToHand() // для сторітеллера автоматично
+        : // Для інших гравців - екран-маска:
           setMiddleButton(
             <Button
               btnStyle={["btnFlexGrow"]}
-              btnText={!storytellerId ? "Tell your story" : "Vote"}
-              onClick={() => (gameStatus === VOTING ? vote() : tellStory())}
-              disabled={gameStatus === VOTING ? !isCanVote : !selectedCardId}
+              btnText={"Close mask"}
+              onClick={returnToHand}
             />,
           );
-        }
+    } else {
+      // Якщо це не карусель-режим і закритий екран-маска - до голосування за карти
+      // !isCurrentPlayerStoryteller &&
+
+      if (isCurrentPlayerStoryteller) {
+        setMiddleButton(null); // Очищаємо кнопку для сторітеллера
+      } else {
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={!storytellerId ? "Tell your story" : "Vote"}
+            onClick={() => (gameStatus === VOTING ? vote() : tellStory())}
+            disabled={gameStatus === VOTING ? !isCanVote : !selectedCardId}
+          />,
+        );
       }
     }
   }, [

@@ -1,6 +1,6 @@
 import useEmblaCarousel from "embla-carousel-react";
 
-import { cloneElement, useEffect, useState } from "react";
+import { cloneElement, useCallback, useEffect, useState } from "react";
 import Hand from "common/components/game/Hand";
 import Players from "common/components/game/Players";
 import Table from "common/components/game/Table";
@@ -11,6 +11,9 @@ import GameNavigationBar from "common/components/game/GameNavigationBar";
 export default function Game() {
   const [activeScreen, setActiveScreen] = useState(0);
   const [middleButton, setMiddleButton] = useState(null);
+  const stabilizedSetMiddleButton = useCallback(value => {
+    setMiddleButton(value);
+  }, []);
 
   const [isCarouselMode, setIsCarouselMode] = useState(false);
 
@@ -82,7 +85,7 @@ export default function Game() {
               {cloneElement(screen, {
                 isActiveScreen: getActiveScreen() === index, // Актуальний індекс
                 setActiveScreen,
-                setMiddleButton,
+                setMiddleButton: stabilizedSetMiddleButton,
                 isCarouselMode,
                 setIsCarouselMode,
               })}
