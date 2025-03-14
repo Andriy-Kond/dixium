@@ -94,6 +94,7 @@ export const useVote = (cardsSet, currentGameId) => {
       players: updatedPlayers,
       deck: updatedDeck,
       discardPile: updatedDiscardPile,
+      isVoted: true, // todo скинути перед наступним раундом
     };
 
     socket.emit("playerVoting", { updatedGame }, response => {

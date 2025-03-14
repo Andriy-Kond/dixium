@@ -8,10 +8,98 @@
 
 .player {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  padding: 12px;
+  padding: 12px 8px 16px 12px;
   background-color: #fff;
   &:not(:last-child) {
     border-bottom: 1px solid #d8e2ed;
   }
+}
+
+.playerState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Додаємо анімацію обертання для спінера
+  svg {
+    &.spin {
+      animation: spin 1s linear infinite; // 1s - швидкість обертання, infinite - безкінечно
+      color: #0f7dff;
+      // stroke-width: 3; // Товщина ліній
+    }
+  }
+}
+
+// Стилі через css:
+// Стан "чекає ходу" зі спінером
+// .waiting {
+//   background-image: url("/path/to/spinner.svg"); // або CSS-анімація
+//   background-size: contain;
+//   background-repeat: no-repeat;
+// }
+
+.waiting {
+  /* change color here */
+  color: #3498db;
+}
+.waiting,
+.waiting:after {
+  box-sizing: border-box;
+}
+.waiting {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+.waiting:after {
+  content: " ";
+  display: block;
+  // width: 20px;
+  // height: 20px;
+  width: 100%;
+  height: 100%;
+  // margin: 8px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-color: currentColor transparent currentColor transparent;
+  animation: spin 1.2s linear infinite;
+}
+
+// .waiting {
+//   border: 2px solid #f3f3f3;
+//   border-top: 2px solid #3498db;
+//   border-radius: 50%;
+//   width: 20px;
+//   height: 20px;
+//   animation: spin 1s linear infinite;
+// }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// // Стан "походив" з галочкою
+.voted {
+  width: 20px;
+  height: 20px;
+  color: #5d7e9e;
+  // background-image: url("/path/to/check.svg");
+  // background-size: contain;
+  // background-repeat: no-repeat;
+}
+
+.storyteller {
+  width: 20px;
+  height: 20px;
+  color: #5d7e9e;
+  // background-size: contain;
+  // background-repeat: no-repeat;
 }

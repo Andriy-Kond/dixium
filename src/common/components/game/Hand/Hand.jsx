@@ -8,6 +8,7 @@ import {
   selectGame,
   selectGamePlayers,
   selectGameStatus,
+  selectHostPlayerId,
   selectIsFirstTurn,
   selectIsSingleCardMode,
   selectPlayerHand,
@@ -41,6 +42,7 @@ export default function Hand({
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
+  const hostPlayerId = useSelector(selectHostPlayerId(gameId));
 
   const playersMoreThanThree = gamePlayers.length > 3;
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
@@ -216,9 +218,20 @@ export default function Hand({
             />,
           );
     } else {
-      // Якщо це не карусель-режим і закритий екран-маска - до голосування за карти
+      // Якщо це не карусель-режим і закритий екран-маска (вже не isFirstTurn) - до голосування за карти
       if (isCurrentPlayerStoryteller) {
-        setMiddleButton(null); // Очищаємо кнопку для сторітеллера
+        const roundReady = !gamePlayers.some(player => !player.isVoted);
+        if (hostPlayerId === userCredentials._id && roundReady) {
+          setMiddleButton(
+            <Button
+              btnStyle={["btnFlexGrow"]}
+              btnText={"Finish round"}
+              // onClick={calculatePoints}
+            />,
+          );
+        } else {
+          setMiddleButton(null); // Очищаємо кнопку для сторітеллера
+        }
       } else {
         setMiddleButton(
           <Button
@@ -236,7 +249,9 @@ export default function Hand({
     cardsSet.secondCard,
     exitCarouselMode,
     firstCard,
+    gamePlayers,
     gameStatus,
+    hostPlayerId,
     isActiveScreen,
     isCanVote,
     isCarouselMode,
@@ -252,6 +267,7 @@ export default function Hand({
     storytellerId,
     tellStory,
     toggleCardSelection,
+    userCredentials._id,
     vote,
   ]);
 
@@ -270,7 +286,13 @@ export default function Hand({
   };
 
   if (isFirstTurn && !isCurrentPlayerStoryteller) {
-    return <Mask />;
+    return (
+      <>
+        <div className={css.maskContainer}>
+          <Mask />
+        </div>
+      </>
+    );
   }
 
   return (

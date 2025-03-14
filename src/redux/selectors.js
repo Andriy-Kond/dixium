@@ -53,3 +53,12 @@ export const selectIsGameRunning = currentGameId => state =>
 
 export const selectIsSingleCardMode = currentGameId => state =>
   state.gameSlice.games[currentGameId].isSingleCardMode;
+
+export const selectIsPlayerVoted = (currentGameId, playerId) => state => {
+  const game = state.gameSlice.games[currentGameId];
+  const player = game.players.find(p => p._id === playerId);
+  return player.isVoted;
+};
+
+export const selectHostPlayerId = currentGameId => state =>
+  state.gameSlice.games[currentGameId].hostPlayerId;
