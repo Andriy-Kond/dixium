@@ -84,15 +84,11 @@ export const useTellStory = (
         isFirstTurn: true,
       };
 
-      socket.emit(
-        "setFirstStoryteller",
-        { currentGame: updatedGame },
-        response => {
-          if (response?.error) {
-            console.error("Failed to update game:", response.error);
-          }
-        },
-      );
+      socket.emit("setFirstStoryteller", { updatedGame }, response => {
+        if (response?.error) {
+          console.error("Failed to update game:", response.error);
+        }
+      });
 
       setSelectedCardId(null); // clear
     }

@@ -29,23 +29,21 @@ export default function Hand({
   isCarouselMode,
   setIsCarouselMode,
 }) {
-  const { currentGameId } = useParams();
-  const gameStatus = useSelector(selectGameStatus(currentGameId));
-  const isFirstTurn = useSelector(selectIsFirstTurn(currentGameId));
+  const { gameId } = useParams();
+  const gameStatus = useSelector(selectGameStatus(gameId));
+  const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
   const userCredentials = useSelector(selectUserCredentials);
-  const storytellerId = useSelector(selectStorytellerId(currentGameId));
-  const playerHand = useSelector(
-    selectPlayerHand(currentGameId, userCredentials._id),
-  );
-  const currentGame = useSelector(selectGame(currentGameId));
-  const gamePlayers = useSelector(selectGamePlayers(currentGameId));
+  const storytellerId = useSelector(selectStorytellerId(gameId));
+  const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
+  const currentGame = useSelector(selectGame(gameId));
+  const gamePlayers = useSelector(selectGamePlayers(gameId));
 
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
 
   const playersMoreThanThree = gamePlayers.length > 3;
-  const isSingleCardMode = useSelector(selectIsSingleCardMode(currentGameId));
+  const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
 
   const [selectedCardId, setSelectedCardId] = useState(null);
 
@@ -62,15 +60,11 @@ export default function Hand({
 
   const { firstCard, secondCard } = cardsSet;
 
-  const tellStory = useTellStory(
-    currentGameId,
-    selectedCardId,
-    setSelectedCardId,
-  );
+  const tellStory = useTellStory(gameId, selectedCardId, setSelectedCardId);
 
-  const vote = useVote(cardsSet, currentGameId);
+  const vote = useVote(cardsSet, gameId);
 
-  const [emblaRefCards, emblaApiCards] = useEmblaCarousel({
+  const [emblaRefCardsVote, emblaApiCards] = useEmblaCarousel({
     loop: true,
     align: "center",
     startIndex: selectedCardIdx,
@@ -147,6 +141,17 @@ export default function Hand({
     return () => emblaApiCards.off("select", onSelect);
   }, [emblaApiCards]);
 
+  // KB events handler
+  useEffect(() => {
+    const handleKeyPress = event => {
+      if (!emblaApiCards) return;
+      if (event.key === "ArrowLeft") emblaApiCards.scrollPrev();
+      else if (event.key === "ArrowRight") emblaApiCards.scrollNext();
+    };
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [emblaApiCards]);
+
   const isCanVote =
     playersMoreThanThree && isSingleCardMode
       ? !!firstCard?._id
@@ -199,10 +204,10 @@ export default function Hand({
         </>,
       );
     } else if (isFirstTurn) {
-      // Якщо це не карусуль-режим і одразу після першого ходу
+      // Якщо це не карусель-режим і одразу після першого ходу
       isCurrentPlayerStoryteller
-        ? returnToHand() // для сторітеллера автоматично
-        : // Для інших гравців - екран-маска:
+        ? returnToHand() // для сторітеллера автоматично закривається екран-маска
+        : // Для інших гравців показується екран-маска, та кнопка закриття маски:
           setMiddleButton(
             <Button
               btnStyle={["btnFlexGrow"]}
@@ -212,8 +217,6 @@ export default function Hand({
           );
     } else {
       // Якщо це не карусель-режим і закритий екран-маска - до голосування за карти
-      // !isCurrentPlayerStoryteller &&
-
       if (isCurrentPlayerStoryteller) {
         setMiddleButton(null); // Очищаємо кнопку для сторітеллера
       } else {
@@ -258,17 +261,6 @@ export default function Hand({
     setActiveCardIdx(idx);
   };
 
-  // KB events handler
-  useEffect(() => {
-    const handleKeyPress = event => {
-      if (!emblaApiCards) return;
-      if (event.key === "ArrowLeft") emblaApiCards.scrollPrev();
-      else if (event.key === "ArrowRight") emblaApiCards.scrollNext();
-    };
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [emblaApiCards]);
-
   // Set star(s) to card(s):
   const getStarMarks = cardId => {
     const marks = [];
@@ -287,7 +279,7 @@ export default function Hand({
       <p>{paragraphText}</p>
 
       {isCarouselMode ? (
-        <div className={css.carouselWrapper} ref={emblaRefCards}>
+        <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
           <ul className={css.carouselContainer}>
             {playerHand.map(card => (
               <li className={css.carouselSlide} key={card._id}>

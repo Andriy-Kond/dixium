@@ -21,8 +21,8 @@ export default function PrepareGame() {
   const navigate = useNavigate();
 
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
-  const { currentGameId } = useParams();
-  const currentGame = useSelector(selectGame(currentGameId));
+  const { gameId } = useParams();
+  const currentGame = useSelector(selectGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const isCurrentPlayerIsHost =
     currentGame.hostPlayerId === userCredentials._id;

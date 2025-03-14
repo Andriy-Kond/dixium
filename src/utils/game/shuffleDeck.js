@@ -16,3 +16,11 @@ export const shuffleDeck = deck => {
   }
   return shuffled;
 };
+
+// Math.floor(Math.random() * (max - min + 1)) + min - формула діапазону
+// від 20 до 40:
+// Math.floor(Math.random() * (40 - 20 + 1)) + 20;
+
+// Math.floor(3.7) = 3 (вниз).
+// Math.round(3.7) = 4 (до найближчого).
+// Math.round(Math.random() * (40 - 20)) + 20;

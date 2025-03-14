@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Notify } from "notiflix";
-import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
+import { clearActiveAction } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
 
@@ -17,7 +17,8 @@ import {
   playerJoined,
   playersOrderUpdate,
   userDeletedFromGame,
-} from "./handlers";
+  playerVoteSuccess,
+} from "./socketHandlers";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -71,6 +72,9 @@ export const useSetupSocketListeners = () => {
     const handleFirstStorytellerUpdated = ({ game }) =>
       firstStorytellerUpdated(game, dispatch);
 
+    const handlePlayerVoteSuccess = ({ game }) =>
+      playerVoteSuccess(game, dispatch);
+
     const handleUserDeletedFromGame = ({ game }) =>
       userDeletedFromGame(game, dispatch);
 
@@ -87,6 +91,7 @@ export const useSetupSocketListeners = () => {
     socket.on("gameRunning", handleGameRun);
 
     socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
+    socket.on("playerVoteSuccess", handlePlayerVoteSuccess);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
 
     return () => {

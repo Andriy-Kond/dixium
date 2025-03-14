@@ -7,9 +7,9 @@ import { useSelector } from "react-redux";
 import { selectGame } from "redux/selectors.js";
 
 export default function GameStartedPage() {
-  const { currentGameId } = useParams();
+  const { gameId } = useParams();
 
-  const { isGameRunning, gameName } = useSelector(selectGame(currentGameId));
+  const { isGameRunning, gameName } = useSelector(selectGame(gameId));
 
   return (
     <>

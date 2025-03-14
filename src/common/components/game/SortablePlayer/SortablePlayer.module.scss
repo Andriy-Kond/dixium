@@ -20,8 +20,7 @@
 
 .dragHandle {
   position: absolute;
-  align-self: stretch;
-  // розтягнути на всю площину li.item:
+
   top: 0;
   left: 0;
   right: 0;
@@ -30,7 +29,7 @@
   display: flex;
   flex-grow: 1;
   align-items: center; /* Вирівнювання тексту по вертикалі */
-  align-self: stretch;
+  align-self: stretch; // розтягнути на всю площину li.item:
   padding: 10px;
 }
 

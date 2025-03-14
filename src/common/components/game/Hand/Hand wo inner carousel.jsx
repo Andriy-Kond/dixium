@@ -22,18 +22,16 @@ import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import Mask from "../Mask/Mask.jsx";
 
 export default function Hand({ isActive, setMiddleButton }) {
-  const { currentGameId } = useParams();
-  const isFirstTurn = useSelector(selectIsFirstTurn(currentGameId));
+  const { gameId } = useParams();
+  const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
   const userCredentials = useSelector(selectUserCredentials);
-  const storytellerId = useSelector(selectStorytellerId(currentGameId));
-  const playerHand = useSelector(
-    selectPlayerHand(currentGameId, userCredentials._id),
-  );
-  const currentGame = useSelector(selectGame(currentGameId));
-  const cardsOnTable = useSelector(selectCardsOnTable(currentGameId));
-  const gameDeck = useSelector(selectGameDeck(currentGameId));
-  const gamePlayers = useSelector(selectGamePlayers(currentGameId));
-  const gameDiscardPile = useSelector(selectGameDiscardPile(currentGameId));
+  const storytellerId = useSelector(selectStorytellerId(gameId));
+  const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
+  const currentGame = useSelector(selectGame(gameId));
+  const cardsOnTable = useSelector(selectCardsOnTable(gameId));
+  const gameDeck = useSelector(selectGameDeck(gameId));
+  const gamePlayers = useSelector(selectGamePlayers(gameId));
+  const gameDiscardPile = useSelector(selectGameDiscardPile(gameId));
 
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
@@ -97,15 +95,11 @@ export default function Hand({ isActive, setMiddleButton }) {
         isFirstTurn: true,
       };
 
-      socket.emit(
-        "setFirstStoryteller",
-        { currentGame: updatedGame },
-        response => {
-          if (response?.error) {
-            console.error("Failed to update game:", response.error);
-          }
-        },
-      );
+      socket.emit("setFirstStoryteller", { updatedGame }, response => {
+        if (response?.error) {
+          console.error("Failed to update game:", response.error);
+        }
+      });
 
       // Очищаємо вибір
       setSelectedCardId(null);

@@ -37,14 +37,21 @@ export const useVote = (cardsSet, currentGameId) => {
     const drawCardsQty = isSingleCardMode ? 1 : 2;
     const movedCards = isSingleCardMode ? [firstCard] : [firstCard, secondCard];
 
+    // Make new arr with selected cards only
+    // const movedCards = playerHand.filter(c =>
+    //   isSingleCardMode
+    //     ? c._id === firstCard._id
+    //     : c._id === firstCard._id || c._id === secondCard._id,
+    // );
+
     if (
       movedCards.length !== drawCardsQty ||
       // minimal check for exist right data in playerHand
-      // !playerHand.some(c => c._id === movedCards[0]._id) ||
+      // !playerHand.some(c => c._id === movedCards[0]._id)
       // full check for exist right data in playerHand
       !movedCards.every(card => playerHand.some(c => c._id === card._id))
     ) {
-      console.warn("Card not found in hand!");
+      console.warn("Card(s) not found in hand!");
       return;
     }
 
@@ -65,6 +72,14 @@ export const useVote = (cardsSet, currentGameId) => {
         newCards,
       },
     );
+    // // Make new arr without selected cards
+    // const updatedPlayerHand = playerHand.filter(c =>
+    //   isSingleCardMode
+    //     ? c._id !== firstCard._id
+    //     : c._id !== firstCard._id && c._id !== secondCard._id,
+    // );
+    // updatedPlayerHand.push(...newCards);
+    // const updatedCardsOnTable = [...cardsOnTable, ...movedCards]; // Add card on table
 
     // update players
     const updatedPlayers = updatePlayers({
