@@ -14,7 +14,7 @@ const gameInitialState = {
     //   hostPlayerId: String, // id творця гри
     //   hostPlayerName: String, // Ім'я творця гри
     //   storytellerId: String, // ID гравця, який зараз розповідає (той, хто робить перший хід)
-    //   currentTurn: Number, // 0
+    //   currentRound: Number, // 0
     //   cardsOnTable: [CardSchema], // Карти, які поклали на стіл під час голосування
     //   votes: { type: Map, of: String }, // Голоси гравців { playerId: cardId }
     //   scores: { type: Map, of: Number }, // Бали гравців { playerId: score }

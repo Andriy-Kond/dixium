@@ -34,7 +34,7 @@ export default function DecksList() {
       hostPlayerId: userCredentials._id,
       hostPlayerName: userCredentials.name,
       storytellerId: null,
-      currentTurn: 0,
+      currentRound: 0,
       cardsOnTable: [],
       votes: {},
       scores: {},
