@@ -10,16 +10,15 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 import socket from "services/socket.js";
+import { discardHandToTable } from "utils/game/discardHandToTable.js";
 
-export const useVote = (cardsSet, currentGameId) => {
+export const useVote = (cardsSet, gameId) => {
   const userCredentials = useSelector(selectUserCredentials);
-  const currentGame = useSelector(selectGame(currentGameId));
-  const gamePlayers = useSelector(selectGamePlayers(currentGameId));
-  const cardsOnTable = useSelector(selectCardsOnTable(currentGameId));
-  const playerHand = useSelector(
-    selectPlayerHand(currentGameId, userCredentials._id),
-  );
-  const isSingleCardMode = useSelector(selectIsSingleCardMode(currentGameId));
+  const currentGame = useSelector(selectGame(gameId));
+  const gamePlayers = useSelector(selectGamePlayers(gameId));
+  const cardsOnTable = useSelector(selectCardsOnTable(gameId));
+  const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
+  const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
 
   const vote = useCallback(() => {
     const { firstCard, secondCard } = cardsSet;
@@ -37,24 +36,32 @@ export const useVote = (cardsSet, currentGameId) => {
       return;
     }
 
-    // Скидання карт з руки на стіл
-    const updatedPlayerHand = playerHand.filter(
-      card => !movedCards.some(c => c._id === card._id),
-    );
-    const updatedCardsOnTable = [...cardsOnTable, ...movedCards];
+    // // Скидання карт з руки на стіл
+    // const updatedPlayerHand = playerHand.filter(
+    //   handCard => !movedCards.some(movedCard => handCard._id === movedCard._id),
+    // );
+    // const updatedCardsOnTable = [...cardsOnTable, ...movedCards];
 
-    // Перезапис руки плеера і мітка, що він походив
-    const updatedPlayers = gamePlayers.map(player =>
-      player._id === userCredentials._id
-        ? { ...player, hand: updatedPlayerHand, isVoted: true }
-        : player,
-    );
+    // // Перезапис руки плеера і мітка, що він походив
+    // const updatedPlayers = gamePlayers.map(player =>
+    //   // todo скинути isVoted перед наступним раундом
+    //   player._id === userCredentials._id
+    //     ? { ...player, hand: updatedPlayerHand, isVoted: true }
+    //     : player,
+    // );
+
+    const { updatedCardsOnTable, updatedPlayers } = discardHandToTable({
+      playerHand,
+      movedCards,
+      cardsOnTable,
+      userId: userCredentials._id,
+      gamePlayers,
+    });
 
     const updatedGame = {
       ...currentGame,
       cardsOnTable: updatedCardsOnTable,
       players: updatedPlayers,
-      isVoted: true, // todo скинути перед наступним раундом
     };
 
     socket.emit("playerVoting", { updatedGame }, response => {

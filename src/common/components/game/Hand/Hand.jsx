@@ -137,6 +137,11 @@ export default function Hand({
 
   const calculatePoints = () => {};
 
+  const handleVoting = useCallback(() => {
+    gameStatus === VOTING ? vote() : tellStory();
+    setCardsSet({ firstCard: null, secondCard: null });
+  }, [gameStatus, tellStory, vote]);
+
   // Отримання індексу активної карти
   useEffect(() => {
     if (!emblaApiCards) return; // Перевірка на наявність API
@@ -160,6 +165,10 @@ export default function Hand({
     playersMoreThanThree && isSingleCardMode
       ? !!firstCard?._id
       : !!firstCard?._id && !!secondCard?._id;
+
+  const isCurrentPlayerVoted = gamePlayers.some(
+    player => player._id === userCredentials._id && player.isVoted,
+  );
 
   useEffect(() => {
     if (!isActiveScreen) return;
@@ -191,14 +200,14 @@ export default function Hand({
                 <Button
                   btnText="★1"
                   onClick={() => toggleCardSelection("firstCard")}
-                  disabled={isDisabledFirstBtn}
+                  disabled={isDisabledFirstBtn || isCurrentPlayerVoted}
                   localClassName={cardsSet.firstCard && css.btnActive}
                 />
                 {!isSingleCardMode && (
                   <Button
                     btnText="★2"
                     onClick={() => toggleCardSelection("secondCard")}
-                    disabled={isDisabledSecondBtn}
+                    disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
                     localClassName={cardsSet.secondCard && css.btnActive}
                   />
                 )}
@@ -221,9 +230,14 @@ export default function Hand({
           );
     } else {
       // Якщо це не карусель-режим і закритий екран-маска (вже не isFirstTurn) - до голосування за карти
-      if (isCurrentPlayerStoryteller) {
-        const roundReady = !gamePlayers.some(player => !player.isVoted);
 
+      if (isCurrentPlayerStoryteller) {
+        setMiddleButton(null); // Очищаємо кнопку для сторітеллера
+      } else {
+        // ЯКщо це не сторітеллер:
+        // Перевірка чи це ведучий:
+        // const roundReady = !gamePlayers.some(player => !player.isVoted);
+        const roundReady = gamePlayers.every(player => player.isVoted);
         if (hostPlayerId === userCredentials._id && roundReady) {
           setMiddleButton(
             <Button
@@ -233,18 +247,19 @@ export default function Hand({
             />,
           );
         } else {
-          setMiddleButton(null); // Очищаємо кнопку для сторітеллера
+          setMiddleButton(
+            <Button
+              btnStyle={["btnFlexGrow"]}
+              btnText={!storytellerId ? "Tell your story" : "Vote"}
+              onClick={handleVoting}
+              disabled={
+                gameStatus === VOTING
+                  ? !isCanVote && isCurrentPlayerVoted
+                  : !selectedCardId
+              }
+            />,
+          );
         }
-      } else {
-        // ЯКщо це не сторітеллер:
-        setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={!storytellerId ? "Tell your story" : "Vote"}
-            onClick={() => (gameStatus === VOTING ? vote() : tellStory())}
-            disabled={gameStatus === VOTING ? !isCanVote : !selectedCardId}
-          />,
-        );
       }
     }
   }, [
@@ -255,11 +270,13 @@ export default function Hand({
     firstCard,
     gamePlayers,
     gameStatus,
+    handleVoting,
     hostPlayerId,
     isActiveScreen,
     isCanVote,
     isCarouselMode,
     isCurrentPlayerStoryteller,
+    isCurrentPlayerVoted,
     isFirstTurn,
     isSingleCardMode,
     playerHand,
@@ -269,10 +286,8 @@ export default function Hand({
     selectedCardId,
     setMiddleButton,
     storytellerId,
-    tellStory,
     toggleCardSelection,
     userCredentials._id,
-    vote,
   ]);
 
   const carouselModeOn = idx => {
