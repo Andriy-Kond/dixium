@@ -23,22 +23,22 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
 
   useEffect(() => {
+    if (!isActiveScreen) return;
     // console.log("Table >> isActiveScreen:::",isActiveScreen, );
-    if (isActiveScreen) {
-      // console.log("Table >> Setting middle button");
-      if (isCurrentPlayerStoryteller) {
-        const roundReady = !gamePlayers.some(player => !player.isVoted);
-        if (hostPlayerId === userCredentials._id && roundReady) {
-          setMiddleButton(
-            <Button
-              btnStyle={["btnFlexGrow"]}
-              btnText={"Finish round"}
-              // onClick={calculatePoints}
-            />,
-          );
-        } else {
-          setMiddleButton(null); // Очищаємо кнопку для сторітеллера
-        }
+    // console.log("Table >> Setting middle button");
+
+    if (isCurrentPlayerStoryteller) {
+      const roundReady = !gamePlayers.some(player => !player.isVoted);
+      if (hostPlayerId === userCredentials._id && roundReady) {
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Finish round"}
+            // onClick={calculatePoints}
+          />,
+        );
+      } else {
+        setMiddleButton(null); // Очищаємо кнопку для сторітеллера
       }
     }
   }, [

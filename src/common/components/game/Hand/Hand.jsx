@@ -135,6 +135,8 @@ export default function Hand({
     ? "You have told your story. Waiting for other players to choose their associations"
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
+  const calculatePoints = () => {};
+
   // Отримання індексу активної карти
   useEffect(() => {
     if (!emblaApiCards) return; // Перевірка на наявність API
@@ -221,18 +223,20 @@ export default function Hand({
       // Якщо це не карусель-режим і закритий екран-маска (вже не isFirstTurn) - до голосування за карти
       if (isCurrentPlayerStoryteller) {
         const roundReady = !gamePlayers.some(player => !player.isVoted);
+
         if (hostPlayerId === userCredentials._id && roundReady) {
           setMiddleButton(
             <Button
               btnStyle={["btnFlexGrow"]}
               btnText={"Finish round"}
-              // onClick={calculatePoints}
+              onClick={calculatePoints}
             />,
           );
         } else {
           setMiddleButton(null); // Очищаємо кнопку для сторітеллера
         }
       } else {
+        // ЯКщо це не сторітеллер:
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}

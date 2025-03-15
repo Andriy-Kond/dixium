@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Notiflix from "notiflix";
+import { Notify } from "notiflix";
 
 import PrivateRoute from "common/components/navigation/PvivateRoute";
 import PublicRoute from "common/components/navigation/PublicRoute";
@@ -12,7 +12,7 @@ import { setIsLoggedIn } from "redux/auth/authSlice";
 import { selectUserToken } from "./redux/selectors";
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
 
-Notiflix.Notify.init({
+Notify.init({
   clickToClose: true,
 });
 

@@ -25,27 +25,26 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
 
   useEffect(() => {
+    if (!isActiveScreen) return;
     // console.log("Players >> isActiveScreen:::", isActiveScreen );
-    if (isActiveScreen) {
-      // console.log("Players >> Clearing middle button");
+    // console.log("Players >> Clearing middle button");
 
-      if (isCurrentPlayerStoryteller) {
-        const roundReady = !gamePlayers.some(player => !player.isVoted);
-        if (hostPlayerId === userCredentials._id && roundReady) {
-          setMiddleButton(
-            <Button
-              btnStyle={["btnFlexGrow"]}
-              btnText={"Finish round"}
-              // onClick={calculatePoints}
-            />,
-          );
-        } else {
-          setMiddleButton(null); // Очищаємо кнопку для сторітеллера
-        }
+    if (isCurrentPlayerStoryteller) {
+      const roundReady = !gamePlayers.some(player => !player.isVoted);
+      if (hostPlayerId === userCredentials._id && roundReady) {
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Finish round"}
+            // onClick={calculatePoints}
+          />,
+        );
+      } else {
+        setMiddleButton(null); // Очищаємо кнопку для сторітеллера
       }
-
-      // setMiddleButton(null);
     }
+
+    // setMiddleButton(null);
   }, [
     gamePlayers,
     hostPlayerId,

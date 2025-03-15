@@ -24,41 +24,44 @@ export const selectStorytellerId = currentGameId => state =>
 //   return game.selectStorytellerId;
 // };
 
-export const selectGameStatus = currentGameId => state =>
-  state.gameSlice.games[currentGameId].gameStatus;
+export const selectGameStatus = gameId => state =>
+  state.gameSlice.games[gameId].gameStatus;
 
-export const selectGamePlayers = currentGameId => state =>
-  state.gameSlice.games[currentGameId].players;
+export const selectGamePlayers = gameId => state =>
+  state.gameSlice.games[gameId].players;
 
-export const selectCardsOnTable = currentGameId => state =>
-  state.gameSlice.games[currentGameId].cardsOnTable;
+export const selectCardsOnTable = gameId => state =>
+  state.gameSlice.games[gameId].cardsOnTable;
 
-export const selectPlayerHand = (currentGameId, playerId) => state => {
-  const game = state.gameSlice.games[currentGameId];
+export const selectPlayerHand = (gameId, playerId) => state => {
+  const game = state.gameSlice.games[gameId];
   const player = game.players.find(p => p._id === playerId);
   return player.hand;
 };
 
-export const selectGameDeck = currentGameId => state =>
-  state.gameSlice.games[currentGameId].deck;
+export const selectGameDeck = gameId => state =>
+  state.gameSlice.games[gameId].deck;
 
-export const selectGameDiscardPile = currentGameId => state =>
-  state.gameSlice.games[currentGameId].discardPile;
+export const selectGameDiscardPile = gameId => state =>
+  state.gameSlice.games[gameId].discardPile;
 
-export const selectIsFirstTurn = currentGameId => state =>
-  state.gameSlice.games[currentGameId].isFirstTurn;
+export const selectIsFirstTurn = gameId => state =>
+  state.gameSlice.games[gameId].isFirstTurn;
 
-export const selectIsGameRunning = currentGameId => state =>
-  state.gameSlice.games[currentGameId].isGameRunning;
+export const selectIsGameRunning = gameId => state =>
+  state.gameSlice.games[gameId].isGameRunning;
 
-export const selectIsSingleCardMode = currentGameId => state =>
-  state.gameSlice.games[currentGameId].isSingleCardMode;
+export const selectIsSingleCardMode = gameId => state =>
+  state.gameSlice.games[gameId].isSingleCardMode;
 
-export const selectIsPlayerVoted = (currentGameId, playerId) => state => {
-  const game = state.gameSlice.games[currentGameId];
+export const selectIsPlayerVoted = (gameId, playerId) => state => {
+  const game = state.gameSlice.games[gameId];
   const player = game.players.find(p => p._id === playerId);
   return player.isVoted;
 };
 
-export const selectHostPlayerId = currentGameId => state =>
-  state.gameSlice.games[currentGameId].hostPlayerId;
+export const selectHostPlayerId = gameId => state =>
+  state.gameSlice.games[gameId].hostPlayerId;
+
+export const selectVotes = gameId => state =>
+  state.gameSlice.games[gameId].votes;
