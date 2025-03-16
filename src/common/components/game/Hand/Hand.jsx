@@ -81,6 +81,13 @@ export default function Hand({
     watchDrag: isCarouselModeHandScreen,
   });
 
+  const handleStory = useCallback(() => {
+    console.log("handleStory");
+    gameStatus === VOTING ? guessStory() : tellStory();
+    setCardsSet({ firstCard: null, secondCard: null }); // не обов'язково
+    setSelectedCardId(null); // clear
+  }, [gameStatus, guessStory, tellStory]);
+
   const onSelectCard = cardId =>
     setSelectedCardId(cardId === selectedCardId ? null : cardId);
 
@@ -156,13 +163,6 @@ export default function Hand({
     if (secondCard?._id === cardId) marks.push("★2");
     return marks;
   };
-
-  const handleStory = useCallback(() => {
-    console.log("handleStory");
-    gameStatus === VOTING ? guessStory() : tellStory();
-    setCardsSet({ firstCard: null, secondCard: null }); // не обов'язково
-    setSelectedCardId(null); // clear
-  }, [gameStatus, guessStory, tellStory]);
 
   // reInit for emblaApiCardsGuess
   useEffect(() => {

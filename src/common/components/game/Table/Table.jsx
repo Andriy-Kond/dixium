@@ -16,6 +16,7 @@ import Mask from "common/components/game/Mask";
 import css from "./Table.module.scss";
 import Button from "common/components/ui/Button/index.js";
 import { VOTING } from "utils/generals/constants.js";
+import { useVote } from "hooks/useVote.js";
 
 export default function Table({
   isActiveScreen,
@@ -54,6 +55,7 @@ export default function Table({
     player => player._id === userCredentials._id && player.isVoted,
   );
 
+  const vote = useVote(cardsSet, gameId);
   const [emblaRefCardsVote, emblaApiCardsVote] = useEmblaCarousel({
     loop: true,
     align: "center",
@@ -61,6 +63,12 @@ export default function Table({
     watchDrag: isCarouselModeTableScreen,
     // inViewThreshold: 0.5,
   });
+
+  const handleVote = useCallback(() => {
+    console.log("handleVote");
+    vote();
+    setCardsSet({ firstCard: null, secondCard: null }); // не обов'язково
+  }, [vote]);
 
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
@@ -82,10 +90,6 @@ export default function Table({
     if (secondCard?._id === cardId) marks.push("★2");
     return marks;
   };
-
-  const handleVote = useCallback(() => {
-    console.log("handleVote");
-  }, []);
 
   // select card(s)
   const toggleCardSelection = useCallback(
