@@ -25,6 +25,8 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
 
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
+  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
 
   const isCurrentPlayerVoted = gamePlayers.some(
     player => player._id === userCredentials._id && player.isVoted,
@@ -37,9 +39,8 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
     if (!isActiveScreen) return;
     // console.log("Players >> isActiveScreen:::", isActiveScreen );
     // console.log("Players >> Clearing middle button");
-    const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
 
-    if (hostPlayerId === userCredentials._id && isReadyToVote) {
+    if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
       setMiddleButton(
         <Button
           btnStyle={["btnFlexGrow"]}
@@ -47,17 +48,13 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
           // onClick={calculatePoints}
         />,
       );
-    }
-
-    if (
+    } else if (
       !storytellerId ||
       isCurrentPlayerStoryteller ||
       isCurrentPlayerVoted ||
       !isCanVote
     )
       setMiddleButton(null);
-
-    // setMiddleButton(null);
   }, [
     gamePlayers,
     hostPlayerId,
@@ -65,6 +62,7 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
     isCanVote,
     isCurrentPlayerStoryteller,
     isCurrentPlayerVoted,
+    isReadyToCalculatePoints,
     isSingleCardMode,
     playersMoreThanThree,
     setMiddleButton,

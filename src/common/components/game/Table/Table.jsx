@@ -23,7 +23,6 @@ export default function Table({
   isCarouselModeTableScreen,
   setIsCarouselModeTableScreen,
   calculateRoundPoints,
-  isCarouselModeHandScreen,
 }) {
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
@@ -36,6 +35,7 @@ export default function Table({
 
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
   const playersMoreThanThree = gamePlayers.length > 3;
+
   const [cardsSet, setCardsSet] = useState({
     firstCard: null,
     secondCard: null,
@@ -43,6 +43,7 @@ export default function Table({
   const { firstCard, secondCard } = cardsSet;
 
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
 
@@ -59,7 +60,16 @@ export default function Table({
     loop: true,
     align: "center",
     startIndex: selectedCardIdx,
+    watchDrag: isCarouselModeTableScreen,
+    // inViewThreshold: 0.5,
   });
+
+  useEffect(() => {
+    if (!emblaApiCardsVote) return;
+    emblaApiCardsVote.reInit({
+      watchDrag: isCarouselModeTableScreen,
+    });
+  }, [emblaApiCardsVote, isCarouselModeTableScreen]);
 
   const toggleCardSelection = useCallback(
     btnKey => {
@@ -102,7 +112,13 @@ export default function Table({
     [emblaApiCardsVote, isSingleCardMode, cardsOnTable, playersMoreThanThree],
   );
 
+  // const exitCarouselMode = useCallback(() => {
+  //   setIsCarouselModeTableScreen(false);
+  //   setMiddleButton(null);
+  // }, [setIsCarouselModeTableScreen, setMiddleButton]);
+
   const exitCarouselMode = useCallback(() => {
+    setIsMounted(false);
     setIsCarouselModeTableScreen(false);
     setMiddleButton(null);
   }, [setIsCarouselModeTableScreen, setMiddleButton]);
@@ -110,6 +126,10 @@ export default function Table({
   const handleVote = () => {
     console.log("handleVote");
   };
+
+  useEffect(() => {
+    if (emblaApiCardsVote) emblaApiCardsVote.scrollTo(activeCardIdx);
+  }, [activeCardIdx, emblaApiCardsVote]);
 
   // // Get active card's index
   useEffect(() => {
@@ -179,23 +199,16 @@ export default function Table({
           </div>
         </>,
       );
-    } else {
-      // Якщо це не карусель, то можна проголосувати, якщо вибір вже зроблений
-      setMiddleButton(
-        <Button
-          btnStyle={["btnFlexGrow"]}
-          btnText={!storytellerId ? "Tell your story" : "Guess story"}
-          onClick={handleVote}
-          disabled={
-            gameStatus === VOTING && (!isCanVote || isCurrentPlayerVoted)
-          }
-        />,
-      );
-    }
-
-    // Якщо це ведучий:
-    if (hostPlayerId === userCredentials._id && isReadyToVote) {
-      // Якщо це не сторітеллер
+    } else if (
+      !storytellerId ||
+      isCurrentPlayerStoryteller ||
+      !isCanVote ||
+      isCurrentPlayerVoted
+    )
+      setMiddleButton(null);
+    // Якщо це режим "не карусель":
+    else if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
+      // Якщо це ведучий:
       setMiddleButton(
         <Button
           btnStyle={["btnFlexGrow"]}
@@ -203,15 +216,20 @@ export default function Table({
           onClick={calculateRoundPoints}
         />,
       );
+    } else if (!isCurrentPlayerStoryteller) {
+      // Якщо це не сторітеллер
+      isCanVote &&
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Vote card"}
+            onClick={handleVote}
+            disabled={
+              gameStatus === VOTING && (!isCanVote || isCurrentPlayerVoted)
+            }
+          />,
+        );
     }
-
-    if (
-      !storytellerId ||
-      isCurrentPlayerStoryteller ||
-      !isCanVote ||
-      isCurrentPlayerVoted
-    )
-      setMiddleButton(null);
   }, [
     activeCardIdx,
     calculateRoundPoints,
@@ -227,7 +245,7 @@ export default function Table({
     isCarouselModeTableScreen,
     isCurrentPlayerStoryteller,
     isCurrentPlayerVoted,
-    isReadyToVote,
+    isReadyToCalculatePoints,
     isSingleCardMode,
     playersMoreThanThree,
     secondCard,
@@ -237,10 +255,12 @@ export default function Table({
     userCredentials._id,
   ]);
 
+  const [isMounted, setIsMounted] = useState(false);
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
+    setActiveCardIdx(idx);
     setIsCarouselModeTableScreen(true);
-    // setActiveCardIdx(idx);
+    setIsMounted(true);
   };
 
   // Set star(s) to card(s):
@@ -260,19 +280,16 @@ export default function Table({
           <div>cards face up</div>
 
           {isCarouselModeTableScreen ? (
-            <div
-              className={css.carouselWrapper}
-              ref={emblaRefCardsVote}
-              // ref={isCarouselModeHandScreen ? null : emblaRefCardsVote}
-              //
-            >
+            <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
               <ul className={css.carouselContainer}>
-                {cardsOnTable.map(card => (
+                {cardsOnTable.map((card, idx) => (
                   <li className={css.carouselSlide} key={card._id}>
                     <img
                       src={card.url}
                       alt="card"
-                      className={css.carouselImage}
+                      className={`${css.carouselImage} ${
+                        isMounted ? css.visible : ""
+                      }`}
                     />
                     <div className={css.checkboxContainer}>
                       {getStarMarks(card._id).map((mark, index) => (
@@ -286,25 +303,23 @@ export default function Table({
               </ul>
             </div>
           ) : (
-            <div>
-              <ul className={`${css.currentDeck}`}>
-                {cardsOnTable.map((card, idx) => (
-                  <li
-                    className={css.card}
-                    key={card._id}
-                    onClick={() => carouselModeOn(idx)}>
-                    <img className={css.img} src={card.url} alt="card" />
-                    <div className={css.checkboxContainer}>
-                      {getStarMarks(card._id).map((mark, index) => (
-                        <span key={index} className={css.checkboxCard}>
-                          {mark}
-                        </span>
-                      ))}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className={`${css.currentDeck}`}>
+              {cardsOnTable.map((card, idx) => (
+                <li
+                  className={css.card}
+                  key={card._id}
+                  onClick={() => carouselModeOn(idx)}>
+                  <img className={css.img} src={card.url} alt="card" />
+                  <div className={css.checkboxContainer}>
+                    {getStarMarks(card._id).map((mark, index) => (
+                      <span key={index} className={css.checkboxCard}>
+                        {mark}
+                      </span>
+                    ))}
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
         </>
       ) : (

@@ -13,10 +13,37 @@
   // flex-basis: 100%; // In chrome-browser set wrong behaviour
 }
 
+// .carouselImage {
+//   width: 100%;
+//   height: auto;
+//   // object-fit: cover;
+// }
+
+//Стилі для появи першого слайду
 .carouselImage {
   width: 100%;
   height: auto;
-  // object-fit: cover;
+
+  // Початковий стан для всіх слайдів
+  transform: scale(0);
+  opacity: 0.5;
+
+  // Анімація для плавної появи слайду
+  &.visible {
+    animation: fadeInScale 0.3s ease forwards; // "forwards" зберігає кінцевий стан
+  }
+}
+
+// Анімація появи
+@keyframes fadeInScale {
+  from {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .checkboxContainer {

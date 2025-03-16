@@ -10,10 +10,16 @@ import GameNavigationBar from "common/components/game/GameNavigationBar";
 
 export default function Game() {
   const [activeScreen, setActiveScreen] = useState(0);
+
   const [middleButton, setMiddleButton] = useState(null);
   const stabilizedSetMiddleButton = useCallback(value => {
     setMiddleButton(value);
   }, []);
+
+  // // set middle button to null when screen change
+  // useEffect(() => {
+  //   if (activeScreen) stabilizedSetMiddleButton(null);
+  // }, [activeScreen, stabilizedSetMiddleButton]);
 
   const [isCarouselModeHandScreen, setIsCarouselModeHandScreen] =
     useState(false);
@@ -27,25 +33,40 @@ export default function Game() {
     // 'start' — Слайди вирівнюються по лівому краю.
     // 'center' — Слайди центруються (за замовчуванням).
     // 'end' — Слайди вирівнюються по правому краю.
-    dragFree: false, // Вільне прокручування без прив'язки до слайдів якщо true
-    slidesToScroll: 1, // Кількість слайдів, які прокручуються за один раз
-    duration: 30, // Швидкість анімації прокручування (не в мілісекундах, а в умовних одиницях, рекомендовано 20–60)
-    skipSnaps: false, // Дозволяє пропускати слайди при сильному свайпі якщо true
+    // dragFree: false, // Вільне прокручування без прив'язки до слайдів якщо true
+    // slidesToScroll: 1, // Кількість слайдів, які прокручуються за один раз
+    // duration: 30, // Швидкість анімації прокручування (не в мілісекундах, а в умовних одиницях, рекомендовано 20–60)
+    // skipSnaps: false, // Дозволяє пропускати слайди при сильному свайпі якщо true
+
+    watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen),
+    // isCarouselModeHandScreen || isCarouselModeTableScreen
+    //   ? ""
+    //   : "is-draggable",
 
     // Адаптивні налаштування для різних розмірів екрану
-    breakpoints: {
-      "(min-width: 768px)": { loop: true }, // увімкнути зациклення на екранах ширше 768px.
-    },
+    // breakpoints: {
+    //   "(min-width: 768px)": { loop: true }, // увімкнути зациклення на екранах ширше 768px.
+    // },
   });
 
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    // reInit потрібен для застосування динамічних змін у налаштуваннях useEmblaCarousel (watchDrag, breakpoints тощо), або якщо динамічно змінюється кількість слайдів каруселі тощо
+    emblaApi.reInit({
+      watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen),
+    });
+  }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
+
   // Отримання поточного індексу слайду для пропсів
-  const getActiveScreen = () => emblaApi?.selectedScrollSnap() || 0;
+  // const getActiveScreen = () => emblaApi?.selectedScrollSnap() || 0;
 
   const screens = [<Hand />, <Players />, <Table />];
 
-  // useEffect(() => {
-  //   if (emblaApi) emblaApi.scrollTo(activeScreen);
-  // }, [activeScreen, emblaApi]);
+  // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
+  useEffect(() => {
+    if (emblaApi) emblaApi.scrollTo(activeScreen);
+  }, [activeScreen, emblaApi]);
 
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
@@ -67,38 +88,32 @@ export default function Game() {
   // KB events handler
   useEffect(() => {
     const handleKeyPress = event => {
-      if (!emblaApi) return;
+      if (!emblaApi || isCarouselModeHandScreen || isCarouselModeTableScreen)
+        return;
+
       if (event.key === "ArrowLeft") {
         emblaApi.scrollPrev();
       } else if (event.key === "ArrowRight") {
         emblaApi.scrollNext();
       }
     };
-
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [emblaApi]);
+  }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
 
   const calculateRoundPoints = useCallback(() => {}, []);
 
   return (
     <>
       <p>Game</p>
-      <div
-        className={css.swipeWrapper}
-        ref={emblaRef}
-        // ref={
-        //   isCarouselModeHandScreen || isCarouselModeTableScreen
-        //     ? null
-        //     : emblaRef
-        // }
-      >
+      <div className={css.swipeWrapper} ref={emblaRef}>
         <ul className={css.screenWrapper}>
           {screens.map((screen, index) => (
             <li className={css.screenContainer} key={index}>
               {cloneElement(screen, {
-                isActiveScreen: getActiveScreen() === index, // Актуальний індекс
-                setActiveScreen,
+                // isActiveScreen: getActiveScreen() === index, // Актуальний індекс
+                isActiveScreen: activeScreen === index,
+                // setActiveScreen,
                 setMiddleButton: stabilizedSetMiddleButton,
                 isCarouselModeHandScreen,
                 setIsCarouselModeHandScreen,
@@ -112,7 +127,8 @@ export default function Game() {
       </div>
 
       <GameNavigationBar
-        activeScreen={getActiveScreen()}
+        // activeScreen={getActiveScreen()}
+        activeScreen={activeScreen}
         screensLength={screens.length}
         onPrevScreen={prevScreen}
         onNextScreen={nextScreen}

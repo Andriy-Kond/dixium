@@ -30,7 +30,6 @@ export default function Hand({
   isCarouselModeHandScreen,
   setIsCarouselModeHandScreen,
   calculateRoundPoints,
-  isCarouselModeTableScreen,
 }) {
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
@@ -41,8 +40,8 @@ export default function Hand({
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
 
-  const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
+  const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
 
@@ -50,6 +49,10 @@ export default function Hand({
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
 
   const [selectedCardId, setSelectedCardId] = useState(null);
+
+  // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
+  const isReadyToVote = gamePlayers.every(player => player.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
 
   useEffect(() => {
     if (gameStatus === VOTING) setSelectedCardId(null);
@@ -74,7 +77,16 @@ export default function Hand({
     loop: true,
     align: "center",
     startIndex: selectedCardIdx,
+    watchDrag: isCarouselModeHandScreen,
   });
+
+  useEffect(() => {
+    if (!emblaApiCardsGuess) return;
+
+    emblaApiCardsGuess.reInit({
+      watchDrag: isCarouselModeHandScreen,
+    });
+  }, [emblaApiCardsGuess, isCarouselModeHandScreen]);
 
   const toggleCardSelection = useCallback(
     btnKey => {
@@ -118,6 +130,7 @@ export default function Hand({
   );
 
   const exitCarouselMode = useCallback(() => {
+    setIsMounted(false);
     setIsCarouselModeHandScreen(false);
     setMiddleButton(null);
   }, [setIsCarouselModeHandScreen, setMiddleButton]);
@@ -221,7 +234,7 @@ export default function Hand({
         </>,
       );
     } else if (isFirstTurn) {
-      // Якщо це не карусель-режим і одразу після першого ходу, то треба показати екран-маску:
+      // Логіка якщо це не карусель-режим і одразу після першого ходу, то треба показати екран-маску:
       isCurrentPlayerStoryteller
         ? returnToHand() // для сторітеллера екран-маска автоматично закривається
         : // Для інших гравців показується екран-маска, та кнопка закриття маски:
@@ -233,11 +246,21 @@ export default function Hand({
             />,
           );
     } else {
-      // Якщо це не карусель-режим і закритий екран-маска (хтось вже став сторітеллером)
-      if (isCurrentPlayerStoryteller) {
+      // Логіка якщо це не карусель, але вже і не перший хід (закрита екран-маска)
+      if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
+        // Якщо це ведучий і всі проголосували можна закінчувати раунд:
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Finish round"}
+            onClick={calculateRoundPoints}
+          />,
+        );
+      } else if (isCurrentPlayerStoryteller) {
+        // Якщо це сторітеллер
         setMiddleButton(null); // Очищаємо кнопку для сторітеллера, бо він карту вже скинув
       }
-      // Інші гравці скидають карту (чи дві, якщо гравців троє)
+      // Якщо це не сторітеллер, то вгадують (скидують) карту (чи дві, якщо гравців троє)
       else {
         setMiddleButton(
           <Button
@@ -252,35 +275,23 @@ export default function Hand({
         );
       }
     }
-
-    // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-    const isReadyToVote = gamePlayers.every(player => player.isGuessed);
-    // Якщо це ведучий:
-    if (hostPlayerId === userCredentials._id && isReadyToVote) {
-      setMiddleButton(
-        <Button
-          btnStyle={["btnFlexGrow"]}
-          btnText={"Finish round"}
-          onClick={calculateRoundPoints}
-        />,
-      );
-    }
   }, [
     activeCardIdx,
+    calculateRoundPoints,
     cardsSet.firstCard,
     cardsSet.secondCard,
     exitCarouselMode,
     firstCard,
-    gamePlayers,
     gameStatus,
     handleStory,
     hostPlayerId,
     isActiveScreen,
     isCanGuess,
     isCarouselModeHandScreen,
-    isCurrentPlayerStoryteller,
     isCurrentPlayerGuessed,
+    isCurrentPlayerStoryteller,
     isFirstTurn,
+    isReadyToCalculatePoints,
     isSingleCardMode,
     playerHand,
     playersMoreThanThree,
@@ -291,13 +302,14 @@ export default function Hand({
     storytellerId,
     toggleCardSelection,
     userCredentials._id,
-    calculateRoundPoints,
   ]);
 
+  const [isMounted, setIsMounted] = useState(false);
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
     setIsCarouselModeHandScreen(true);
     setActiveCardIdx(idx);
+    setIsMounted(true);
   };
 
   // Set star(s) to card(s):
@@ -324,15 +336,18 @@ export default function Hand({
       <p>{paragraphText}</p>
 
       {isCarouselModeHandScreen ? (
-        <div
-          className={css.carouselWrapper}
-          ref={emblaRefCardsGuess}
-          // ref={isCarouselModeTableScreen ? null : emblaRefCardsGuess}
-        >
+        <div className={css.carouselWrapper} ref={emblaRefCardsGuess}>
           <ul className={css.carouselContainer}>
             {playerHand.map(card => (
               <li className={css.carouselSlide} key={card._id}>
-                <img src={card.url} alt="card" className={css.carouselImage} />
+                <img
+                  src={card.url}
+                  alt="card"
+                  // className={css.carouselImage}
+                  className={`${css.carouselImage} ${
+                    isMounted ? css.visible : ""
+                  }`}
+                />
                 <div className={css.checkboxContainer}>
                   {getStarMarks(card._id).map((mark, index) => (
                     <span key={index} className={css.checkboxCarousel}>
