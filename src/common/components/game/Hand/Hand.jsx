@@ -39,40 +39,41 @@ export default function Hand({
   const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
-
-  const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
-  const storyteller = gamePlayers.find(p => p._id === storytellerId);
-  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
-
-  const playersMoreThanThree = gamePlayers.length > 3;
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
 
-  const [selectedCardId, setSelectedCardId] = useState(null);
-
-  // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-  const isReadyToVote = gamePlayers.every(player => player.isGuessed);
-  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
-
-  useEffect(() => {
-    if (gameStatus === VOTING) setSelectedCardId(null);
-  }, [gameStatus]);
-
-  const onSelectCard = cardId =>
-    setSelectedCardId(cardId === selectedCardId ? null : cardId);
-
+  const [selectedCardId, setSelectedCardId] = useState(null); // for first story(teller) mode
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
-
   const [cardsSet, setCardsSet] = useState({
     firstCard: null,
     secondCard: null,
   });
+  const [isMountedCarousel, setIsMountedCarousel] = useState(false); // is mounted carousel
+
   const { firstCard, secondCard } = cardsSet;
+  const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
+  const storyteller = gamePlayers.find(p => p._id === storytellerId);
+  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
+  const playersMoreThanThree = gamePlayers.length > 3;
+  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
+  // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
+  // const isReadyToVote = gamePlayers.every(player => player.isGuessed);
+  const isCanGuess =
+    playersMoreThanThree && isSingleCardMode
+      ? !!firstCard?._id
+      : !!firstCard?._id && !!secondCard?._id;
+  const isCurrentPlayerGuessed = gamePlayers.some(
+    player => player._id === userCredentials._id && player.isGuessed,
+  );
+  const paragraphText = !storytellerId
+    ? "Be the first to think of an association for one of your cards. Choose it and make a move. Tell us about your association."
+    : isCurrentPlayerStoryteller
+    ? "You have told your story. Waiting for other players to choose their associations"
+    : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
   const tellStory = useTellStory(gameId, selectedCardId);
   const guessStory = useGuess(cardsSet, gameId);
-
   const [emblaRefCardsGuess, emblaApiCardsGuess] = useEmblaCarousel({
     loop: true,
     align: "center",
@@ -80,13 +81,32 @@ export default function Hand({
     watchDrag: isCarouselModeHandScreen,
   });
 
-  useEffect(() => {
-    if (!emblaApiCardsGuess) return;
+  const onSelectCard = cardId =>
+    setSelectedCardId(cardId === selectedCardId ? null : cardId);
 
-    emblaApiCardsGuess.reInit({
-      watchDrag: isCarouselModeHandScreen,
+  const returnToHand = useCallback(() => {
+    const updatedGame = { ...currentGame, isFirstTurn: false };
+    socket.emit("gameUpdateFirstTurn", { updatedGame }, response => {
+      if (response?.error) {
+        console.error("Failed to update game:", response.error);
+      }
     });
-  }, [emblaApiCardsGuess, isCarouselModeHandScreen]);
+
+    setSelectedCardId(null);
+  }, [currentGame]);
+
+  const carouselModeOn = idx => {
+    setSelectedCardIdx(idx);
+    setIsCarouselModeHandScreen(true);
+    setActiveCardIdx(idx);
+    setIsMountedCarousel(true);
+  };
+
+  const exitCarouselMode = useCallback(() => {
+    setIsMountedCarousel(false);
+    setIsCarouselModeHandScreen(false);
+    setMiddleButton(null);
+  }, [setIsCarouselModeHandScreen, setMiddleButton]);
 
   const toggleCardSelection = useCallback(
     btnKey => {
@@ -129,50 +149,43 @@ export default function Hand({
     [emblaApiCardsGuess, isSingleCardMode, playerHand, playersMoreThanThree],
   );
 
-  const exitCarouselMode = useCallback(() => {
-    setIsMounted(false);
-    setIsCarouselModeHandScreen(false);
-    setMiddleButton(null);
-  }, [setIsCarouselModeHandScreen, setMiddleButton]);
-
-  const returnToHand = useCallback(() => {
-    const updatedGame = { ...currentGame, isFirstTurn: false };
-    socket.emit("gameUpdateFirstTurn", { updatedGame }, response => {
-      if (response?.error) {
-        console.error("Failed to update game:", response.error);
-      }
-    });
-
-    setSelectedCardId(null);
-  }, [currentGame]);
-
-  const paragraphText = !storytellerId
-    ? "Be the first to think of an association for one of your cards. Choose it and make a move. Tell us about your association."
-    : isCurrentPlayerStoryteller
-    ? "You have told your story. Waiting for other players to choose their associations"
-    : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
+  // Set star(s) to card(s):
+  const getStarMarks = cardId => {
+    const marks = [];
+    if (firstCard?._id === cardId) marks.push("★1");
+    if (secondCard?._id === cardId) marks.push("★2");
+    return marks;
+  };
 
   const handleStory = useCallback(() => {
+    console.log("handleStory");
     gameStatus === VOTING ? guessStory() : tellStory();
     setCardsSet({ firstCard: null, secondCard: null }); // не обов'язково
     setSelectedCardId(null); // clear
   }, [gameStatus, guessStory, tellStory]);
 
-  const isCanGuess =
-    playersMoreThanThree && isSingleCardMode
-      ? !!firstCard?._id
-      : !!firstCard?._id && !!secondCard?._id;
+  // reInit for emblaApiCardsGuess
+  useEffect(() => {
+    if (!emblaApiCardsGuess) return;
 
-  const isCurrentPlayerGuessed = gamePlayers.some(
-    player => player._id === userCredentials._id && player.isGuessed,
-  );
+    emblaApiCardsGuess.reInit({
+      watchDrag: isCarouselModeHandScreen,
+    });
+  }, [emblaApiCardsGuess, isCarouselModeHandScreen]);
+
+  // ??
+  useEffect(() => {
+    if (gameStatus === VOTING) setSelectedCardId(null); // todo перевірити чи потрібно ще?
+  }, [gameStatus]);
 
   // Get active card's index
   useEffect(() => {
-    if (!emblaApiCardsGuess) return; // Перевірка на наявність API
+    if (!emblaApiCardsGuess) return;
+
     const onSelect = () =>
       setActiveCardIdx(emblaApiCardsGuess.selectedScrollSnap());
     emblaApiCardsGuess.on("select", onSelect); // Підписка на подію зміни слайда
+
     return () => emblaApiCardsGuess.off("select", onSelect);
   }, [emblaApiCardsGuess]);
 
@@ -187,6 +200,7 @@ export default function Hand({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCardsGuess]);
 
+  // setMiddleButton
   useEffect(() => {
     if (!isActiveScreen) return;
 
@@ -304,22 +318,7 @@ export default function Hand({
     userCredentials._id,
   ]);
 
-  const [isMounted, setIsMounted] = useState(false);
-  const carouselModeOn = idx => {
-    setSelectedCardIdx(idx);
-    setIsCarouselModeHandScreen(true);
-    setActiveCardIdx(idx);
-    setIsMounted(true);
-  };
-
-  // Set star(s) to card(s):
-  const getStarMarks = cardId => {
-    const marks = [];
-    if (firstCard?._id === cardId) marks.push("★1");
-    if (secondCard?._id === cardId) marks.push("★2");
-    return marks;
-  };
-
+  // ^Render
   if (isFirstTurn && !isCurrentPlayerStoryteller) {
     return (
       <>
@@ -345,7 +344,7 @@ export default function Hand({
                   alt="card"
                   // className={css.carouselImage}
                   className={`${css.carouselImage} ${
-                    isMounted ? css.visible : ""
+                    isMountedCarousel ? css.visible : ""
                   }`}
                 />
                 <div className={css.checkboxContainer}>

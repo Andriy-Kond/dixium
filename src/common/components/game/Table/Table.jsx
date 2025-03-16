@@ -33,25 +33,23 @@ export default function Table({
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
 
-  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
-  const playersMoreThanThree = gamePlayers.length > 3;
-
+  const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
+  const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
   const [cardsSet, setCardsSet] = useState({
     firstCard: null,
     secondCard: null,
   });
-  const { firstCard, secondCard } = cardsSet;
+  const [isMounted, setIsMounted] = useState(false);
 
+  const { firstCard, secondCard } = cardsSet;
+  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
+  const playersMoreThanThree = gamePlayers.length > 3;
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
-  const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
-  const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
-
   const isCanVote =
     playersMoreThanThree && isSingleCardMode
       ? !!firstCard?._id
       : !!firstCard?._id && !!secondCard?._id;
-
   const isCurrentPlayerVoted = gamePlayers.some(
     player => player._id === userCredentials._id && player.isVoted,
   );
@@ -64,13 +62,32 @@ export default function Table({
     // inViewThreshold: 0.5,
   });
 
-  useEffect(() => {
-    if (!emblaApiCardsVote) return;
-    emblaApiCardsVote.reInit({
-      watchDrag: isCarouselModeTableScreen,
-    });
-  }, [emblaApiCardsVote, isCarouselModeTableScreen]);
+  const carouselModeOn = idx => {
+    setSelectedCardIdx(idx);
+    setActiveCardIdx(idx);
+    setIsCarouselModeTableScreen(true);
+    setIsMounted(true);
+  };
 
+  const exitCarouselMode = useCallback(() => {
+    setIsMounted(false);
+    setIsCarouselModeTableScreen(false);
+    setMiddleButton(null);
+  }, [setIsCarouselModeTableScreen, setMiddleButton]);
+
+  // Set star(s) to card(s):
+  const getStarMarks = cardId => {
+    const marks = [];
+    if (firstCard?._id === cardId) marks.push("★1");
+    if (secondCard?._id === cardId) marks.push("★2");
+    return marks;
+  };
+
+  const handleVote = useCallback(() => {
+    console.log("handleVote");
+  }, []);
+
+  // select card(s)
   const toggleCardSelection = useCallback(
     btnKey => {
       if (isSingleCardMode && btnKey === "secondCard") {
@@ -112,32 +129,27 @@ export default function Table({
     [emblaApiCardsVote, isSingleCardMode, cardsOnTable, playersMoreThanThree],
   );
 
-  // const exitCarouselMode = useCallback(() => {
-  //   setIsCarouselModeTableScreen(false);
-  //   setMiddleButton(null);
-  // }, [setIsCarouselModeTableScreen, setMiddleButton]);
+  // reInit for emblaApiCardsVote
+  useEffect(() => {
+    if (!emblaApiCardsVote) return;
 
-  const exitCarouselMode = useCallback(() => {
-    setIsMounted(false);
-    setIsCarouselModeTableScreen(false);
-    setMiddleButton(null);
-  }, [setIsCarouselModeTableScreen, setMiddleButton]);
-
-  const handleVote = () => {
-    console.log("handleVote");
-  };
+    emblaApiCardsVote.reInit({
+      watchDrag: isCarouselModeTableScreen,
+    });
+  }, [emblaApiCardsVote, isCarouselModeTableScreen]);
 
   useEffect(() => {
     if (emblaApiCardsVote) emblaApiCardsVote.scrollTo(activeCardIdx);
   }, [activeCardIdx, emblaApiCardsVote]);
 
-  // // Get active card's index
+  // Get active card's index
   useEffect(() => {
-    if (!emblaApiCardsVote) return; // Перевірка на наявність API
+    if (!emblaApiCardsVote) return;
 
     const onSelect = () =>
       setActiveCardIdx(emblaApiCardsVote.selectedScrollSnap());
     emblaApiCardsVote.on("select", onSelect); // Підписка на подію зміни слайда
+
     return () => emblaApiCardsVote.off("select", onSelect);
   }, [emblaApiCardsVote]);
 
@@ -152,6 +164,7 @@ export default function Table({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCardsVote]);
 
+  // setMiddleButton
   useEffect(() => {
     if (!isActiveScreen) return;
 
@@ -239,6 +252,7 @@ export default function Table({
     exitCarouselMode,
     firstCard,
     gameStatus,
+    handleVote,
     hostPlayerId,
     isActiveScreen,
     isCanVote,
@@ -254,22 +268,6 @@ export default function Table({
     toggleCardSelection,
     userCredentials._id,
   ]);
-
-  const [isMounted, setIsMounted] = useState(false);
-  const carouselModeOn = idx => {
-    setSelectedCardIdx(idx);
-    setActiveCardIdx(idx);
-    setIsCarouselModeTableScreen(true);
-    setIsMounted(true);
-  };
-
-  // Set star(s) to card(s):
-  const getStarMarks = cardId => {
-    const marks = [];
-    if (firstCard?._id === cardId) marks.push("★1");
-    if (secondCard?._id === cardId) marks.push("★2");
-    return marks;
-  };
 
   return (
     <>
