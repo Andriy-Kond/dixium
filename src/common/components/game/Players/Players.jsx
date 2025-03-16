@@ -8,6 +8,7 @@ import { FaCheck } from "react-icons/fa6";
 import {
   selectGamePlayers,
   selectHostPlayerId,
+  selectIsSingleCardMode,
   selectStorytellerId,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -21,36 +22,53 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const gamePlayers = useSelector(selectGamePlayers(gameId));
+  const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
 
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
+
+  const isCurrentPlayerVoted = gamePlayers.some(
+    player => player._id === userCredentials._id && player.isVoted,
+  );
+
+  const playersMoreThanThree = gamePlayers.length > 3;
+  const isCanVote = playersMoreThanThree && isSingleCardMode;
 
   useEffect(() => {
     if (!isActiveScreen) return;
     // console.log("Players >> isActiveScreen:::", isActiveScreen );
     // console.log("Players >> Clearing middle button");
+    const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
 
-    if (isCurrentPlayerStoryteller) {
-      const roundReady = !gamePlayers.some(player => !player.isVoted);
-      if (hostPlayerId === userCredentials._id && roundReady) {
-        setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={"Finish round"}
-            // onClick={calculatePoints}
-          />,
-        );
-      } else {
-        setMiddleButton(null); // Очищаємо кнопку для сторітеллера
-      }
+    if (hostPlayerId === userCredentials._id && isReadyToVote) {
+      setMiddleButton(
+        <Button
+          btnStyle={["btnFlexGrow"]}
+          btnText={"Finish round"}
+          // onClick={calculatePoints}
+        />,
+      );
     }
+
+    if (
+      !storytellerId ||
+      isCurrentPlayerStoryteller ||
+      isCurrentPlayerVoted ||
+      !isCanVote
+    )
+      setMiddleButton(null);
 
     // setMiddleButton(null);
   }, [
     gamePlayers,
     hostPlayerId,
     isActiveScreen,
+    isCanVote,
     isCurrentPlayerStoryteller,
+    isCurrentPlayerVoted,
+    isSingleCardMode,
+    playersMoreThanThree,
     setMiddleButton,
+    storytellerId,
     userCredentials._id,
   ]);
 
@@ -63,25 +81,15 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
           <li className={css.player} key={player._id}>
             <div>{player.name.toUpperCase()}</div>
 
-            {/* стилі через css: */}
-            {/* <span
-              className={`${css.playerState} ${
-                !isPlayerVoted
-                  ? css.waiting
-                  : isCurrentPlayerStoryteller
-                  ? css.storyteller
-                  : css.voted
-              }`}></span> */}
-
             {/* стилі через компоненти: */}
             <span className={css.playerState}>
-              {!player.isVoted ? (
+              {!player.isGuessed ? (
                 // <CgSpinnerTwoAlt className={css.spin} />
                 <div className={css.waiting}></div>
               ) : player._id === storytellerId ? (
                 <FaCircleCheck className={css.storyteller} />
               ) : (
-                <FaCheck className={css.voted} />
+                <FaCheck className={css.guessed} />
               )}
             </span>
           </li>

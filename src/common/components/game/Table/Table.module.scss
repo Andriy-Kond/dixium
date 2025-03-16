@@ -1,4 +1,4 @@
-.table {
+.cardsListFaceDown {
   position: relative;
   display: flex;
 
@@ -10,4 +10,82 @@
   align-items: center;
 
   background-color: #aec2d6;
+}
+
+.cardsListFaceUp {
+  position: relative;
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  // background-color: #aec2d6;
+}
+
+.carouselWrapper {
+  overflow: hidden;
+}
+
+.carouselContainer {
+  display: flex;
+}
+
+.carouselSlide {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+  // flex-basis: 100%; // In chrome-browser set wrong behaviour
+}
+
+.carouselImage {
+  width: 100%;
+  height: auto;
+  // object-fit: cover;
+}
+
+.checkboxContainer {
+  position: absolute; /* Позиціонування відносно картки */
+  top: 10px; /* Відступ від низу картки */
+  right: 10px; /* Відступ зліва */
+  display: flex; /* Горизонтальне розташування зірочок */
+  gap: 5px; /* Відстань між зірочками */
+}
+
+.checkboxBase {
+  color: gold;
+}
+
+.checkboxCard {
+  @extend .checkboxBase;
+  font-size: 14px; /* Розмір для .card */
+}
+
+.checkboxCarousel {
+  @extend .checkboxBase;
+  font-size: 40px; /* Розмір для .carouselSlide */
+}
+
+.currentDeck {
+  display: flex;
+  justify-content: left;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 5px;
+}
+
+.card {
+  position: relative;
+  width: 120px;
+  height: 160px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.img {
+  width: 100%;
+  height: 100%;
 }

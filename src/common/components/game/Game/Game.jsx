@@ -15,7 +15,11 @@ export default function Game() {
     setMiddleButton(value);
   }, []);
 
-  const [isCarouselMode, setIsCarouselMode] = useState(false);
+  const [isCarouselModeHandScreen, setIsCarouselModeHandScreen] =
+    useState(false);
+
+  const [isCarouselModeTableScreen, setIsCarouselModeTableScreen] =
+    useState(false);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -39,9 +43,9 @@ export default function Game() {
 
   const screens = [<Hand />, <Players />, <Table />];
 
-  useEffect(() => {
-    if (emblaApi) emblaApi.scrollTo(activeScreen);
-  }, [activeScreen, emblaApi]);
+  // useEffect(() => {
+  //   if (emblaApi) emblaApi.scrollTo(activeScreen);
+  // }, [activeScreen, emblaApi]);
 
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
@@ -75,10 +79,20 @@ export default function Game() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApi]);
 
+  const calculateRoundPoints = useCallback(() => {}, []);
+
   return (
     <>
       <p>Game</p>
-      <div className={css.swipeWrapper} ref={isCarouselMode ? null : emblaRef}>
+      <div
+        className={css.swipeWrapper}
+        ref={emblaRef}
+        // ref={
+        //   isCarouselModeHandScreen || isCarouselModeTableScreen
+        //     ? null
+        //     : emblaRef
+        // }
+      >
         <ul className={css.screenWrapper}>
           {screens.map((screen, index) => (
             <li className={css.screenContainer} key={index}>
@@ -86,8 +100,11 @@ export default function Game() {
                 isActiveScreen: getActiveScreen() === index, // Актуальний індекс
                 setActiveScreen,
                 setMiddleButton: stabilizedSetMiddleButton,
-                isCarouselMode,
-                setIsCarouselMode,
+                isCarouselModeHandScreen,
+                setIsCarouselModeHandScreen,
+                isCarouselModeTableScreen,
+                setIsCarouselModeTableScreen,
+                calculateRoundPoints,
               })}
             </li>
           ))}
@@ -100,7 +117,7 @@ export default function Game() {
         onPrevScreen={prevScreen}
         onNextScreen={nextScreen}
         middleButton={middleButton}
-        sidesButtons={!isCarouselMode}
+        sidesButtons={!isCarouselModeHandScreen && !isCarouselModeTableScreen}
       />
     </>
   );

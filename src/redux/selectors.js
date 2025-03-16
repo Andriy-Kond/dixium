@@ -65,3 +65,6 @@ export const selectHostPlayerId = gameId => state =>
 
 export const selectVotes = gameId => state =>
   state.gameSlice.games[gameId].votes;
+
+export const selectScores = gameId => state =>
+  state.gameSlice.games[gameId].scores;

@@ -7,4 +7,4 @@ export * from "./playerJoined.js";
 export * from "./firstStorytellerUpdated.js";
 export * from "./gameFirstTurnUpdate.js";
 export * from "./userDeletedFromGame.js";
-export * from "./playerVoteSuccess.js";
+export * from "./playerGuessSuccess.js";

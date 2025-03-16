@@ -16,19 +16,21 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 
-import { VOTING } from "utils/generals/constants.js";
+import { LOBBY, VOTING } from "utils/generals/constants.js";
 import Button from "common/components/ui/Button";
 import Mask from "../Mask/Mask.jsx";
 
 import css from "./Hand.module.scss";
 import { useTellStory } from "hooks/useTellStory.js";
-import { useVote } from "hooks/useVote.js";
+import { useGuess } from "hooks/useGuess.js";
 
 export default function Hand({
   isActiveScreen,
   setMiddleButton,
-  isCarouselMode,
-  setIsCarouselMode,
+  isCarouselModeHandScreen,
+  setIsCarouselModeHandScreen,
+  calculateRoundPoints,
+  isCarouselModeTableScreen,
 }) {
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
@@ -49,6 +51,10 @@ export default function Hand({
 
   const [selectedCardId, setSelectedCardId] = useState(null);
 
+  useEffect(() => {
+    if (gameStatus === VOTING) setSelectedCardId(null);
+  }, [gameStatus]);
+
   const onSelectCard = cardId =>
     setSelectedCardId(cardId === selectedCardId ? null : cardId);
 
@@ -59,14 +65,12 @@ export default function Hand({
     firstCard: null,
     secondCard: null,
   });
-
   const { firstCard, secondCard } = cardsSet;
 
-  const tellStory = useTellStory(gameId, selectedCardId, setSelectedCardId);
+  const tellStory = useTellStory(gameId, selectedCardId);
+  const guessStory = useGuess(cardsSet, gameId);
 
-  const vote = useVote(cardsSet, gameId);
-
-  const [emblaRefCardsVote, emblaApiCards] = useEmblaCarousel({
+  const [emblaRefCardsGuess, emblaApiCardsGuess] = useEmblaCarousel({
     loop: true,
     align: "center",
     startIndex: selectedCardIdx,
@@ -79,7 +83,7 @@ export default function Hand({
         return;
       }
 
-      const currentCardIndex = emblaApiCards?.selectedScrollSnap() || 0;
+      const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
       const currentCard = playerHand[currentCardIndex];
 
       if (!currentCard) {
@@ -110,13 +114,13 @@ export default function Hand({
         return prev; // Якщо обидва слоти зайняті іншими картами
       });
     },
-    [emblaApiCards, isSingleCardMode, playerHand, playersMoreThanThree],
+    [emblaApiCardsGuess, isSingleCardMode, playerHand, playersMoreThanThree],
   );
 
   const exitCarouselMode = useCallback(() => {
-    setIsCarouselMode(false);
+    setIsCarouselModeHandScreen(false);
     setMiddleButton(null);
-  }, [setIsCarouselMode, setMiddleButton]);
+  }, [setIsCarouselModeHandScreen, setMiddleButton]);
 
   const returnToHand = useCallback(() => {
     const updatedGame = { ...currentGame, isFirstTurn: false };
@@ -135,45 +139,45 @@ export default function Hand({
     ? "You have told your story. Waiting for other players to choose their associations"
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
-  const calculatePoints = () => {};
+  const handleStory = useCallback(() => {
+    gameStatus === VOTING ? guessStory() : tellStory();
+    setCardsSet({ firstCard: null, secondCard: null }); // не обов'язково
+    setSelectedCardId(null); // clear
+  }, [gameStatus, guessStory, tellStory]);
 
-  const handleVoting = useCallback(() => {
-    gameStatus === VOTING ? vote() : tellStory();
-    setCardsSet({ firstCard: null, secondCard: null });
-  }, [gameStatus, tellStory, vote]);
-
-  // Отримання індексу активної карти
-  useEffect(() => {
-    if (!emblaApiCards) return; // Перевірка на наявність API
-    const onSelect = () => setActiveCardIdx(emblaApiCards.selectedScrollSnap());
-    emblaApiCards.on("select", onSelect); // Підписка на подію зміни слайда
-    return () => emblaApiCards.off("select", onSelect);
-  }, [emblaApiCards]);
-
-  // KB events handler
-  useEffect(() => {
-    const handleKeyPress = event => {
-      if (!emblaApiCards) return;
-      if (event.key === "ArrowLeft") emblaApiCards.scrollPrev();
-      else if (event.key === "ArrowRight") emblaApiCards.scrollNext();
-    };
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [emblaApiCards]);
-
-  const isCanVote =
+  const isCanGuess =
     playersMoreThanThree && isSingleCardMode
       ? !!firstCard?._id
       : !!firstCard?._id && !!secondCard?._id;
 
-  const isCurrentPlayerVoted = gamePlayers.some(
-    player => player._id === userCredentials._id && player.isVoted,
+  const isCurrentPlayerGuessed = gamePlayers.some(
+    player => player._id === userCredentials._id && player.isGuessed,
   );
+
+  // Get active card's index
+  useEffect(() => {
+    if (!emblaApiCardsGuess) return; // Перевірка на наявність API
+    const onSelect = () =>
+      setActiveCardIdx(emblaApiCardsGuess.selectedScrollSnap());
+    emblaApiCardsGuess.on("select", onSelect); // Підписка на подію зміни слайда
+    return () => emblaApiCardsGuess.off("select", onSelect);
+  }, [emblaApiCardsGuess]);
+
+  // KB events handler
+  useEffect(() => {
+    const handleKeyPress = event => {
+      if (!emblaApiCardsGuess) return;
+      if (event.key === "ArrowLeft") emblaApiCardsGuess.scrollPrev();
+      else if (event.key === "ArrowRight") emblaApiCardsGuess.scrollNext();
+    };
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [emblaApiCardsGuess]);
 
   useEffect(() => {
     if (!isActiveScreen) return;
 
-    if (isCarouselMode) {
+    if (isCarouselModeHandScreen) {
       const activeCard = playerHand[activeCardIdx];
       if (!activeCard) {
         console.log("error: card not found");
@@ -200,14 +204,14 @@ export default function Hand({
                 <Button
                   btnText="★1"
                   onClick={() => toggleCardSelection("firstCard")}
-                  disabled={isDisabledFirstBtn || isCurrentPlayerVoted}
+                  disabled={isDisabledFirstBtn || isCurrentPlayerGuessed}
                   localClassName={cardsSet.firstCard && css.btnActive}
                 />
                 {!isSingleCardMode && (
                   <Button
                     btnText="★2"
                     onClick={() => toggleCardSelection("secondCard")}
-                    disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
+                    disabled={isDisabledSecondBtn || isCurrentPlayerGuessed}
                     localClassName={cardsSet.secondCard && css.btnActive}
                   />
                 )}
@@ -217,9 +221,9 @@ export default function Hand({
         </>,
       );
     } else if (isFirstTurn) {
-      // Якщо це не карусель-режим і одразу після першого ходу
+      // Якщо це не карусель-режим і одразу після першого ходу, то треба показати екран-маску:
       isCurrentPlayerStoryteller
-        ? returnToHand() // для сторітеллера автоматично закривається екран-маска
+        ? returnToHand() // для сторітеллера екран-маска автоматично закривається
         : // Для інших гравців показується екран-маска, та кнопка закриття маски:
           setMiddleButton(
             <Button
@@ -229,38 +233,37 @@ export default function Hand({
             />,
           );
     } else {
-      // Якщо це не карусель-режим і закритий екран-маска (вже не isFirstTurn) - до голосування за карти
-
+      // Якщо це не карусель-режим і закритий екран-маска (хтось вже став сторітеллером)
       if (isCurrentPlayerStoryteller) {
-        setMiddleButton(null); // Очищаємо кнопку для сторітеллера
-      } else {
-        // ЯКщо це не сторітеллер:
-        // Перевірка чи це ведучий:
-        // const roundReady = !gamePlayers.some(player => !player.isVoted);
-        const roundReady = gamePlayers.every(player => player.isVoted);
-        if (hostPlayerId === userCredentials._id && roundReady) {
-          setMiddleButton(
-            <Button
-              btnStyle={["btnFlexGrow"]}
-              btnText={"Finish round"}
-              onClick={calculatePoints}
-            />,
-          );
-        } else {
-          setMiddleButton(
-            <Button
-              btnStyle={["btnFlexGrow"]}
-              btnText={!storytellerId ? "Tell your story" : "Vote"}
-              onClick={handleVoting}
-              disabled={
-                gameStatus === VOTING
-                  ? !isCanVote && isCurrentPlayerVoted
-                  : !selectedCardId
-              }
-            />,
-          );
-        }
+        setMiddleButton(null); // Очищаємо кнопку для сторітеллера, бо він карту вже скинув
       }
+      // Інші гравці скидають карту (чи дві, якщо гравців троє)
+      else {
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={!storytellerId ? "Tell your story" : "Guess story"}
+            onClick={handleStory}
+            disabled={
+              (gameStatus === LOBBY && !selectedCardId) ||
+              (gameStatus === VOTING && (!isCanGuess || isCurrentPlayerGuessed))
+            }
+          />,
+        );
+      }
+    }
+
+    // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
+    const isReadyToVote = gamePlayers.every(player => player.isGuessed);
+    // Якщо це ведучий:
+    if (hostPlayerId === userCredentials._id && isReadyToVote) {
+      setMiddleButton(
+        <Button
+          btnStyle={["btnFlexGrow"]}
+          btnText={"Finish round"}
+          onClick={calculateRoundPoints}
+        />,
+      );
     }
   }, [
     activeCardIdx,
@@ -270,13 +273,13 @@ export default function Hand({
     firstCard,
     gamePlayers,
     gameStatus,
-    handleVoting,
+    handleStory,
     hostPlayerId,
     isActiveScreen,
-    isCanVote,
-    isCarouselMode,
+    isCanGuess,
+    isCarouselModeHandScreen,
     isCurrentPlayerStoryteller,
-    isCurrentPlayerVoted,
+    isCurrentPlayerGuessed,
     isFirstTurn,
     isSingleCardMode,
     playerHand,
@@ -288,11 +291,12 @@ export default function Hand({
     storytellerId,
     toggleCardSelection,
     userCredentials._id,
+    calculateRoundPoints,
   ]);
 
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
-    setIsCarouselMode(true);
+    setIsCarouselModeHandScreen(true);
     setActiveCardIdx(idx);
   };
 
@@ -319,8 +323,12 @@ export default function Hand({
       <p>Hand</p>
       <p>{paragraphText}</p>
 
-      {isCarouselMode ? (
-        <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
+      {isCarouselModeHandScreen ? (
+        <div
+          className={css.carouselWrapper}
+          ref={emblaRefCardsGuess}
+          // ref={isCarouselModeTableScreen ? null : emblaRefCardsGuess}
+        >
           <ul className={css.carouselContainer}>
             {playerHand.map(card => (
               <li className={css.carouselSlide} key={card._id}>
@@ -339,13 +347,13 @@ export default function Hand({
       ) : (
         <div>
           <ul className={`${css.currentDeck}`}>
-            {currentPlayer.hand.map((card, selectedCardIdx) => (
+            {currentPlayer.hand.map((card, idx) => (
               <li
                 className={css.card}
                 key={card._id}
                 onClick={
                   gameStatus === VOTING
-                    ? () => carouselModeOn(selectedCardIdx)
+                    ? () => carouselModeOn(idx)
                     : () => onSelectCard(card._id)
                 }>
                 <img

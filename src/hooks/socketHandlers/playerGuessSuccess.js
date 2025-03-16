@@ -1,6 +1,6 @@
 import { updateGame } from "redux/game/gameSlice.js";
 
-export const playerVoteSuccess = (game, dispatch) => {
+export const playerGuessSuccess = (game, dispatch) => {
   if (!game) {
     throw new Error(`The game is ${game}`);
   }

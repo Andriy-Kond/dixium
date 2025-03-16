@@ -14,9 +14,9 @@ export const discardHandToTable = ({
 
   // Перезапис руки плеера і мітка, що він походив
   const updatedPlayers = gamePlayers.map(player =>
-    // todo скинути isVoted перед наступним раундом
+    // todo скинути isGuessed перед наступним раундом
     player._id === userId
-      ? { ...player, hand: updatedPlayerHand, isVoted: true }
+      ? { ...player, hand: updatedPlayerHand, isGuessed: true }
       : player,
   );
 

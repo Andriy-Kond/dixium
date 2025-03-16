@@ -17,7 +17,7 @@ import {
   playerJoined,
   playersOrderUpdate,
   userDeletedFromGame,
-  playerVoteSuccess,
+  playerGuessSuccess,
 } from "./socketHandlers";
 
 export const useSetupSocketListeners = () => {
@@ -72,8 +72,8 @@ export const useSetupSocketListeners = () => {
     const handleFirstStorytellerUpdated = ({ game }) =>
       firstStorytellerUpdated(game, dispatch);
 
-    const handlePlayerVoteSuccess = ({ game }) =>
-      playerVoteSuccess(game, dispatch);
+    const handlePlayerGuessSuccess = ({ game }) =>
+      playerGuessSuccess(game, dispatch);
 
     const handleUserDeletedFromGame = ({ game }) =>
       userDeletedFromGame(game, dispatch);
@@ -91,7 +91,7 @@ export const useSetupSocketListeners = () => {
     socket.on("gameRunning", handleGameRun);
 
     socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
-    socket.on("playerVoteSuccess", handlePlayerVoteSuccess);
+    socket.on("playerGuessSuccess", handlePlayerGuessSuccess);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
 
     return () => {

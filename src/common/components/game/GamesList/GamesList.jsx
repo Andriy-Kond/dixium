@@ -22,7 +22,7 @@ export default function GamesList() {
   const startOrJoinToGame = game => {
     socket.emit("startOrJoinToGame", {
       gameId: game._id,
-      player: { ...userCredentials, isVoted: false },
+      player: { ...userCredentials, isGuessed: false },
     });
   };
 

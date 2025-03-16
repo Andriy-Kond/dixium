@@ -24,7 +24,8 @@ const gameInitialState = {
     //       name: String,
     //       avatarURL: String,
     //       hand: [CardSchema],
-    //       isVoted:Boolean
+    //       isGuessed: Boolean,
+    //       isVoted: Boolean
     //     },
     //   ], // List of players
     //   deck: [CardSchema], // Deck of cards

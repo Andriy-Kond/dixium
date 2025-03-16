@@ -14,7 +14,7 @@ import { useCallback } from "react";
 import { Notify } from "notiflix";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
 
-export const useTellStory = (gameId, selectedCardId, setSelectedCardId) => {
+export const useTellStory = (gameId, selectedCardId) => {
   const currentGame = useSelector(selectGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
@@ -40,21 +40,6 @@ export const useTellStory = (gameId, selectedCardId, setSelectedCardId) => {
     // If storyteller not defined, the player becomes the first storyteller
     // todo: logic for storytellerId === true (maybe just add "&& !isFirstTurn"?)
     if (!isFirstTurn) {
-      // // Скидання карт з руки на стіл
-      // const updatedPlayerHand = playerHand.filter(
-      //   handCard => handCard._id !== movedCard._id,
-      // );
-      // const updatedCardsOnTable = [...cardsOnTable, movedCard];
-
-      // // Перезапис руки плеера і мітка, що він походив
-
-      // const updatedPlayers = gamePlayers.map(player =>
-      //   // todo скинути isVoted перед наступним раундом
-      //   player._id === userCredentials._id
-      //     ? { ...player, hand: updatedPlayerHand, isVoted: true }
-      //     : player,
-      // );
-
       const { updatedCardsOnTable, updatedPlayers } = discardHandToTable({
         playerHand,
         movedCards: [movedCard],
@@ -77,8 +62,6 @@ export const useTellStory = (gameId, selectedCardId, setSelectedCardId) => {
           console.error("Failed to update game:", response.error);
         }
       });
-
-      setSelectedCardId(null); // clear
     }
   }, [
     cardsOnTable,
@@ -87,7 +70,7 @@ export const useTellStory = (gameId, selectedCardId, setSelectedCardId) => {
     isFirstTurn,
     playerHand,
     selectedCardId,
-    setSelectedCardId,
+
     storytellerId,
     userCredentials._id,
   ]);
