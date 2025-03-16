@@ -11,6 +11,7 @@ import {
   selectIsSingleCardMode,
   selectStorytellerId,
   selectUserCredentials,
+  selectVotes,
 } from "redux/selectors.js";
 import Mask from "common/components/game/Mask";
 import css from "./Table.module.scss";
@@ -33,6 +34,7 @@ export default function Table({
   const userCredentials = useSelector(selectUserCredentials);
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
+  const votes = useSelector(selectVotes(gameId));
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
@@ -40,6 +42,7 @@ export default function Table({
     firstCard: null,
     secondCard: null,
   });
+
   const [isMounted, setIsMounted] = useState(false);
 
   const { firstCard, secondCard } = cardsSet;
@@ -88,6 +91,19 @@ export default function Table({
     const marks = [];
     if (firstCard?._id === cardId) marks.push("★1");
     if (secondCard?._id === cardId) marks.push("★2");
+    return marks;
+  };
+
+  // Set star(s) to card(s) from votes state:
+  const getStarMarksFromVotes = cardId => {
+    const marks = [];
+    const currentPlayerVote = votes[userCredentials._id];
+    // console.log(" currentPlayerVote:::", currentPlayerVote); //? чому спрацьовує 15 раз для 5 карток?
+    if (!currentPlayerVote) return marks;
+    const { firstCard, secondCard } = currentPlayerVote;
+
+    if (firstCard === cardId) marks.push("★1");
+    if (secondCard === cardId) marks.push("★2");
     return marks;
   };
 
@@ -168,7 +184,7 @@ export default function Table({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCardsVote]);
 
-  // setMiddleButton
+  //* setMiddleButton
   useEffect(() => {
     if (!isActiveScreen) return;
 
@@ -216,14 +232,7 @@ export default function Table({
           </div>
         </>,
       );
-    } else if (
-      !storytellerId ||
-      isCurrentPlayerStoryteller ||
-      !isCanVote ||
-      isCurrentPlayerVoted
-    )
-      setMiddleButton(null);
-    // Якщо це режим "не карусель":
+    } // Якщо це режим "не карусель":
     else if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
       // Якщо це ведучий:
       setMiddleButton(
@@ -233,7 +242,14 @@ export default function Table({
           onClick={calculateRoundPoints}
         />,
       );
-    } else if (!isCurrentPlayerStoryteller) {
+    } else if (
+      !storytellerId ||
+      isCurrentPlayerStoryteller ||
+      !isCanVote ||
+      isCurrentPlayerVoted
+    )
+      setMiddleButton(null);
+    else if (!isCurrentPlayerStoryteller) {
       // Якщо це не сторітеллер
       isCanVote &&
         setMiddleButton(
@@ -312,8 +328,17 @@ export default function Table({
                   key={card._id}
                   onClick={() => carouselModeOn(idx)}>
                   <img className={css.img} src={card.url} alt="card" />
+
                   <div className={css.checkboxContainer}>
                     {getStarMarks(card._id).map((mark, index) => (
+                      <span key={index} className={css.checkboxCard}>
+                        {mark}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className={css.checkboxContainer}>
+                    {getStarMarksFromVotes(card._id).map((mark, index) => (
                       <span key={index} className={css.checkboxCard}>
                         {mark}
                       </span>

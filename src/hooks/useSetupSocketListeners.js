@@ -18,6 +18,7 @@ import {
   playersOrderUpdate,
   userDeletedFromGame,
   playerGuessSuccess,
+  playerVoteSuccess,
 } from "./socketHandlers";
 
 export const useSetupSocketListeners = () => {
@@ -75,6 +76,9 @@ export const useSetupSocketListeners = () => {
     const handlePlayerGuessSuccess = ({ game }) =>
       playerGuessSuccess(game, dispatch);
 
+    const handlePlayerVoteSuccess = ({ game }) =>
+      playerVoteSuccess(game, dispatch);
+
     const handleUserDeletedFromGame = ({ game }) =>
       userDeletedFromGame(game, dispatch);
 
@@ -92,6 +96,7 @@ export const useSetupSocketListeners = () => {
 
     socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
     socket.on("playerGuessSuccess", handlePlayerGuessSuccess);
+    socket.on("playerVoteSuccess", handlePlayerVoteSuccess);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
 
     return () => {
@@ -109,6 +114,8 @@ export const useSetupSocketListeners = () => {
       socket.off("gameRunning", handleGameRun);
 
       socket.off("firstStorytellerUpdated", handleFirstStorytellerUpdated);
+      socket.off("playerGuessSuccess", handlePlayerGuessSuccess);
+      socket.off("playerVoteSuccess", handlePlayerVoteSuccess);
       socket.off("userDeletedFromGame", handleUserDeletedFromGame);
 
       // if client runout from page (unmount component) before server responding

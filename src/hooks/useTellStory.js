@@ -46,6 +46,7 @@ export const useTellStory = (gameId, selectedCardId) => {
         cardsOnTable,
         userId: userCredentials._id,
         gamePlayers,
+        isStoryteller: true,
       });
 
       const updatedGame = {

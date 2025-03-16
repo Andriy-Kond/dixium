@@ -8,3 +8,4 @@ export * from "./firstStorytellerUpdated.js";
 export * from "./gameFirstTurnUpdate.js";
 export * from "./userDeletedFromGame.js";
 export * from "./playerGuessSuccess.js";
+export * from "./playerVoteSuccess.js";

@@ -4,6 +4,7 @@ export const discardHandToTable = ({
   cardsOnTable,
   userId,
   gamePlayers,
+  isStoryteller,
 }) => {
   // Скидання карт з руки на стіл
   const updatedPlayerHand = playerHand.filter(
@@ -16,7 +17,12 @@ export const discardHandToTable = ({
   const updatedPlayers = gamePlayers.map(player =>
     // todo скинути isGuessed перед наступним раундом
     player._id === userId
-      ? { ...player, hand: updatedPlayerHand, isGuessed: true }
+      ? {
+          ...player,
+          hand: updatedPlayerHand,
+          isGuessed: true,
+          isVoted: isStoryteller,
+        }
       : player,
   );
 
