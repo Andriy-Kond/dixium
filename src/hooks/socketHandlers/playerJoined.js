@@ -8,6 +8,7 @@ export const playerJoined = (
   currentGameId,
   navigate,
 ) => {
+  console.log("playerJoined");
   if (!game) {
     throw new Error(`The game is ${game}`);
   }

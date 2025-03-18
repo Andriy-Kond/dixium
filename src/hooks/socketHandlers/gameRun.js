@@ -3,6 +3,7 @@ import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
 export const gameRun = (game, message, dispatch, activeActions) => {
+  console.log("gameRun");
   if (!game) {
     throw new Error(`The game is ${game}`);
   }
@@ -20,10 +21,9 @@ export const gameRun = (game, message, dispatch, activeActions) => {
     if (message) {
       dispatch(updateGame(relatedAction.meta.previousGameState));
       Notify.failure(message);
-    } else {
-      // Server response or response late (more then 10 sec) -> state update
-      dispatch(updateGame(game));
     }
+    // Server response or response late (more then 10 sec) -> state update
+    else dispatch(updateGame(game));
 
     if (relatedAction?.meta?.timer) {
       clearTimeout(relatedAction.meta.timer);
@@ -31,9 +31,8 @@ export const gameRun = (game, message, dispatch, activeActions) => {
     }
   } else {
     // Логіка для інших гравців
-    if (message) {
-      Notify.failure(message);
-    } else {
+    if (message) Notify.failure(message);
+    else
       dispatch(
         gameApi.util.updateQueryData("getAllGames", undefined, draft => {
           if (game._id in draft) {
@@ -43,6 +42,5 @@ export const gameRun = (game, message, dispatch, activeActions) => {
           }
         }),
       );
-    }
   }
 };

@@ -48,13 +48,14 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
           // onClick={calculatePoints}
         />,
       );
-    } else if (
-      !storytellerId ||
-      isCurrentPlayerStoryteller ||
-      isCurrentPlayerVoted ||
-      !isCanVote
-    )
-      setMiddleButton(null);
+    }
+    //   if (
+    //   !storytellerId ||
+    //   isCurrentPlayerStoryteller ||
+    //   isCurrentPlayerVoted ||
+    //   !isCanVote
+    // )
+    else setMiddleButton(null);
   }, [
     gamePlayers,
     hostPlayerId,

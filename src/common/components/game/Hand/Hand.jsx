@@ -23,6 +23,7 @@ import Mask from "../Mask/Mask.jsx";
 import css from "./Hand.module.scss";
 import { useTellStory } from "hooks/useTellStory.js";
 import { useGuess } from "hooks/useGuess.js";
+import { Notify } from "notiflix";
 
 export default function Hand({
   isActiveScreen,
@@ -46,12 +47,12 @@ export default function Hand({
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
   const [cardsSet, setCardsSet] = useState({
-    firstCard: null,
-    secondCard: null,
+    firstGuessCardSet: null,
+    secondGuessCardSet: null,
   });
   const [isMountedCarousel, setIsMountedCarousel] = useState(false); // is mounted carousel
 
-  const { firstCard, secondCard } = cardsSet;
+  const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
   const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
@@ -59,13 +60,14 @@ export default function Hand({
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
   // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   // const isReadyToVote = gamePlayers.every(player => player.isGuessed);
-  const isCanGuess =
-    playersMoreThanThree && isSingleCardMode
-      ? !!firstCard?._id
-      : !!firstCard?._id && !!secondCard?._id;
+  const isCanGuess = playersMoreThanThree
+    ? !!firstGuessCardSet?._id
+    : !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+
   const isCurrentPlayerGuessed = gamePlayers.some(
     player => player._id === userCredentials._id && player.isGuessed,
   );
+
   const paragraphText = !storytellerId
     ? "Be the first to think of an association for one of your cards. Choose it and make a move. Tell us about your association."
     : isCurrentPlayerStoryteller
@@ -73,7 +75,7 @@ export default function Hand({
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
   const tellStory = useTellStory(gameId, selectedCardId);
-  const guessStory = useGuess(cardsSet, gameId);
+  const guessStory = useGuess(gameId, cardsSet);
   const [emblaRefCardsGuess, emblaApiCardsGuess] = useEmblaCarousel({
     loop: true,
     align: "center",
@@ -84,7 +86,7 @@ export default function Hand({
   const handleStory = useCallback(() => {
     console.log("handleStory");
     gameStatus === VOTING ? guessStory() : tellStory();
-    setCardsSet({ firstCard: null, secondCard: null }); // не обов'язково
+    setCardsSet({ firstGuessCardSet: null, secondGuessCardSet: null }); // не обов'язково
     setSelectedCardId(null); // clear
   }, [gameStatus, guessStory, tellStory]);
 
@@ -117,7 +119,7 @@ export default function Hand({
 
   const toggleCardSelection = useCallback(
     btnKey => {
-      if (isSingleCardMode && btnKey === "secondCard") {
+      if (isSingleCardMode && btnKey === "secondGuessCardSet") {
         console.log("error: only one card allowed");
         return;
       }
@@ -132,17 +134,20 @@ export default function Hand({
 
       setCardsSet(prev => {
         const isSelected =
-          prev.firstCard?._id === currentCard._id ||
-          prev.secondCard?._id === currentCard._id;
+          prev.firstGuessCardSet?._id === currentCard._id ||
+          prev.secondGuessCardSet?._id === currentCard._id;
 
         if (isSelected && prev[btnKey]?._id === currentCard._id)
           return { ...prev, [btnKey]: null };
 
         const otherCard =
-          btnKey === "firstCard" ? prev.secondCard : prev.firstCard;
+          btnKey === "firstGuessCardSet"
+            ? prev.secondGuessCardSet
+            : prev.firstGuessCardSet;
 
-        if (!prev.firstCard || !prev.secondCard) {
+        if (!prev.firstGuessCardSet || !prev.secondGuessCardSet) {
           if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
+            Notify.failure("error: cards must be different");
             console.log("error: cards must be different");
             return prev;
           }
@@ -159,8 +164,8 @@ export default function Hand({
   // Set star(s) to card(s):
   const getStarMarks = cardId => {
     const marks = [];
-    if (firstCard?._id === cardId) marks.push("★1");
-    if (secondCard?._id === cardId) marks.push("★2");
+    if (firstGuessCardSet?._id === cardId) marks.push("★1");
+    if (secondGuessCardSet?._id === cardId) marks.push("★2");
     return marks;
   };
 
@@ -212,14 +217,18 @@ export default function Hand({
       }
 
       const isDisabledFirstBtn = playersMoreThanThree
-        ? firstCard && firstCard._id !== activeCard._id
-        : (firstCard && firstCard._id !== activeCard._id) ||
-          (!firstCard && secondCard && secondCard._id === activeCard._id);
+        ? firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
+        : (firstGuessCardSet && firstGuessCardSet._id !== activeCard._id) ||
+          (!firstGuessCardSet &&
+            secondGuessCardSet &&
+            secondGuessCardSet._id === activeCard._id);
 
       const isDisabledSecondBtn = playersMoreThanThree
-        ? secondCard && secondCard._id !== activeCard._id
-        : (secondCard && secondCard._id !== activeCard._id) ||
-          (!secondCard && firstCard && firstCard._id === activeCard._id);
+        ? secondGuessCardSet && secondGuessCardSet._id !== activeCard._id
+        : (secondGuessCardSet && secondGuessCardSet._id !== activeCard._id) ||
+          (!secondGuessCardSet &&
+            firstGuessCardSet &&
+            firstGuessCardSet._id === activeCard._id);
 
       setMiddleButton(
         <>
@@ -230,16 +239,16 @@ export default function Hand({
               <>
                 <Button
                   btnText="★1"
-                  onClick={() => toggleCardSelection("firstCard")}
+                  onClick={() => toggleCardSelection("firstGuessCardSet")}
                   disabled={isDisabledFirstBtn || isCurrentPlayerGuessed}
-                  localClassName={cardsSet.firstCard && css.btnActive}
+                  localClassName={firstGuessCardSet && css.btnActive}
                 />
-                {!isSingleCardMode && (
+                {!playersMoreThanThree && (
                   <Button
                     btnText="★2"
-                    onClick={() => toggleCardSelection("secondCard")}
+                    onClick={() => toggleCardSelection("secondGuessCardSet")}
                     disabled={isDisabledSecondBtn || isCurrentPlayerGuessed}
-                    localClassName={cardsSet.secondCard && css.btnActive}
+                    localClassName={secondGuessCardSet && css.btnActive}
                   />
                 )}
               </>
@@ -292,10 +301,9 @@ export default function Hand({
   }, [
     activeCardIdx,
     calculateRoundPoints,
-    cardsSet.firstCard,
-    cardsSet.secondCard,
+
     exitCarouselMode,
-    firstCard,
+    firstGuessCardSet,
     gameStatus,
     handleStory,
     hostPlayerId,
@@ -310,7 +318,7 @@ export default function Hand({
     playerHand,
     playersMoreThanThree,
     returnToHand,
-    secondCard,
+    secondGuessCardSet,
     selectedCardId,
     setMiddleButton,
     storytellerId,
@@ -349,7 +357,7 @@ export default function Hand({
                 />
                 <div className={css.checkboxContainer}>
                   {getStarMarks(card._id).map((mark, index) => (
-                    <span key={index} className={css.checkboxCarousel}>
+                    <span key={index} className={css.carouselCheckbox}>
                       {mark}
                     </span>
                   ))}

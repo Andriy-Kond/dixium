@@ -12,26 +12,26 @@ import {
 import socket from "services/socket.js";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
 
-export const useGuess = (cardsSet, gameId) => {
+export const useGuess = (gameId, cardsSet) => {
   const userCredentials = useSelector(selectUserCredentials);
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
-  const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
+  const playersMoreThanThree = gamePlayers.length > 3;
 
   const guessStory = useCallback(() => {
-    const { firstCard, secondCard } = cardsSet;
-    if (!firstCard || (!isSingleCardMode && !secondCard)) {
+    const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
+    if (!firstGuessCardSet || (!playersMoreThanThree && !secondGuessCardSet)) {
       console.warn("Invalid card selection!");
       Notify.failure("Invalid card selection!");
       return;
     }
 
-    const movedCards =
-      isSingleCardMode || firstCard._id === secondCard._id
-        ? [firstCard]
-        : [firstCard, secondCard];
+    const movedCards = playersMoreThanThree
+      ? // || firstGuessCardSet._id === secondGuessCardSet._id
+        [firstGuessCardSet]
+      : [firstGuessCardSet, secondGuessCardSet];
 
     if (!movedCards.every(card => playerHand.some(c => c._id === card._id))) {
       console.warn("Not right data in card!");
@@ -63,8 +63,8 @@ export const useGuess = (cardsSet, gameId) => {
     cardsSet,
     currentGame,
     gamePlayers,
-    isSingleCardMode,
     playerHand,
+    playersMoreThanThree,
     userCredentials._id,
   ]);
 

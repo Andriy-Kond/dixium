@@ -17,7 +17,7 @@ const gameInitialState = {
     //   currentRound: Number, // 0
     //   cardsOnTable: [CardSchema], // Карти, які поклали на стіл під час голосування
     //   votes: { type: Map, of: { type: Map, of: String } },  Голоси гравців
-    //          { playerId: {firstCard: firstCardId, second: secondCardId} }
+    //          { playerId: {firstVotedCardId: firstVotedCardId, secondVotedCardId: secondVotedCardId} }
     //   scores: { type: Map, of: Number }, // Бали гравців { playerId: score }
     //   players: [
     //     {
@@ -129,6 +129,21 @@ export const gameSlice = createSlice({
       const game = state.games[gameId];
       if (game) state.games[gameId].cardsOnTable.push(card);
     },
+
+    updatePlayerVoteLocally: (state, action) => {
+      const { gameId, playerId, firstVotedCardId, secondVotedCardId } =
+        action.payload;
+      const game = state.games[gameId];
+      if (game) {
+        state.games[gameId].votes = {
+          ...game.votes,
+          [playerId]: {
+            firstVotedCardId,
+            secondVotedCardId,
+          },
+        };
+      }
+    },
   },
 });
 
@@ -158,4 +173,32 @@ export const {
   setFirstStoryteller,
   nextStoryteller,
   setCardsOnTable,
+  updatePlayerVoteLocally,
 } = gameSlice.actions;
+
+// } else if (
+//   !storytellerId ||
+//   isCurrentPlayerStoryteller ||
+//   isCurrentPlayerVoted
+// ) {
+//   setMiddleButton(null);
+// } else {
+//   const playerVotes = votes[userCredentials._id] || {};
+//   const isCanVote =
+//     playersMoreThanThree && isSingleCardMode
+//       ? !!playerVotes.firstVotedCardId
+//       : !!playerVotes.firstVotedCardId && !!playerVotes.secondVotedCardId;
+
+//   if (isCanVote) {
+//     setMiddleButton(
+//       <Button
+//         btnStyle={["btnFlexGrow"]}
+//         btnText={"Vote card"}
+//         onClick={handleVote}
+//         disabled={gameStatus === VOTING && (!isCanVote || isCurrentPlayerVoted)}
+//       />
+//     );
+//   } else {
+//     setMiddleButton(null);
+//   }
+// }

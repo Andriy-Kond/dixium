@@ -76,8 +76,8 @@ export const useSetupSocketListeners = () => {
     const handlePlayerGuessSuccess = ({ game }) =>
       playerGuessSuccess(game, dispatch);
 
-    const handlePlayerVoteSuccess = ({ game }) =>
-      playerVoteSuccess(game, dispatch);
+    const handlePlayerVoteSuccess = ({ game, message }) =>
+      playerVoteSuccess(game, message, dispatch, activeActions);
 
     const handleUserDeletedFromGame = ({ game }) =>
       userDeletedFromGame(game, dispatch);

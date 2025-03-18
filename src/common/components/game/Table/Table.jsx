@@ -1,7 +1,6 @@
 import useEmblaCarousel from "embla-carousel-react";
-
-import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   selectCardsOnTable,
@@ -18,6 +17,8 @@ import css from "./Table.module.scss";
 import Button from "common/components/ui/Button/index.js";
 import { VOTING } from "utils/generals/constants.js";
 import { useVote } from "hooks/useVote.js";
+import { Notify } from "notiflix";
+import { updatePlayerVoteLocally } from "redux/game/gameSlice.js";
 
 export default function Table({
   isActiveScreen,
@@ -26,6 +27,7 @@ export default function Table({
   setIsCarouselModeTableScreen,
   calculateRoundPoints,
 }) {
+  const dispatch = useDispatch();
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
@@ -38,27 +40,32 @@ export default function Table({
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
-  const [cardsSet, setCardsSet] = useState({
-    firstCard: null,
-    secondCard: null,
-  });
-
   const [isMounted, setIsMounted] = useState(false);
 
-  const { firstCard, secondCard } = cardsSet;
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
   const playersMoreThanThree = gamePlayers.length > 3;
+  const playersMoreThanSix = gamePlayers.length > 6;
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
+
+  const playerVotes = useMemo(
+    () => votes[userCredentials._id] || {},
+    [userCredentials._id, votes],
+  );
+  const { firstVotedCardId, secondVotedCardId } = playerVotes;
+
   const isCanVote =
-    playersMoreThanThree && isSingleCardMode
-      ? !!firstCard?._id
-      : !!firstCard?._id && !!secondCard?._id;
+    playersMoreThanThree || isSingleCardMode
+      ? !!firstVotedCardId
+      : !!firstVotedCardId && !!secondVotedCardId;
+
   const isCurrentPlayerVoted = gamePlayers.some(
     player => player._id === userCredentials._id && player.isVoted,
   );
 
-  const vote = useVote(cardsSet, gameId);
+  // const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
+  const vote = useVote(gameId);
+
   const [emblaRefCardsVote, emblaApiCardsVote] = useEmblaCarousel({
     loop: true,
     align: "center",
@@ -70,7 +77,6 @@ export default function Table({
   const handleVote = useCallback(() => {
     console.log("handleVote");
     vote();
-    setCardsSet({ firstCard: null, secondCard: null }); // не обов'язково
   }, [vote]);
 
   const carouselModeOn = idx => {
@@ -86,67 +92,74 @@ export default function Table({
     setMiddleButton(null);
   }, [setIsCarouselModeTableScreen, setMiddleButton]);
 
-  // Set star(s) to card(s):
-  const getStarMarks = cardId => {
-    const marks = [];
-    if (firstCard?._id === cardId) marks.push("★1");
-    if (secondCard?._id === cardId) marks.push("★2");
-    return marks;
-  };
+  const getStarsMarks = useCallback(
+    cardId => {
+      const marks = [];
+      // const playerVotes = votes[userCredentials._id] || {};
+      // const { firstVotedCardId, secondVotedCardId } = playerVotes;
 
-  // Set star(s) to card(s) from votes state:
-  const getStarMarksFromVotes = cardId => {
-    const marks = [];
-    const currentPlayerVote = votes[userCredentials._id];
-    // console.log(" currentPlayerVote:::", currentPlayerVote); //? чому спрацьовує 15 раз для 5 карток?
-    if (!currentPlayerVote) return marks;
-    const { firstCard, secondCard } = currentPlayerVote;
-
-    if (firstCard === cardId) marks.push("★1");
-    if (secondCard === cardId) marks.push("★2");
-    return marks;
-  };
+      if (firstVotedCardId === cardId) marks.push("★1");
+      if (secondVotedCardId === cardId) marks.push("★2");
+      return marks;
+    },
+    [firstVotedCardId, secondVotedCardId],
+  );
 
   // select card(s)
   const toggleCardSelection = useCallback(
     btnKey => {
-      if (isSingleCardMode && btnKey === "secondCard") {
-        console.log("error: only one card allowed");
-        return;
-      }
-
       const currentCardIndex = emblaApiCardsVote?.selectedScrollSnap() || 0;
       const currentCard = cardsOnTable[currentCardIndex];
 
+      // const playerVotes = votes[userCredentials._id] || {};
+      // const { firstVotedCardId, secondVotedCardId } = playerVotes;
+
       if (!currentCard) {
+        Notify.failure("error: card not found");
         console.log("error: card not found");
         return;
       }
 
-      setCardsSet(prev => {
-        const isSelected =
-          prev.firstCard?._id === currentCard._id ||
-          prev.secondCard?._id === currentCard._id;
+      const isSelected =
+        firstVotedCardId === currentCard._id ||
+        secondVotedCardId === currentCard._id;
 
-        if (isSelected && prev[btnKey]?._id === currentCard._id)
-          return { ...prev, [btnKey]: null };
+      const fieldToUpdate =
+        btnKey === "firstVoteCardSet"
+          ? "firstVotedCardId"
+          : "secondVotedCardId";
 
-        const otherCard =
-          btnKey === "firstCard" ? prev.secondCard : prev.firstCard;
+      const currentVote = playerVotes[fieldToUpdate];
 
-        if (!prev.firstCard || !prev.secondCard) {
-          if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
-            console.log("error: cards must be different");
-            return prev;
-          }
+      const updatedVotes = {
+        ...playerVotes,
+        [fieldToUpdate]:
+          isSelected && currentVote === currentCard._id
+            ? null // Знімаємо вибір
+            : !firstVotedCardId || !secondVotedCardId
+            ? currentCard._id // Додаємо вибір, якщо є вільний слот
+            : currentVote, // Залишаємо як є, якщо слоти зайняті
+      };
 
-          return { ...prev, [btnKey]: currentCard };
-        }
-
-        return prev; // Якщо обидва слоти зайняті іншими картами
-      });
+      dispatch(
+        updatePlayerVoteLocally({
+          gameId,
+          playerId: userCredentials._id,
+          firstVotedCardId: updatedVotes.firstVotedCardId,
+          secondVotedCardId: updatedVotes.secondVotedCardId,
+        }),
+      );
     },
-    [emblaApiCardsVote, isSingleCardMode, cardsOnTable, playersMoreThanThree],
+    [
+      cardsOnTable,
+      dispatch,
+      emblaApiCardsVote,
+      firstVotedCardId,
+      gameId,
+      playerVotes,
+      secondVotedCardId,
+      userCredentials._id,
+    ],
   );
 
   // reInit for emblaApiCardsVote
@@ -187,6 +200,13 @@ export default function Table({
   //* setMiddleButton
   useEffect(() => {
     if (!isActiveScreen) return;
+    // const playerVotes = votes[userCredentials._id] || {};
+    // const { firstVotedCardId, secondVotedCardId } = playerVotes;
+
+    // const isCanVote =
+    //   playersMoreThanThree && isSingleCardMode
+    //     ? !!firstVotedCardId
+    //     : !!firstVotedCardId && !!secondVotedCardId;
 
     if (isCarouselModeTableScreen) {
       // Якщо це режим каруселі, то можна вгадувати карти на столі:
@@ -196,15 +216,12 @@ export default function Table({
         return;
       }
 
-      const isDisabledFirstBtn = playersMoreThanThree
-        ? firstCard && firstCard._id !== activeCard._id
-        : (firstCard && firstCard._id !== activeCard._id) ||
-          (!firstCard && secondCard && secondCard._id === activeCard._id);
-
-      const isDisabledSecondBtn = playersMoreThanThree
-        ? secondCard && secondCard._id !== activeCard._id
-        : (secondCard && secondCard._id !== activeCard._id) ||
-          (!secondCard && firstCard && firstCard._id === activeCard._id);
+      const isDisabledFirstBtn =
+        (firstVotedCardId && firstVotedCardId !== activeCard._id) ||
+        userCredentials._id === activeCard.owner;
+      const isDisabledSecondBtn =
+        (secondVotedCardId && secondVotedCardId !== activeCard._id) ||
+        userCredentials._id === activeCard.owner;
 
       setMiddleButton(
         <>
@@ -215,16 +232,16 @@ export default function Table({
               <>
                 <Button
                   btnText="★1"
-                  onClick={() => toggleCardSelection("firstCard")}
+                  onClick={() => toggleCardSelection("firstVoteCardSet")}
                   disabled={isDisabledFirstBtn || isCurrentPlayerVoted}
-                  localClassName={cardsSet.firstCard && css.btnActive}
+                  localClassName={firstVotedCardId && css.btnActive}
                 />
-                {!isSingleCardMode && (
+                {playersMoreThanSix && (
                   <Button
                     btnText="★2"
-                    onClick={() => toggleCardSelection("secondCard")}
+                    onClick={() => toggleCardSelection("secondVoteCardSet")}
                     disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
-                    localClassName={cardsSet.secondCard && css.btnActive}
+                    localClassName={secondVotedCardId && css.btnActive}
                   />
                 )}
               </>
@@ -245,32 +262,29 @@ export default function Table({
     } else if (
       !storytellerId ||
       isCurrentPlayerStoryteller ||
-      !isCanVote ||
-      isCurrentPlayerVoted
+      isCurrentPlayerVoted ||
+      !isCanVote
     )
       setMiddleButton(null);
-    else if (!isCurrentPlayerStoryteller) {
-      // Якщо це не сторітеллер
-      isCanVote &&
-        setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={"Vote card"}
-            onClick={handleVote}
-            disabled={
-              gameStatus === VOTING && (!isCanVote || isCurrentPlayerVoted)
-            }
-          />,
-        );
+    else if (!isCurrentPlayerStoryteller && isCanVote) {
+      // Якщо це не сторітеллер і може голосувати (вже обрані карти)
+      setMiddleButton(
+        <Button
+          btnStyle={["btnFlexGrow"]}
+          btnText={"Vote card"}
+          onClick={handleVote}
+          disabled={
+            gameStatus === VOTING && (!isCanVote || isCurrentPlayerVoted)
+          }
+        />,
+      );
     }
   }, [
     activeCardIdx,
     calculateRoundPoints,
     cardsOnTable,
-    cardsSet.firstCard,
-    cardsSet.secondCard,
     exitCarouselMode,
-    firstCard,
+    firstVotedCardId,
     gameStatus,
     handleVote,
     hostPlayerId,
@@ -280,9 +294,8 @@ export default function Table({
     isCurrentPlayerStoryteller,
     isCurrentPlayerVoted,
     isReadyToCalculatePoints,
-    isSingleCardMode,
-    playersMoreThanThree,
-    secondCard,
+    playersMoreThanSix,
+    secondVotedCardId,
     setMiddleButton,
     storytellerId,
     toggleCardSelection,
@@ -310,8 +323,8 @@ export default function Table({
                       }`}
                     />
                     <div className={css.checkboxContainer}>
-                      {getStarMarks(card._id).map((mark, index) => (
-                        <span key={index} className={css.checkboxCarousel}>
+                      {getStarsMarks(card._id).map((mark, index) => (
+                        <span key={index} className={css.carouselCheckbox}>
                           {mark}
                         </span>
                       ))}
@@ -330,15 +343,7 @@ export default function Table({
                   <img className={css.img} src={card.url} alt="card" />
 
                   <div className={css.checkboxContainer}>
-                    {getStarMarks(card._id).map((mark, index) => (
-                      <span key={index} className={css.checkboxCard}>
-                        {mark}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className={css.checkboxContainer}>
-                    {getStarMarksFromVotes(card._id).map((mark, index) => (
+                    {getStarsMarks(card._id).map((mark, index) => (
                       <span key={index} className={css.checkboxCard}>
                         {mark}
                       </span>

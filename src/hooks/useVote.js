@@ -8,42 +8,32 @@ import {
   selectUserCredentials,
   selectVotes,
 } from "redux/selectors.js";
-import socket from "services/socket.js";
 
-export const useVote = (cardsSet, gameId) => {
+import { useOptimisticDispatch } from "./useOptimisticDispatch.js";
+
+export const useVote = gameId => {
+  const { optimisticUpdateDispatch } = useOptimisticDispatch();
+
   const userCredentials = useSelector(selectUserCredentials);
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const votes = useSelector(selectVotes(gameId));
-  // { playerId: { firstCard: null, secondCard: null }}
+  // { playerId: {firstVotedCardId: firstVotedCardId, secondVotedCardId: secondVotedCardId} }
+  const playersMoreThanSix = gamePlayers.length > 6;
 
-  // const votedCards =
-  //   isSingleCardMode || firstCard._id === secondCard._id
-  //     ? [firstCard]
-  //     : [firstCard, secondCard];
-
-  // if (!votedCards.every(card => cardsOnTable.some(c => c._id === card._id))) {
-  //   console.warn("Not right data in card!");
-  //   Notify.failure("Not right data in card!");
-  //   return;
-  // }
   const vote = useCallback(() => {
-    const { firstCard, secondCard } = cardsSet;
+    const playerVotes = votes[userCredentials._id] || {};
+    const { firstVotedCardId, secondVotedCardId } = playerVotes;
 
-    if (!firstCard || (!isSingleCardMode && !secondCard)) {
+    if (
+      !firstVotedCardId ||
+      (!isSingleCardMode && playersMoreThanSix && !secondVotedCardId)
+    ) {
       console.warn("Invalid card selection!");
       Notify.failure("Invalid card selection!");
       return;
     }
-
-    const updatedVotes = {
-      ...votes,
-      [userCredentials._id]: {
-        firstCard: firstCard._id,
-        secondCard: secondCard._id,
-      },
-    };
 
     const updatedPlayers = gamePlayers.map(player =>
       // todo скинути isVoted перед наступним раундом
@@ -54,20 +44,26 @@ export const useVote = (cardsSet, gameId) => {
 
     const updatedGame = {
       ...currentGame,
-      votes: updatedVotes,
+      votes: {
+        ...votes,
+        [userCredentials._id]: {
+          firstVotedCardId,
+          secondVotedCardId,
+        },
+      },
       players: updatedPlayers,
     };
 
-    socket.emit("playerVoting", { updatedGame }, response => {
-      if (response?.error) {
-        console.error("Failed to update game playerVoting:", response.error);
-      }
+    optimisticUpdateDispatch({
+      eventName: "playerVoting",
+      updatedGame,
     });
   }, [
-    cardsSet,
     currentGame,
     gamePlayers,
     isSingleCardMode,
+    optimisticUpdateDispatch,
+    playersMoreThanSix,
     userCredentials._id,
     votes,
   ]);
