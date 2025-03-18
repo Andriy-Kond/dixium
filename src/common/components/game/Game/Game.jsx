@@ -7,19 +7,25 @@ import Table from "common/components/game/Table";
 
 import css from "./Game.module.scss";
 import GameNavigationBar from "common/components/game/GameNavigationBar";
+import { useDispatch, useSelector } from "react-redux";
+import { setGameStatus } from "redux/game/gameSlice.js";
+import { useParams } from "react-router-dom";
+import { ROUND_RESULTS } from "utils/generals/constants.js";
+import socket from "services/socket.js";
+import { selectGame, selectVotes } from "redux/selectors.js";
 
 export default function Game() {
-  const [activeScreen, setActiveScreen] = useState(0);
+  const dispatch = useDispatch();
+  const { gameId } = useParams();
+  const currentGame = useSelector(selectGame(gameId));
+  const votes = useSelector(selectVotes(gameId));
 
+  const [activeScreen, setActiveScreen] = useState(0);
   const [middleButton, setMiddleButton] = useState(null);
+
   const stabilizedSetMiddleButton = useCallback(value => {
     setMiddleButton(value);
   }, []);
-
-  // // set middle button to null when screen change
-  // useEffect(() => {
-  //   if (activeScreen) stabilizedSetMiddleButton(null);
-  // }, [activeScreen, stabilizedSetMiddleButton]);
 
   const [isCarouselModeHandScreen, setIsCarouselModeHandScreen] =
     useState(false);
@@ -49,6 +55,30 @@ export default function Game() {
     // },
   });
 
+  const screens = [<Hand />, <Players />, <Table />];
+
+  // Навігація через Embla API
+  const prevScreen = () => {
+    emblaApi?.scrollPrev();
+  };
+  const nextScreen = () => {
+    emblaApi?.scrollNext();
+  };
+
+  const finishRound = useCallback(() => {
+    // reaction to socket from server:
+    dispatch(setGameStatus({ gameId, status: ROUND_RESULTS }));
+
+    // підрахунок балів
+    // calculatePoints()
+    const calculatePoints = () => {};
+
+    const updatedGame = { ...currentGame };
+    dispatch(updatedGame(updatedGame));
+
+    socket.emit("roundFinish", { updatedGame });
+  }, [currentGame, dispatch, gameId]);
+
   useEffect(() => {
     if (!emblaApi) return;
 
@@ -60,8 +90,6 @@ export default function Game() {
 
   // Отримання поточного індексу слайду для пропсів
   // const getActiveScreen = () => emblaApi?.selectedScrollSnap() || 0;
-
-  const screens = [<Hand />, <Players />, <Table />];
 
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {
@@ -76,14 +104,6 @@ export default function Game() {
     emblaApi.on("select", onSelect); // Слухаємо подію зміни слайду
     return () => emblaApi.off("select", onSelect);
   }, [emblaApi]);
-
-  // Навігація через Embla API
-  const prevScreen = () => {
-    emblaApi?.scrollPrev();
-  };
-  const nextScreen = () => {
-    emblaApi?.scrollNext();
-  };
 
   // KB events handler
   useEffect(() => {
@@ -101,8 +121,6 @@ export default function Game() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
 
-  const calculateRoundPoints = useCallback(() => {}, []);
-
   return (
     <>
       <p>Game</p>
@@ -119,7 +137,7 @@ export default function Game() {
                 setIsCarouselModeHandScreen,
                 isCarouselModeTableScreen,
                 setIsCarouselModeTableScreen,
-                calculateRoundPoints,
+                finishRound,
               })}
             </li>
           ))}

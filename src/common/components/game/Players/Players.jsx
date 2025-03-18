@@ -14,6 +14,7 @@ import {
 } from "redux/selectors.js";
 import css from "./Players.module.scss";
 import Button from "common/components/ui/Button/index.js";
+import { ROUND_RESULTS } from "utils/generals/constants.js";
 
 export default function Players({ isActiveScreen, setMiddleButton }) {
   const { gameId } = useParams();

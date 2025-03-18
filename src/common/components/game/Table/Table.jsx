@@ -15,7 +15,7 @@ import {
 import Mask from "common/components/game/Mask";
 import css from "./Table.module.scss";
 import Button from "common/components/ui/Button/index.js";
-import { VOTING } from "utils/generals/constants.js";
+import { VOTING, ROUND_RESULTS } from "utils/generals/constants.js";
 import { useVote } from "hooks/useVote.js";
 import { Notify } from "notiflix";
 import { updatePlayerVoteLocally } from "redux/game/gameSlice.js";
@@ -25,7 +25,7 @@ export default function Table({
   setMiddleButton,
   isCarouselModeTableScreen,
   setIsCarouselModeTableScreen,
-  calculateRoundPoints,
+  finishRound,
 }) {
   const dispatch = useDispatch();
   const { gameId } = useParams();
@@ -54,10 +54,21 @@ export default function Table({
   );
   const { firstVotedCardId, secondVotedCardId } = playerVotes;
 
+  // const isCanVote2 =
+  //   playersMoreThanThree || isSingleCardMode
+  //     ? !!firstVotedCardId
+  //     : !!firstVotedCardId && !!secondVotedCardId;
+
+  //  Гравців === 3 - голосування за 1 карту.
+  //  Гравців 3-6 - голосування за 1 карту
+  //  Гравців 7-12 - голосування за 1 карту якщо режиму isSingleCardMode, інакше - за 2 карти
+
   const isCanVote =
-    playersMoreThanThree || isSingleCardMode
-      ? !!firstVotedCardId
-      : !!firstVotedCardId && !!secondVotedCardId;
+    playersMoreThanSix && !isSingleCardMode
+      ? !!firstVotedCardId && !!secondVotedCardId
+      : !!firstVotedCardId;
+  // console.log(" isCanVote:::", isCanVote);
+  // console.log("!playersMoreThanThree :>> ", !playersMoreThanThree);
 
   const isCurrentPlayerVoted = gamePlayers.some(
     player => player._id === userCredentials._id && player.isVoted,
@@ -256,7 +267,7 @@ export default function Table({
         <Button
           btnStyle={["btnFlexGrow"]}
           btnText={"Finish round"}
-          onClick={calculateRoundPoints}
+          onClick={finishRound}
         />,
       );
     } else if (
@@ -281,7 +292,7 @@ export default function Table({
     }
   }, [
     activeCardIdx,
-    calculateRoundPoints,
+    finishRound,
     cardsOnTable,
     exitCarouselMode,
     firstVotedCardId,

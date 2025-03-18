@@ -6,11 +6,4 @@ export const firstStorytellerUpdated = (game, dispatch) => {
   }
 
   dispatch(updateGame(game));
-  // dispatch(
-  //   setFirstStoryteller({
-  //     gameId: game._id,
-  //     playerId: userCredentials._id,
-  //   }),
-  // );
-  // dispatch(setGameStatus({ gameId: game._id, status: MAKING_TURN }));
 };

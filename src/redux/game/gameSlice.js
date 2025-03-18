@@ -76,13 +76,13 @@ export const gameSlice = createSlice({
       //# якщо games - це масив
       // const gameIndex = state.games.findIndex(g => g._id === updatedGame._id);
 
-      //# якщо games - це об'єкт
-      state.games[updatedGame._id] = updatedGame;
-
       // non mutation, but slower:
       // state.games = state.games.map(game =>
       //   game._id === action.payload._id ? action.payload : game,
       // );
+
+      //# якщо games - це об'єкт
+      state.games[updatedGame._id] = updatedGame;
     },
 
     setActiveAction(state, action) {

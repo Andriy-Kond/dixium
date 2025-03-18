@@ -16,7 +16,7 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 
-import { LOBBY, VOTING } from "utils/generals/constants.js";
+import { LOBBY, VOTING, ROUND_RESULTS } from "utils/generals/constants.js";
 import Button from "common/components/ui/Button";
 import Mask from "../Mask/Mask.jsx";
 
@@ -30,7 +30,7 @@ export default function Hand({
   setMiddleButton,
   isCarouselModeHandScreen,
   setIsCarouselModeHandScreen,
-  calculateRoundPoints,
+  finishRound,
 }) {
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
@@ -276,7 +276,7 @@ export default function Hand({
           <Button
             btnStyle={["btnFlexGrow"]}
             btnText={"Finish round"}
-            onClick={calculateRoundPoints}
+            onClick={finishRound}
           />,
         );
       } else if (isCurrentPlayerStoryteller) {
@@ -300,7 +300,7 @@ export default function Hand({
     }
   }, [
     activeCardIdx,
-    calculateRoundPoints,
+    finishRound,
 
     exitCarouselMode,
     firstGuessCardSet,
@@ -337,6 +337,8 @@ export default function Hand({
     );
   }
 
+  if (ROUND_RESULTS) {
+  }
   return (
     <>
       <p>Hand</p>
