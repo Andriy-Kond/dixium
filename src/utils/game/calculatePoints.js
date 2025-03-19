@@ -1,86 +1,89 @@
-// Функція підрахунку очок в Dixit
-// Ця функція враховує всі правила, включаючи бонуси за введення інших в оману:
-export const calculatePoints = (
-  players,
+export function calculatePoints({
+  gamePlayers,
   storytellerId,
-  selectedCardId,
+  cardsOnTable,
   votes,
-) => {
-  const points = {};
+  scores,
+  isSingleCardMode,
+}) {
+  // Ініціалізація нових балів на основі поточних
+  const updatedScores = { ...scores };
+  const playerCount = gamePlayers.length;
 
-  // Ініціалізуємо всіх гравців з нульовими очками за раунд
-  players.forEach(player => (points[player.id] = 0));
-
-  // Збираємо дані про голосування
-  const votesPerCard = {}; // { cardId: кількість голосів }
-  let correctVotes = 0;
-
-  Object.entries(votes).forEach(([playerId, votedCardId]) => {
-    votesPerCard[votedCardId] = (votesPerCard[votedCardId] || 0) + 1;
-
-    if (votedCardId === selectedCardId) {
-      correctVotes++; // Гравець правильно вгадав карту ведучого
-    }
+  // Ініціалізація балів, якщо гравець ще не має їх
+  gamePlayers.forEach(player => {
+    if (!updatedScores[player._id]) updatedScores[player._id] = 0;
   });
 
-  const totalPlayers = players.length;
+  // Знаходимо карту оповідача
+  const storytellerCard = cardsOnTable.find(
+    card => card.owner === storytellerId,
+  );
+  const storytellerCardId = storytellerCard._id;
 
-  // Розрахунок очок ведучому (Storyteller)
-  if (correctVotes === 0 || correctVotes === totalPlayers - 1) {
-    points[storytellerId] += 0; // Якщо всі або ніхто не вгадав, ведучий отримує 0
+  // Підрахунок кількості голосів за карту оповідача
+  let votesForStorytellerCard = 0;
+  Object.entries(votes).forEach(([voterId, vote]) => {
+    if (vote.firstVotedCardId === storytellerCardId) votesForStorytellerCard++;
+    if (vote.secondVotedCardId === storytellerCardId) votesForStorytellerCard++;
+  });
+
+  // Логіка підрахунку балів
+  const allVotedForStoryteller = votesForStorytellerCard === playerCount - 1; // -1, бо оповідач не голосує за себе
+  const noneVotedForStoryteller = votesForStorytellerCard === 0;
+
+  // * Правила для 3 гравців, та стандартні правила для 4-6 гравців або 7-12 з isSingleCardMode
+
+  if (allVotedForStoryteller || noneVotedForStoryteller) {
+    updatedScores[storytellerId] += 0; // Оповідач отримує 0
+    gamePlayers.forEach(player => {
+      if (player._id !== storytellerId) updatedScores[player._id] += 2; // Інші по 2
+    });
   } else {
-    points[storytellerId] += 3; // В іншому випадку +3 очки ведучому
+    updatedScores[storytellerId] += 3; // Оповідач отримує 3
+    Object.entries(votes).forEach(([voterId, vote]) => {
+      if (
+        voterId !== storytellerId &&
+        (vote.firstVotedCardId === storytellerCardId ||
+          vote.secondVotedCardId === storytellerCardId)
+      ) {
+        updatedScores[voterId] += 3; // Вгадали карту оповідача - 3 бали
+      }
+    });
   }
 
-  // Розрахунок очок гравцям
-  players.forEach(player => {
-    if (player.id !== storytellerId) {
-      const votedCardId = votes[player.id];
-
-      if (votedCardId === selectedCardId) {
-        points[player.id] += 3; // Гравець вгадав карту ведучого
+  // Додаткові бали за голоси за карти гравців (максимум 3)
+  const bonusPoints = {};
+  Object.entries(votes).forEach(([voterId, vote]) => {
+    // Беру проголосовані гравцем карти і шукаю їх на столі:
+    [vote.firstVotedCardId, vote.secondVotedCardId].forEach(cardId => {
+      if (cardId) {
+        const card = cardsOnTable.find(c => c._id === cardId);
+        // Голосувати за свою карту не можна:
+        if (card && card.owner !== voterId) {
+          // Якщо проголосована гравцем карта знайдена на столі і це не його карта, то додатковий бонусний бал власнику карти:
+          bonusPoints[card.owner] = (bonusPoints[card.owner] || 0) + 1;
+        }
       }
-
-      // Додаємо бонус за введення інших в оману
-      if (votesPerCard[player.ownCard]) {
-        points[player.id] += votesPerCard[player.ownCard];
-      }
-    }
+    });
+  });
+  Object.entries(bonusPoints).forEach(([playerId, points]) => {
+    updatedScores[playerId] += Math.min(points, 3); // гравець може отримати максимум 3 бали, навіть якщо його points більше.
   });
 
-  return points;
-};
+  // * Додаткове правило Odyssey для 7-12 гравців без isSingleCardMode
+  if (playerCount >= 7 && !isSingleCardMode) {
+    // Додатковий бал за два голоси за правильну карту
+    Object.entries(votes).forEach(([playerId, vote]) => {
+      if (
+        vote.firstVotedCardId === vote.secondVotedCardId &&
+        vote.firstVotedCardId === storytellerCardId &&
+        playerId !== storytellerId
+      ) {
+        updatedScores[playerId] += 1;
+      }
+    });
+  }
 
-// Приклад використання
-const players = [
-  { id: "user1", name: "Alex", ownCard: "cardA" },
-  { id: "user2", name: "Masha", ownCard: "cardB" },
-  { id: "user3", name: "Ivan", ownCard: "cardC" },
-  { id: "user4", name: "Olya", ownCard: "cardD" },
-];
-
-const storytellerId = "user1"; // Ведучий
-const selectedCardId = "cardA"; // Карта ведучого
-const votes = { user2: "cardA", user3: "cardB", user4: "cardB" };
-// В цьому прикладі:
-//     User2 вгадав карту ведучого → +3 бали
-//     User3 і User4 вибрали карту User3 → User3 отримує +2 бонусних бали
-//     User1 (ведучий) отримує +3, бо не всі і не ніхто не вгадали
-console.log(calculatePoints(players, storytellerId, selectedCardId, votes));
-
-// Формула для ведучого:
-const getStorytellerPoints = (correctVotes, totalPlayers) => {
-  return correctVotes === 0 || correctVotes === totalPlayers - 1 ? 0 : 3;
-};
-
-// Формула для гравця:
-const getPlayerPoints = (isCorrect, receivedVotes) => {
-  return (isCorrect ? 3 : 0) + receivedVotes;
-};
-
-// votes: Об’єкт, де ключ — ID гравця, значення — ID карти, за яку він проголосував.
-// submitVote: (state, action) => {
-//     state.game.votes[action.payload.playerId] = action.payload.cardId;
-//   },
-// scores: Бали гравців для відображення результатів.
-// state.game.scores = action.payload.scores;
+  return updatedScores;
+}

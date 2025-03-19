@@ -8,17 +8,32 @@ import Table from "common/components/game/Table";
 import css from "./Game.module.scss";
 import GameNavigationBar from "common/components/game/GameNavigationBar";
 import { useDispatch, useSelector } from "react-redux";
-import { setGameStatus } from "redux/game/gameSlice.js";
+import { updateGame } from "redux/game/gameSlice.js";
 import { useParams } from "react-router-dom";
 import { ROUND_RESULTS } from "utils/generals/constants.js";
 import socket from "services/socket.js";
-import { selectGame, selectVotes } from "redux/selectors.js";
+import {
+  selectCardsOnTable,
+  selectGame,
+  selectGamePlayers,
+  selectIsSingleCardMode,
+  selectScores,
+  selectStorytellerId,
+  selectVotes,
+} from "redux/selectors.js";
+import { calculatePoints } from "utils/game/calculatePoints.js";
+import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
 
 export default function Game() {
   const dispatch = useDispatch();
   const { gameId } = useParams();
   const currentGame = useSelector(selectGame(gameId));
+  const gamePlayers = useSelector(selectGamePlayers(gameId));
+  const storytellerId = useSelector(selectStorytellerId(gameId));
+  const cardsOnTable = useSelector(selectCardsOnTable(gameId));
+  const scores = useSelector(selectScores(gameId));
   const votes = useSelector(selectVotes(gameId));
+  const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
 
   const [activeScreen, setActiveScreen] = useState(0);
   const [middleButton, setMiddleButton] = useState(null);
@@ -66,18 +81,41 @@ export default function Game() {
   };
 
   const finishRound = useCallback(() => {
-    // reaction to socket from server:
-    dispatch(setGameStatus({ gameId, status: ROUND_RESULTS }));
+    const updatedScores = calculatePoints({
+      gamePlayers,
+      storytellerId,
+      cardsOnTable,
+      votes,
+      scores,
+      isSingleCardMode,
+    });
 
-    // підрахунок балів
-    // calculatePoints()
-    const calculatePoints = () => {};
+    const roundResults = prepareRoundResults({
+      cardsOnTable,
+      votes,
+      gamePlayers,
+    });
+    console.log(" finishRound >> roundResults:::", roundResults);
 
-    const updatedGame = { ...currentGame };
-    dispatch(updatedGame(updatedGame));
+    const updatedGame = {
+      ...currentGame,
+      scores: updatedScores,
+      gameStatus: ROUND_RESULTS,
+      roundResults, // для більш зручного рендерингу результатів (не обов'язково)
+    };
 
+    dispatch(updateGame(updatedGame));
     socket.emit("roundFinish", { updatedGame });
-  }, [currentGame, dispatch, gameId]);
+  }, [
+    cardsOnTable,
+    currentGame,
+    dispatch,
+    isSingleCardMode,
+    gamePlayers,
+    scores,
+    storytellerId,
+    votes,
+  ]);
 
   useEffect(() => {
     if (!emblaApi) return;

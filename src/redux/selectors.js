@@ -9,18 +9,17 @@ export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
 export const selectActiveActions = state => state.gameSlice.activeActions;
 
 //# якщо games - це об'єкт:
-export const selectGame = currentGameId => state =>
-  state.gameSlice.games[currentGameId];
+export const selectGame = gameId => state => state.gameSlice.games[gameId];
 //# якщо games - це масив:
-// export const selectGame = currentGameId => state =>
-//   state.gameSlice.games.find(g => g._id === currentGameId);
+// export const selectGame = gameId => state =>
+//   state.gameSlice.games.find(g => g._id === gameId);
 
 //# якщо games - це об'єкт:
-export const selectStorytellerId = currentGameId => state =>
-  state.gameSlice.games[currentGameId].storytellerId;
+export const selectStorytellerId = gameId => state =>
+  state.gameSlice.games[gameId].storytellerId;
 //# якщо games - це масив:
-// export const selectStorytellerId = currentGameId => {
-//   const game = selectGame(currentGameId);
+// export const selectStorytellerId = gameId => {
+//   const game = selectGame(gameId);
 //   return game.selectStorytellerId;
 // };
 
