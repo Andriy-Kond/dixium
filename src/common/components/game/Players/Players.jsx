@@ -4,19 +4,26 @@ import { useParams } from "react-router-dom";
 import { FaCircleCheck } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa6";
 // import { CgSpinnerTwoAlt } from "react-icons/cg";
+import { FaCircle } from "react-icons/fa6";
 
 import {
   selectGamePlayers,
+  selectGameStatus,
   selectHostPlayerId,
   selectIsSingleCardMode,
+  selectScores,
   selectStorytellerId,
   selectUserCredentials,
 } from "redux/selectors.js";
 import css from "./Players.module.scss";
 import Button from "common/components/ui/Button/index.js";
-import { ROUND_RESULTS } from "utils/generals/constants.js";
+import { ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
 
-export default function Players({ isActiveScreen, setMiddleButton }) {
+export default function Players({
+  isActiveScreen,
+  setMiddleButton,
+  finishRound,
+}) {
   const { gameId } = useParams();
   const players = useSelector(selectGamePlayers(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
@@ -24,6 +31,8 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
   const userCredentials = useSelector(selectUserCredentials);
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
+  const scores = useSelector(selectScores(gameId));
+  const gameStatus = useSelector(selectGameStatus(gameId));
 
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
@@ -41,12 +50,16 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
     // console.log("Players >> isActiveScreen:::", isActiveScreen );
     // console.log("Players >> Clearing middle button");
 
-    if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
+    if (
+      hostPlayerId === userCredentials._id &&
+      isReadyToCalculatePoints &&
+      gameStatus === VOTING
+    ) {
       setMiddleButton(
         <Button
           btnStyle={["btnFlexGrow"]}
           btnText={"Finish round"}
-          // onClick={calculatePoints}
+          onClick={finishRound}
         />,
       );
     }
@@ -58,7 +71,9 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
     // )
     else setMiddleButton(null);
   }, [
+    finishRound,
     gamePlayers,
+    gameStatus,
     hostPlayerId,
     isActiveScreen,
     isCanVote,
@@ -77,23 +92,51 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
       <p>Players</p>
 
       <ul className={css.playersList}>
-        {players.map(player => (
-          <li className={css.player} key={player._id}>
-            <div>{player.name.toUpperCase()}</div>
+        {players.map(player => {
+          const maxScore = Math.max(...Object.values(scores)); // Максимальний бал для цього раунду
+          const playerScore = scores[player._id] || 0; // Бал поточного гравця
+          const fillPercentage =
+            maxScore > 0 ? (playerScore / maxScore) * 100 : 0; // Відсоток замальовки для поточного гравця
 
-            {/* стилі через компоненти: */}
-            <span className={css.playerState}>
-              {!player.isGuessed ? (
-                // <CgSpinnerTwoAlt className={css.spin} />
-                <div className={css.waiting}></div>
-              ) : player._id === storytellerId ? (
-                <FaCircleCheck className={css.storyteller} />
-              ) : (
-                <FaCheck className={css.guessed} />
-              )}
-            </span>
-          </li>
-        ))}
+          return (
+            <li
+              className={css.player}
+              key={player._id}
+              style={{
+                "--fill-percentage": `${fillPercentage}%`,
+              }}>
+              <div>{player.name.toUpperCase()}</div>
+
+              <div className={css.playerState}>
+                {gameStatus === ROUND_RESULTS ? (
+                  player._id === storytellerId ? (
+                    <>
+                      <FaCircle className={css.storyteller} />
+                      <span
+                        className={css.storytellerWrapper}
+                        style={{ "--color": "#fff" }}>
+                        {playerScore}
+                      </span>
+                    </>
+                  ) : (
+                    <span
+                      className={css.storytellerWrapper}
+                      style={{ "--color": "#5D7E9E" }}>
+                      {playerScore}
+                    </span>
+                  )
+                ) : !player.isGuessed ? (
+                  // <CgSpinnerTwoAlt className={css.spin} />
+                  <div className={css.waiting}></div>
+                ) : player._id === storytellerId ? (
+                  <FaCircleCheck className={css.storyteller} />
+                ) : (
+                  <FaCheck className={css.guessed} />
+                )}
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </>
   );

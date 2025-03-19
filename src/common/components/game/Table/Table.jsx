@@ -262,7 +262,11 @@ export default function Table({
         </>,
       );
     } // Якщо це режим "не карусель":
-    else if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
+    else if (
+      hostPlayerId === userCredentials._id &&
+      isReadyToCalculatePoints &&
+      gameStatus === VOTING
+    ) {
       // Якщо це ведучий:
       setMiddleButton(
         <Button

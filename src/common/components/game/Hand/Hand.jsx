@@ -57,12 +57,20 @@ export default function Hand({
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
   const playersMoreThanThree = gamePlayers.length > 3;
+  const playersMoreThanSix = gamePlayers.length > 6;
+
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
   // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   // const isReadyToVote = gamePlayers.every(player => player.isGuessed);
-  const isCanGuess = playersMoreThanThree
-    ? !!firstGuessCardSet?._id
-    : !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+  // const isCanGuess =
+  //   playersMoreThanThree
+  //     ? !!firstGuessCardSet?._id
+  //     : !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+
+  const isCanGuess =
+    playersMoreThanSix && !isSingleCardMode
+      ? !!firstGuessCardSet?._id && !!secondGuessCardSet?._id
+      : !!firstGuessCardSet?._id;
 
   const isCurrentPlayerGuessed = gamePlayers.some(
     player => player._id === userCredentials._id && player.isGuessed,
@@ -270,7 +278,11 @@ export default function Hand({
           );
     } else {
       // Логіка якщо це не карусель, але вже і не перший хід (закрита екран-маска)
-      if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
+      if (
+        hostPlayerId === userCredentials._id &&
+        isReadyToCalculatePoints &&
+        gameStatus === VOTING
+      ) {
         // Якщо це ведучий і всі проголосували можна закінчувати раунд:
         setMiddleButton(
           <Button
@@ -279,12 +291,12 @@ export default function Hand({
             onClick={finishRound}
           />,
         );
-      } else if (isCurrentPlayerStoryteller) {
-        // Якщо це сторітеллер
-        setMiddleButton(null); // Очищаємо кнопку для сторітеллера, бо він карту вже скинув
       }
       // Якщо це не сторітеллер, то вгадують (скидують) карту (чи дві, якщо гравців троє)
-      else {
+      else if (
+        !isCurrentPlayerStoryteller &&
+        (gameStatus === VOTING || gameStatus === LOBBY)
+      ) {
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -292,16 +304,24 @@ export default function Hand({
             onClick={handleStory}
             disabled={
               (gameStatus === LOBBY && !selectedCardId) ||
-              (gameStatus === VOTING && (!isCanGuess || isCurrentPlayerGuessed))
+              (gameStatus === VOTING && !isCanGuess) ||
+              isCurrentPlayerGuessed
             }
           />,
         );
+      }
+
+      if (
+        isCurrentPlayerStoryteller ||
+        !(gameStatus === VOTING || gameStatus === LOBBY)
+      ) {
+        // Якщо це сторітеллер
+        setMiddleButton(null); // Очищаємо кнопку для сторітеллера, бо він карту вже скинув
       }
     }
   }, [
     activeCardIdx,
     finishRound,
-
     exitCarouselMode,
     firstGuessCardSet,
     gameStatus,

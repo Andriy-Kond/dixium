@@ -67,7 +67,8 @@ export function calculatePoints({
     });
   });
   Object.entries(bonusPoints).forEach(([playerId, points]) => {
-    updatedScores[playerId] += Math.min(points, 3); // гравець може отримати максимум 3 бали, навіть якщо його points більше.
+    if (playerId !== storytellerId)
+      updatedScores[playerId] += Math.min(points, 3); // гравець може отримати максимум 3 бали, навіть якщо його points більше.
   });
 
   // * Додаткове правило Odyssey для 7-12 гравців без isSingleCardMode

@@ -13,15 +13,38 @@
   width: 100%;
   padding: 12px 8px 16px 12px;
   background-color: #fff;
+  position: relative;
+  overflow: hidden;
+
   &:not(:last-child) {
     border-bottom: 1px solid #d8e2ed;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: var(--fill-percentage);
+    background-color: #0f7dff1f; /* один колір з прозорістю */
+    transition: width 0.3s ease; /* додаткова анімація для плавності */
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
   }
 }
 
 .playerState {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
 
   // Додаємо анімацію обертання для спінера
   svg {
@@ -85,4 +108,23 @@
   color: #5d7e9e;
   // background-size: contain;
   // background-repeat: no-repeat;
+}
+
+.storytellerCircle {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  color: #5d7e9e;
+}
+
+.storytellerWrapper {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color); // Колір тексту
+  font-size: 12px; // Розмір шрифту
+
+  line-height: 13px;
 }

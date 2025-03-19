@@ -7,7 +7,7 @@ import Table from "common/components/game/Table";
 
 import css from "./Game.module.scss";
 import GameNavigationBar from "common/components/game/GameNavigationBar";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { useParams } from "react-router-dom";
 import { ROUND_RESULTS } from "utils/generals/constants.js";
