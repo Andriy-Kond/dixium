@@ -33,7 +33,6 @@ export function calculatePoints({
   const noneVotedForStoryteller = votesForStorytellerCard === 0;
 
   // * Правила для 3 гравців, та стандартні правила для 4-6 гравців або 7-12 з isSingleCardMode
-
   if (allVotedForStoryteller || noneVotedForStoryteller) {
     updatedScores[storytellerId] += 0; // Оповідач отримує 0
     gamePlayers.forEach(player => {

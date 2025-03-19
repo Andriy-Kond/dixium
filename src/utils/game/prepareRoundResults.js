@@ -6,7 +6,7 @@
 export function prepareRoundResults({ cardsOnTable, votes, gamePlayers }) {
   const results = cardsOnTable.map(card => {
     const ownerPlayer = gamePlayers.find(p => p._id === card.owner);
-    const votesForCard = [];
+    const votesForThisCard = [];
 
     Object.entries(votes).forEach(([playerId, vote]) => {
       let voteCount = 0;
@@ -14,7 +14,7 @@ export function prepareRoundResults({ cardsOnTable, votes, gamePlayers }) {
       if (vote.secondVotedCardId === card._id) voteCount++;
       if (voteCount > 0) {
         const voter = gamePlayers.find(p => p._id === playerId);
-        votesForCard.push({
+        votesForThisCard.push({
           playerName: voter.name,
           voteCount, // 1 або 2 зірочки
         });
@@ -26,7 +26,7 @@ export function prepareRoundResults({ cardsOnTable, votes, gamePlayers }) {
       cardName: card.cardName,
       url: card.url,
       ownerName: ownerPlayer.name,
-      votesForCard,
+      votesForThisCard,
     };
   });
 

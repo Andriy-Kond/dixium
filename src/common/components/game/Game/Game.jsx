@@ -8,7 +8,7 @@ import Table from "common/components/game/Table";
 import css from "./Game.module.scss";
 import GameNavigationBar from "common/components/game/GameNavigationBar";
 import { useDispatch, useSelector } from "react-redux";
-import { updateGame } from "redux/game/gameSlice.js";
+
 import { useParams } from "react-router-dom";
 import { ROUND_RESULTS } from "utils/generals/constants.js";
 import socket from "services/socket.js";
@@ -25,7 +25,6 @@ import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
 
 export default function Game() {
-  const dispatch = useDispatch();
   const { gameId } = useParams();
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
@@ -104,12 +103,10 @@ export default function Game() {
       roundResults, // для більш зручного рендерингу результатів (не обов'язково)
     };
 
-    dispatch(updateGame(updatedGame));
     socket.emit("roundFinish", { updatedGame });
   }, [
     cardsOnTable,
     currentGame,
-    dispatch,
     isSingleCardMode,
     gamePlayers,
     scores,

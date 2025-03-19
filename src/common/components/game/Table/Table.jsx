@@ -1,3 +1,4 @@
+// todo при відправці голосування одним гравцем, якщо інший натиснув зірочку, то вона скидається після відповіді сервера. Треба мабуть ще додати локальний стан? Чи відправляти оновлені дані на сервер при натисканні зірочки кожен раз...
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
