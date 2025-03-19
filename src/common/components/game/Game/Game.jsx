@@ -157,7 +157,7 @@ export default function Game() {
   }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
 
   return (
-    <>
+    <div className={css.gameContainer}>
       <p>Game</p>
       <div className={css.swipeWrapper} ref={emblaRef}>
         <ul className={css.screenWrapper}>
@@ -188,6 +188,6 @@ export default function Game() {
         middleButton={middleButton}
         sidesButtons={!isCarouselModeHandScreen && !isCarouselModeTableScreen}
       />
-    </>
+    </div>
   );
 }

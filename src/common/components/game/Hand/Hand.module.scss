@@ -70,11 +70,15 @@
   flex-wrap: wrap;
   gap: 5px;
   padding: 0 5px;
+
+  overflow-y: auto;
+  max-height: 80vh;
 }
 
 .card {
   position: relative;
-  width: 120px;
+  // width: 120px;
+  width: calc((100% / 3) - 10px);
   height: 160px;
   overflow: hidden;
   border-radius: 10px;

@@ -1,5 +1,10 @@
 .bottomBar {
-  margin-top: auto;
+  // position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  // margin-top: auto;
+  z-index: 1;
 
   display: flex;
   justify-content: space-between;
