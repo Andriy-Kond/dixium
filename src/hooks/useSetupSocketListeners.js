@@ -21,6 +21,7 @@ import {
   playerVoteSuccess,
   roundFinishSuccess,
 } from "./socketHandlers";
+import { votingStarted } from "./socketHandlers/votingStarted.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -77,6 +78,8 @@ export const useSetupSocketListeners = () => {
     const handlePlayerGuessSuccess = ({ game }) =>
       playerGuessSuccess(game, dispatch);
 
+    const handleVotingStarted = ({ game }) => votingStarted(game, dispatch);
+
     const handlePlayerVoteSuccess = ({ game, message }) =>
       playerVoteSuccess(game, message, dispatch, activeActions);
 
@@ -100,6 +103,7 @@ export const useSetupSocketListeners = () => {
 
     socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
     socket.on("playerGuessSuccess", handlePlayerGuessSuccess);
+    socket.on("votingStarted", handleVotingStarted);
     socket.on("playerVoteSuccess", handlePlayerVoteSuccess);
     socket.on("roundFinishSuccess", handleRoundFinishSuccess);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
@@ -120,6 +124,7 @@ export const useSetupSocketListeners = () => {
 
       socket.off("firstStorytellerUpdated", handleFirstStorytellerUpdated);
       socket.off("playerGuessSuccess", handlePlayerGuessSuccess);
+      socket.off("votingStarted", handleVotingStarted);
       socket.off("playerVoteSuccess", handlePlayerVoteSuccess);
       socket.off("roundFinishSuccess", handleRoundFinishSuccess);
       socket.off("userDeletedFromGame", handleUserDeletedFromGame);

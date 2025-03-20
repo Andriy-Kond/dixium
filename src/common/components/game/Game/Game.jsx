@@ -10,15 +10,17 @@ import GameNavigationBar from "common/components/game/GameNavigationBar";
 import { useSelector } from "react-redux";
 
 import { useParams } from "react-router-dom";
-import { ROUND_RESULTS } from "utils/generals/constants.js";
+import { ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
 import socket from "services/socket.js";
 import {
   selectCardsOnTable,
   selectGame,
   selectGamePlayers,
+  selectIsFirstTurn,
   selectIsSingleCardMode,
   selectScores,
   selectStorytellerId,
+  selectUserCredentials,
   selectVotes,
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
@@ -26,6 +28,7 @@ import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
 
 export default function Game() {
   const { gameId } = useParams();
+  const userCredentials = useSelector(selectUserCredentials);
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
@@ -33,6 +36,9 @@ export default function Game() {
   const scores = useSelector(selectScores(gameId));
   const votes = useSelector(selectVotes(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
+  const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
+  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
+  const isBlocked = isFirstTurn && !isCurrentPlayerStoryteller;
 
   const [activeScreen, setActiveScreen] = useState(0);
   const [middleButton, setMiddleButton] = useState(null);
@@ -69,7 +75,7 @@ export default function Game() {
     // },
   });
 
-  const screens = [<Hand />, <Players />, <Table />];
+  const screens = isBlocked ? [<Hand />] : [<Hand />, <Players />, <Table />];
 
   // Навігація через Embla API
   const prevScreen = () => {
@@ -78,6 +84,15 @@ export default function Game() {
   const nextScreen = () => {
     emblaApi?.scrollNext();
   };
+
+  const startVoting = useCallback(() => {
+    const updatedGame = {
+      ...currentGame,
+      gameStatus: VOTING,
+    };
+
+    socket.emit("startVoting", { updatedGame });
+  }, [currentGame]);
 
   const finishRound = useCallback(() => {
     const updatedScores = calculatePoints({
@@ -94,7 +109,6 @@ export default function Game() {
       votes,
       gamePlayers,
     });
-    console.log(" finishRound >> roundResults:::", roundResults);
 
     const updatedGame = {
       ...currentGame,
@@ -128,8 +142,10 @@ export default function Game() {
 
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {
-    if (emblaApi) emblaApi.scrollTo(activeScreen);
-  }, [activeScreen, emblaApi]);
+    if (emblaApi) {
+      isFirstTurn ? emblaApi.scrollTo(0) : emblaApi.scrollTo(activeScreen);
+    }
+  }, [activeScreen, emblaApi, isFirstTurn]);
 
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
@@ -173,6 +189,7 @@ export default function Game() {
                 isCarouselModeTableScreen,
                 setIsCarouselModeTableScreen,
                 finishRound,
+                startVoting,
               })}
             </li>
           ))}

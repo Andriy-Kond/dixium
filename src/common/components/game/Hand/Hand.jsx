@@ -16,7 +16,12 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 
-import { LOBBY, VOTING, ROUND_RESULTS } from "utils/generals/constants.js";
+import {
+  LOBBY,
+  GUESSING,
+  VOITING,
+  ROUND_RESULTS,
+} from "utils/generals/constants.js";
 import Button from "common/components/ui/Button";
 import Mask from "../Mask/Mask.jsx";
 
@@ -30,11 +35,13 @@ export default function Hand({
   setMiddleButton,
   isCarouselModeHandScreen,
   setIsCarouselModeHandScreen,
+  startVoting,
   finishRound,
 }) {
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
   const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
+  console.log(" isFirstTurn:::", isFirstTurn);
   const userCredentials = useSelector(selectUserCredentials);
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
@@ -93,7 +100,7 @@ export default function Hand({
 
   const handleStory = useCallback(() => {
     console.log("handleStory");
-    gameStatus === VOTING ? guessStory() : tellStory();
+    gameStatus === GUESSING ? guessStory() : tellStory();
     setCardsSet({ firstGuessCardSet: null, secondGuessCardSet: null }); // не обов'язково
     setSelectedCardId(null); // clear
   }, [gameStatus, guessStory, tellStory]);
@@ -188,7 +195,7 @@ export default function Hand({
 
   // ??
   useEffect(() => {
-    if (gameStatus === VOTING) setSelectedCardId(null); // todo перевірити чи потрібно ще?
+    if (gameStatus === GUESSING) setSelectedCardId(null); // todo перевірити чи потрібно ще?
   }, [gameStatus]);
 
   // Get active card's index
@@ -213,7 +220,7 @@ export default function Hand({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCardsGuess]);
 
-  // setMiddleButton
+  //* setMiddleButton
   useEffect(() => {
     if (!isActiveScreen) return;
 
@@ -281,7 +288,7 @@ export default function Hand({
       if (
         hostPlayerId === userCredentials._id &&
         isReadyToCalculatePoints &&
-        gameStatus === VOTING
+        gameStatus === GUESSING
       ) {
         // Якщо це ведучий і всі проголосували можна закінчувати раунд:
         setMiddleButton(
@@ -295,7 +302,7 @@ export default function Hand({
       // Якщо це не сторітеллер, то вгадують (скидують) карту (чи дві, якщо гравців троє)
       else if (
         !isCurrentPlayerStoryteller &&
-        (gameStatus === VOTING || gameStatus === LOBBY)
+        (gameStatus === GUESSING || gameStatus === LOBBY)
       ) {
         setMiddleButton(
           <Button
@@ -304,7 +311,7 @@ export default function Hand({
             onClick={handleStory}
             disabled={
               (gameStatus === LOBBY && !selectedCardId) ||
-              (gameStatus === VOTING && !isCanGuess) ||
+              (gameStatus === GUESSING && !isCanGuess) ||
               isCurrentPlayerGuessed
             }
           />,
@@ -313,7 +320,7 @@ export default function Hand({
 
       if (
         isCurrentPlayerStoryteller ||
-        !(gameStatus === VOTING || gameStatus === LOBBY)
+        !(gameStatus === GUESSING || gameStatus === LOBBY)
       ) {
         // Якщо це сторітеллер
         setMiddleButton(null); // Очищаємо кнопку для сторітеллера, бо він карту вже скинув
@@ -396,7 +403,7 @@ export default function Hand({
                 className={css.card}
                 key={card._id}
                 onClick={
-                  gameStatus === VOTING
+                  gameStatus === GUESSING
                     ? () => carouselModeOn(idx)
                     : () => onSelectCard(card._id)
                 }>

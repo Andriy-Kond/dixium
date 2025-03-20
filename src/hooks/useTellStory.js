@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux";
 import socket from "services/socket.js";
-import { VOTING } from "utils/generals/constants.js";
+import { GUESSING, LOBBY } from "utils/generals/constants.js";
 import {
   selectCardsOnTable,
   selectGame,
   selectGamePlayers,
+  selectGameStatus,
   selectIsFirstTurn,
   selectPlayerHand,
   selectStorytellerId,
@@ -22,6 +23,8 @@ export const useTellStory = (gameId, selectedCardId) => {
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
+  const gameStatus = useSelector(selectGameStatus(gameId));
+  console.log(" useTellStory >> gameStatus:::", gameStatus);
 
   const tellStory = useCallback(() => {
     if (!selectedCardId) {
@@ -52,10 +55,10 @@ export const useTellStory = (gameId, selectedCardId) => {
       const updatedGame = {
         ...currentGame,
         storytellerId: userCredentials._id,
-        gameStatus: VOTING,
+        gameStatus: GUESSING,
         cardsOnTable: updatedCardsOnTable,
         players: updatedPlayers,
-        isFirstTurn: storytellerId ? true : false,
+        isFirstTurn: gameStatus === LOBBY ? true : false,
       };
 
       socket.emit("setFirstStoryteller", { updatedGame }, response => {
@@ -68,11 +71,10 @@ export const useTellStory = (gameId, selectedCardId) => {
     cardsOnTable,
     currentGame,
     gamePlayers,
+    gameStatus,
     isFirstTurn,
     playerHand,
     selectedCardId,
-
-    storytellerId,
     userCredentials._id,
   ]);
 

@@ -34,7 +34,7 @@ export default function PrepareGame() {
     useState(false);
 
   const isDisabledCheckbox =
-    !isCurrentPlayerIsHost || currentGame.players.length < 4; // todo поставити тут <7 (згідно правил)
+    !isCurrentPlayerIsHost || currentGame.players.length < 7;
 
   useEffect(() => {
     if (!isCurrentPlayerInGame) {

@@ -16,7 +16,7 @@ import {
 import Mask from "common/components/game/Mask";
 import css from "./Table.module.scss";
 import Button from "common/components/ui/Button/index.js";
-import { VOTING, ROUND_RESULTS } from "utils/generals/constants.js";
+import { GUESSING, ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
 import { useVote } from "hooks/useVote.js";
 import { Notify } from "notiflix";
 import { updatePlayerVoteLocally } from "redux/game/gameSlice.js";
@@ -26,6 +26,7 @@ export default function Table({
   setMiddleButton,
   isCarouselModeTableScreen,
   setIsCarouselModeTableScreen,
+  startVoting,
   finishRound,
 }) {
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ export default function Table({
   const playersMoreThanSix = gamePlayers.length > 6;
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
+  const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
 
   const playerVotes = useMemo(
     () => votes[userCredentials._id] || {},
@@ -212,13 +214,6 @@ export default function Table({
   //* setMiddleButton
   useEffect(() => {
     if (!isActiveScreen) return;
-    // const playerVotes = votes[userCredentials._id] || {};
-    // const { firstVotedCardId, secondVotedCardId } = playerVotes;
-
-    // const isCanVote =
-    //   playersMoreThanThree && isSingleCardMode
-    //     ? !!firstVotedCardId
-    //     : !!firstVotedCardId && !!secondVotedCardId;
 
     if (isCarouselModeTableScreen) {
       // Якщо це режим каруселі, то можна вгадувати карти на столі:
@@ -262,44 +257,51 @@ export default function Table({
         </>,
       );
     } // Якщо це режим "не карусель":
-    else if (
-      hostPlayerId === userCredentials._id &&
-      isReadyToCalculatePoints &&
-      gameStatus === VOTING
-    ) {
-      // Якщо це ведучий:
-      setMiddleButton(
-        <Button
-          btnStyle={["btnFlexGrow"]}
-          btnText={"Finish round"}
-          onClick={finishRound}
-        />,
-      );
-    } else if (
-      !storytellerId ||
-      isCurrentPlayerStoryteller ||
-      isCurrentPlayerVoted ||
-      !isCanVote
-    )
-      setMiddleButton(null);
-    else if (!isCurrentPlayerStoryteller && isCanVote) {
-      // Якщо це не сторітеллер і може голосувати (вже обрані карти)
-      setMiddleButton(
-        <Button
-          btnStyle={["btnFlexGrow"]}
-          btnText={"Vote card"}
-          onClick={handleVote}
-          disabled={
-            gameStatus === VOTING && (!isCanVote || isCurrentPlayerVoted)
-          }
-        />,
-      );
+    else if (gameStatus === GUESSING) {
+      if (hostPlayerId === userCredentials._id && isReadyToVote) {
+        // Якщо це ведучий:
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Start voting"}
+            onClick={startVoting}
+            disabled={isStartVotingDisabled}
+          />,
+        );
+      } else setMiddleButton(null);
+    } else if (gameStatus === VOTING) {
+      if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
+        // Якщо це ведучий:
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Finish round"}
+            onClick={finishRound}
+          />,
+        );
+      } else if (!isCurrentPlayerStoryteller && isCanVote) {
+        // Якщо це не сторітеллер і може голосувати (вже обрані карти)
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Vote card"}
+            onClick={handleVote}
+            disabled={!isCanVote || isCurrentPlayerVoted}
+          />,
+        );
+      } else if (
+        !storytellerId ||
+        isCurrentPlayerStoryteller ||
+        isCurrentPlayerVoted ||
+        !isCanVote
+      )
+        setMiddleButton(null);
     }
   }, [
     activeCardIdx,
-    finishRound,
     cardsOnTable,
     exitCarouselMode,
+    finishRound,
     firstVotedCardId,
     gameStatus,
     handleVote,
@@ -310,9 +312,12 @@ export default function Table({
     isCurrentPlayerStoryteller,
     isCurrentPlayerVoted,
     isReadyToCalculatePoints,
+    isReadyToVote,
+    isStartVotingDisabled,
     playersMoreThanSix,
     secondVotedCardId,
     setMiddleButton,
+    startVoting,
     storytellerId,
     toggleCardSelection,
     userCredentials._id,
@@ -322,7 +327,7 @@ export default function Table({
     <>
       <p>Table</p>
 
-      {isReadyToVote ? (
+      {gameStatus === VOTING ? (
         <>
           <div>cards face up</div>
 
