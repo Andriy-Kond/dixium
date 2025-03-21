@@ -144,7 +144,6 @@ export default function Game() {
   const [isEmblaReady, setIsEmblaReady] = useState(false);
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {
-    console.log(" useEffect >> isShowMask:::", isShowMask);
     if (emblaApi) {
       isShowMask ? emblaApi.scrollTo(0) : emblaApi.scrollTo(activeScreen);
 
