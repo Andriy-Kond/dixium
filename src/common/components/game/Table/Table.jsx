@@ -1,5 +1,5 @@
-// todo при відправці голосування одним гравцем, якщо інший натиснув зірочку, то вона скидається після відповіді сервера. Треба мабуть ще додати локальний стан? Чи відправляти оновлені дані на сервер при натисканні зірочки кожен раз...
 import useEmblaCarousel from "embla-carousel-react";
+import { Notify } from "notiflix";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -11,15 +11,14 @@ import {
   selectIsSingleCardMode,
   selectStorytellerId,
   selectUserCredentials,
-  selectVotes,
+  selectVotesLocal,
 } from "redux/selectors.js";
+import { GUESSING, VOTING } from "utils/generals/constants.js";
 import Mask from "common/components/game/Mask";
-import css from "./Table.module.scss";
 import Button from "common/components/ui/Button/index.js";
-import { GUESSING, ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
 import { useVote } from "hooks/useVote.js";
-import { Notify } from "notiflix";
-import { updatePlayerVoteLocally } from "redux/game/gameSlice.js";
+import css from "./Table.module.scss";
+import { updateVotesLocal } from "redux/game/localPersonalSlice.js";
 
 export default function Table({
   isActiveScreen,
@@ -30,37 +29,42 @@ export default function Table({
   finishRound,
 }) {
   const dispatch = useDispatch();
+  const userCredentials = useSelector(selectUserCredentials);
+  const { _id: playerId } = userCredentials;
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
-  const userCredentials = useSelector(selectUserCredentials);
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
-  const votes = useSelector(selectVotes(gameId));
+
+  // const votes = useSelector(selectVotes(gameId));
+  const playerVotes = useSelector(selectVotesLocal(gameId, playerId));
+  // const interimVotesFromSelector = useSelector(
+  //   selectVotesLocal(gameId, playerId),
+  // );
+  // const playerVotes = useMemo(
+  //   () => interimVotesFromSelector || {},
+  //   [interimVotesFromSelector],
+  // );
+  const { firstVotedCardId, secondVotedCardId } = playerVotes;
+
+  // const playerVotes = useMemo(
+  //   () => useSelector(selectVotesLocal(gameId, playerId)) || {},
+  //   [gameId, playerId],
+  // );
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
   const [isMounted, setIsMounted] = useState(false);
 
-  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
-  const playersMoreThanThree = gamePlayers.length > 3;
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
+  // const playersMoreThanThree = gamePlayers.length > 3;
   const playersMoreThanSix = gamePlayers.length > 6;
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
   const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
-
-  const playerVotes = useMemo(
-    () => votes[userCredentials._id] || {},
-    [userCredentials._id, votes],
-  );
-  const { firstVotedCardId, secondVotedCardId } = playerVotes;
-
-  // const isCanVote2 =
-  //   playersMoreThanThree || isSingleCardMode
-  //     ? !!firstVotedCardId
-  //     : !!firstVotedCardId && !!secondVotedCardId;
 
   //  Гравців === 3 - голосування за 1 карту.
   //  Гравців 3-6 - голосування за 1 карту
@@ -70,15 +74,13 @@ export default function Table({
     playersMoreThanSix && !isSingleCardMode
       ? !!firstVotedCardId && !!secondVotedCardId
       : !!firstVotedCardId;
-  // console.log(" isCanVote:::", isCanVote);
-  // console.log("!playersMoreThanThree :>> ", !playersMoreThanThree);
 
   const isCurrentPlayerVoted = gamePlayers.some(
-    player => player._id === userCredentials._id && player.isVoted,
+    player => player._id === playerId && player.isVoted,
   );
 
   // const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
-  const vote = useVote(gameId);
+  const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
 
   const [emblaRefCardsVote, emblaApiCardsVote] = useEmblaCarousel({
     loop: true,
@@ -109,8 +111,6 @@ export default function Table({
   const getStarsMarks = useCallback(
     cardId => {
       const marks = [];
-      // const playerVotes = votes[userCredentials._id] || {};
-      // const { firstVotedCardId, secondVotedCardId } = playerVotes;
 
       if (firstVotedCardId === cardId) marks.push("★1");
       if (secondVotedCardId === cardId) marks.push("★2");
@@ -124,9 +124,6 @@ export default function Table({
     btnKey => {
       const currentCardIndex = emblaApiCardsVote?.selectedScrollSnap() || 0;
       const currentCard = cardsOnTable[currentCardIndex];
-
-      // const playerVotes = votes[userCredentials._id] || {};
-      // const { firstVotedCardId, secondVotedCardId } = playerVotes;
 
       if (!currentCard) {
         Notify.failure("error: card not found");
@@ -156,9 +153,9 @@ export default function Table({
       };
 
       dispatch(
-        updatePlayerVoteLocally({
+        updateVotesLocal({
           gameId,
-          playerId: userCredentials._id,
+          playerId,
           firstVotedCardId: updatedVotes.firstVotedCardId,
           secondVotedCardId: updatedVotes.secondVotedCardId,
         }),
@@ -170,9 +167,9 @@ export default function Table({
       emblaApiCardsVote,
       firstVotedCardId,
       gameId,
+      playerId,
       playerVotes,
       secondVotedCardId,
-      userCredentials._id,
     ],
   );
 
@@ -225,10 +222,10 @@ export default function Table({
 
       const isDisabledFirstBtn =
         (firstVotedCardId && firstVotedCardId !== activeCard._id) ||
-        userCredentials._id === activeCard.owner;
+        playerId === activeCard.owner;
       const isDisabledSecondBtn =
         (secondVotedCardId && secondVotedCardId !== activeCard._id) ||
-        userCredentials._id === activeCard.owner;
+        playerId === activeCard.owner;
 
       setMiddleButton(
         <>
@@ -258,7 +255,7 @@ export default function Table({
       );
     } // Якщо це режим "не карусель":
     else if (gameStatus === GUESSING) {
-      if (hostPlayerId === userCredentials._id && isReadyToVote) {
+      if (hostPlayerId === playerId && isReadyToVote) {
         // Якщо це ведучий:
         setMiddleButton(
           <Button
@@ -270,7 +267,7 @@ export default function Table({
         );
       } else setMiddleButton(null);
     } else if (gameStatus === VOTING) {
-      if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
+      if (hostPlayerId === playerId && isReadyToCalculatePoints) {
         // Якщо це ведучий:
         setMiddleButton(
           <Button
@@ -320,7 +317,7 @@ export default function Table({
     startVoting,
     storytellerId,
     toggleCardSelection,
-    userCredentials._id,
+    playerId,
   ]);
 
   return (

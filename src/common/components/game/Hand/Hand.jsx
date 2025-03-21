@@ -9,7 +9,6 @@ import {
   selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
-  selectIsFirstTurn,
   selectIsShowMask,
   selectIsSingleCardMode,
   selectPlayerHand,
@@ -20,7 +19,6 @@ import {
 import {
   LOBBY,
   GUESSING,
-  VOITING,
   ROUND_RESULTS,
   VOTING,
 } from "utils/generals/constants.js";
@@ -42,16 +40,17 @@ export default function Hand({
 }) {
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
-  const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
 
   const userCredentials = useSelector(selectUserCredentials);
+  const { _id: playerId } = userCredentials;
   const storytellerId = useSelector(selectStorytellerId(gameId));
-  const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
+
+  const playerHand = useSelector(selectPlayerHand(gameId, playerId));
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
-  const isShowMask = useSelector(selectIsShowMask(gameId, userCredentials._id));
+  const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
 
   const [selectedCardId, setSelectedCardId] = useState(null); // for first story(teller) mode
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
@@ -63,9 +62,9 @@ export default function Hand({
   const [isMountedCarousel, setIsMountedCarousel] = useState(false); // is mounted carousel
 
   const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
-  const currentPlayer = gamePlayers.find(p => p._id === userCredentials._id);
+  const currentPlayer = gamePlayers.find(p => p._id === playerId);
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
-  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
   const playersMoreThanThree = gamePlayers.length > 3;
   const playersMoreThanSix = gamePlayers.length > 6;
   const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
@@ -85,10 +84,10 @@ export default function Hand({
       : !!firstGuessCardSet?._id;
 
   const isCurrentPlayerGuessed = gamePlayers.some(
-    player => player._id === userCredentials._id && player.isGuessed,
+    player => player._id === playerId && player.isGuessed,
   );
 
-  const isCurrentPlayerHost = hostPlayerId === userCredentials._id;
+  const isCurrentPlayerHost = hostPlayerId === playerId;
 
   const paragraphText = !storytellerId
     ? "Be the first to think of an association for one of your cards. Choose it and make a move. Tell us about your association."

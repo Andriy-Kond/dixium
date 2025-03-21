@@ -1,5 +1,5 @@
 import { Notify } from "notiflix";
-import { setActiveScreen } from "redux/game/activeScreenSlice.js";
+import { setActiveScreen } from "redux/game/localPersonalSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 

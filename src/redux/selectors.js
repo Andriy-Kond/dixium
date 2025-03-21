@@ -3,19 +3,32 @@ export const selectUserIsLoggedIn = state => state.authSlice.isLoggedIn;
 export const selectUserToken = state => state.authSlice.userToken;
 export const selectUserCredentials = state => state.authSlice.user;
 
-// activeScreenSlice selectors:
+// localPersonalSlice selectors:
 export const selectActiveScreen = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
-  const screen = state.activeScreenSlice.screens[key];
+  const screen = state.localPersonalSlice.screens[key];
 
   return screen ?? 0;
 };
 
 export const selectIsShowMask = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
-  const isShowMask = state.activeScreenSlice.isShowMask[key];
+  const isShowMask = state.localPersonalSlice.isShowMask[key];
 
   return isShowMask;
+};
+
+// export const selectVotesLocal = (gameId, playerId) => state => {
+//   const key = `${gameId}_${playerId}`;
+//   return state.localPersonalSlice.votes[key]; // Поверне undefined, якщо немає
+// };
+
+// selector without using memoization (new obj must be alway the same)
+const defaultVotes = { firstVotedCardId: null, secondVotedCardId: null };
+export const selectVotesLocal = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const votes = state.localPersonalSlice.votes[key];
+  return votes !== undefined ? votes : defaultVotes;
 };
 
 // gameSlice:

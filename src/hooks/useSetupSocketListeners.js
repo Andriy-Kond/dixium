@@ -26,7 +26,7 @@ import { votingStarted } from "./socketHandlers/votingStarted.js";
 import {
   removeActiveScreen,
   setActiveScreen,
-} from "redux/game/activeScreenSlice.js";
+} from "redux/game/localPersonalSlice.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();

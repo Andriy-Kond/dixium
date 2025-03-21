@@ -18,6 +18,7 @@ import {
   selectGame,
   selectGamePlayers,
   selectIsFirstTurn,
+  selectIsShowMask,
   selectIsSingleCardMode,
   selectScores,
   selectStorytellerId,
@@ -26,12 +27,13 @@ import {
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
-import { setActiveScreen } from "redux/game/activeScreenSlice.js";
+import { setActiveScreen } from "redux/game/localPersonalSlice.js";
 
 export default function Game() {
   const dispatch = useDispatch();
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
+  const { _id: playerId } = userCredentials;
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
@@ -40,14 +42,13 @@ export default function Game() {
   const votes = useSelector(selectVotes(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
-  const activeScreen = useSelector(
-    selectActiveScreen(gameId, userCredentials._id),
-  );
+  const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
+  const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
 
   // const [localActiveScreen, setLocalActiveScreen] = useState(activeScreen);
 
-  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
-  const isBlocked = isFirstTurn && !isCurrentPlayerStoryteller;
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
+  const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
 
   const [middleButton, setMiddleButton] = useState(null);
 
@@ -72,7 +73,7 @@ export default function Game() {
     // duration: 30, // Швидкість анімації прокручування (не в мілісекундах, а в умовних одиницях, рекомендовано 20–60)
     // skipSnaps: false, // Дозволяє пропускати слайди при сильному свайпі якщо true
     // startIndex: activeScreen, // Початковий індекс береться з Redux (!не працюють стилі слайдінгу)
-    watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen), // заборона на слайдінг при цій умові
+    watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen), // дозвіл на слайдінг при цій умові
     // isCarouselModeHandScreen || isCarouselModeTableScreen
     //   ? ""
     //   : "is-draggable",
@@ -83,7 +84,9 @@ export default function Game() {
     // },
   });
 
-  const screens = isBlocked ? [<Hand />] : [<Hand />, <Players />, <Table />];
+  const screens = isBlockScreens
+    ? [<Hand />]
+    : [<Hand />, <Players />, <Table />];
 
   // Навігація через Embla API
   const prevScreen = () => {
@@ -137,35 +140,24 @@ export default function Game() {
   ]);
 
   const [isEmblaReady, setIsEmblaReady] = useState(false);
-  // Щоб карусель після F5 одразу була на останньому активному екрані без ефекту перемотування
-  useEffect(() => {
-    if (emblaApi) {
-      // emblaApi.scrollTo(localActiveScreen);
-      emblaApi.scrollTo(activeScreen); // Переходимо до потрібного екрану
-      setIsEmblaReady(true);
-    }
-  }, [emblaApi, activeScreen, isEmblaReady]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-
-    // reInit потрібен для застосування динамічних змін у налаштуваннях useEmblaCarousel (watchDrag, breakpoints тощо), або якщо динамічно змінюється кількість слайдів каруселі тощо
-    emblaApi.reInit({
-      watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen),
-    });
-  }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
-
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {
+    console.log(" useEffect >> isShowMask:::", isShowMask);
     if (emblaApi) {
-      // isFirstTurn ? emblaApi.scrollTo(0) : emblaApi.scrollTo(activeScreen);
-      emblaApi.scrollTo(activeScreen);
+      isShowMask ? emblaApi.scrollTo(0) : emblaApi.scrollTo(activeScreen);
+
+      // Щоб карусель після F5 одразу була на останньому активному екрані без ефекту перемотування
+      setIsEmblaReady(true);
     }
-  }, [
-    activeScreen,
-    emblaApi,
-    // isFirstTurn
-  ]);
+  }, [activeScreen, emblaApi, isShowMask]);
+
+  // reInit потрібен для застосування динамічних змін у налаштуваннях useEmblaCarousel (watchDrag, breakpoints тощо), або якщо динамічно змінюється кількість слайдів каруселі тощо
+  useEffect(() => {
+    if (emblaApi)
+      emblaApi.reInit({
+        watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen),
+      });
+  }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
 
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
@@ -177,7 +169,7 @@ export default function Game() {
       dispatch(
         setActiveScreen({
           gameId,
-          playerId: userCredentials._id,
+          playerId: playerId,
           screen: newScreen,
         }),
       );
@@ -185,7 +177,7 @@ export default function Game() {
 
     emblaApi.on("select", onSelect); // Слухаємо подію зміни слайду
     return () => emblaApi.off("select", onSelect);
-  }, [activeScreen, dispatch, emblaApi, gameId, userCredentials._id]);
+  }, [activeScreen, dispatch, emblaApi, gameId, playerId]);
 
   // KB events handler
   useEffect(() => {

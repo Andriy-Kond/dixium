@@ -5,9 +5,10 @@ import { persistReducer } from "redux-persist";
 const initialState = {
   screens: {}, // Об’єкт виду { "gameId_playerId": screen }
   isShowMask: {}, // Об’єкт виду { "gameId_playerId": Boolean }
+  votes: {}, // {"gameId_playerId": {firstVotedCardId: null, secondVotedCardId: null}}
 };
 
-export const activeScreenSlice = createSlice({
+export const localPersonalSlice = createSlice({
   name: "activeScreen",
   initialState,
   reducers: {
@@ -43,6 +44,29 @@ export const activeScreenSlice = createSlice({
       const key = `${gameId}_${playerId}`;
       state.isShowMask[key] = isShow;
     },
+
+    setVotesLocal(state, action) {
+      // const { gameId, playerId, votes } = action.payload;
+      // const key = `${gameId}_${playerId}`;
+      // // state.screens = { ...state.screens, key: screen };
+      // state.votes[key] = votes;
+    },
+
+    resetVotesLocal(state, action) {
+      // const { gameId, playerId } = action.payload;
+      // const key = `${gameId}_${playerId}`;
+      // delete state.votes[key];
+    },
+
+    updateVotesLocal: (state, action) => {
+      const { gameId, playerId, firstVotedCardId, secondVotedCardId } =
+        action.payload;
+      const key = `${gameId}_${playerId}`;
+      state.votes[key] = {
+        firstVotedCardId,
+        secondVotedCardId,
+      };
+    },
   },
 });
 
@@ -54,7 +78,7 @@ const persistConfig = {
 
 export const persistedActiveScreenReducer = persistReducer(
   persistConfig,
-  activeScreenSlice.reducer,
+  localPersonalSlice.reducer,
 );
 
 export const {
@@ -62,4 +86,7 @@ export const {
   // forceSetActiveScreen
   removeActiveScreen,
   setIsShowMask,
-} = activeScreenSlice.actions;
+  setVotesLocal,
+  resetVotesLocal,
+  updateVotesLocal,
+} = localPersonalSlice.actions;

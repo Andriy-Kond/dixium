@@ -1,7 +1,7 @@
 import {
   setActiveScreen,
   setIsShowMask,
-} from "redux/game/activeScreenSlice.js";
+} from "redux/game/localPersonalSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
 import { updateGame } from "redux/game/gameSlice.js";
 

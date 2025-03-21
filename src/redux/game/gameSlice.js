@@ -148,7 +148,7 @@ export const gameSlice = createSlice({
       if (game) state.games[gameId].cardsOnTable.push(card);
     },
 
-    updatePlayerVoteLocally: (state, action) => {
+    updatePlayerVote: (state, action) => {
       const { gameId, playerId, firstVotedCardId, secondVotedCardId } =
         action.payload;
       const game = state.games[gameId];
@@ -202,7 +202,7 @@ export const {
   setFirstStoryteller,
   nextStoryteller,
   setCardsOnTable,
-  updatePlayerVoteLocally,
+  updatePlayerVote,
   updateCurrentPlayer,
 } = gameSlice.actions;
 

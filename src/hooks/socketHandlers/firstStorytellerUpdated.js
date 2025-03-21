@@ -1,7 +1,7 @@
 import {
   setActiveScreen,
   setIsShowMask,
-} from "redux/game/activeScreenSlice.js";
+} from "redux/game/localPersonalSlice.js";
 import { updateGame } from "redux/game/gameSlice.js";
 
 export const firstStorytellerUpdated = (game, dispatch, playerId) => {

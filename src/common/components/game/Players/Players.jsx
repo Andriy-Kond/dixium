@@ -10,6 +10,7 @@ import {
   selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
+  selectIsShowMask,
   selectIsSingleCardMode,
   selectScores,
   selectStorytellerId,
@@ -27,48 +28,34 @@ export default function Players({
   finishRound,
 }) {
   const { gameId } = useParams();
+  const userCredentials = useSelector(selectUserCredentials);
+  const { _id: playerId } = userCredentials;
   const players = useSelector(selectGamePlayers(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
-  const userCredentials = useSelector(selectUserCredentials);
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const scores = useSelector(selectScores(gameId));
   const gameStatus = useSelector(selectGameStatus(gameId));
 
-  const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
 
   const isCurrentPlayerVoted = gamePlayers.some(
-    player => player._id === userCredentials._id && player.isVoted,
+    player => player._id === playerId && player.isVoted,
   );
 
   const playersMoreThanThree = gamePlayers.length > 3;
   const isCanVote = playersMoreThanThree && isSingleCardMode;
   const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
 
+  //* setMiddleBtton
   useEffect(() => {
     if (!isActiveScreen) return;
-    // console.log("Players >> isActiveScreen:::", isActiveScreen );
-    // console.log("Players >> Clearing middle button");
-
-    // if (
-    //   hostPlayerId === userCredentials._id &&
-    //   isReadyToCalculatePoints &&
-    //   gameStatus === GUESSING
-    // ) {
-    //   setMiddleButton(
-    //     <Button
-    //       btnStyle={["btnFlexGrow"]}
-    //       btnText={"Finish round"}
-    //       onClick={finishRound}
-    //     />,
-    //   );
-    // } else setMiddleButton(null);
 
     if (gameStatus === GUESSING) {
-      if (hostPlayerId === userCredentials._id && isReadyToVote) {
+      if (hostPlayerId === playerId && isReadyToVote) {
         // Якщо це ведучий:
         setMiddleButton(
           <Button
@@ -80,7 +67,7 @@ export default function Players({
         );
       } else setMiddleButton(null);
     } else if (gameStatus === VOTING) {
-      if (hostPlayerId === userCredentials._id && isReadyToCalculatePoints) {
+      if (hostPlayerId === playerId && isReadyToCalculatePoints) {
         // Якщо це ведучий:
         setMiddleButton(
           <Button
@@ -101,7 +88,7 @@ export default function Players({
     isStartVotingDisabled,
     setMiddleButton,
     startVoting,
-    userCredentials._id,
+    playerId,
   ]);
 
   return (
