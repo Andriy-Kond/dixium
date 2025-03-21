@@ -5,7 +5,15 @@ import storage from "redux-persist/lib/storage";
 const authInitialState = {
   userToken: null,
   isLoggedIn: false,
-  user: {},
+  user: {
+    //     {
+    //     name: { String, },
+    //     email: { String, },
+    //     password: { String, },
+    //     token: { String, },
+    //     avatarURL: { String, },
+    // },
+  },
 };
 
 export const authSlice = createSlice({

@@ -296,7 +296,7 @@ export default function Table({
         !isCanVote
       )
         setMiddleButton(null);
-    }
+    } else setMiddleButton(null);
   }, [
     activeCardIdx,
     cardsOnTable,

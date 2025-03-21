@@ -1,8 +1,9 @@
 import { Notify } from "notiflix";
+import { setActiveScreen } from "redux/game/activeScreenSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
-export const gameRun = (game, message, dispatch, activeActions) => {
+export const gameRun = (game, message, dispatch, activeActions, playerId) => {
   console.log("gameRun");
   if (!game) {
     throw new Error(`The game is ${game}`);
@@ -25,6 +26,14 @@ export const gameRun = (game, message, dispatch, activeActions) => {
     // Server response or response late (more then 10 sec) -> state update
     else dispatch(updateGame(game));
 
+    dispatch(
+      setActiveScreen({
+        gameId: game._id,
+        playerId: playerId,
+        screen: 0,
+      }),
+    );
+
     if (relatedAction?.meta?.timer) {
       clearTimeout(relatedAction.meta.timer);
       dispatch(clearActiveAction(key));
@@ -39,6 +48,14 @@ export const gameRun = (game, message, dispatch, activeActions) => {
             // Якщо гра вже є, оновлюємо її
             dispatch(updateGame(game)); // оновлення gameSlice (для актуального локального стейту)
             draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
+
+            dispatch(
+              setActiveScreen({
+                gameId: game._id,
+                playerId: playerId,
+                screen: 0,
+              }),
+            );
           }
         }),
       );

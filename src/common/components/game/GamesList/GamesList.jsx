@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useGetAllGamesQuery } from "redux/game/gameApi.js";
-import { selectUserCredentials } from "redux/selectors.js";
+import { selectAllGames, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
 import { addGamesList } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
@@ -11,7 +11,16 @@ export default function GamesList() {
   const dispatch = useDispatch();
 
   const userCredentials = useSelector(selectUserCredentials);
+  const {
+    name,
+    avatarURL,
+    isGuessed,
+    isVoted,
+    _id: playerId,
+  } = userCredentials;
+
   const { data: allGames, isFetching } = useGetAllGamesQuery();
+  const games = useSelector(selectAllGames); // більш актуальні дані, ніж з сирих allGames
 
   useEffect(() => {
     if (allGames) {
@@ -20,10 +29,39 @@ export default function GamesList() {
   }, [allGames, dispatch]);
 
   const startOrJoinToGame = game => {
-    socket.emit("startOrJoinToGame", {
-      gameId: game._id,
-      player: { ...userCredentials, isGuessed: false },
-    });
+    const currentGame = games[game._id];
+
+    const isPlayerInGame = currentGame.players.some(
+      player => player._id === playerId,
+    );
+
+    if (isPlayerInGame) {
+      socket.emit("startOrJoinToGame", {
+        gameId: game._id,
+        // player: { ...userCredentials },
+        player: {
+          _id: playerId,
+          name: name,
+          avatarURL: avatarURL,
+          hand: [],
+          isGuessed,
+          isVoted,
+        },
+      });
+    } else {
+      socket.emit("startOrJoinToGame", {
+        gameId: game._id,
+        // player: { ...userCredentials, isGuessed: false},
+        player: {
+          _id: playerId,
+          name: name,
+          avatarURL: avatarURL,
+          hand: [],
+          isGuessed: false,
+          isVoted: false,
+        },
+      });
+    }
   };
 
   const removeCurrentGame = async gameId => {
@@ -51,7 +89,7 @@ export default function GamesList() {
                   <div className={css.btnsContainer}>
                     <Button
                       btnText={
-                        userCredentials._id === game.hostPlayerId
+                        playerId === game.hostPlayerId
                           ? "Start game"
                           : game.isGameRunning
                           ? `Game running`
@@ -62,14 +100,11 @@ export default function GamesList() {
                       }}
                       disabled={
                         (game.isGameRunning &&
-                          !game.players.find(
-                            p => p._id === userCredentials._id,
-                          )) ||
-                        (!game.isGameStarted &&
-                          userCredentials._id !== game.hostPlayerId) // disabled when it is not creator button (i.e. Join to) and game not started
+                          !game.players.find(p => p._id === playerId)) ||
+                        (!game.isGameStarted && playerId !== game.hostPlayerId) // disabled when it is not creator button (i.e. Join to) and game not started
                       }
                     />
-                    {userCredentials._id === game.hostPlayerId && (
+                    {playerId === game.hostPlayerId && (
                       <Button
                         btnText="Delete game"
                         onClick={() => removeCurrentGame(game._id)}

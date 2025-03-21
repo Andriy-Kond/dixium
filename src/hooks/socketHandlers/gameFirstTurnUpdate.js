@@ -1,7 +1,11 @@
+import {
+  setActiveScreen,
+  setIsShowMask,
+} from "redux/game/activeScreenSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
 import { updateGame } from "redux/game/gameSlice.js";
 
-export const gameFirstTurnUpdate = (game, dispatch) => {
+export const gameFirstTurnUpdate = (game, dispatch, playerId) => {
   if (!game) {
     throw new Error(`The game is ${game}`);
   }
@@ -14,6 +18,14 @@ export const gameFirstTurnUpdate = (game, dispatch) => {
         dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
         draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
       }
+    }),
+  );
+
+  dispatch(
+    setIsShowMask({
+      gameId: game._id,
+      playerId,
+      isShow: false,
     }),
   );
 };

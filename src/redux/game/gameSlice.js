@@ -5,32 +5,50 @@ import storage from "redux-persist/lib/storage";
 const gameInitialState = {
   games: {
     // {
+    //   _id: String,
     //   gameName: String, // Game name
     //   gamePoster: String,
-    //   gameStatus: String, // "lobby" | "makingTurn" | GUESSING | "voting" | "results" | "finished"
+    //   gameStatus: String, // "lobby" | "makingMove" | "voting" | "results" | "finished"
     //   isGameRunning: Boolean, // game started and running (players can't join anymore)
     //   isGameStarted: Boolean, // game started but not running (players can join)
-    //   isSingleCardMode,
+    //   isFirstTurn: Boolean,
+    //   isSingleCardMode: Boolean,
     //   hostPlayerId: String, // id творця гри
     //   hostPlayerName: String, // Ім'я творця гри
     //   storytellerId: String, // ID гравця, який зараз розповідає (той, хто робить перший хід)
     //   currentRound: Number, // 0
-    //   cardsOnTable: [CardSchema], // Карти, які поклали на стіл під час голосування
-    //   votes: { type: Map, of: { type: Map, of: String } },  Голоси гравців
-    //          { playerId: {firstVotedCardId: firstVotedCardId, secondVotedCardId: secondVotedCardId} }
-    //   scores: { type: Map, of: Number }, // Бали гравців { playerId: score }
-    //   players: [
-    //     {
+    //   cardsOnTable: [{
+    //       _id: String,
+    //       cardName: String,
+    //       public_id: String, // Public card id from Cloudinary
+    //       url: String, // Card url from Cloudinary
+    //       owner: String,
+    //     }, ], // Карти, які поклали на стіл під час голосування
+    //   votes:  { playerId: {firstVotedCardId, secondVotedCardId }, }, // Голоси гравців
+    //   scores: { playerId: score, }, // Бали гравців { playerId: score }
+    //   players: [ {
     //       _id: String,
     //       name: String,
     //       avatarURL: String,
-    //       hand: [CardSchema],
+    //       hand: [{}],
     //       isGuessed: Boolean,
-    //       isVoted: Boolean
+    //       isVoted: Boolean,
+    //     }, ], // List of players
+    //   deck: [CardSchema],
+    //   // Deck of cards
+    //   discardPile: [{}],
+    //   roundResults: [ {
+    //       _id: String,
+    //       cardName: String,
+    //       public_id: String,
+    //       url: String,
+    //       owner: String,
+    //       votesForThisCard: [ {
+    //           playerName: String,
+    //           voteCount: Number,
+    //        }, ],
     //     },
-    //   ], // List of players
-    //   deck: [CardSchema], // Deck of cards
-    //   discardPile: [CardSchema],
+    //   ],
     // },
   },
 
@@ -144,6 +162,17 @@ export const gameSlice = createSlice({
         };
       }
     },
+
+    updateCurrentPlayer(state, action) {
+      const { gameId, player } = action.payload;
+
+      const game = state.games[gameId];
+      if (game) {
+        const idx = game.players.findIndex(p => p._id === player._id);
+        if (idx !== -1) game.players[idx] = player;
+        else game.players.push(player);
+      }
+    },
   },
 });
 
@@ -174,6 +203,7 @@ export const {
   nextStoryteller,
   setCardsOnTable,
   updatePlayerVoteLocally,
+  updateCurrentPlayer,
 } = gameSlice.actions;
 
 // } else if (

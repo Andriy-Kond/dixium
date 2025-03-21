@@ -24,7 +24,6 @@ export const useTellStory = (gameId, selectedCardId) => {
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
   const gameStatus = useSelector(selectGameStatus(gameId));
-  console.log(" useTellStory >> gameStatus:::", gameStatus);
 
   const tellStory = useCallback(() => {
     if (!selectedCardId) {

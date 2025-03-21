@@ -16,11 +16,14 @@ import { usersApi } from "redux/auth/authApi";
 import { gameApi } from "redux/game/gameApi.js";
 import { persistedGameReducer } from "redux/game/gameSlice.js";
 import optimisticUpdateMiddleware from "redux/middlewares/optimisticUpdateMiddleware.js";
+import { persistedActiveScreenReducer } from "./game/activeScreenSlice.js";
 
 export const store = configureStore({
   reducer: {
     authSlice: persistedUserAuthReducer,
     gameSlice: persistedGameReducer,
+    activeScreenSlice: persistedActiveScreenReducer,
+
     [usersApi.reducerPath]: usersApi.reducer,
     [gameApi.reducerPath]: gameApi.reducer,
   },

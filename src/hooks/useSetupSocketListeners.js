@@ -20,8 +20,13 @@ import {
   playerGuessSuccess,
   playerVoteSuccess,
   roundFinishSuccess,
+  gameEntry,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
+import {
+  removeActiveScreen,
+  setActiveScreen,
+} from "redux/game/activeScreenSlice.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -48,10 +53,13 @@ export const useSetupSocketListeners = () => {
     const handleError = err => Notify.failure(err.errorMessage);
 
     const handleGameFirstTurnUpdate = ({ game }) =>
-      gameFirstTurnUpdate(game, dispatch);
+      gameFirstTurnUpdate(game, dispatch, userCredentials._id);
 
     const handleGameCreateOrUpdate = ({ game }) =>
       gameCreateOrUpdate(game, dispatch);
+
+    const handleGameEntry = ({ game, player }) =>
+      gameEntry(game, player, dispatch);
 
     const handlePlayerJoined = ({ game, player, message }) =>
       playerJoined(
@@ -63,22 +71,40 @@ export const useSetupSocketListeners = () => {
         navigate,
       );
 
-    const handleGameDeleted = ({ game, message }) =>
+    const handleGameDeleted = ({ game, message }) => {
       gameDelete(game, message, dispatch, currentGameId, navigate);
+      dispatch(
+        removeActiveScreen({
+          gameId: game._id,
+          playerId: userCredentials._id,
+        }),
+      );
+    };
 
     const handlePlayersOrderUpdate = ({ game, message }) =>
       playersOrderUpdate(game, message, dispatch, activeActions);
 
-    const handleGameRun = ({ game, message }) =>
-      gameRun(game, message, dispatch, activeActions);
+    const handleGameRun = ({ game, message }) => {
+      gameRun(game, message, dispatch, activeActions, userCredentials._id);
+    };
 
-    const handleFirstStorytellerUpdated = ({ game }) =>
-      firstStorytellerUpdated(game, dispatch);
+    const handleFirstStorytellerUpdated = ({ game }) => {
+      firstStorytellerUpdated(game, dispatch, userCredentials._id);
+    };
 
     const handlePlayerGuessSuccess = ({ game }) =>
       playerGuessSuccess(game, dispatch);
 
-    const handleVotingStarted = ({ game }) => votingStarted(game, dispatch);
+    const handleVotingStarted = ({ game }) => {
+      votingStarted(game, dispatch, userCredentials._id);
+      dispatch(
+        setActiveScreen({
+          gameId: game._id,
+          playerId: userCredentials._id,
+          screen: 2,
+        }),
+      );
+    };
 
     const handlePlayerVoteSuccess = ({ game, message }) =>
       playerVoteSuccess(game, message, dispatch, activeActions);
@@ -95,6 +121,7 @@ export const useSetupSocketListeners = () => {
 
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
     socket.on("gameCreatedOrUpdated", handleGameCreateOrUpdate);
+    // socket.on("gameEntry", handleGameEntry);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("gameWasDeleted", handleGameDeleted);
 
@@ -114,8 +141,9 @@ export const useSetupSocketListeners = () => {
       socket.off("reconnect", handleReconnect);
       socket.off("error", handleError);
 
-      socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
+      socket.off("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
       socket.off("gameCreatedOrUpdated", handleGameCreateOrUpdate);
+      // socket.off("gameEntry", handleGameEntry);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("gameWasDeleted", handleGameDeleted);
 

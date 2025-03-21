@@ -3,10 +3,27 @@ export const selectUserIsLoggedIn = state => state.authSlice.isLoggedIn;
 export const selectUserToken = state => state.authSlice.userToken;
 export const selectUserCredentials = state => state.authSlice.user;
 
+// activeScreenSlice selectors:
+export const selectActiveScreen = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const screen = state.activeScreenSlice.screens[key];
+
+  return screen ?? 0;
+};
+
+export const selectIsShowMask = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const isShowMask = state.activeScreenSlice.isShowMask[key];
+
+  return isShowMask;
+};
+
 // gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
 export const selectActiveActions = state => state.gameSlice.activeActions;
+
+export const selectAllGames = state => state.gameSlice.games;
 
 //# якщо games - це об'єкт:
 export const selectGame = gameId => state => state.gameSlice.games[gameId];

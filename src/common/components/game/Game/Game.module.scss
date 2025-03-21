@@ -23,3 +23,8 @@
   height: 100%;
   flex: 0 0 100%;
 }
+
+.visuallyHidden {
+  transform: scale(0);
+  flex-grow: 1; // !!! щоб кнопка не підскакувала при оновленні
+}

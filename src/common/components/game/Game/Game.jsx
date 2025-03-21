@@ -7,12 +7,13 @@ import Table from "common/components/game/Table";
 
 import css from "./Game.module.scss";
 import GameNavigationBar from "common/components/game/GameNavigationBar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useParams } from "react-router-dom";
 import { ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
 import socket from "services/socket.js";
 import {
+  selectActiveScreen,
   selectCardsOnTable,
   selectGame,
   selectGamePlayers,
@@ -25,8 +26,10 @@ import {
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
+import { setActiveScreen } from "redux/game/activeScreenSlice.js";
 
 export default function Game() {
+  const dispatch = useDispatch();
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const currentGame = useSelector(selectGame(gameId));
@@ -37,10 +40,15 @@ export default function Game() {
   const votes = useSelector(selectVotes(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
+  const activeScreen = useSelector(
+    selectActiveScreen(gameId, userCredentials._id),
+  );
+
+  // const [localActiveScreen, setLocalActiveScreen] = useState(activeScreen);
+
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
   const isBlocked = isFirstTurn && !isCurrentPlayerStoryteller;
 
-  const [activeScreen, setActiveScreen] = useState(0);
   const [middleButton, setMiddleButton] = useState(null);
 
   const stabilizedSetMiddleButton = useCallback(value => {
@@ -63,8 +71,8 @@ export default function Game() {
     // slidesToScroll: 1, // Кількість слайдів, які прокручуються за один раз
     // duration: 30, // Швидкість анімації прокручування (не в мілісекундах, а в умовних одиницях, рекомендовано 20–60)
     // skipSnaps: false, // Дозволяє пропускати слайди при сильному свайпі якщо true
-
-    watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen),
+    // startIndex: activeScreen, // Початковий індекс береться з Redux (!не працюють стилі слайдінгу)
+    watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen), // заборона на слайдінг при цій умові
     // isCarouselModeHandScreen || isCarouselModeTableScreen
     //   ? ""
     //   : "is-draggable",
@@ -128,6 +136,16 @@ export default function Game() {
     votes,
   ]);
 
+  const [isEmblaReady, setIsEmblaReady] = useState(false);
+  // Щоб карусель після F5 одразу була на останньому активному екрані без ефекту перемотування
+  useEffect(() => {
+    if (emblaApi) {
+      // emblaApi.scrollTo(localActiveScreen);
+      emblaApi.scrollTo(activeScreen); // Переходимо до потрібного екрану
+      setIsEmblaReady(true);
+    }
+  }, [emblaApi, activeScreen, isEmblaReady]);
+
   useEffect(() => {
     if (!emblaApi) return;
 
@@ -137,24 +155,37 @@ export default function Game() {
     });
   }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
 
-  // Отримання поточного індексу слайду для пропсів
-  // const getActiveScreen = () => emblaApi?.selectedScrollSnap() || 0;
-
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {
     if (emblaApi) {
-      isFirstTurn ? emblaApi.scrollTo(0) : emblaApi.scrollTo(activeScreen);
+      // isFirstTurn ? emblaApi.scrollTo(0) : emblaApi.scrollTo(activeScreen);
+      emblaApi.scrollTo(activeScreen);
     }
-  }, [activeScreen, emblaApi, isFirstTurn]);
+  }, [
+    activeScreen,
+    emblaApi,
+    // isFirstTurn
+  ]);
 
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
     if (!emblaApi) return;
-    const onSelect = () => setActiveScreen(emblaApi.selectedScrollSnap());
+
+    const onSelect = () => {
+      const newScreen = emblaApi.selectedScrollSnap();
+      // setLocalActiveScreen(newScreen);
+      dispatch(
+        setActiveScreen({
+          gameId,
+          playerId: userCredentials._id,
+          screen: newScreen,
+        }),
+      );
+    };
 
     emblaApi.on("select", onSelect); // Слухаємо подію зміни слайду
     return () => emblaApi.off("select", onSelect);
-  }, [emblaApi]);
+  }, [activeScreen, dispatch, emblaApi, gameId, userCredentials._id]);
 
   // KB events handler
   useEffect(() => {
@@ -175,14 +206,15 @@ export default function Game() {
   return (
     <div className={css.gameContainer}>
       <p>Game</p>
-      <div className={css.swipeWrapper} ref={emblaRef}>
+
+      <div
+        className={`${css.swipeWrapper} ${!isEmblaReady && css.visuallyHidden}`}
+        ref={emblaRef}>
         <ul className={css.screenWrapper}>
           {screens.map((screen, index) => (
             <li className={css.screenContainer} key={index}>
               {cloneElement(screen, {
-                // isActiveScreen: getActiveScreen() === index, // Актуальний індекс
                 isActiveScreen: activeScreen === index,
-                // setActiveScreen,
                 setMiddleButton: stabilizedSetMiddleButton,
                 isCarouselModeHandScreen,
                 setIsCarouselModeHandScreen,
@@ -197,7 +229,6 @@ export default function Game() {
       </div>
 
       <GameNavigationBar
-        // activeScreen={getActiveScreen()}
         activeScreen={activeScreen}
         screensLength={screens.length}
         onPrevScreen={prevScreen}

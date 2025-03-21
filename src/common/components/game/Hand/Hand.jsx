@@ -10,6 +10,7 @@ import {
   selectGameStatus,
   selectHostPlayerId,
   selectIsFirstTurn,
+  selectIsShowMask,
   selectIsSingleCardMode,
   selectPlayerHand,
   selectStorytellerId,
@@ -21,6 +22,7 @@ import {
   GUESSING,
   VOITING,
   ROUND_RESULTS,
+  VOTING,
 } from "utils/generals/constants.js";
 import Button from "common/components/ui/Button";
 import Mask from "../Mask/Mask.jsx";
@@ -41,7 +43,7 @@ export default function Hand({
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
   const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
-  console.log(" isFirstTurn:::", isFirstTurn);
+
   const userCredentials = useSelector(selectUserCredentials);
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
@@ -49,6 +51,7 @@ export default function Hand({
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
+  const isShowMask = useSelector(selectIsShowMask(gameId, userCredentials._id));
 
   const [selectedCardId, setSelectedCardId] = useState(null); // for first story(teller) mode
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
@@ -65,7 +68,9 @@ export default function Hand({
   const isCurrentPlayerStoryteller = storytellerId === userCredentials._id;
   const playersMoreThanThree = gamePlayers.length > 3;
   const playersMoreThanSix = gamePlayers.length > 6;
+  const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
 
+  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
   // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   // const isReadyToVote = gamePlayers.every(player => player.isGuessed);
@@ -82,6 +87,8 @@ export default function Hand({
   const isCurrentPlayerGuessed = gamePlayers.some(
     player => player._id === userCredentials._id && player.isGuessed,
   );
+
+  const isCurrentPlayerHost = hostPlayerId === userCredentials._id;
 
   const paragraphText = !storytellerId
     ? "Be the first to think of an association for one of your cards. Choose it and make a move. Tell us about your association."
@@ -110,6 +117,7 @@ export default function Hand({
 
   const returnToHand = useCallback(() => {
     const updatedGame = { ...currentGame, isFirstTurn: false };
+
     socket.emit("gameUpdateFirstTurn", { updatedGame }, response => {
       if (response?.error) {
         console.error("Failed to update game:", response.error);
@@ -225,6 +233,7 @@ export default function Hand({
     if (!isActiveScreen) return;
 
     if (isCarouselModeHandScreen) {
+      console.log("it is isCarouselModeHandScreen");
       const activeCard = playerHand[activeCardIdx];
       if (!activeCard) {
         console.log("error: card not found");
@@ -271,7 +280,8 @@ export default function Hand({
           </div>
         </>,
       );
-    } else if (isFirstTurn) {
+    } else if (isShowMask) {
+      console.log("it is isShowMask");
       // Логіка якщо це не карусель-режим і одразу після першого ходу, то треба показати екран-маску:
       isCurrentPlayerStoryteller
         ? returnToHand() // для сторітеллера екран-маска автоматично закривається
@@ -283,14 +293,67 @@ export default function Hand({
               onClick={returnToHand}
             />,
           );
-    } else {
-      // Логіка якщо це не карусель, але вже і не перший хід (закрита екран-маска)
-      if (
-        hostPlayerId === userCredentials._id &&
-        isReadyToCalculatePoints &&
-        gameStatus === GUESSING
-      ) {
-        // Якщо це ведучий і всі проголосували можна закінчувати раунд:
+    } else if (isCurrentPlayerStoryteller && !isCurrentPlayerHost) {
+      console.log(
+        "it is storyteller and he is not host: isCurrentPlayerStoryteller && !isCurrentPlayerHost",
+      );
+      // Якщо це сторітеллер
+      setMiddleButton(null); // Очищаємо кнопку для сторітеллера, бо він карту вже скинув
+    } else if (gameStatus === LOBBY) {
+      console.log("this is gameStatus === LOBBY");
+      // if (!isCurrentPlayerStoryteller) {
+      setMiddleButton(
+        <Button
+          btnStyle={["btnFlexGrow"]}
+          btnText={"Tell your story"}
+          onClick={handleStory}
+          disabled={!selectedCardId}
+        />,
+      );
+      // }
+    } else if (gameStatus === GUESSING) {
+      console.log("this is gameStatus === GUESSING");
+      // Якщо це не карусель, але вже і не перший хід (закрита екран-маска)
+      if (isCurrentPlayerHost && isReadyToVote) {
+        // Якщо це ведучий:
+        console.log(
+          "this is gameStatus === GUESSING and current player is host and all players guessed",
+        );
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Start voting"}
+            onClick={startVoting}
+            disabled={isStartVotingDisabled}
+          />,
+        );
+      }
+      // Якщо це не сторітеллер, то вгадують (скидують) карту (чи дві, якщо гравців троє)
+      // if (!isCurrentPlayerStoryteller) {
+      else if (!isCurrentPlayerGuessed) {
+        console.log("payer still not guessed when gameStatus === GUESSING");
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Guess story"}
+            onClick={handleStory}
+            disabled={!isCanGuess || isCurrentPlayerGuessed}
+          />,
+        );
+      } else {
+        console.log(
+          "this is gameStatus === GUESSING, and player already guessed ",
+        );
+        setMiddleButton(null);
+      }
+      // }
+    } else if (gameStatus === VOTING) {
+      console.log("it is gameStatus === VOTING");
+      if (isCurrentPlayerHost && isReadyToCalculatePoints) {
+        console.log(
+          "it is gameStatus === VOTING and current player is host and all players already voted",
+        );
+        // Якщо це ведучий:
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -299,62 +362,39 @@ export default function Hand({
           />,
         );
       }
-      // Якщо це не сторітеллер, то вгадують (скидують) карту (чи дві, якщо гравців троє)
-      else if (
-        !isCurrentPlayerStoryteller &&
-        (gameStatus === GUESSING || gameStatus === LOBBY)
-      ) {
-        setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={!storytellerId ? "Tell your story" : "Guess story"}
-            onClick={handleStory}
-            disabled={
-              (gameStatus === LOBBY && !selectedCardId) ||
-              (gameStatus === GUESSING && !isCanGuess) ||
-              isCurrentPlayerGuessed
-            }
-          />,
-        );
-      }
-
-      if (
-        isCurrentPlayerStoryteller ||
-        !(gameStatus === GUESSING || gameStatus === LOBBY)
-      ) {
-        // Якщо це сторітеллер
-        setMiddleButton(null); // Очищаємо кнопку для сторітеллера, бо він карту вже скинув
-      }
+    } else {
+      console.log("set middle btn to null");
+      setMiddleButton(null);
     }
   }, [
     activeCardIdx,
-    finishRound,
     exitCarouselMode,
+    finishRound,
     firstGuessCardSet,
     gameStatus,
     handleStory,
-    hostPlayerId,
     isActiveScreen,
     isCanGuess,
     isCarouselModeHandScreen,
     isCurrentPlayerGuessed,
+    isCurrentPlayerHost,
     isCurrentPlayerStoryteller,
-    isFirstTurn,
     isReadyToCalculatePoints,
-    isSingleCardMode,
+    isReadyToVote,
+    isShowMask,
+    isStartVotingDisabled,
     playerHand,
     playersMoreThanThree,
     returnToHand,
     secondGuessCardSet,
     selectedCardId,
     setMiddleButton,
-    storytellerId,
+    startVoting,
     toggleCardSelection,
-    userCredentials._id,
   ]);
 
   // ^Render
-  if (isFirstTurn && !isCurrentPlayerStoryteller) {
+  if (!isCurrentPlayerStoryteller && isShowMask) {
     return (
       <>
         <div className={css.maskContainer}>

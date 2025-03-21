@@ -90,7 +90,7 @@ export default function Players({
           />,
         );
       } else setMiddleButton(null);
-    }
+    } else setMiddleButton(null);
   }, [
     finishRound,
     gameStatus,
