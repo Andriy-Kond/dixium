@@ -9,7 +9,7 @@ export const discardHandToTable = ({
   // Додавання власника до скинутих карт
   const updatedMovedCards = movedCards.map(card => ({
     ...card,
-    owner: userId,
+    ownerId: userId,
   }));
 
   // Скидання карт з руки на стіл

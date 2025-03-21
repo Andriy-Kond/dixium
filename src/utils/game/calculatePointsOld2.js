@@ -27,7 +27,7 @@ export function calculatePoints({
 
   // Визначаємо карту оповідача
   const storytellerCard = cardsOnTable.find(
-    card => card.owner === storytellerId,
+    card => card.ownerId === storytellerId,
   );
   const storytellerCardId = storytellerCard._id;
 
@@ -144,7 +144,7 @@ function calculateStandardScoring({
 
   // Додаткові бали за голоси на картах гравців
   cardsOnTable.forEach(card => {
-    const ownerId = card.owner;
+    const ownerId = card.ownerId;
     if (ownerId !== storytellerId) {
       const votesForCard = voteCountByCard.get(card.public_id) || 0;
       const bonusPoints = Math.min(votesForCard, 3); // Максимум 3 бали
@@ -215,7 +215,7 @@ function calculateOdysseyScoring({
 
   // Додаткові бали за голоси на картах гравців
   cardsOnTable.forEach(card => {
-    const ownerId = card.owner;
+    const ownerId = card.ownerId;
     if (ownerId !== storytellerId) {
       const votesForCard = voteCountByCard.get(card.public_id) || 0;
       const bonusPoints = Math.min(votesForCard, 3); // Максимум 3 бали

@@ -22,7 +22,7 @@ const gameInitialState = {
     //       cardName: String,
     //       public_id: String, // Public card id from Cloudinary
     //       url: String, // Card url from Cloudinary
-    //       owner: String,
+    //       ownerId: String,
     //     }, ], // Карти, які поклали на стіл під час голосування
     //   votes:  { playerId: {firstVotedCardId, secondVotedCardId }, }, // Голоси гравців
     //   scores: { playerId: score, }, // Бали гравців { playerId: score }
@@ -38,15 +38,14 @@ const gameInitialState = {
     //   // Deck of cards
     //   discardPile: [{}],
     //   roundResults: [ {
-    //       _id: String,
-    //       cardName: String,
-    //       public_id: String,
-    //       url: String,
-    //       owner: String,
-    //       votesForThisCard: [ {
-    //           playerName: String,
-    //           voteCount: Number,
-    //        }, ],
+    //     cardId: String,
+    //     cardName: String,
+    //     url: String,
+    //     ownerName: String,
+    //     votesForThisCard: [ {
+    //         playerName: String,
+    //         voteCount: Number, }, ],
+    //   },],
     //     },
     //   ],
     // },

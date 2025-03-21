@@ -17,7 +17,7 @@ export function calculatePoints({
 
   // Знаходимо карту оповідача
   const storytellerCard = cardsOnTable.find(
-    card => card.owner === storytellerId,
+    card => card.ownerId === storytellerId,
   );
   const storytellerCardId = storytellerCard._id;
 
@@ -59,9 +59,9 @@ export function calculatePoints({
       if (cardId) {
         const card = cardsOnTable.find(c => c._id === cardId);
         // Голосувати за свою карту не можна:
-        if (card && card.owner !== voterId) {
+        if (card && card.ownerId !== voterId) {
           // Якщо проголосована гравцем карта знайдена на столі і це не його карта, то додатковий бонусний бал власнику карти:
-          bonusPoints[card.owner] = (bonusPoints[card.owner] || 0) + 1;
+          bonusPoints[card.ownerId] = (bonusPoints[card.ownerId] || 0) + 1;
         }
       }
     });

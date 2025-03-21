@@ -1,6 +1,6 @@
 import { Notify } from "notiflix";
 import { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   selectGame,
   selectGamePlayers,
@@ -13,7 +13,6 @@ import { useOptimisticDispatch } from "./useOptimisticDispatch.js";
 // import { updatePlayerVote } from "redux/game/gameSlice.js";
 
 export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
-  const dispatch = useDispatch();
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
 
   const userCredentials = useSelector(selectUserCredentials);
@@ -25,17 +24,6 @@ export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
   const playersMoreThanSix = gamePlayers.length > 6;
 
   const vote = useCallback(() => {
-    // dispatch(
-    //   updatePlayerVote({
-    //     gameId,
-    //     playerId,
-    //     firstVotedCardId,
-    //     secondVotedCardId,
-    //   }),
-    // );
-    // const playerVotes = votes[playerId] || {};
-    // const { firstVotedCardId, secondVotedCardId } = playerVotes;
-
     if (
       !firstVotedCardId ||
       (!isSingleCardMode && playersMoreThanSix && !secondVotedCardId)

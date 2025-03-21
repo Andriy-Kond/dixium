@@ -28,6 +28,7 @@ import {
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
 import { setActiveScreen } from "redux/game/localPersonalSlice.js";
+import { shuffleDeck } from "utils/game/shuffleDeck.js";
 
 export default function Game() {
   const dispatch = useDispatch();
@@ -99,6 +100,7 @@ export default function Game() {
   const startVoting = useCallback(() => {
     const updatedGame = {
       ...currentGame,
+      cardsOnTable: shuffleDeck(currentGame.cardsOnTable),
       gameStatus: VOTING,
     };
 

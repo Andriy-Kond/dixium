@@ -9,11 +9,12 @@ import {
   selectGameStatus,
   selectHostPlayerId,
   selectIsSingleCardMode,
+  selectRoundResults,
   selectStorytellerId,
   selectUserCredentials,
   selectVotesLocal,
 } from "redux/selectors.js";
-import { GUESSING, VOTING } from "utils/generals/constants.js";
+import { GUESSING, ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
 import Mask from "common/components/game/Mask";
 import Button from "common/components/ui/Button/index.js";
 import { useVote } from "hooks/useVote.js";
@@ -38,6 +39,7 @@ export default function Table({
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
+  const roundResults = useSelector(selectRoundResults(gameId));
 
   // const votes = useSelector(selectVotes(gameId));
   const playerVotes = useSelector(selectVotesLocal(gameId, playerId));
@@ -222,10 +224,10 @@ export default function Table({
 
       const isDisabledFirstBtn =
         (firstVotedCardId && firstVotedCardId !== activeCard._id) ||
-        playerId === activeCard.owner;
+        playerId === activeCard.ownerId;
       const isDisabledSecondBtn =
         (secondVotedCardId && secondVotedCardId !== activeCard._id) ||
-        playerId === activeCard.owner;
+        playerId === activeCard.ownerId;
 
       setMiddleButton(
         <>
@@ -320,49 +322,33 @@ export default function Table({
     playerId,
   ]);
 
-  return (
-    <>
-      <p>Table</p>
+  const getStarMarks = voteCount => {
+    const marks = [];
+    if (voteCount === 1) marks.push("★1");
+    if (voteCount === 2) marks.push("★2");
+    return marks;
+  };
 
-      {gameStatus === VOTING ? (
-        <>
-          <div>cards face up</div>
+  if (gameStatus === VOTING) {
+    return (
+      <>
+        <p>Table gameStatus === VOTING - cards face up</p>
 
-          {isCarouselModeTableScreen ? (
-            <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
-              <ul className={css.carouselContainer}>
-                {cardsOnTable.map((card, idx) => (
-                  <li className={css.carouselSlide} key={card._id}>
-                    <img
-                      src={card.url}
-                      alt="card"
-                      className={`${css.carouselImage} ${
-                        isMounted ? css.visible : ""
-                      }`}
-                    />
-                    <div className={css.checkboxContainer}>
-                      {getStarsMarks(card._id).map((mark, index) => (
-                        <span key={index} className={css.carouselCheckbox}>
-                          {mark}
-                        </span>
-                      ))}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <ul className={`${css.currentDeck}`}>
+        {isCarouselModeTableScreen ? (
+          <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
+            <ul className={css.carouselContainer}>
               {cardsOnTable.map((card, idx) => (
-                <li
-                  className={css.card}
-                  key={card._id}
-                  onClick={() => carouselModeOn(idx)}>
-                  <img className={css.img} src={card.url} alt="card" />
-
+                <li className={css.carouselSlide} key={card._id}>
+                  <img
+                    src={card.url}
+                    alt="card"
+                    className={`${css.carouselImage} ${
+                      isMounted ? css.visible : ""
+                    }`}
+                  />
                   <div className={css.checkboxContainer}>
                     {getStarsMarks(card._id).map((mark, index) => (
-                      <span key={index} className={css.checkboxCard}>
+                      <span key={index} className={css.carouselCheckbox}>
                         {mark}
                       </span>
                     ))}
@@ -370,9 +356,66 @@ export default function Table({
                 </li>
               ))}
             </ul>
-          )}
-        </>
-      ) : (
+          </div>
+        ) : (
+          <ul className={`${css.currentDeck}`}>
+            {cardsOnTable.map((card, idx) => (
+              <li
+                className={css.card}
+                key={card._id}
+                onClick={() => carouselModeOn(idx)}>
+                <img className={css.img} src={card.url} alt="card" />
+
+                <div className={css.checkboxContainer}>
+                  {getStarsMarks(card._id).map((mark, index) => (
+                    <span key={index} className={css.checkboxCard}>
+                      {mark}
+                    </span>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
+    );
+  } else if (gameStatus === ROUND_RESULTS) {
+    return (
+      <>
+        <p>Table gameStatus === ROUND_RESULTS</p>
+
+        <ul className={css.resultList}>
+          {roundResults.map(result => (
+            <li className={css.resultItem} key={result.cardId}>
+              <img className={css.resultImg} src={result.url} alt="card" />
+              <div className={css.resultPlayers}>
+                <span>Card owner: {result.ownerName.toUpperCase()}</span>
+                <p>Votes:</p>
+                <ul className={css.resultVotes}>
+                  result.votesForThisCard
+                  {result.votesForThisCard.map((vote, voteIdx) => (
+                    <li className={css.voterContainer} key={voteIdx}>
+                      {vote.playerName}
+                      <div className={css.voteCheckboxContainer}>
+                        {getStarMarks(vote.voteCount).map((mark, index) => (
+                          <span key={index} className={css.checkboxCard}>
+                            {mark}
+                          </span>
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <p>Table default - cards face down</p>
         <ul className={css.cardsListFaceDown}>
           {cardsOnTable.map((card, idx) => (
             <li key={card._id}>
@@ -384,7 +427,7 @@ export default function Table({
             </li>
           ))}
         </ul>
-      )}
-    </>
-  );
+      </>
+    );
+  }
 }
