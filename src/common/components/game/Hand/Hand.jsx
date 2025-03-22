@@ -29,6 +29,7 @@ import css from "./Hand.module.scss";
 import { useTellStory } from "hooks/useTellStory.js";
 import { useGuess } from "hooks/useGuess.js";
 import { Notify } from "notiflix";
+import { MdOutlineStarOutline } from "react-icons/md";
 
 export default function Hand({
   isActiveScreen,
@@ -182,14 +183,6 @@ export default function Hand({
     },
     [emblaApiCardsGuess, isSingleCardMode, playerHand, playersMoreThanThree],
   );
-
-  // Set star(s) to card(s):
-  const getStarMarks = cardId => {
-    const marks = [];
-    if (firstGuessCardSet?._id === cardId) marks.push("★1");
-    if (secondGuessCardSet?._id === cardId) marks.push("★2");
-    return marks;
-  };
 
   // reInit for emblaApiCardsGuess
   useEffect(() => {
@@ -392,6 +385,17 @@ export default function Hand({
     toggleCardSelection,
   ]);
 
+  // Set star(s) to card(s):
+  const getStarMarksByCardId = cardId => {
+    const marks = [];
+
+    if (firstGuessCardSet?._id === cardId)
+      marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+    if (secondGuessCardSet?._id === cardId)
+      marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+    return marks;
+  };
+
   // ^Render
   if (!isCurrentPlayerStoryteller && isShowMask) {
     return (
@@ -418,13 +422,12 @@ export default function Hand({
                 <img
                   src={card.url}
                   alt="card"
-                  // className={css.carouselImage}
                   className={`${css.carouselImage} ${
                     isMountedCarousel ? css.visible : ""
                   }`}
                 />
                 <div className={css.checkboxContainer}>
-                  {getStarMarks(card._id).map((mark, index) => (
+                  {getStarMarksByCardId(card._id).map((mark, index) => (
                     <span key={index} className={css.carouselCheckbox}>
                       {mark}
                     </span>
@@ -435,7 +438,7 @@ export default function Hand({
           </ul>
         </div>
       ) : (
-        <div>
+        <div className={css.currentDeckContainer}>
           <ul className={`${css.currentDeck}`}>
             {currentPlayer.hand.map((card, idx) => (
               <li
@@ -456,10 +459,8 @@ export default function Hand({
                   alt="card"
                 />
                 <div className={css.checkboxContainer}>
-                  {getStarMarks(card._id).map((mark, index) => (
-                    <span key={index} className={css.checkboxCard}>
-                      {mark}
-                    </span>
+                  {getStarMarksByCardId(card._id).map((mark, index) => (
+                    <span key={index}>{mark}</span>
                   ))}
                 </div>
               </li>

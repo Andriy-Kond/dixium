@@ -121,6 +121,7 @@ export default function Game() {
       cardsOnTable,
       votes,
       gamePlayers,
+      storytellerId,
     });
 
     const updatedGame = {

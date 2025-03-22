@@ -113,6 +113,17 @@ export default function Table({
     setMiddleButton(null);
   }, [setIsCarouselModeTableScreen, setMiddleButton]);
 
+  const getStarsMarks = useCallback(
+    cardId => {
+      const marks = [];
+
+      if (firstVotedCardId === cardId) marks.push("★1");
+      if (secondVotedCardId === cardId) marks.push("★2");
+      return marks;
+    },
+    [firstVotedCardId, secondVotedCardId],
+  );
+
   // select card(s)
   const toggleCardSelection = useCallback(
     btnKey => {
@@ -229,22 +240,18 @@ export default function Table({
             {!isCurrentPlayerStoryteller && (
               <>
                 <Button
+                  btnText="★1"
                   onClick={() => toggleCardSelection("firstVoteCardSet")}
                   disabled={isDisabledFirstBtn || isCurrentPlayerVoted}
-                  localClassName={firstVotedCardId && css.btnActive}>
-                  <MdOutlineStarOutline
-                    style={{ width: "20px", height: "20px" }}
-                  />
-                </Button>
+                  localClassName={firstVotedCardId && css.btnActive}
+                />
                 {playersMoreThanSix && (
                   <Button
+                    btnText="★2"
                     onClick={() => toggleCardSelection("secondVoteCardSet")}
                     disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
-                    localClassName={secondVotedCardId && css.btnActive}>
-                    <MdOutlineStarOutline
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </Button>
+                    localClassName={secondVotedCardId && css.btnActive}
+                  />
                 )}
               </>
             )}
@@ -318,37 +325,26 @@ export default function Table({
     playerId,
   ]);
 
-  const getStarsMarksByVoteCount = voteCount => {
+  const getStarMarksByCardId = cardId => {
     const marks = [];
-    if (voteCount === 1)
-      marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
-    if (voteCount === 2)
-      marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+    console.log(" table marks:::", marks);
+
+    if (playerVotes[`${gameId}_${playerId}`]?.firstVotedCardId === cardId)
+      marks.push(<MdOutlineStarOutline className={css.carouselCheckbox} />);
+    if (playerVotes[`${gameId}_${playerId}`]?.secondVotedCardId === cardId)
+      marks.push(<MdOutlineStarOutline className={css.carouselCheckbox} />);
     return marks;
   };
 
-  const getStarsMarksByCardId = useCallback(
-    cardId => {
-      const marks = [];
+  const getStarMarksByVoteCount = voteCount => {
+    const marks = [];
 
-      if (firstVotedCardId === cardId)
-        marks.push(
-          <MdOutlineStar
-            className={css.carouselCheckbox}
-            style={{ color: "#fff" }}
-          />,
-        );
-      if (secondVotedCardId === cardId)
-        marks.push(
-          <MdOutlineStar
-            className={css.carouselCheckbox}
-            style={{ color: "#000" }}
-          />,
-        );
-      return marks;
-    },
-    [firstVotedCardId, secondVotedCardId],
-  );
+    if (voteCount === 1)
+      marks.push(<MdOutlineStar className={css.checkboxCard} />);
+    if (voteCount === 2)
+      marks.push(<MdOutlineStar className={css.checkboxCard} />);
+    return marks;
+  };
 
   if (gameStatus === VOTING) {
     return (
@@ -358,30 +354,22 @@ export default function Table({
         {isCarouselModeTableScreen ? (
           <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
             <ul className={css.carouselContainer}>
-              {cardsOnTable.map((card, idx) => {
-                const marks = getStarsMarksByCardId(card._id);
-
-                return (
-                  <li className={css.carouselSlide} key={card._id}>
-                    <div className={css.slideContainer}>
-                      {marks.length > 0 && (
-                        <div className={css.checkboxContainer}>
-                          {marks.map((mark, index) => (
-                            <span key={index}>{mark}</span>
-                          ))}
-                        </div>
-                      )}
-                      <img
-                        className={`${css.carouselImage} ${
-                          isMounted ? css.visible : ""
-                        }`}
-                        src={card.url}
-                        alt="card"
-                      />
-                    </div>
-                  </li>
-                );
-              })}
+              {cardsOnTable.map((card, idx) => (
+                <li className={css.carouselSlide} key={card._id}>
+                  <img
+                    src={card.url}
+                    alt="card"
+                    className={`${css.carouselImage} ${
+                      isMounted ? css.visible : ""
+                    }`}
+                  />
+                  <div className={css.checkboxContainer}>
+                    {getStarMarksByCardId(card._id).map((mark, index) => (
+                      <span key={index}>{mark}</span>
+                    ))}
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         ) : (
@@ -394,7 +382,7 @@ export default function Table({
                 <img className={css.img} src={card.url} alt="card" />
 
                 <div className={css.checkboxContainer}>
-                  {getStarsMarksByCardId(card._id).map((mark, index) => (
+                  {getStarMarksByCardId(card._id).map((mark, index) => (
                     <span key={index} className={css.checkboxCard}>
                       {mark}
                     </span>
@@ -427,7 +415,7 @@ export default function Table({
                     <li className={css.voterContainer} key={voteIdx}>
                       {capitalizeWords(vote.playerName)}
                       <div className={css.voteCheckboxContainer}>
-                        {getStarsMarksByVoteCount(vote.voteCount).map(
+                        {getStarMarksByVoteCount(vote.voteCount).map(
                           (mark, index) => (
                             <span key={index}>{mark}</span>
                           ),

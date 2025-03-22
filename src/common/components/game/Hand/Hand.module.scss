@@ -43,45 +43,51 @@
 }
 
 .checkboxContainer {
-  position: absolute; /* Позиціонування відносно картки */
-  top: 10px; /* Відступ від низу картки */
+  position: absolute;
+  top: 10px;
   right: 10px; /* Відступ зліва */
   display: flex; /* Горизонтальне розташування зірочок */
   gap: 5px; /* Відстань між зірочками */
 }
 
 .checkboxBase {
-  color: gold;
+  display: flex;
+  color: #5d7e9e;
 }
 
 .checkboxCard {
   @extend .checkboxBase;
-  font-size: 14px; /* Розмір для .card */
+  width: 20px;
+  height: 20px;
 }
 
 .carouselCheckbox {
   @extend .checkboxBase;
-  font-size: 40px; /* Розмір для .carouselSlide */
+  width: 40px;
+  height: 40px;
+}
+
+.currentDeckContainer {
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .currentDeck {
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
-  justify-content: left;
+
   flex-wrap: wrap;
-  gap: 5px;
-  padding: 0 5px;
+  gap: 26px 2px;
 
   overflow-y: auto;
-  max-height: 80vh;
+  max-height: 90vh;
 }
 
 .card {
   position: relative;
-  // width: 120px;
-  width: calc((100% / 3) - 10px);
-  height: 160px;
+  flex-basis: calc((100% - 4px) / 3);
   overflow: hidden;
-  border-radius: 10px;
 }
 
 .img {

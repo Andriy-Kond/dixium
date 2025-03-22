@@ -109,7 +109,10 @@ export default function Players({
               style={{
                 "--fill-percentage": `${fillPercentage}%`,
               }}>
-              <div>{player.name.toUpperCase()}</div>
+              <div>
+                {player.name.toUpperCase()}
+                {hostPlayerId === player._id && " (THE HOST)"}
+              </div>
 
               <div className={css.playerState}>
                 {gameStatus === ROUND_RESULTS ? (

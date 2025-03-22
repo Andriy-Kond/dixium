@@ -61,6 +61,7 @@ export const localPersonalSlice = createSlice({
     updateVotesLocal: (state, action) => {
       const { gameId, playerId, firstVotedCardId, secondVotedCardId } =
         action.payload;
+      console.log("  action.payload:::", action.payload);
       const key = `${gameId}_${playerId}`;
       state.votes[key] = {
         firstVotedCardId,

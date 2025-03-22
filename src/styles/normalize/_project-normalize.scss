@@ -5,6 +5,10 @@ body {
   font-family: var(--font_family), serif;
   user-select: none; // prevents any selection
   caret-color: transparent; // prevents show cursor on text (for LibreWolf browser)
+
+  font-size: var(--font_size);
+  line-height: var(--font_line-height);
+  color: var(--font_color);
 }
 
 /* ========== СКИДАННЯ СТИЛІВ ==========  */

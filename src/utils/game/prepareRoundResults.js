@@ -4,7 +4,12 @@
 //     Ім’ям власника (ownerName).
 //     Масивом голосів (votesForCard), де для кожного гравця, який голосував, вказується його ім’я та кількість голосів (1 або 2).
 
-export function prepareRoundResults({ cardsOnTable, votes, gamePlayers }) {
+export function prepareRoundResults({
+  cardsOnTable,
+  votes,
+  gamePlayers,
+  storytellerId,
+}) {
   const results = cardsOnTable.map(card => {
     const ownerPlayer = gamePlayers.find(p => p._id === card.ownerId);
     const votesForThisCard = [];
@@ -28,11 +33,20 @@ export function prepareRoundResults({ cardsOnTable, votes, gamePlayers }) {
       cardId: card._id,
       cardName: card.cardName,
       url: card.url,
+      ownerId: card.ownerId,
       ownerName: ownerPlayer.name,
       votesForThisCard,
     };
   });
 
   // todo розставити карти в масиві по порядку, який скаже Антон
+
+  // Сортування - картка оповідача на перше місце
+  results.sort((a, b) => {
+    if (a.ownerId === storytellerId) return -1; // a йде на перед
+    if (b.ownerId === storytellerId) return 1; // b йде на перед
+    return 0; // порядок не змінюється
+  });
+
   return results;
 }
