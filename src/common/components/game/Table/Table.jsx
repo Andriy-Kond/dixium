@@ -332,19 +332,9 @@ export default function Table({
       const marks = [];
 
       if (firstVotedCardId === cardId)
-        marks.push(
-          <MdOutlineStar
-            className={css.carouselCheckbox}
-            style={{ color: "#fff" }}
-          />,
-        );
+        marks.push(<MdOutlineStar className={css.carouselCheckbox} />);
       if (secondVotedCardId === cardId)
-        marks.push(
-          <MdOutlineStar
-            className={css.carouselCheckbox}
-            style={{ color: "#000" }}
-          />,
-        );
+        marks.push(<MdOutlineStar className={css.carouselCheckbox} />);
       return marks;
     },
     [firstVotedCardId, secondVotedCardId],
@@ -367,10 +357,13 @@ export default function Table({
                       {marks.length > 0 && (
                         <div className={css.checkboxContainer}>
                           {marks.map((mark, index) => (
-                            <span key={index}>{mark}</span>
+                            <span key={index} className={css.checkboxCard}>
+                              {mark}
+                            </span>
                           ))}
                         </div>
                       )}
+
                       <img
                         className={`${css.carouselImage} ${
                           isMounted ? css.visible : ""
@@ -386,22 +379,28 @@ export default function Table({
           </div>
         ) : (
           <ul className={`${css.currentDeck}`}>
-            {cardsOnTable.map((card, idx) => (
-              <li
-                className={css.card}
-                key={card._id}
-                onClick={() => carouselModeOn(idx)}>
-                <img className={css.img} src={card.url} alt="card" />
+            {cardsOnTable.map((card, idx) => {
+              const marks = getStarsMarksByCardId(card._id);
 
-                <div className={css.checkboxContainer}>
-                  {getStarsMarksByCardId(card._id).map((mark, index) => (
-                    <span key={index} className={css.checkboxCard}>
-                      {mark}
-                    </span>
-                  ))}
-                </div>
-              </li>
-            ))}
+              return (
+                <li
+                  className={css.card}
+                  key={card._id}
+                  onClick={() => carouselModeOn(idx)}>
+                  {marks.length > 0 && (
+                    <div className={css.checkboxContainerList}>
+                      {getStarsMarksByCardId(card._id).map((mark, index) => (
+                        <span key={index} className={css.checkboxCard}>
+                          {mark}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <img className={css.img} src={card.url} alt="card" />
+                </li>
+              );
+            })}
           </ul>
         )}
       </>
@@ -426,7 +425,7 @@ export default function Table({
                   {result.votesForThisCard.map((vote, voteIdx) => (
                     <li className={css.voterContainer} key={voteIdx}>
                       {capitalizeWords(vote.playerName)}
-                      <div className={css.voteCheckboxContainer}>
+                      <div className={css.resultCheckboxContainer}>
                         {getStarsMarksByVoteCount(vote.voteCount).map(
                           (mark, index) => (
                             <span key={index}>{mark}</span>

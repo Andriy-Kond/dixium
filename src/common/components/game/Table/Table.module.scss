@@ -83,20 +83,20 @@
   padding-left: 2px;
   padding-right: 2px;
 
-  border-radius: 8px 8px 0px 0px;
-  // border-top-left-radius: 10px;
-  // border-top-right-radius: 10px;
+  // border-radius: 8px 8px 0px 0px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .checkboxCard {
   width: 20px;
   height: 20px;
-  color: #fff;
 }
 
 .currentDeck {
   margin-left: auto;
   margin-right: auto;
+  padding-top: 26px;
   display: flex;
 
   flex-wrap: wrap;
@@ -109,7 +109,26 @@
 .card {
   position: relative;
   flex-basis: calc((100% - 4px) / 3);
-  overflow: hidden;
+  // overflow: hidden;
+}
+
+.checkboxContainerList {
+  position: absolute;
+  top: -22px;
+  left: 0x;
+  display: flex;
+  gap: 5px;
+  background-color: #5d7e9e;
+  color: #fff;
+
+  height: 22px;
+  padding-top: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+
+  border-radius: 8px 8px 0px 0px;
+  // border-top-left-radius: 10px;
+  // border-top-right-radius: 10px;
 }
 
 .img {
@@ -180,7 +199,12 @@
   color: #000000de;
 }
 
-.voteCheckboxContainer {
+.resultCheckboxContainer {
   display: flex;
   gap: 5px;
+  color: #5d7e9e;
+}
+
+.btnActive {
+  background-color: #0f7dff1f;
 }
