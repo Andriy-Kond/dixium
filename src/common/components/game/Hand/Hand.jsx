@@ -295,43 +295,49 @@ export default function Hand({
         }
       };
 
-      // const isDisabledFirstBtn = playersMoreThanThree
-      //   ? firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
-      //   : (firstGuessCardSet && firstGuessCardSet._id !== activeCard._id) ||
-      //     (!firstGuessCardSet &&
-      //       secondGuessCardSet &&
-      //       secondGuessCardSet._id === activeCard._id);
+      const isDisabledSecondBtn = () => {
+        return playersMoreThanThree
+          ? secondGuessCardSet && secondGuessCardSet._id !== activeCard._id
+          : (secondGuessCardSet && secondGuessCardSet._id !== activeCard._id) ||
+              (!secondGuessCardSet &&
+                firstGuessCardSet &&
+                firstGuessCardSet._id === activeCard._id);
+      };
 
-      const isDisabledSecondBtn = playersMoreThanThree
-        ? secondGuessCardSet && secondGuessCardSet._id !== activeCard._id
-        : (secondGuessCardSet && secondGuessCardSet._id !== activeCard._id) ||
-          (!secondGuessCardSet &&
-            firstGuessCardSet &&
-            firstGuessCardSet._id === activeCard._id);
-
+      if (gameStatus === LOBBY) {
+      } else if (gameStatus === GUESSING) {
+      }
       setMiddleButton(
         <>
-          <Button btnText="Back" onClick={exitCarouselMode} />
+          <Button btnText="<" onClick={exitCarouselMode} />
 
           <div style={{ display: "flex", flexDirection: "row" }}>
             {!isCurrentPlayerStoryteller && (
               <>
                 <Button
-                  btnText="★1"
                   onClick={() => toggleCardSelection("firstGuessCardSet")}
                   disabled={isDisabledFirstBtn() || isCurrentPlayerGuessed}
                   localClassName={
                     (firstGuessCardSet || selectedCardId) && css.btnActive
-                  }
-                />
+                  }>
+                  {gameStatus === LOBBY ? (
+                    <MdCheck style={{ width: "20px", height: "20px" }} />
+                  ) : (
+                    <MdOutlineStarOutline
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  )}
+                </Button>
 
                 {!playersMoreThanThree && (
                   <Button
-                    btnText="★2"
                     onClick={() => toggleCardSelection("secondGuessCardSet")}
-                    disabled={isDisabledSecondBtn || isCurrentPlayerGuessed}
-                    localClassName={secondGuessCardSet && css.btnActive}
-                  />
+                    disabled={isDisabledSecondBtn() || isCurrentPlayerGuessed}
+                    localClassName={secondGuessCardSet && css.btnActive}>
+                    <MdOutlineStarOutline
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </Button>
                 )}
               </>
             )}
@@ -365,7 +371,7 @@ export default function Hand({
           btnStyle={["btnFlexGrow"]}
           btnText={"Tell your story"}
           onClick={handleStory}
-          // disabled={!selectedCardId}
+          disabled={!selectedCardId}
         />,
       );
       // }
@@ -454,12 +460,14 @@ export default function Hand({
   ]);
 
   // Set star(s) to card(s):
-  const getStarMarksByCardId = cardId => {
+  const getStarsMarksByCardId = cardId => {
     const marks = [];
 
     if (gameStatus === LOBBY) {
       if (selectedCardId === cardId) {
-        marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+        marks.push(
+          <MdCheck className={css.checkboxCard} style={{ color: "white" }} />,
+        );
       }
     } else {
       if (firstGuessCardSet?._id === cardId)
@@ -493,23 +501,29 @@ export default function Hand({
         <div className={css.carouselWrapper} ref={emblaRefCardsGuess}>
           <ul className={css.carouselContainer}>
             {playerHand.map(card => {
-              const marks = getStarMarksByCardId(card._id);
+              const marks = getStarsMarksByCardId(card._id);
+              console.log(" marks:::", marks);
 
               return (
                 <li className={css.carouselSlide} key={card._id}>
-                  <img
-                    src={card.url}
-                    alt="card"
-                    className={`${css.carouselImage} ${
-                      isMountedCarousel ? css.visible : ""
-                    }`}
-                  />
-                  <div className={css.checkboxContainer}>
-                    {marks.map((mark, index) => (
-                      <span key={index} className={css.carouselCheckbox}>
-                        {mark}
-                      </span>
-                    ))}
+                  <div className={css.slideContainer}>
+                    {marks.length > 0 && (
+                      <div className={css.checkboxContainer}>
+                        {marks.map((mark, index) => (
+                          <span key={index} className={css.checkboxCard}>
+                            {mark}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <img
+                      className={`${css.carouselImage} ${
+                        isMountedCarousel ? css.visible : ""
+                      }`}
+                      src={card.url}
+                      alt="card"
+                    />
                   </div>
                 </li>
               );
@@ -519,34 +533,27 @@ export default function Hand({
       ) : (
         <div className={css.currentDeckContainer}>
           <ul className={`${css.currentDeck}`}>
-            {currentPlayer.hand.map((card, idx) => (
-              <li
-                className={css.card}
-                key={card._id}
-                onClick={
-                  () => carouselModeOn(idx)
-                  // gameStatus === GUESSING
-                  // ? () => carouselModeOn(idx)
-                  // : () => onSelectCard(card._id)
-                }>
-                <img
-                  className={
-                    `${css.img}`
-                    //  ${
-                    // selectedCardId &&
-                    // selectedCardId !== card._id &&
-                    // css.imgInactive }
-                  }
-                  src={card.url}
-                  alt="card"
-                />
-                <div className={css.checkboxContainer}>
-                  {getStarMarksByCardId(card._id).map((mark, index) => (
-                    <span key={index}>{mark}</span>
-                  ))}
-                </div>
-              </li>
-            ))}
+            {currentPlayer.hand.map((card, idx) => {
+              const marks = getStarsMarksByCardId(card._id);
+
+              return (
+                <li
+                  className={css.card}
+                  key={card._id}
+                  onClick={() => carouselModeOn(idx)}>
+                  {marks.length > 0 && (
+                    <div className={css.checkboxContainerList}>
+                      {getStarsMarksByCardId(card._id).map((mark, index) => (
+                        <span key={index} className={css.checkboxCard}>
+                          {mark}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <img className={css.img} src={card.url} alt="card" />
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

@@ -2,7 +2,7 @@ import { MdOutlineStarOutline, MdOutlineStar } from "react-icons/md";
 
 import useEmblaCarousel from "embla-carousel-react";
 import { Notify } from "notiflix";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
@@ -340,6 +340,7 @@ export default function Table({
     [firstVotedCardId, secondVotedCardId],
   );
 
+  //^ Render
   if (gameStatus === VOTING) {
     return (
       <>
@@ -348,7 +349,7 @@ export default function Table({
         {isCarouselModeTableScreen ? (
           <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
             <ul className={css.carouselContainer}>
-              {cardsOnTable.map((card, idx) => {
+              {cardsOnTable.map(card => {
                 const marks = getStarsMarksByCardId(card._id);
 
                 return (
@@ -378,30 +379,32 @@ export default function Table({
             </ul>
           </div>
         ) : (
-          <ul className={`${css.currentDeck}`}>
-            {cardsOnTable.map((card, idx) => {
-              const marks = getStarsMarksByCardId(card._id);
+          <div className={css.currentDeckContainer}>
+            <ul className={`${css.currentDeck}`}>
+              {cardsOnTable.map((card, idx) => {
+                const marks = getStarsMarksByCardId(card._id);
 
-              return (
-                <li
-                  className={css.card}
-                  key={card._id}
-                  onClick={() => carouselModeOn(idx)}>
-                  {marks.length > 0 && (
-                    <div className={css.checkboxContainerList}>
-                      {getStarsMarksByCardId(card._id).map((mark, index) => (
-                        <span key={index} className={css.checkboxCard}>
-                          {mark}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                return (
+                  <li
+                    className={css.card}
+                    key={card._id}
+                    onClick={() => carouselModeOn(idx)}>
+                    {marks.length > 0 && (
+                      <div className={css.checkboxContainerList}>
+                        {getStarsMarksByCardId(card._id).map((mark, index) => (
+                          <span key={index} className={css.checkboxCard}>
+                            {mark}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
-                  <img className={css.img} src={card.url} alt="card" />
-                </li>
-              );
-            })}
-          </ul>
+                    <img className={css.img} src={card.url} alt="card" />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         )}
       </>
     );
