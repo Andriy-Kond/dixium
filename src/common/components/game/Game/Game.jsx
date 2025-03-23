@@ -17,7 +17,6 @@ import {
   selectCardsOnTable,
   selectGame,
   selectGamePlayers,
-  selectIsFirstTurn,
   selectIsShowMask,
   selectIsSingleCardMode,
   selectScores,
@@ -42,7 +41,6 @@ export default function Game() {
   const scores = useSelector(selectScores(gameId));
   const votes = useSelector(selectVotes(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
-  const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
 

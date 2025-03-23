@@ -35,7 +35,6 @@ export const selectSelectedCardId = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
 
   const selectedCardId = state.localPersonalSlice.selectedCardId[key];
-  console.log(" selectedCardId:::", selectedCardId);
 
   return selectedCardId || null;
 };

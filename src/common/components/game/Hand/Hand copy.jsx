@@ -32,10 +32,7 @@ import css from "./Hand.module.scss";
 import { useTellStory } from "hooks/useTellStory.js";
 import { useGuess } from "hooks/useGuess.js";
 import { Notify } from "notiflix";
-import {
-  setIsShowMask,
-  setSelectedCardId,
-} from "redux/game/localPersonalSlice.js";
+import { setSelectedCardId } from "redux/game/localPersonalSlice.js";
 
 export default function Hand({
   isActiveScreen,
@@ -48,7 +45,6 @@ export default function Hand({
   const dispatch = useDispatch();
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
-  console.log(" gameStatus:::", gameStatus);
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
   const storytellerId = useSelector(selectStorytellerId(gameId));
@@ -131,9 +127,7 @@ export default function Hand({
   // );
 
   const returnToHand = useCallback(() => {
-    console.log("returnToHand");
     const updatedGame = { ...currentGame, isFirstTurn: false };
-    dispatch(setIsShowMask({ gameId, playerId, isShow: false }));
 
     socket.emit("gameUpdateFirstTurn", { updatedGame }, response => {
       if (response?.error) {
@@ -142,7 +136,7 @@ export default function Hand({
     });
 
     // dispatch(setSelectedCardId(null));
-  }, [currentGame, dispatch, gameId, playerId]);
+  }, [currentGame]);
 
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
@@ -229,13 +223,6 @@ export default function Hand({
     ],
   );
 
-  useEffect(() => {
-    if (isShowMask) {
-      setIsCarouselModeHandScreen(false);
-      console.log(" useEffect >> isShowMask:::", isShowMask);
-    }
-  }, [isShowMask, setIsCarouselModeHandScreen]);
-
   // reInit for emblaApiCardsGuess
   useEffect(() => {
     if (!emblaApiCardsGuess) return;
@@ -277,12 +264,10 @@ export default function Hand({
     if (!isActiveScreen) return;
 
     if (isCarouselModeHandScreen) {
-      console.log("Carousel Mode");
+      console.log("it is isCarouselModeHandScreen");
       const activeCard = playerHand[activeCardIdx];
-
       if (!activeCard) {
         console.log("error: card not found");
-        Notify.failure("error: card not found");
         return;
       }
 
@@ -319,48 +304,54 @@ export default function Hand({
                 firstGuessCardSet._id === activeCard._id);
       };
 
+      if (gameStatus === LOBBY) {
+      } else if (gameStatus === GUESSING) {
+      }
       setMiddleButton(
         <>
           <Button btnText="<" onClick={exitCarouselMode} />
 
-          {/* <div style={{ display: "flex", flexDirection: "row" }}> */}
-          {!isCurrentPlayerStoryteller && (
-            <>
-              <Button
-                btnText={gameStatus === LOBBY ? "Select card" : "Choose card"}
-                onClick={() => toggleCardSelection("firstGuessCardSet")}
-                disabled={isDisabledFirstBtn() || isCurrentPlayerGuessed}
-                btnStyle={["btnFlexGrow"]}
-                localClassName={
-                  (firstGuessCardSet || selectedCardId) && css.btnActive
-                }></Button>
-
-              {!playersMoreThanThree && (
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {!isCurrentPlayerStoryteller && (
+              <>
                 <Button
-                  onClick={() => toggleCardSelection("secondGuessCardSet")}
-                  disabled={isDisabledSecondBtn() || isCurrentPlayerGuessed}
-                  localClassName={secondGuessCardSet && css.btnActive}>
-                  <MdOutlineStarOutline
-                    style={{ width: "20px", height: "20px" }}
-                  />
+                  btnText={gameStatus === LOBBY ? "Select card" : "Choose card"}
+                  onClick={() => toggleCardSelection("firstGuessCardSet")}
+                  disabled={isDisabledFirstBtn() || isCurrentPlayerGuessed}
+                  btnStyle={["btnFlexGrow"]}
+                  localClassName={
+                    (firstGuessCardSet || selectedCardId) && css.btnActive
+                  }>
+                  {/* {gameStatus === LOBBY ? (
+                    <MdCheck style={{ width: "20px", height: "20px" }} />
+                  ) : (
+                    <MdOutlineStarOutline
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  )} */}
                 </Button>
-              )}
-            </>
-          )}
-          {/* </div> */}
+
+                {!playersMoreThanThree && (
+                  <Button
+                    onClick={() => toggleCardSelection("secondGuessCardSet")}
+                    disabled={isDisabledSecondBtn() || isCurrentPlayerGuessed}
+                    localClassName={secondGuessCardSet && css.btnActive}>
+                    <MdOutlineStarOutline
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
         </>,
       );
-    } else {
-      console.log("Non Carousel Mode");
-
-      if (isShowMask) {
-        console.log("isShowMask");
-        if (isCurrentPlayerStoryteller) {
-          console.log("returnToHand() for isCurrentPlayerStoryteller ");
-          returnToHand(); // для сторітеллера екран-маска автоматично закривається
-        } else {
-          console.log("set Mask for other players");
-          // Для інших гравців показується екран-маска, та кнопка закриття маски:
+    } else if (isShowMask) {
+      console.log("it is isShowMask");
+      // Логіка якщо це не карусель-режим і одразу після першого ходу, то треба показати екран-маску:
+      isCurrentPlayerStoryteller
+        ? returnToHand() // для сторітеллера екран-маска автоматично закривається
+        : // Для інших гравців показується екран-маска, та кнопка закриття маски:
           setMiddleButton(
             <Button
               btnStyle={["btnFlexGrow"]}
@@ -368,9 +359,32 @@ export default function Hand({
               onClick={returnToHand}
             />,
           );
-        }
-      } else if (isCurrentPlayerHost && isReadyToVote) {
-        console.log("це хост і всі обрали карти - готові до голосування");
+    } else if (isCurrentPlayerStoryteller && !isCurrentPlayerHost) {
+      console.log(
+        "it is storyteller and he is not host: isCurrentPlayerStoryteller && !isCurrentPlayerHost",
+      );
+      // Якщо це сторітеллер
+      setMiddleButton(null); // Очищаємо кнопку для сторітеллера, бо він карту вже скинув
+    } else if (gameStatus === LOBBY) {
+      console.log("this is gameStatus === LOBBY");
+      // if (!isCurrentPlayerStoryteller) {
+      setMiddleButton(
+        <Button
+          btnStyle={["btnFlexGrow"]}
+          btnText={"Tell your story"}
+          onClick={handleStory}
+          disabled={!selectedCardId}
+        />,
+      );
+      // }
+    } else if (gameStatus === GUESSING) {
+      console.log("this is gameStatus === GUESSING");
+      // Якщо це не карусель, але вже і не перший хід (закрита екран-маска)
+      if (isCurrentPlayerHost && isReadyToVote) {
+        // Якщо це ведучий:
+        console.log(
+          "this is gameStatus === GUESSING and current player is host and all players guessed",
+        );
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -379,8 +393,33 @@ export default function Hand({
             disabled={isStartVotingDisabled}
           />,
         );
-      } else if (isCurrentPlayerHost && isReadyToCalculatePoints) {
-        console.log("це хост і всі обрали проголосували - можна рахувати бали");
+      }
+      // Якщо це не сторітеллер, то вгадують (скидують) карту (чи дві, якщо гравців троє)
+      // if (!isCurrentPlayerStoryteller) {
+      else if (!isCurrentPlayerGuessed) {
+        console.log("payer still not guessed when gameStatus === GUESSING");
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Guess story"}
+            onClick={handleStory}
+            disabled={!isCanGuess || isCurrentPlayerGuessed}
+          />,
+        );
+      } else {
+        console.log(
+          "this is gameStatus === GUESSING, and player already guessed ",
+        );
+        setMiddleButton(null);
+      }
+      // }
+    } else if (gameStatus === VOTING) {
+      console.log("it is gameStatus === VOTING");
+      if (isCurrentPlayerHost && isReadyToCalculatePoints) {
+        console.log(
+          "it is gameStatus === VOTING and current player is host and all players already voted",
+        );
+        // Якщо це ведучий:
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -388,42 +427,10 @@ export default function Hand({
             onClick={finishRound}
           />,
         );
-      } else {
-        if (isCurrentPlayerStoryteller) {
-          console.log("встановлюю кнопку в нуль для сторітелера");
-          setMiddleButton(null);
-        } else {
-          if (gameStatus === LOBBY) {
-            console.log(
-              "блок для gameStatus LOBBY - встановити кнопку tell your story",
-            );
-            setMiddleButton(
-              <Button
-                btnStyle={["btnFlexGrow"]}
-                btnText={"Tell your story"}
-                onClick={handleStory}
-                disabled={!selectedCardId}
-              />,
-            );
-          }
-
-          if (gameStatus === GUESSING) {
-            console.log("блок для gameStatus GUESSING");
-
-            if (!isCurrentPlayerGuessed) {
-              console.log("GUESSING player not guessed");
-              setMiddleButton(
-                <Button
-                  btnStyle={["btnFlexGrow"]}
-                  btnText={"Guess story"}
-                  onClick={handleStory}
-                  disabled={!isCanGuess || isCurrentPlayerGuessed}
-                />,
-              );
-            }
-          }
-        }
       }
+    } else {
+      console.log("set middle btn to null");
+      setMiddleButton(null);
     }
   }, [
     activeCardIdx,
@@ -485,6 +492,8 @@ export default function Hand({
     );
   }
 
+  if (ROUND_RESULTS) {
+  }
   return (
     <>
       <p>Hand</p>

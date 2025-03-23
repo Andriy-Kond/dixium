@@ -42,6 +42,7 @@ export const localPersonalSlice = createSlice({
 
     setIsShowMask(state, action) {
       const { gameId, playerId, isShow } = action.payload;
+      console.log(" setIsShowMask >> isShow:::", isShow);
       const key = `${gameId}_${playerId}`;
       state.isShowMask[key] = isShow;
     },
