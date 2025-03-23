@@ -8,6 +8,7 @@ import {
   selectGameStatus,
   selectIsFirstTurn,
   selectPlayerHand,
+  selectSelectedCardId,
   selectStorytellerId,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -15,15 +16,17 @@ import { useCallback } from "react";
 import { Notify } from "notiflix";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
 
-export const useTellStory = (gameId, selectedCardId) => {
+export const useTellStory = gameId => {
   const currentGame = useSelector(selectGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
-  const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
+  const { _id: playerId } = userCredentials;
+  const playerHand = useSelector(selectPlayerHand(gameId, playerId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
   const gameStatus = useSelector(selectGameStatus(gameId));
+  const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
 
   const tellStory = useCallback(() => {
     if (!selectedCardId) {
@@ -46,14 +49,14 @@ export const useTellStory = (gameId, selectedCardId) => {
         playerHand,
         movedCards: [movedCard],
         cardsOnTable,
-        userId: userCredentials._id,
+        userId: playerId,
         gamePlayers,
         isStoryteller: true,
       });
 
       const updatedGame = {
         ...currentGame,
-        storytellerId: userCredentials._id,
+        storytellerId: playerId,
         gameStatus: GUESSING,
         cardsOnTable: updatedCardsOnTable,
         players: updatedPlayers,
@@ -74,7 +77,7 @@ export const useTellStory = (gameId, selectedCardId) => {
     isFirstTurn,
     playerHand,
     selectedCardId,
-    userCredentials._id,
+    playerId,
   ]);
 
   return tellStory;

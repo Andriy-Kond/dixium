@@ -1,5 +1,7 @@
+import { MdOutlineStarOutline, MdOutlineStar, MdCheck } from "react-icons/md";
+
 import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
 import socket from "services/socket.js";
@@ -12,6 +14,7 @@ import {
   selectIsShowMask,
   selectIsSingleCardMode,
   selectPlayerHand,
+  selectSelectedCardId,
   selectStorytellerId,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -29,7 +32,7 @@ import css from "./Hand.module.scss";
 import { useTellStory } from "hooks/useTellStory.js";
 import { useGuess } from "hooks/useGuess.js";
 import { Notify } from "notiflix";
-import { MdOutlineStarOutline } from "react-icons/md";
+import { setSelectedCardId } from "redux/game/localPersonalSlice.js";
 
 export default function Hand({
   isActiveScreen,
@@ -39,21 +42,21 @@ export default function Hand({
   startVoting,
   finishRound,
 }) {
+  const dispatch = useDispatch();
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
-
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
   const storytellerId = useSelector(selectStorytellerId(gameId));
-
   const playerHand = useSelector(selectPlayerHand(gameId, playerId));
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
+  const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
 
-  const [selectedCardId, setSelectedCardId] = useState(null); // for first story(teller) mode
+  // const [selectedCardId, setSelectedCardId] = useState(null); // for first story(teller) mode
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
   const [cardsSet, setCardsSet] = useState({
@@ -96,7 +99,8 @@ export default function Hand({
     ? "You have told your story. Waiting for other players to choose their associations"
     : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
-  const tellStory = useTellStory(gameId, selectedCardId);
+  // const tellStory = useTellStory(gameId, selectedCardId);
+  const tellStory = useTellStory(gameId);
   const guessStory = useGuess(gameId, cardsSet);
   const [emblaRefCardsGuess, emblaApiCardsGuess] = useEmblaCarousel({
     loop: true,
@@ -105,15 +109,22 @@ export default function Hand({
     watchDrag: isCarouselModeHandScreen,
   });
 
+  const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
+  const currentCard = playerHand[currentCardIndex];
+
   const handleStory = useCallback(() => {
     console.log("handleStory");
     gameStatus === GUESSING ? guessStory() : tellStory();
+
     setCardsSet({ firstGuessCardSet: null, secondGuessCardSet: null }); // не обов'язково
-    setSelectedCardId(null); // clear
+    // dispatch(setSelectedCardId(null)); // clear
   }, [gameStatus, guessStory, tellStory]);
 
-  const onSelectCard = cardId =>
-    setSelectedCardId(cardId === selectedCardId ? null : cardId);
+  // const onSelectCard = useCallback(
+  //   cardId =>
+  //     dispatch(setSelectedCardId(cardId === selectedCardId ? null : cardId)),
+  //   [dispatch, selectedCardId],
+  // );
 
   const returnToHand = useCallback(() => {
     const updatedGame = { ...currentGame, isFirstTurn: false };
@@ -124,7 +135,7 @@ export default function Hand({
       }
     });
 
-    setSelectedCardId(null);
+    // dispatch(setSelectedCardId(null));
   }, [currentGame]);
 
   const carouselModeOn = idx => {
@@ -144,44 +155,72 @@ export default function Hand({
     btnKey => {
       if (isSingleCardMode && btnKey === "secondGuessCardSet") {
         console.log("error: only one card allowed");
+        Notify.failure("error: only one card allowed");
         return;
       }
 
-      const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
-      const currentCard = playerHand[currentCardIndex];
+      // const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
+      // const currentCard = playerHand[currentCardIndex];
 
       if (!currentCard) {
         console.log("error: card not found");
+        Notify.failure("error: card not found");
         return;
       }
 
-      setCardsSet(prev => {
-        const isSelected =
-          prev.firstGuessCardSet?._id === currentCard._id ||
-          prev.secondGuessCardSet?._id === currentCard._id;
+      if (gameStatus === GUESSING) {
+        console.log("gameStatus === GUESSING");
+        // Встановлення локального стану карток:
+        setCardsSet(prev => {
+          const isSelected =
+            prev.firstGuessCardSet?._id === currentCard._id ||
+            prev.secondGuessCardSet?._id === currentCard._id;
 
-        if (isSelected && prev[btnKey]?._id === currentCard._id)
-          return { ...prev, [btnKey]: null };
+          if (isSelected && prev[btnKey]?._id === currentCard._id)
+            return { ...prev, [btnKey]: null };
 
-        const otherCard =
-          btnKey === "firstGuessCardSet"
-            ? prev.secondGuessCardSet
-            : prev.firstGuessCardSet;
+          const otherCard =
+            btnKey === "firstGuessCardSet"
+              ? prev.secondGuessCardSet
+              : prev.firstGuessCardSet;
 
-        if (!prev.firstGuessCardSet || !prev.secondGuessCardSet) {
-          if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
-            Notify.failure("error: cards must be different");
-            console.log("error: cards must be different");
-            return prev;
+          // Якщо картки не обрані
+          if (!prev.firstGuessCardSet || !prev.secondGuessCardSet) {
+            // Коли гравців троє, то в комірках мають бути різні карти:
+            if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
+              Notify.failure("error: cards must be different");
+              console.log("error: cards must be different");
+              return prev;
+            }
+
+            return { ...prev, [btnKey]: currentCard };
           }
 
-          return { ...prev, [btnKey]: currentCard };
-        }
+          return prev; // Якщо обидва слоти зайняті іншими картами
+        });
+      } else if (gameStatus === LOBBY) {
+        dispatch(
+          setSelectedCardId({
+            gameId,
+            playerId,
+            selectedCardId:
+              currentCard._id === selectedCardId ? null : currentCard._id,
+          }),
+        );
 
-        return prev; // Якщо обидва слоти зайняті іншими картами
-      });
+        // onSelectCard(currentCard._id);
+      }
     },
-    [emblaApiCardsGuess, isSingleCardMode, playerHand, playersMoreThanThree],
+    [
+      currentCard,
+      dispatch,
+      gameId,
+      gameStatus,
+      isSingleCardMode,
+      playerId,
+      playersMoreThanThree,
+      selectedCardId,
+    ],
   );
 
   // reInit for emblaApiCardsGuess
@@ -193,10 +232,10 @@ export default function Hand({
     });
   }, [emblaApiCardsGuess, isCarouselModeHandScreen]);
 
-  // ??
-  useEffect(() => {
-    if (gameStatus === GUESSING) setSelectedCardId(null); // todo перевірити чи потрібно ще?
-  }, [gameStatus]);
+  // // ??
+  // useEffect(() => {
+  //   if (gameStatus === GUESSING) dispatch(setSelectedCardId(null)); // todo перевірити чи потрібно ще?
+  // }, [dispatch, gameStatus]);
 
   // Get active card's index
   useEffect(() => {
@@ -232,12 +271,36 @@ export default function Hand({
         return;
       }
 
-      const isDisabledFirstBtn = playersMoreThanThree
-        ? firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
-        : (firstGuessCardSet && firstGuessCardSet._id !== activeCard._id) ||
-          (!firstGuessCardSet &&
-            secondGuessCardSet &&
-            secondGuessCardSet._id === activeCard._id);
+      const isDisabledFirstBtn = () => {
+        if (gameStatus === LOBBY) {
+          // const currentCardIndex =
+          //   emblaApiCardsGuess?.selectedScrollSnap() || 0;
+          // const currentCard = playerHand[currentCardIndex];
+
+          return selectedCardId && selectedCardId !== currentCard._id;
+        }
+
+        if (gameStatus === GUESSING) {
+          if (playersMoreThanThree) {
+            return (
+              firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
+            );
+          } else
+            return (
+              (firstGuessCardSet && firstGuessCardSet._id !== activeCard._id) ||
+              (!firstGuessCardSet &&
+                secondGuessCardSet &&
+                secondGuessCardSet._id === activeCard._id)
+            );
+        }
+      };
+
+      // const isDisabledFirstBtn = playersMoreThanThree
+      //   ? firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
+      //   : (firstGuessCardSet && firstGuessCardSet._id !== activeCard._id) ||
+      //     (!firstGuessCardSet &&
+      //       secondGuessCardSet &&
+      //       secondGuessCardSet._id === activeCard._id);
 
       const isDisabledSecondBtn = playersMoreThanThree
         ? secondGuessCardSet && secondGuessCardSet._id !== activeCard._id
@@ -256,9 +319,12 @@ export default function Hand({
                 <Button
                   btnText="★1"
                   onClick={() => toggleCardSelection("firstGuessCardSet")}
-                  disabled={isDisabledFirstBtn || isCurrentPlayerGuessed}
-                  localClassName={firstGuessCardSet && css.btnActive}
+                  disabled={isDisabledFirstBtn() || isCurrentPlayerGuessed}
+                  localClassName={
+                    (firstGuessCardSet || selectedCardId) && css.btnActive
+                  }
                 />
+
                 {!playersMoreThanThree && (
                   <Button
                     btnText="★2"
@@ -299,7 +365,7 @@ export default function Hand({
           btnStyle={["btnFlexGrow"]}
           btnText={"Tell your story"}
           onClick={handleStory}
-          disabled={!selectedCardId}
+          // disabled={!selectedCardId}
         />,
       );
       // }
@@ -360,6 +426,8 @@ export default function Hand({
     }
   }, [
     activeCardIdx,
+    currentCard._id,
+    emblaApiCardsGuess,
     exitCarouselMode,
     finishRound,
     firstGuessCardSet,
@@ -389,10 +457,17 @@ export default function Hand({
   const getStarMarksByCardId = cardId => {
     const marks = [];
 
-    if (firstGuessCardSet?._id === cardId)
-      marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
-    if (secondGuessCardSet?._id === cardId)
-      marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+    if (gameStatus === LOBBY) {
+      if (selectedCardId === cardId) {
+        marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+      }
+    } else {
+      if (firstGuessCardSet?._id === cardId)
+        marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+      if (secondGuessCardSet?._id === cardId)
+        marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+    }
+
     return marks;
   };
 
@@ -417,24 +492,28 @@ export default function Hand({
       {isCarouselModeHandScreen ? (
         <div className={css.carouselWrapper} ref={emblaRefCardsGuess}>
           <ul className={css.carouselContainer}>
-            {playerHand.map(card => (
-              <li className={css.carouselSlide} key={card._id}>
-                <img
-                  src={card.url}
-                  alt="card"
-                  className={`${css.carouselImage} ${
-                    isMountedCarousel ? css.visible : ""
-                  }`}
-                />
-                <div className={css.checkboxContainer}>
-                  {getStarMarksByCardId(card._id).map((mark, index) => (
-                    <span key={index} className={css.carouselCheckbox}>
-                      {mark}
-                    </span>
-                  ))}
-                </div>
-              </li>
-            ))}
+            {playerHand.map(card => {
+              const marks = getStarMarksByCardId(card._id);
+
+              return (
+                <li className={css.carouselSlide} key={card._id}>
+                  <img
+                    src={card.url}
+                    alt="card"
+                    className={`${css.carouselImage} ${
+                      isMountedCarousel ? css.visible : ""
+                    }`}
+                  />
+                  <div className={css.checkboxContainer}>
+                    {marks.map((mark, index) => (
+                      <span key={index} className={css.carouselCheckbox}>
+                        {mark}
+                      </span>
+                    ))}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : (
@@ -445,16 +524,19 @@ export default function Hand({
                 className={css.card}
                 key={card._id}
                 onClick={
-                  gameStatus === GUESSING
-                    ? () => carouselModeOn(idx)
-                    : () => onSelectCard(card._id)
+                  () => carouselModeOn(idx)
+                  // gameStatus === GUESSING
+                  // ? () => carouselModeOn(idx)
+                  // : () => onSelectCard(card._id)
                 }>
                 <img
-                  className={`${css.img} ${
-                    selectedCardId &&
-                    selectedCardId !== card._id &&
-                    css.imgInactive
-                  }`}
+                  className={
+                    `${css.img}`
+                    //  ${
+                    // selectedCardId &&
+                    // selectedCardId !== card._id &&
+                    // css.imgInactive }
+                  }
                   src={card.url}
                   alt="card"
                 />

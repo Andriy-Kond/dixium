@@ -6,6 +6,7 @@ const initialState = {
   screens: {}, // Об’єкт виду { "gameId_playerId": screen }
   isShowMask: {}, // Об’єкт виду { "gameId_playerId": Boolean }
   votes: {}, // {"gameId_playerId": {firstVotedCardId: null, secondVotedCardId: null}}
+  selectedCardId: {},
 };
 
 export const localPersonalSlice = createSlice({
@@ -61,12 +62,21 @@ export const localPersonalSlice = createSlice({
     updateVotesLocal: (state, action) => {
       const { gameId, playerId, firstVotedCardId, secondVotedCardId } =
         action.payload;
-      console.log("  action.payload:::", action.payload);
+
       const key = `${gameId}_${playerId}`;
+
       state.votes[key] = {
         firstVotedCardId,
         secondVotedCardId,
       };
+    },
+
+    setSelectedCardId: (state, action) => {
+      const { gameId, playerId, selectedCardId } = action.payload;
+
+      const key = `${gameId}_${playerId}`;
+
+      state.selectedCardId[key] = selectedCardId;
     },
   },
 });
@@ -90,4 +100,5 @@ export const {
   setVotesLocal,
   resetVotesLocal,
   updateVotesLocal,
+  setSelectedCardId,
 } = localPersonalSlice.actions;

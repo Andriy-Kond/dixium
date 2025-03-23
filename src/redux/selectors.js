@@ -31,6 +31,15 @@ export const selectVotesLocal = (gameId, playerId) => state => {
   return votes !== undefined ? votes : defaultVotes;
 };
 
+export const selectSelectedCardId = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+
+  const selectedCardId = state.localPersonalSlice.selectedCardId[key];
+  console.log(" selectedCardId:::", selectedCardId);
+
+  return selectedCardId || null;
+};
+
 // gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
