@@ -1,3 +1,4 @@
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MdOutlineStarOutline, MdOutlineStar } from "react-icons/md";
 
 import useEmblaCarousel from "embla-carousel-react";
@@ -23,6 +24,7 @@ import { useVote } from "hooks/useVote.js";
 import css from "./Table.module.scss";
 import { updateVotesLocal } from "redux/game/localPersonalSlice.js";
 import { capitalizeWords } from "utils/game/capitalizeWords.js";
+import LocalModal from "common/components/LocalModal";
 
 export default function Table({
   isActiveScreen,
@@ -31,6 +33,8 @@ export default function Table({
   setIsCarouselModeTableScreen,
   startVoting,
   finishRound,
+  toggleZoomCardId,
+  setToggleZoomCardId,
 }) {
   const dispatch = useDispatch();
   const userCredentials = useSelector(selectUserCredentials);
@@ -167,6 +171,18 @@ export default function Table({
     ],
   );
 
+  const showCard = cardId => {
+    setToggleZoomCardId(cardId);
+  };
+
+  const closeCard = useCallback(() => {
+    setToggleZoomCardId(null);
+  }, [setToggleZoomCardId]);
+
+  const toggleZoomCard = roundResults.find(
+    result => result.cardId === toggleZoomCardId,
+  );
+
   // reInit for emblaApiCardsVote
   useEffect(() => {
     if (!emblaApiCardsVote) return;
@@ -291,6 +307,9 @@ export default function Table({
         !isCanVote
       )
         setMiddleButton(null);
+    } else if (gameStatus === ROUND_RESULTS && toggleZoomCard) {
+      console.log("ROUND_RESULTS && toggleZoomCard");
+      setMiddleButton(<Button btnText="Back" onClick={() => closeCard()} />);
     } else setMiddleButton(null);
   }, [
     activeCardIdx,
@@ -316,6 +335,8 @@ export default function Table({
     storytellerId,
     toggleCardSelection,
     playerId,
+    toggleZoomCard,
+    closeCard,
   ]);
 
   const getStarsMarksByVoteCount = voteCount => {
@@ -413,35 +434,52 @@ export default function Table({
       <>
         <p>Table gameStatus === ROUND_RESULTS</p>
 
-        <ul className={css.resultList}>
-          {roundResults.map(result => (
-            <li className={css.resultItem} key={result.cardId}>
-              <img className={css.resultImg} src={result.url} alt="card" />
-              <div className={css.resultPlayers}>
-                <span>
-                  {result.ownerId === storytellerId
-                    ? `Storyteller ${result.ownerName.toUpperCase()} guessed the card:`
-                    : `${result.ownerName.toUpperCase()}'s card`}
-                </span>
+        {toggleZoomCard ? (
+          <LocalModal toggleModal={closeCard}>
+            <TransformWrapper
+              initialScale={1}
+              minScale={0.5}
+              maxScale={5}
+              panning={{ velocityDisabled: true }}>
+              <TransformComponent>
+                <img src={toggleZoomCard.url} alt="enlarged card" />
+              </TransformComponent>
+            </TransformWrapper>
+          </LocalModal>
+        ) : (
+          <ul className={css.resultList}>
+            {roundResults.map(result => (
+              <li
+                className={css.resultItem}
+                key={result.cardId}
+                onClick={() => showCard(result.cardId)}>
+                <img className={css.resultImg} src={result.url} alt="card" />
+                <div className={css.resultPlayers}>
+                  <span>
+                    {result.ownerId === storytellerId
+                      ? `Storyteller ${result.ownerName.toUpperCase()} guessed the card:`
+                      : `${result.ownerName.toUpperCase()}'s card`}
+                  </span>
 
-                <ul className={css.resultVotes}>
-                  {result.votesForThisCard.map((vote, voteIdx) => (
-                    <li className={css.voterContainer} key={voteIdx}>
-                      {capitalizeWords(vote.playerName)}
-                      <div className={css.resultCheckboxContainer}>
-                        {getStarsMarksByVoteCount(vote.voteCount).map(
-                          (mark, index) => (
-                            <span key={index}>{mark}</span>
-                          ),
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  <ul className={css.resultVotes}>
+                    {result.votesForThisCard.map((vote, voteIdx) => (
+                      <li className={css.voterContainer} key={voteIdx}>
+                        {capitalizeWords(vote.playerName)}
+                        <div className={css.resultCheckboxContainer}>
+                          {getStarsMarksByVoteCount(vote.voteCount).map(
+                            (mark, index) => (
+                              <span key={index}>{mark}</span>
+                            ),
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </>
     );
   } else {

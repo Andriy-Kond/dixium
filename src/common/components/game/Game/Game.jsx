@@ -61,6 +61,8 @@ export default function Game() {
   const [isCarouselModeTableScreen, setIsCarouselModeTableScreen] =
     useState(false);
 
+  const [toggleZoomCardId, setToggleZoomCardId] = useState(null); // for zoom card in modal window
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     align: "start", // Вирівнювання слайдів:
@@ -72,7 +74,11 @@ export default function Game() {
     // duration: 30, // Швидкість анімації прокручування (не в мілісекундах, а в умовних одиницях, рекомендовано 20–60)
     // skipSnaps: false, // Дозволяє пропускати слайди при сильному свайпі якщо true
     // startIndex: activeScreen, // Початковий індекс береться з Redux (!не працюють стилі слайдінгу)
-    watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen), // дозвіл на слайдінг при цій умові
+    watchDrag: !(
+      isCarouselModeHandScreen ||
+      isCarouselModeTableScreen ||
+      middleButton
+    ), // дозвіл на слайдінг при цій умові
     // isCarouselModeHandScreen || isCarouselModeTableScreen
     //   ? ""
     //   : "is-draggable",
@@ -155,9 +161,18 @@ export default function Game() {
   useEffect(() => {
     if (emblaApi)
       emblaApi.reInit({
-        watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen),
+        watchDrag: !(
+          isCarouselModeHandScreen ||
+          isCarouselModeTableScreen ||
+          middleButton
+        ),
       });
-  }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
+  }, [
+    emblaApi,
+    isCarouselModeHandScreen,
+    isCarouselModeTableScreen,
+    middleButton,
+  ]);
 
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
@@ -182,7 +197,12 @@ export default function Game() {
   // KB events handler
   useEffect(() => {
     const handleKeyPress = event => {
-      if (!emblaApi || isCarouselModeHandScreen || isCarouselModeTableScreen)
+      if (
+        !emblaApi ||
+        isCarouselModeHandScreen ||
+        isCarouselModeTableScreen ||
+        middleButton
+      )
         return;
 
       if (event.key === "ArrowLeft") {
@@ -193,7 +213,12 @@ export default function Game() {
     };
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
+  }, [
+    emblaApi,
+    isCarouselModeHandScreen,
+    isCarouselModeTableScreen,
+    middleButton,
+  ]);
 
   return (
     <div className={css.gameContainer}>
@@ -214,6 +239,8 @@ export default function Game() {
                 setIsCarouselModeTableScreen,
                 finishRound,
                 startVoting,
+                toggleZoomCardId,
+                setToggleZoomCardId,
               })}
             </li>
           ))}
@@ -226,7 +253,11 @@ export default function Game() {
         onPrevScreen={prevScreen}
         onNextScreen={nextScreen}
         middleButton={middleButton}
-        sidesButtons={!isCarouselModeHandScreen && !isCarouselModeTableScreen}
+        isShowSidesBtns={
+          !isCarouselModeHandScreen &&
+          !isCarouselModeTableScreen &&
+          !toggleZoomCardId
+        }
       />
     </div>
   );

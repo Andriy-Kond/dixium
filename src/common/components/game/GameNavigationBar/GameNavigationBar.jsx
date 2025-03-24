@@ -7,14 +7,12 @@ export default function GameNavigationBar({
   onPrevScreen,
   onNextScreen,
   middleButton,
-  sidesButtons = true,
+  isShowSidesBtns,
+  // sidesButtons = isShowSidesBtns ? isShowSidesBtns : true,
 }) {
-  // console.log("GameNavigationBar >> activeScreen:::", activeScreen);
-  // console.log("GameNavigationBar >> middleButton:::", middleButton);
-
   return (
     <div className={css.bottomBar}>
-      {sidesButtons && (
+      {isShowSidesBtns && (
         <Button
           btnText={"<"}
           onClick={onPrevScreen}
@@ -25,7 +23,7 @@ export default function GameNavigationBar({
 
       {middleButton || <span>{`${activeScreen + 1} / ${screensLength}`}</span>}
 
-      {sidesButtons && (
+      {isShowSidesBtns && (
         <Button
           btnText={">"}
           onClick={onNextScreen}

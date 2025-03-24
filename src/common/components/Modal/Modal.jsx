@@ -13,7 +13,6 @@ export default function Modal({ children, toggleModal }) {
     };
 
     window.addEventListener("keydown", handleKeydownEsc);
-
     return () => {
       window.removeEventListener("keydown", handleKeydownEsc);
     };
@@ -32,9 +31,9 @@ export default function Modal({ children, toggleModal }) {
     <div className={css.backdrop} onClick={handleBackdropClick}>
       <div className={css.modalWindow}>
         {children}
-        <button type="button" onClick={toggleModal}>
+        {/* <button type="button" onClick={toggleModal}>
           Close modal
-        </button>
+        </button> */}
       </div>
     </div>,
     modalPortal,
