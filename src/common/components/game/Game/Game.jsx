@@ -50,6 +50,7 @@ export default function Game() {
   const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
 
   const [middleButton, setMiddleButton] = useState(null);
+  const [toggleZoomCardId, setToggleZoomCardId] = useState(null); // for zoom card in modal window
 
   const stabilizedSetMiddleButton = useCallback(value => {
     setMiddleButton(value);
@@ -60,8 +61,6 @@ export default function Game() {
 
   const [isCarouselModeTableScreen, setIsCarouselModeTableScreen] =
     useState(false);
-
-  const [toggleZoomCardId, setToggleZoomCardId] = useState(null); // for zoom card in modal window
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -77,7 +76,7 @@ export default function Game() {
     watchDrag: !(
       isCarouselModeHandScreen ||
       isCarouselModeTableScreen ||
-      middleButton
+      toggleZoomCardId
     ), // дозвіл на слайдінг при цій умові
     // isCarouselModeHandScreen || isCarouselModeTableScreen
     //   ? ""
@@ -164,14 +163,14 @@ export default function Game() {
         watchDrag: !(
           isCarouselModeHandScreen ||
           isCarouselModeTableScreen ||
-          middleButton
+          toggleZoomCardId
         ),
       });
   }, [
     emblaApi,
     isCarouselModeHandScreen,
     isCarouselModeTableScreen,
-    middleButton,
+    toggleZoomCardId,
   ]);
 
   // Синхронізація activeScreen з Embla Carousel
@@ -201,7 +200,7 @@ export default function Game() {
         !emblaApi ||
         isCarouselModeHandScreen ||
         isCarouselModeTableScreen ||
-        middleButton
+        toggleZoomCardId
       )
         return;
 
@@ -217,7 +216,7 @@ export default function Game() {
     emblaApi,
     isCarouselModeHandScreen,
     isCarouselModeTableScreen,
-    middleButton,
+    toggleZoomCardId,
   ]);
 
   return (
@@ -225,11 +224,13 @@ export default function Game() {
       <p>Game</p>
 
       <div
-        className={`${css.swipeWrapper} ${!isEmblaReady && css.visuallyHidden}`}
+        className={`${css.screenCarouselWrapper} ${
+          !isEmblaReady && css.visuallyHidden
+        }`}
         ref={emblaRef}>
-        <ul className={css.screenWrapper}>
+        <ul className={css.screenCarouselContainer}>
           {screens.map((screen, index) => (
-            <li className={css.screenContainer} key={index}>
+            <li className={css.screenCarouselSlide} key={index}>
               {cloneElement(screen, {
                 isActiveScreen: activeScreen === index,
                 setMiddleButton: stabilizedSetMiddleButton,

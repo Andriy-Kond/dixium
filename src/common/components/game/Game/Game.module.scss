@@ -6,23 +6,27 @@
   flex-direction: column;
 }
 
-.swipeWrapper {
+.screenCarouselWrapper {
   display: flex;
   flex-grow: 1;
-  overflow: hidden; // ?
+  overflow: hidden;
 }
 
-.screenWrapper {
+.screenCarouselContainer {
   width: 100%;
   display: flex;
 }
 
-.screenContainer {
+.screenCarouselSlide {
   position: relative; // for table LocalModal
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding-left: 2px;
+  padding-right: 2px;
+  flex-basis: 100%;
   display: flex;
   flex-direction: column;
   height: 100%;
-  flex: 0 0 100%;
 }
 
 .visuallyHidden {

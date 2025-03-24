@@ -1,3 +1,5 @@
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -91,6 +93,45 @@ export default function Players({
     playerId,
   ]);
 
+  const getIconOfPlayerState = (player, playerScore) => {
+    if (!player) return;
+
+    if (gameStatus === ROUND_RESULTS) {
+      if (player._id === storytellerId) {
+        return (
+          <>
+            <FaCircle className={css.storyteller} />
+            <span
+              className={css.storytellerWrapper}
+              style={{ "--color": "#fff" }}>
+              {playerScore}
+            </span>
+          </>
+        );
+      } else {
+        return (
+          <span
+            className={css.storytellerWrapper}
+            style={{ "--color": "#5D7E9E" }}>
+            {playerScore}
+          </span>
+        );
+      }
+    } else {
+      if (player._id === storytellerId)
+        return <FaCircleCheck className={css.storyteller} />;
+      else if (
+        (gameStatus === GUESSING && !player.isGuessed) ||
+        (gameStatus === VOTING && !player.isVoted)
+      ) {
+        return (
+          // <CgSpinnerTwoAlt className={css.spin} />
+          <div className={css.waiting} />
+        );
+      } else return <FaCheck className={css.guessed} />;
+    }
+  };
+
   return (
     <>
       <p>Players</p>
@@ -115,31 +156,7 @@ export default function Players({
               </div>
 
               <div className={css.playerState}>
-                {gameStatus === ROUND_RESULTS ? (
-                  player._id === storytellerId ? (
-                    <>
-                      <FaCircle className={css.storyteller} />
-                      <span
-                        className={css.storytellerWrapper}
-                        style={{ "--color": "#fff" }}>
-                        {playerScore}
-                      </span>
-                    </>
-                  ) : (
-                    <span
-                      className={css.storytellerWrapper}
-                      style={{ "--color": "#5D7E9E" }}>
-                      {playerScore}
-                    </span>
-                  )
-                ) : !player.isGuessed ? (
-                  // <CgSpinnerTwoAlt className={css.spin} />
-                  <div className={css.waiting}></div>
-                ) : player._id === storytellerId ? (
-                  <FaCircleCheck className={css.storyteller} />
-                ) : (
-                  <FaCheck className={css.guessed} />
-                )}
+                {getIconOfPlayerState(player, playerScore)}
               </div>
             </li>
           );

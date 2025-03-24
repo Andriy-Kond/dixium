@@ -1,6 +1,8 @@
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+
 import { MdOutlineStarOutline, MdOutlineStar, MdCheck } from "react-icons/md";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
@@ -22,8 +24,9 @@ import {
 import {
   LOBBY,
   GUESSING,
-  ROUND_RESULTS,
   VOTING,
+  ROUND_RESULTS,
+  FINISHED,
 } from "utils/generals/constants.js";
 import Button from "common/components/ui/Button";
 import Mask from "../Mask/Mask.jsx";
@@ -36,6 +39,7 @@ import {
   setIsShowMask,
   setSelectedCardId,
 } from "redux/game/localPersonalSlice.js";
+import { useStartNewRound } from "hooks/useStartNewRound.js";
 
 export default function Hand({
   isActiveScreen,
@@ -44,6 +48,8 @@ export default function Hand({
   setIsCarouselModeHandScreen,
   startVoting,
   finishRound,
+  isZoomed,
+  setIsZoomed,
 }) {
   const dispatch = useDispatch();
   const { gameId } = useParams();
@@ -79,12 +85,8 @@ export default function Hand({
 
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
-  // const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-  // const isReadyToVote = gamePlayers.every(player => player.isGuessed);
-  // const isCanGuess =
-  //   playersMoreThanThree
-  //     ? !!firstGuessCardSet?._id
-  //     : !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+  const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
+  const isCurrentPlayerHost = hostPlayerId === playerId;
 
   const isCanGuess =
     playersMoreThanSix && !isSingleCardMode
@@ -95,8 +97,6 @@ export default function Hand({
     player => player._id === playerId && player.isGuessed,
   );
 
-  const isCurrentPlayerHost = hostPlayerId === playerId;
-
   const paragraphText = !storytellerId
     ? "Be the first to think of an association for one of your cards. Choose it and make a move. Tell us about your association."
     : isCurrentPlayerStoryteller
@@ -106,11 +106,13 @@ export default function Hand({
   // const tellStory = useTellStory(gameId, selectedCardId);
   const tellStory = useTellStory(gameId);
   const guessStory = useGuess(gameId, cardsSet);
+  const startNewRound = useStartNewRound(gameId);
+
   const [emblaRefCardsGuess, emblaApiCardsGuess] = useEmblaCarousel({
     loop: true,
     align: "center",
     startIndex: selectedCardIdx,
-    watchDrag: isCarouselModeHandScreen,
+    watchDrag: isCarouselModeHandScreen && !isZoomed,
   });
 
   const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
@@ -123,12 +125,6 @@ export default function Hand({
     setCardsSet({ firstGuessCardSet: null, secondGuessCardSet: null }); // не обов'язково
     // dispatch(setSelectedCardId(null)); // clear
   }, [gameStatus, guessStory, tellStory]);
-
-  // const onSelectCard = useCallback(
-  //   cardId =>
-  //     dispatch(setSelectedCardId(cardId === selectedCardId ? null : cardId)),
-  //   [dispatch, selectedCardId],
-  // );
 
   const returnToHand = useCallback(() => {
     console.log("returnToHand");
@@ -241,9 +237,9 @@ export default function Hand({
     if (!emblaApiCardsGuess) return;
 
     emblaApiCardsGuess.reInit({
-      watchDrag: isCarouselModeHandScreen,
+      watchDrag: isCarouselModeHandScreen && !isZoomed,
     });
-  }, [emblaApiCardsGuess, isCarouselModeHandScreen]);
+  }, [emblaApiCardsGuess, isCarouselModeHandScreen, isZoomed]);
 
   // // ??
   // useEffect(() => {
@@ -279,7 +275,6 @@ export default function Hand({
     if (isCarouselModeHandScreen) {
       console.log("Carousel Mode");
       const activeCard = playerHand[activeCardIdx];
-
       if (!activeCard) {
         console.log("error: card not found");
         Notify.failure("error: card not found");
@@ -287,20 +282,15 @@ export default function Hand({
       }
 
       const isDisabledFirstBtn = () => {
-        if (gameStatus === LOBBY) {
-          // const currentCardIndex =
-          //   emblaApiCardsGuess?.selectedScrollSnap() || 0;
-          // const currentCard = playerHand[currentCardIndex];
-
+        if (gameStatus === LOBBY)
           return selectedCardId && selectedCardId !== currentCard._id;
-        }
 
         if (gameStatus === GUESSING) {
-          if (playersMoreThanThree) {
+          if (playersMoreThanThree)
             return (
               firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
             );
-          } else
+          else
             return (
               (firstGuessCardSet && firstGuessCardSet._id !== activeCard._id) ||
               (!firstGuessCardSet &&
@@ -323,7 +313,6 @@ export default function Hand({
         <>
           <Button btnText="<" onClick={exitCarouselMode} />
 
-          {/* <div style={{ display: "flex", flexDirection: "row" }}> */}
           {!isCurrentPlayerStoryteller && (
             <>
               <Button
@@ -347,7 +336,6 @@ export default function Hand({
               )}
             </>
           )}
-          {/* </div> */}
         </>,
       );
     } else {
@@ -369,7 +357,11 @@ export default function Hand({
             />,
           );
         }
-      } else if (isCurrentPlayerHost && isReadyToVote) {
+      } else if (
+        isCurrentPlayerHost &&
+        isReadyToVote &&
+        gameStatus === GUESSING
+      ) {
         console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button
@@ -379,13 +371,26 @@ export default function Hand({
             disabled={isStartVotingDisabled}
           />,
         );
-      } else if (isCurrentPlayerHost && isReadyToCalculatePoints) {
+      } else if (
+        isCurrentPlayerHost &&
+        isReadyToCalculatePoints &&
+        gameStatus === VOTING
+      ) {
         console.log("це хост і всі обрали проголосували - можна рахувати бали");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
             btnText={"Finish round"}
             onClick={finishRound}
+          />,
+        );
+      } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
+        console.log("це хост і можна починати новий раунд");
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Start new round"}
+            onClick={startNewRound}
           />,
         );
       } else {
@@ -405,9 +410,7 @@ export default function Hand({
                 disabled={!selectedCardId}
               />,
             );
-          }
-
-          if (gameStatus === GUESSING) {
+          } else if (gameStatus === GUESSING) {
             console.log("блок для gameStatus GUESSING");
 
             if (!isCurrentPlayerGuessed) {
@@ -420,8 +423,10 @@ export default function Hand({
                   disabled={!isCanGuess || isCurrentPlayerGuessed}
                 />,
               );
+            } else {
+              setMiddleButton(null);
             }
-          }
+          } else setMiddleButton(null);
         }
       }
     }
@@ -441,6 +446,7 @@ export default function Hand({
     isCurrentPlayerHost,
     isCurrentPlayerStoryteller,
     isReadyToCalculatePoints,
+    isReadyToStartNewRound,
     isReadyToVote,
     isShowMask,
     isStartVotingDisabled,
@@ -450,6 +456,7 @@ export default function Hand({
     secondGuessCardSet,
     selectedCardId,
     setMiddleButton,
+    startNewRound,
     startVoting,
     toggleCardSelection,
   ]);
@@ -473,6 +480,14 @@ export default function Hand({
 
     return marks;
   };
+
+  // const Controls = ({ zoomIn, zoomOut, resetTransform }) => (
+  //   <>
+  //     <button onClick={() => zoomIn()}>+</button>
+  //     <button onClick={() => zoomOut()}>-</button>
+  //     <button onClick={() => resetTransform()}>x</button>
+  //   </>
+  // );
 
   // ^Render
   if (!isCurrentPlayerStoryteller && isShowMask) {
@@ -514,8 +529,39 @@ export default function Hand({
                         isMountedCarousel ? css.visible : ""
                       }`}
                       src={card.url}
-                      alt="card"
+                      alt="enlarged card"
                     />
+                    {/* <TransformWrapper
+                      maxScale={5}
+                      panning={{ velocityDisabled: true, disabled: !isZoomed }}
+                      onTransformed={({ state }) =>
+                        setIsZoomed(state.scale > 1)
+                      }>
+                      {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
+                        return (
+                          <div className={css.zoomCardWrapper}>
+                            {isZoomed && (
+                              <div className={css.zoomTools}>
+                                <button onClick={() => zoomIn()}>+</button>
+                                <button onClick={() => zoomOut()}>-</button>
+                                <button onClick={() => resetTransform()}>
+                                  x
+                                </button>
+                              </div>
+                            )}
+                            <TransformComponent>
+                              <img
+                                className={`${css.carouselImage} ${
+                                  isMountedCarousel ? css.visible : ""
+                                }`}
+                                src={card.url}
+                                alt="enlarged card"
+                              />
+                            </TransformComponent>
+                          </div>
+                        );
+                      }}
+                    </TransformWrapper> */}
                   </div>
                 </li>
               );

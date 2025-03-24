@@ -25,6 +25,7 @@ import css from "./Table.module.scss";
 import { updateVotesLocal } from "redux/game/localPersonalSlice.js";
 import { capitalizeWords } from "utils/game/capitalizeWords.js";
 import LocalModal from "common/components/LocalModal";
+import { useStartNewRound } from "hooks/useStartNewRound.js";
 
 export default function Table({
   isActiveScreen,
@@ -47,22 +48,8 @@ export default function Table({
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const roundResults = useSelector(selectRoundResults(gameId));
-
-  // const votes = useSelector(selectVotes(gameId));
   const playerVotes = useSelector(selectVotesLocal(gameId, playerId));
-  // const interimVotesFromSelector = useSelector(
-  //   selectVotesLocal(gameId, playerId),
-  // );
-  // const playerVotes = useMemo(
-  //   () => interimVotesFromSelector || {},
-  //   [interimVotesFromSelector],
-  // );
   const { firstVotedCardId, secondVotedCardId } = playerVotes;
-
-  // const playerVotes = useMemo(
-  //   () => useSelector(selectVotesLocal(gameId, playerId)) || {},
-  //   [gameId, playerId],
-  // );
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
@@ -74,6 +61,8 @@ export default function Table({
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
   const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
+  const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
+  const isCurrentPlayerHost = hostPlayerId === playerId;
 
   //  Гравців === 3 - голосування за 1 карту.
   //  Гравців 3-6 - голосування за 1 карту
@@ -90,6 +79,7 @@ export default function Table({
 
   // const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
   const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
+  const startNewRound = useStartNewRound(gameId);
 
   const [emblaRefCardsVote, emblaApiCardsVote] = useEmblaCarousel({
     loop: true,
@@ -223,7 +213,7 @@ export default function Table({
     if (!isActiveScreen) return;
 
     if (isCarouselModeTableScreen) {
-      // Якщо це режим каруселі, то можна вгадувати карти на столі:
+      console.log("Carousel Mode");
       const activeCard = cardsOnTable[activeCardIdx];
       if (!activeCard) {
         console.log("error: card not found");
@@ -239,38 +229,37 @@ export default function Table({
 
       setMiddleButton(
         <>
-          <Button btnText="Back" onClick={exitCarouselMode} />
+          <Button btnText="<" onClick={exitCarouselMode} />
 
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            {!isCurrentPlayerStoryteller && (
-              <>
+          {!isCurrentPlayerStoryteller && (
+            <>
+              <Button
+                onClick={() => toggleCardSelection("firstVoteCardSet")}
+                disabled={isDisabledFirstBtn || isCurrentPlayerVoted}
+                localClassName={firstVotedCardId && css.btnActive}>
+                <MdOutlineStarOutline
+                  style={{ width: "20px", height: "20px" }}
+                />
+              </Button>
+              {playersMoreThanSix && (
                 <Button
-                  onClick={() => toggleCardSelection("firstVoteCardSet")}
-                  disabled={isDisabledFirstBtn || isCurrentPlayerVoted}
-                  localClassName={firstVotedCardId && css.btnActive}>
+                  onClick={() => toggleCardSelection("secondVoteCardSet")}
+                  disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
+                  localClassName={secondVotedCardId && css.btnActive}>
                   <MdOutlineStarOutline
                     style={{ width: "20px", height: "20px" }}
                   />
                 </Button>
-                {playersMoreThanSix && (
-                  <Button
-                    onClick={() => toggleCardSelection("secondVoteCardSet")}
-                    disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
-                    localClassName={secondVotedCardId && css.btnActive}>
-                    <MdOutlineStarOutline
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
+              )}
+            </>
+          )}
         </>,
       );
-    } // Якщо це режим "не карусель":
-    else if (gameStatus === GUESSING) {
-      if (hostPlayerId === playerId && isReadyToVote) {
-        // Якщо це ведучий:
+    } else {
+      console.log("Non Carousel Mode");
+
+      if (isCurrentPlayerHost && isReadyToVote && gameStatus === GUESSING) {
+        console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -279,10 +268,12 @@ export default function Table({
             disabled={isStartVotingDisabled}
           />,
         );
-      } else setMiddleButton(null);
-    } else if (gameStatus === VOTING) {
-      if (hostPlayerId === playerId && isReadyToCalculatePoints) {
-        // Якщо це ведучий:
+      } else if (
+        isCurrentPlayerHost &&
+        isReadyToCalculatePoints &&
+        gameStatus === VOTING
+      ) {
+        console.log("це хост і всі обрали проголосували - можна рахувати бали");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -290,27 +281,41 @@ export default function Table({
             onClick={finishRound}
           />,
         );
-      } else if (!isCurrentPlayerStoryteller && isCanVote) {
-        // Якщо це не сторітеллер і може голосувати (вже обрані карти)
+      } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
+        console.log("це хост і можна починати новий раунд");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
-            btnText={"Vote card"}
-            onClick={handleVote}
-            disabled={!isCanVote || isCurrentPlayerVoted}
+            btnText={"Start new round"}
+            onClick={startNewRound}
           />,
         );
-      } else if (
-        !storytellerId ||
-        isCurrentPlayerStoryteller ||
-        isCurrentPlayerVoted ||
-        !isCanVote
-      )
-        setMiddleButton(null);
-    } else if (gameStatus === ROUND_RESULTS && toggleZoomCard) {
-      console.log("ROUND_RESULTS && toggleZoomCard");
-      setMiddleButton(<Button btnText="Back" onClick={() => closeCard()} />);
-    } else setMiddleButton(null);
+      } else {
+        if (isCurrentPlayerStoryteller) {
+          console.log("встановлюю кнопку в нуль для сторітелера");
+          setMiddleButton(null);
+        } else if (gameStatus === VOTING) {
+          console.log("блок для gameStatus VOTING");
+
+          if (!isCurrentPlayerStoryteller) {
+            // Якщо це не сторітеллер і може голосувати (вже обрані карти)
+            setMiddleButton(
+              <Button
+                btnStyle={["btnFlexGrow"]}
+                btnText={"Vote card"}
+                onClick={handleVote}
+                disabled={!isCanVote || isCurrentPlayerVoted}
+              />,
+            );
+          } else if (gameStatus === ROUND_RESULTS && toggleZoomCard) {
+            console.log("ROUND_RESULTS && toggleZoomCard");
+            setMiddleButton(
+              <Button btnText="Back" onClick={() => closeCard()} />,
+            );
+          } else setMiddleButton(null);
+        } else setMiddleButton(null);
+      }
+    }
   }, [
     activeCardIdx,
     cardsOnTable,
@@ -337,6 +342,9 @@ export default function Table({
     playerId,
     toggleZoomCard,
     closeCard,
+    isCurrentPlayerHost,
+    isReadyToStartNewRound,
+    startNewRound,
   ]);
 
   const getStarsMarksByVoteCount = voteCount => {
@@ -436,11 +444,7 @@ export default function Table({
 
         {toggleZoomCard ? (
           <LocalModal toggleModal={closeCard}>
-            <TransformWrapper
-              initialScale={1}
-              minScale={0.5}
-              maxScale={5}
-              panning={{ velocityDisabled: true }}>
+            <TransformWrapper maxScale={5} panning={{ velocityDisabled: true }}>
               <TransformComponent>
                 <img src={toggleZoomCard.url} alt="enlarged card" />
               </TransformComponent>

@@ -140,3 +140,18 @@
   height: 100%;
   background-color: #aec2d6;
 }
+
+.zoomCardWrapper {
+  position: relative;
+}
+
+.zoomTools {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  display: flex;
+  gap: 5px;
+  font-size: 24px;
+  z-index: 1;
+}

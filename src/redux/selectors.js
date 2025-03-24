@@ -108,3 +108,11 @@ export const selectScores = gameId => state =>
 
 export const selectRoundResults = gameId => state =>
   state.gameSlice.games[gameId].roundResults;
+
+//   export const isReadyToVote = gameId => {
+//     if (selectGamePlayers(gameId).some(player => !player.isGuessed)) {
+//       return true
+//     }
+//   };
+//  export  const isReadyToCalculatePoints =() => { gamePlayers.every(player => player.isVoted);}
+//   export const isReadyToStartNewRound = () => {gameStatus === ROUND_RESULTS;}
