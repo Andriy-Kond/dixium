@@ -1,16 +1,17 @@
 import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction } from "redux/game/gameSlice.js";
+import { clearState } from "redux/game/localPersonalSlice.js";
 
-// todo: optimistic update!
 export const gameDelete = (
-  game,
+  gameId,
   message,
   dispatch,
   currentGameId,
+  playerId,
   navigate,
 ) => {
-  if (!game) {
-    throw new Error(`The game is ${game}`);
+  if (!gameId) {
+    throw new Error(`The gameId is ${gameId}`);
   }
 
   //# якщо games (draft === gameSlice.games) - це масив
@@ -23,13 +24,14 @@ export const gameDelete = (
   //# якщо games (draft === gameSlice.games) - це об'єкт
   dispatch(
     gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-      delete draft[game._id]; // Видаляємо гру за її _id
+      delete draft[gameId]; // Видаляємо гру за її _id
     }),
   );
 
   dispatch(clearActiveAction({}));
+  dispatch(clearState());
 
-  if (currentGameId === game._id) {
+  if (currentGameId === gameId) {
     navigate(`/game`, { replace: true });
   }
 };

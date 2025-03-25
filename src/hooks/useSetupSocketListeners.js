@@ -23,15 +23,13 @@ import {
   gameEntry,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
-import {
-  removeActiveScreen,
-  setActiveScreen,
-} from "redux/game/localPersonalSlice.js";
+import { setActiveScreen } from "redux/game/localPersonalSlice.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userCredentials = useSelector(selectUserCredentials);
+  const { _id: userId } = userCredentials;
   const location = useLocation();
   const match = location.pathname.match(/game\/([\w\d]+)/);
   const currentGameId = match ? match[1] : null;
@@ -53,7 +51,7 @@ export const useSetupSocketListeners = () => {
     const handleError = err => Notify.failure(err.errorMessage);
 
     const handleGameFirstTurnUpdate = ({ game }) =>
-      gameFirstTurnUpdate(game, dispatch, userCredentials._id);
+      gameFirstTurnUpdate(game, dispatch, userId);
 
     const handleGameCreateOrUpdate = ({ game }) =>
       gameCreateOrUpdate(game, dispatch);
@@ -72,35 +70,29 @@ export const useSetupSocketListeners = () => {
       );
 
     const handleGameDeleted = ({ game, message }) => {
-      gameDelete(game, message, dispatch, currentGameId, navigate);
-      dispatch(
-        removeActiveScreen({
-          gameId: game._id,
-          playerId: userCredentials._id,
-        }),
-      );
+      gameDelete(game._id, message, dispatch, currentGameId, userId, navigate);
     };
 
     const handlePlayersOrderUpdate = ({ game, message }) =>
       playersOrderUpdate(game, message, dispatch, activeActions);
 
     const handleGameRun = ({ game, message }) => {
-      gameRun(game, message, dispatch, activeActions, userCredentials._id);
+      gameRun(game, message, dispatch, activeActions, userId);
     };
 
     const handleFirstStorytellerUpdated = ({ game }) => {
-      firstStorytellerUpdated(game, dispatch, userCredentials._id);
+      firstStorytellerUpdated(game, dispatch, userId);
     };
 
     const handlePlayerGuessSuccess = ({ game }) =>
       playerGuessSuccess(game, dispatch);
 
     const handleVotingStarted = ({ game }) => {
-      votingStarted(game, dispatch, userCredentials._id);
+      votingStarted(game, dispatch, userId);
       dispatch(
         setActiveScreen({
           gameId: game._id,
-          playerId: userCredentials._id,
+          playerId: userId,
           screen: 2,
         }),
       );

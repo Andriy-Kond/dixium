@@ -257,8 +257,13 @@ export default function Table({
       );
     } else {
       console.log("Non Carousel Mode");
-
-      if (isCurrentPlayerHost && isReadyToVote && gameStatus === GUESSING) {
+      if (toggleZoomCard) {
+        setMiddleButton(<Button btnText="<" onClick={closeCard} />);
+      } else if (
+        isCurrentPlayerHost &&
+        isReadyToVote &&
+        gameStatus === GUESSING
+      ) {
         console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button

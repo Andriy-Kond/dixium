@@ -29,6 +29,7 @@ export default function Players({
   startVoting,
   finishRound,
 }) {
+  console.log(" isActiveScreen:::", isActiveScreen);
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
@@ -147,9 +148,15 @@ export default function Players({
             <li
               className={css.player}
               key={player._id}
-              style={{
-                "--fill-percentage": `${fillPercentage}%`,
-              }}>
+              style={
+                isActiveScreen
+                  ? {
+                      "--fill-percentage": `${fillPercentage}%`,
+                    }
+                  : {
+                      "--fill-percentage": `0%`,
+                    }
+              }>
               <div>
                 {player.name.toUpperCase()}
                 {hostPlayerId === player._id && " (THE HOST)"}

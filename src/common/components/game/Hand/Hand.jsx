@@ -1,8 +1,8 @@
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
-import { MdOutlineStarOutline, MdOutlineStar, MdCheck } from "react-icons/md";
+import { MdOutlineStarOutline, MdCheck } from "react-icons/md";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
@@ -26,7 +26,6 @@ import {
   GUESSING,
   VOTING,
   ROUND_RESULTS,
-  FINISHED,
 } from "utils/generals/constants.js";
 import Button from "common/components/ui/Button";
 import Mask from "../Mask/Mask.jsx";
@@ -36,8 +35,9 @@ import { useTellStory } from "hooks/useTellStory.js";
 import { useGuess } from "hooks/useGuess.js";
 import { Notify } from "notiflix";
 import {
-  setIsShowMask,
   setSelectedCardId,
+  removeSelectedCardId,
+  setIsShowMask,
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 
@@ -123,8 +123,8 @@ export default function Hand({
     gameStatus === GUESSING ? guessStory() : tellStory();
 
     setCardsSet({ firstGuessCardSet: null, secondGuessCardSet: null }); // не обов'язково
-    // dispatch(setSelectedCardId(null)); // clear
-  }, [gameStatus, guessStory, tellStory]);
+    dispatch(removeSelectedCardId({ gameId, playerId })); // clear
+  }, [dispatch, gameId, gameStatus, guessStory, playerId, tellStory]);
 
   const returnToHand = useCallback(() => {
     console.log("returnToHand");
@@ -137,7 +137,7 @@ export default function Hand({
       }
     });
 
-    // dispatch(setSelectedCardId(null));
+    dispatch(removeSelectedCardId({ gameId, playerId })); // clear
   }, [currentGame, dispatch, gameId, playerId]);
 
   const carouselModeOn = idx => {
@@ -201,14 +201,17 @@ export default function Hand({
           return prev; // Якщо обидва слоти зайняті іншими картами
         });
       } else if (gameStatus === LOBBY) {
-        dispatch(
-          setSelectedCardId({
-            gameId,
-            playerId,
-            selectedCardId:
-              currentCard._id === selectedCardId ? null : currentCard._id,
-          }),
-        );
+        if (currentCard._id === selectedCardId) {
+          dispatch(removeSelectedCardId({ gameId, playerId })); // clear
+        } else {
+          dispatch(
+            setSelectedCardId({
+              gameId,
+              playerId,
+              selectedCardId: currentCard._id,
+            }),
+          );
+        }
 
         // onSelectCard(currentCard._id);
       }
@@ -243,10 +246,11 @@ export default function Hand({
 
   // // ??
   // useEffect(() => {
-  //   if (gameStatus === GUESSING) dispatch(setSelectedCardId(null)); // todo перевірити чи потрібно ще?
-  // }, [dispatch, gameStatus]);
+  //   if (gameStatus === GUESSING) dispatch(removeSelectedCardId({ gameId, playerId })); // todo перевірити чи потрібно ще?
+  // }, [dispatch, gameId, gameStatus, playerId]);
 
   // Get active card's index
+
   useEffect(() => {
     if (!emblaApiCardsGuess) return;
 
@@ -531,7 +535,8 @@ export default function Hand({
                       src={card.url}
                       alt="enlarged card"
                     />
-                    {/* <TransformWrapper
+                    {/* // todo add zoom by modal window
+                     <TransformWrapper
                       maxScale={5}
                       panning={{ velocityDisabled: true, disabled: !isZoomed }}
                       onTransformed={({ state }) =>
