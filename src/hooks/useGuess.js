@@ -23,7 +23,7 @@ export const useGuess = (gameId, cardsSet) => {
   const guessStory = useCallback(() => {
     const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
     if (!firstGuessCardSet || (!playersMoreThanThree && !secondGuessCardSet)) {
-      console.warn("Invalid card selection!");
+      console.warn("guess Story: Invalid card selection!");
       Notify.failure("Invalid card selection!");
       return;
     }

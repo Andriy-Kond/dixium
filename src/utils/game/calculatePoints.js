@@ -13,7 +13,7 @@ export function calculatePoints({
   // Ініціалізація балів, якщо гравець ще не має їх
   gamePlayers.forEach(player => {
     if (!updatedScores[player._id]) updatedScores[player._id] = 0;
-    console.log(" бали гравців на початку updatedScores:::", updatedScores);
+    // console.log(" бали гравців на початку updatedScores:::", updatedScores);
   });
 
   // Знаходимо карту оповідача
@@ -26,15 +26,15 @@ export function calculatePoints({
   let votesForStorytellerCard = 0;
   Object.entries(votes).forEach(([voterId, vote]) => {
     if (vote.firstVotedCardId === storytellerCardId) {
-      console.log(
-        "голос за карту оповідача першою зіркою - votesForStorytellerCard++",
-      );
+      // console.log(
+      //   "голос за карту оповідача першою зіркою - votesForStorytellerCard++",
+      // );
       votesForStorytellerCard++;
     }
     if (vote.secondVotedCardId === storytellerCardId) {
-      console.log(
-        "голос за карту оповідача другою зіркою - votesForStorytellerCard++",
-      );
+      // console.log(
+      //   "голос за карту оповідача другою зіркою - votesForStorytellerCard++",
+      // );
       votesForStorytellerCard++;
     }
   });
@@ -43,30 +43,30 @@ export function calculatePoints({
   const allVotedForStoryteller = votesForStorytellerCard === playerCount - 1; // -1, бо оповідач не голосує за себе
   const noneVotedForStoryteller = votesForStorytellerCard === 0;
 
-  console.log(" playerCount:::", playerCount);
-  console.log(" votesForStorytellerCard:::", votesForStorytellerCard);
+  // console.log(" playerCount:::", playerCount);
+  // console.log(" votesForStorytellerCard:::", votesForStorytellerCard);
 
   // * Правила для 3 гравців, та стандартні правила для 4-6 гравців або 7-12 з isSingleCardMode
   if (allVotedForStoryteller || noneVotedForStoryteller) {
-    console.log(
-      "або ніхто не вгадав гру, або всі вгадали - всім по 2 бали, оповідачу - 0",
-    );
+    // console.log(
+    //   "або ніхто не вгадав гру, або всі вгадали - всім по 2 бали, оповідачу - 0",
+    // );
     updatedScores[storytellerId] = 0; // Оповідач отримує 0
-    console.log(" Оповідач отримує 0 балів updatedScores:::", updatedScores);
+    // console.log(" Оповідач отримує 0 балів updatedScores:::", updatedScores);
 
     gamePlayers.forEach(player => {
       if (player._id !== storytellerId) {
-        console.log(" storytellerId:::", storytellerId);
-        console.log("гравець отримає 2 бали:>> ", player._id);
+        // console.log(" storytellerId:::", storytellerId);
+        // console.log("гравець отримає 2 бали:>> ", player._id);
         updatedScores[player._id] += 2;
       } // Інші по 2
     });
   } else {
-    console.log(
-      "хтось вгадав карту оповідача, але не всі - оповідачу - 3 бали, всім вгадавшим теж по 3 бали",
-    );
+    // console.log(
+    //   "хтось вгадав карту оповідача, але не всі - оповідачу - 3 бали, всім вгадавшим теж по 3 бали",
+    // );
     updatedScores[storytellerId] += 3; // Оповідач отримує 3
-    console.log("Оповідач отримує 3 бали updatedScores:::", updatedScores);
+    // console.log("Оповідач отримує 3 бали updatedScores:::", updatedScores);
 
     Object.entries(votes).forEach(([voterId, vote]) => {
       if (
@@ -75,12 +75,12 @@ export function calculatePoints({
           vote.secondVotedCardId === storytellerCardId)
       ) {
         updatedScores[voterId] += 3; // Вгадали карту оповідача - 3 бали
-        console.log("гравець  отримає 3 бали :>> ", voterId);
+        // console.log("гравець  отримає 3 бали :>> ", voterId);
 
-        console.log(
-          " гравець  отримає 3 бали >> updatedScores:::",
-          updatedScores,
-        );
+        // console.log(
+        //   " гравець  отримає 3 бали >> updatedScores:::",
+        //   updatedScores,
+        // );
       }
     });
   }

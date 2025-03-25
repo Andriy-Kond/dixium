@@ -100,8 +100,8 @@ export const selectGameDeck = gameId => state =>
 export const selectGameDiscardPile = gameId => state =>
   state.gameSlice.games[gameId].discardPile;
 
-export const selectIsFirstTurn = gameId => state =>
-  state.gameSlice.games[gameId].isFirstTurn;
+// export const selectIsFirstTurn = gameId => state =>
+//   state.gameSlice.games[gameId].isFirstTurn;
 
 export const selectIsGameRunning = gameId => state =>
   state.gameSlice.games[gameId].isGameRunning;

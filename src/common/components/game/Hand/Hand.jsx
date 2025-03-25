@@ -94,10 +94,17 @@ export default function Hand({
 
   const isCurrentPlayerHost = hostPlayerId === playerId;
 
-  const isCanGuess =
-    playersMoreThanSix && !isSingleCardMode
-      ? !!firstGuessCardSet?._id && !!secondGuessCardSet?._id
-      : !!firstGuessCardSet?._id;
+  const isCanGuess = useCallback(() => {
+    if ((playersMoreThanSix && !isSingleCardMode) || !playersMoreThanThree) {
+      return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+    } else return !!firstGuessCardSet?._id;
+  }, [
+    firstGuessCardSet?._id,
+    isSingleCardMode,
+    playersMoreThanSix,
+    playersMoreThanThree,
+    secondGuessCardSet?._id,
+  ]);
 
   const isCurrentPlayerGuessed = gamePlayers.some(
     player => player._id === playerId && player.isGuessed,
@@ -359,12 +366,13 @@ export default function Hand({
 
               {!playersMoreThanThree && (
                 <Button
+                  btnText={gameStatus === LOBBY ? "Select card" : "Choose card"}
                   onClick={() => toggleCardSelection("secondGuessCardSet")}
                   disabled={isDisabledSecondBtn() || isCurrentPlayerGuessed}
                   localClassName={secondGuessCardSet && css.btnActive}>
-                  <MdOutlineStarOutline
+                  {/* <MdOutlineStarOutline
                     style={{ width: "20px", height: "20px" }}
-                  />
+                  /> */}
                 </Button>
               )}
             </>
@@ -387,6 +395,7 @@ export default function Hand({
       );
     } else {
       console.log("Non Carousel Mode");
+      setMiddleButton(null); // обнуляю кнопку для усіх при старті нового раунду
 
       if (isShowMask) {
         console.log("isShowMask");
@@ -477,7 +486,7 @@ export default function Hand({
                   btnStyle={["btnFlexGrow"]}
                   btnText={"Guess story"}
                   onClick={handleStory}
-                  disabled={!isCanGuess || isCurrentPlayerGuessed}
+                  disabled={!isCanGuess() || isCurrentPlayerGuessed}
                 />,
               );
             } else {

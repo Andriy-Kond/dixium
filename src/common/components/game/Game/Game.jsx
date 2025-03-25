@@ -69,17 +69,6 @@ export default function Game() {
     selectIsCarouselModeTableScreen(gameId, playerId),
   );
 
-  useEffect(() => {
-    console.log(
-      " Game >> isCarouselModeHandScreen:::",
-      isCarouselModeHandScreen,
-    );
-    console.log(
-      " Game >> isCarouselModeTableScreen:::",
-      isCarouselModeTableScreen,
-    );
-  }, [isCarouselModeHandScreen, isCarouselModeTableScreen]);
-
   // const [isCarouselModeHandScreen, setIsCarouselModeHandScreen] =
   //   useState(false);
 

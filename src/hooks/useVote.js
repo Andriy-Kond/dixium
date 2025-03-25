@@ -28,7 +28,7 @@ export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
       !firstVotedCardId ||
       (!isSingleCardMode && playersMoreThanSix && !secondVotedCardId)
     ) {
-      console.warn("Invalid card selection!");
+      console.warn("Vote: Invalid card selection!");
       Notify.failure("Invalid card selection!");
       return;
     }

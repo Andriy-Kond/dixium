@@ -23,7 +23,7 @@ export const roundFinishSuccess = (
     setActiveScreen({
       gameId: game._id,
       playerId,
-      screen: 0,
+      screen: 2,
     }),
   );
 

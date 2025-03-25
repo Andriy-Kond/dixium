@@ -20,8 +20,14 @@ import {
 } from "redux/selectors.js";
 import css from "./Players.module.scss";
 import Button from "common/components/ui/Button/index.js";
-import { ROUND_RESULTS, GUESSING, VOTING } from "utils/generals/constants.js";
+import {
+  ROUND_RESULTS,
+  GUESSING,
+  VOTING,
+  LOBBY,
+} from "utils/generals/constants.js";
 import { useVote } from "hooks/useVote.js";
+import { useStartNewRound } from "hooks/useStartNewRound.js";
 
 export default function Players({
   isActiveScreen,
@@ -51,13 +57,17 @@ export default function Players({
   const playersMoreThanThree = gamePlayers.length > 3;
   const isCanVote = playersMoreThanThree && isSingleCardMode;
   const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
+  const isCurrentPlayerHost = hostPlayerId === playerId;
+  const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
+
+  const startNewRound = useStartNewRound(gameId);
 
   //* setMiddleBtton
   useEffect(() => {
     if (!isActiveScreen) return;
 
     if (gameStatus === GUESSING) {
-      if (hostPlayerId === playerId && isReadyToVote) {
+      if (isCurrentPlayerHost && isReadyToVote) {
         // Якщо це ведучий:
         setMiddleButton(
           <Button
@@ -69,7 +79,7 @@ export default function Players({
         );
       } else setMiddleButton(null);
     } else if (gameStatus === VOTING) {
-      if (hostPlayerId === playerId && isReadyToCalculatePoints) {
+      if (isCurrentPlayerHost && isReadyToCalculatePoints) {
         // Якщо це ведучий:
         setMiddleButton(
           <Button
@@ -79,6 +89,17 @@ export default function Players({
           />,
         );
       } else setMiddleButton(null);
+    } else if (gameStatus === ROUND_RESULTS) {
+      if (isCurrentPlayerHost && isReadyToStartNewRound) {
+        console.log("це хост і можна починати новий раунд");
+        setMiddleButton(
+          <Button
+            btnStyle={["btnFlexGrow"]}
+            btnText={"Start new round"}
+            onClick={startNewRound}
+          />,
+        );
+      }
     } else setMiddleButton(null);
   }, [
     finishRound,
@@ -91,12 +112,20 @@ export default function Players({
     setMiddleButton,
     startVoting,
     playerId,
+    isCurrentPlayerHost,
+    isReadyToStartNewRound,
+    startNewRound,
   ]);
 
   const getIconOfPlayerState = (player, playerScore) => {
-    if (!player) return;
+    if (!player) {
+      console.log(" getIconOfPlayerState >> player нема повертаюсь:::", player);
+      return;
+    }
 
-    if (gameStatus === ROUND_RESULTS) {
+    if (gameStatus === LOBBY) {
+      return <div className={css.waiting} />;
+    } else if (gameStatus === ROUND_RESULTS) {
       if (player._id === storytellerId) {
         return (
           <>
