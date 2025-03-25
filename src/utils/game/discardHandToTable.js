@@ -20,15 +20,14 @@ export const discardHandToTable = ({
   );
   const updatedCardsOnTable = [...cardsOnTable, ...updatedMovedCards];
 
-  // Перезапис руки плеера і мітка, що він походив
+  // Перезапис руки гравця і мітка, що він походив
   const updatedPlayers = gamePlayers.map(player =>
-    // todo скинути isGuessed перед наступним раундом
     player._id === userId
       ? {
           ...player,
           hand: updatedPlayerHand,
           isGuessed: true,
-          isVoted: isStoryteller,
+          isVoted: isStoryteller, // якщо це оповідач, то вважається, що він "проголосував"
         }
       : player,
   );

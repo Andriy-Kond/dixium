@@ -70,7 +70,7 @@ export default function PrepareGame() {
       ...game,
       isGameRunning: true,
       isSingleCardMode: isSingleCardModeCheckbox,
-    }; // todo при закінченні гри зробити false
+    };
 
     // optimistic update:
     optimisticUpdateDispatch({

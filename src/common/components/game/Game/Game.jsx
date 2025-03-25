@@ -17,8 +17,11 @@ import {
   selectCardsOnTable,
   selectGame,
   selectGamePlayers,
+  selectIsCarouselModeHandScreen,
+  selectIsCarouselModeTableScreen,
   selectIsShowMask,
   selectIsSingleCardMode,
+  selectZoomCardId,
   selectScores,
   selectStorytellerId,
   selectUserCredentials,
@@ -44,23 +47,44 @@ export default function Game() {
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
 
+  const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
+
   // const [localActiveScreen, setLocalActiveScreen] = useState(activeScreen);
 
   const isCurrentPlayerStoryteller = storytellerId === playerId;
   const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
 
   const [middleButton, setMiddleButton] = useState(null);
-  const [toggleZoomCardId, setToggleZoomCardId] = useState(null); // for zoom card in modal window
+  // const [toggleZoomCardId, setToggleZoomCardId] = useState(null);
 
   const stabilizedSetMiddleButton = useCallback(value => {
     setMiddleButton(value);
   }, []);
 
-  const [isCarouselModeHandScreen, setIsCarouselModeHandScreen] =
-    useState(false);
+  const isCarouselModeHandScreen = useSelector(
+    selectIsCarouselModeHandScreen(gameId, playerId),
+  );
 
-  const [isCarouselModeTableScreen, setIsCarouselModeTableScreen] =
-    useState(false);
+  const isCarouselModeTableScreen = useSelector(
+    selectIsCarouselModeTableScreen(gameId, playerId),
+  );
+
+  useEffect(() => {
+    console.log(
+      " Game >> isCarouselModeHandScreen:::",
+      isCarouselModeHandScreen,
+    );
+    console.log(
+      " Game >> isCarouselModeTableScreen:::",
+      isCarouselModeTableScreen,
+    );
+  }, [isCarouselModeHandScreen, isCarouselModeTableScreen]);
+
+  // const [isCarouselModeHandScreen, setIsCarouselModeHandScreen] =
+  //   useState(false);
+
+  // const [isCarouselModeTableScreen, setIsCarouselModeTableScreen] =
+  //   useState(false);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -76,7 +100,7 @@ export default function Game() {
     watchDrag: !(
       isCarouselModeHandScreen ||
       isCarouselModeTableScreen ||
-      toggleZoomCardId
+      zoomCardId
     ), // дозвіл на слайдінг при цій умові
     // isCarouselModeHandScreen || isCarouselModeTableScreen
     //   ? ""
@@ -163,14 +187,14 @@ export default function Game() {
         watchDrag: !(
           isCarouselModeHandScreen ||
           isCarouselModeTableScreen ||
-          toggleZoomCardId
+          zoomCardId
         ),
       });
   }, [
     emblaApi,
     isCarouselModeHandScreen,
     isCarouselModeTableScreen,
-    toggleZoomCardId,
+    zoomCardId,
   ]);
 
   // Синхронізація activeScreen з Embla Carousel
@@ -200,7 +224,7 @@ export default function Game() {
         !emblaApi ||
         isCarouselModeHandScreen ||
         isCarouselModeTableScreen ||
-        toggleZoomCardId
+        zoomCardId
       )
         return;
 
@@ -216,7 +240,7 @@ export default function Game() {
     emblaApi,
     isCarouselModeHandScreen,
     isCarouselModeTableScreen,
-    toggleZoomCardId,
+    zoomCardId,
   ]);
 
   return (
@@ -235,13 +259,13 @@ export default function Game() {
                 isActiveScreen: activeScreen === index,
                 setMiddleButton: stabilizedSetMiddleButton,
                 isCarouselModeHandScreen,
-                setIsCarouselModeHandScreen,
+                // setIsCarouselModeHandScreen,
                 isCarouselModeTableScreen,
-                setIsCarouselModeTableScreen,
+                // setIsCarouselModeTableScreen,
                 finishRound,
                 startVoting,
-                toggleZoomCardId,
-                setToggleZoomCardId,
+                // toggleZoomCardId,
+                // setToggleZoomCardId,
               })}
             </li>
           ))}
@@ -255,9 +279,7 @@ export default function Game() {
         onNextScreen={nextScreen}
         middleButton={middleButton}
         isShowSidesBtns={
-          !isCarouselModeHandScreen &&
-          !isCarouselModeTableScreen &&
-          !toggleZoomCardId
+          !isCarouselModeHandScreen && !isCarouselModeTableScreen && !zoomCardId
         }
       />
     </div>

@@ -13,6 +13,8 @@ import {
   selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
+  selectIsCarouselModeHandScreen,
+  selectIsCarouselModeTableScreen,
   selectIsShowMask,
   selectIsSingleCardMode,
   selectPlayerHand,
@@ -38,14 +40,15 @@ import {
   setSelectedCardId,
   removeSelectedCardId,
   setIsShowMask,
+  setIsCarouselModeHandScreen,
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 
 export default function Hand({
   isActiveScreen,
   setMiddleButton,
-  isCarouselModeHandScreen,
-  setIsCarouselModeHandScreen,
+  // isCarouselModeHandScreen,
+  // setIsCarouselModeHandScreen,
   startVoting,
   finishRound,
   isZoomed,
@@ -54,7 +57,7 @@ export default function Hand({
   const dispatch = useDispatch();
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
-  console.log(" gameStatus:::", gameStatus);
+
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
   const storytellerId = useSelector(selectStorytellerId(gameId));
@@ -65,6 +68,9 @@ export default function Hand({
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
   const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
+  const isCarouselModeHandScreen = useSelector(
+    selectIsCarouselModeHandScreen(gameId, playerId),
+  );
 
   // const [selectedCardId, setSelectedCardId] = useState(null); // for first story(teller) mode
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
@@ -85,7 +91,7 @@ export default function Hand({
 
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
-  const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
+
   const isCurrentPlayerHost = hostPlayerId === playerId;
 
   const isCanGuess =
@@ -101,9 +107,8 @@ export default function Hand({
     ? "Be the first to think of an association for one of your cards. Choose it and make a move. Tell us about your association."
     : isCurrentPlayerStoryteller
     ? "You have told your story. Waiting for other players to choose their associations"
-    : `Player ${storyteller.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
+    : `Player ${storyteller?.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
-  // const tellStory = useTellStory(gameId, selectedCardId);
   const tellStory = useTellStory(gameId);
   const guessStory = useGuess(gameId, cardsSet);
   const startNewRound = useStartNewRound(gameId);
@@ -142,16 +147,31 @@ export default function Hand({
 
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
-    setIsCarouselModeHandScreen(true);
+    // setIsCarouselModeHandScreen(true);
+    dispatch(
+      setIsCarouselModeHandScreen({
+        gameId,
+        playerId,
+        isCarouselModeHandScreen: true,
+      }),
+    );
+
     setActiveCardIdx(idx);
     setIsMountedCarousel(true);
   };
 
   const exitCarouselMode = useCallback(() => {
+    // setIsCarouselModeHandScreen(false);
+    dispatch(
+      setIsCarouselModeHandScreen({
+        gameId,
+        playerId,
+        isCarouselModeHandScreen: false,
+      }),
+    );
     setIsMountedCarousel(false);
-    setIsCarouselModeHandScreen(false);
-    setMiddleButton(null);
-  }, [setIsCarouselModeHandScreen, setMiddleButton]);
+    // setMiddleButton(null);
+  }, [dispatch, gameId, playerId]);
 
   const toggleCardSelection = useCallback(
     btnKey => {
@@ -230,10 +250,18 @@ export default function Hand({
 
   useEffect(() => {
     if (isShowMask) {
-      setIsCarouselModeHandScreen(false);
+      // setIsCarouselModeHandScreen(false);
+      dispatch(
+        setIsCarouselModeHandScreen({
+          gameId,
+          playerId,
+          isCarouselModeHandScreen: false,
+        }),
+      );
+
       console.log(" useEffect >> isShowMask:::", isShowMask);
     }
-  }, [isShowMask, setIsCarouselModeHandScreen]);
+  }, [dispatch, gameId, isShowMask, playerId]);
 
   // reInit for emblaApiCardsGuess
   useEffect(() => {
@@ -317,7 +345,8 @@ export default function Hand({
         <>
           <Button btnText="<" onClick={exitCarouselMode} />
 
-          {!isCurrentPlayerStoryteller && (
+          {!storytellerId ||
+          (!isCurrentPlayerStoryteller && storyteller?.isGuessed) ? (
             <>
               <Button
                 btnText={gameStatus === LOBBY ? "Select card" : "Choose card"}
@@ -339,6 +368,20 @@ export default function Hand({
                 </Button>
               )}
             </>
+          ) : (
+            isCurrentPlayerStoryteller &&
+            !currentPlayer.isGuessed && (
+              <>
+                <Button
+                  btnText={"Select card"}
+                  onClick={() => toggleCardSelection("firstGuessCardSet")}
+                  disabled={isDisabledFirstBtn() || isCurrentPlayerGuessed}
+                  btnStyle={["btnFlexGrow"]}
+                  localClassName={
+                    (firstGuessCardSet || selectedCardId) && css.btnActive
+                  }></Button>
+              </>
+            )
           )}
         </>,
       );
@@ -361,7 +404,12 @@ export default function Hand({
             />,
           );
         }
-      } else if (
+      }
+      // else if (isCurrentPlayerHost && gameStatus === LOBBY) {
+      //   console.log("це хост і почався новий раунд (LOBBY)");
+      //   setMiddleButton(null);
+      // }
+      else if (
         isCurrentPlayerHost &&
         isReadyToVote &&
         gameStatus === GUESSING
@@ -388,7 +436,7 @@ export default function Hand({
             onClick={finishRound}
           />,
         );
-      } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
+      } else if (isCurrentPlayerHost && gameStatus === ROUND_RESULTS) {
         console.log("це хост і можна починати новий раунд");
         setMiddleButton(
           <Button
@@ -398,7 +446,7 @@ export default function Hand({
           />,
         );
       } else {
-        if (isCurrentPlayerStoryteller) {
+        if (isCurrentPlayerStoryteller && gameStatus === !LOBBY) {
           console.log("встановлюю кнопку в нуль для сторітелера");
           setMiddleButton(null);
         } else {
@@ -406,14 +454,19 @@ export default function Hand({
             console.log(
               "блок для gameStatus LOBBY - встановити кнопку tell your story",
             );
-            setMiddleButton(
-              <Button
-                btnStyle={["btnFlexGrow"]}
-                btnText={"Tell your story"}
-                onClick={handleStory}
-                disabled={!selectedCardId}
-              />,
-            );
+            if (
+              !storytellerId ||
+              (storytellerId && isCurrentPlayerStoryteller)
+            ) {
+              setMiddleButton(
+                <Button
+                  btnStyle={["btnFlexGrow"]}
+                  btnText={"Tell your story"}
+                  onClick={handleStory}
+                  disabled={!selectedCardId}
+                />,
+              );
+            }
           } else if (gameStatus === GUESSING) {
             console.log("блок для gameStatus GUESSING");
 
@@ -437,7 +490,7 @@ export default function Hand({
   }, [
     activeCardIdx,
     currentCard._id,
-    emblaApiCardsGuess,
+    currentPlayer.isGuessed,
     exitCarouselMode,
     finishRound,
     firstGuessCardSet,
@@ -450,7 +503,6 @@ export default function Hand({
     isCurrentPlayerHost,
     isCurrentPlayerStoryteller,
     isReadyToCalculatePoints,
-    isReadyToStartNewRound,
     isReadyToVote,
     isShowMask,
     isStartVotingDisabled,
@@ -462,6 +514,8 @@ export default function Hand({
     setMiddleButton,
     startNewRound,
     startVoting,
+    storyteller?.isGuessed,
+    storytellerId,
     toggleCardSelection,
   ]);
 
@@ -529,12 +583,19 @@ export default function Hand({
                     )}
 
                     <img
+                      className={`${css.carouselImage} ${css.visible}`}
+                      src={card.url}
+                      alt="enlarged card"
+                    />
+
+                    {/* <img
                       className={`${css.carouselImage} ${
                         isMountedCarousel ? css.visible : ""
                       }`}
                       src={card.url}
                       alt="enlarged card"
-                    />
+                    /> */}
+
                     {/* // todo add zoom by modal window
                      <TransformWrapper
                       maxScale={5}

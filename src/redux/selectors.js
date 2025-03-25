@@ -33,10 +33,28 @@ export const selectVotesLocal = (gameId, playerId) => state => {
 
 export const selectSelectedCardId = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
-
   const selectedCardId = state.localPersonalSlice.selectedCardId[key];
-
   return selectedCardId || null;
+};
+
+export const selectIsCarouselModeHandScreen = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const isCarouselModeHandScreen =
+    state.localPersonalSlice.isCarouselModeHandScreen[key];
+  return isCarouselModeHandScreen || null;
+};
+
+export const selectIsCarouselModeTableScreen = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const isCarouselModeTableScreen =
+    state.localPersonalSlice.isCarouselModeTableScreen[key];
+  return isCarouselModeTableScreen || null;
+};
+
+export const selectZoomCardId = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const zoomCardId = state.localPersonalSlice.zoomCardId[key];
+  return zoomCardId || null;
 };
 
 // gameSlice:

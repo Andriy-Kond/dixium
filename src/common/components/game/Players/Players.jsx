@@ -29,7 +29,6 @@ export default function Players({
   startVoting,
   finishRound,
 }) {
-  console.log(" isActiveScreen:::", isActiveScreen);
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;

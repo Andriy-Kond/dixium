@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { LOBBY } from "utils/generals/constants.js";
 
 const gameInitialState = {
   games: {
@@ -164,13 +165,23 @@ export const gameSlice = createSlice({
 
     updateCurrentPlayer(state, action) {
       const { gameId, player } = action.payload;
-
       const game = state.games[gameId];
       if (game) {
         const idx = game.players.findIndex(p => p._id === player._id);
         if (idx !== -1) game.players[idx] = player;
         else game.players.push(player);
       }
+    },
+
+    clearingForNewRound: (state, action) => {
+      const { gameId } = action.payload;
+      const game = state.games[gameId];
+
+      if (!game) return;
+      game.votes = {};
+      game.gameStatus = LOBBY;
+      game.cardsOnTable = {};
+      game.votes = {};
     },
   },
 });
@@ -203,6 +214,7 @@ export const {
   setCardsOnTable,
   updatePlayerVote,
   updateCurrentPlayer,
+  clearingForNewRound,
 } = gameSlice.actions;
 
 // } else if (

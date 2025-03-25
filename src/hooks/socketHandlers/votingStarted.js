@@ -1,4 +1,10 @@
 import { updateGame } from "redux/game/gameSlice.js";
+import {
+  setActiveScreen,
+  setIsCarouselModeHandScreen,
+  setIsCarouselModeTableScreen,
+  setZoomCardId,
+} from "redux/game/localPersonalSlice.js";
 
 export const votingStarted = (game, dispatch, playerId) => {
   console.log("votingStarted");
@@ -8,4 +14,30 @@ export const votingStarted = (game, dispatch, playerId) => {
   }
 
   dispatch(updateGame(game));
+
+  dispatch(
+    setActiveScreen({
+      gameId: game._id,
+      playerId,
+      screen: 2,
+    }),
+  );
+
+  dispatch(
+    setIsCarouselModeTableScreen({
+      gameId: game._id,
+      playerId,
+      isCarouselModeTableScreen: false,
+    }),
+  );
+
+  dispatch(
+    setIsCarouselModeHandScreen({
+      gameId: game._id,
+      playerId,
+      isCarouselModeHandScreen: false,
+    }),
+  );
+
+  dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
 };

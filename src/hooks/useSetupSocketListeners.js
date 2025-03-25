@@ -21,9 +21,10 @@ import {
   playerVoteSuccess,
   roundFinishSuccess,
   gameEntry,
+  startNewRoundSuccess,
+  nextStorytellerUpdated,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
-import { setActiveScreen } from "redux/game/localPersonalSlice.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -61,13 +62,16 @@ export const useSetupSocketListeners = () => {
 
     const handlePlayerJoined = ({ game, player, message }) =>
       playerJoined(
-        game,
+        game._id,
         player,
         message,
         userCredentials,
         currentGameId,
         navigate,
       );
+
+    const handleUserDeletedFromGame = ({ game }) =>
+      userDeletedFromGame(game, dispatch);
 
     const handleGameDeleted = ({ game, message }) => {
       gameDelete(game._id, message, dispatch, currentGameId, userId, navigate);
@@ -84,28 +88,27 @@ export const useSetupSocketListeners = () => {
       firstStorytellerUpdated(game, dispatch, userId);
     };
 
+    const handleNextStorytellerUpdated = ({ game }) => {
+      nextStorytellerUpdated(game, dispatch, userId);
+    };
+
     const handlePlayerGuessSuccess = ({ game }) =>
       playerGuessSuccess(game, dispatch);
 
     const handleVotingStarted = ({ game }) => {
       votingStarted(game, dispatch, userId);
-      dispatch(
-        setActiveScreen({
-          gameId: game._id,
-          playerId: userId,
-          screen: 2,
-        }),
-      );
     };
 
     const handlePlayerVoteSuccess = ({ game, message }) =>
       playerVoteSuccess(game, message, dispatch, activeActions);
 
     const handleRoundFinishSuccess = ({ game, message }) =>
-      roundFinishSuccess(game, message, dispatch, activeActions);
+      roundFinishSuccess(game, message, dispatch, activeActions, userId);
 
-    const handleUserDeletedFromGame = ({ game }) =>
-      userDeletedFromGame(game, dispatch);
+    const handleStartNewRoundSuccess = ({ game, message }) =>
+      startNewRoundSuccess(game, message, dispatch, activeActions, userId);
+
+    // startNewRoundSuccess;
 
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
@@ -115,17 +118,19 @@ export const useSetupSocketListeners = () => {
     socket.on("gameCreatedOrUpdated", handleGameCreateOrUpdate);
     // socket.on("gameEntry", handleGameEntry);
     socket.on("playerJoined", handlePlayerJoined);
+    socket.on("userDeletedFromGame", handleUserDeletedFromGame);
     socket.on("gameWasDeleted", handleGameDeleted);
 
     socket.on("playersOrderUpdated", handlePlayersOrderUpdate);
     socket.on("gameRunning", handleGameRun);
 
     socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
+    socket.on("nextStorytellerUpdated", handleNextStorytellerUpdated);
     socket.on("playerGuessSuccess", handlePlayerGuessSuccess);
     socket.on("votingStarted", handleVotingStarted);
     socket.on("playerVoteSuccess", handlePlayerVoteSuccess);
     socket.on("roundFinishSuccess", handleRoundFinishSuccess);
-    socket.on("userDeletedFromGame", handleUserDeletedFromGame);
+    socket.on("startNewRoundSuccess", handleStartNewRoundSuccess);
 
     return () => {
       // console.log("Cleaning up socket listeners");
@@ -137,17 +142,19 @@ export const useSetupSocketListeners = () => {
       socket.off("gameCreatedOrUpdated", handleGameCreateOrUpdate);
       // socket.off("gameEntry", handleGameEntry);
       socket.off("playerJoined", handlePlayerJoined);
+      socket.off("userDeletedFromGame", handleUserDeletedFromGame);
       socket.off("gameWasDeleted", handleGameDeleted);
 
       socket.off("playersOrderUpdated", handlePlayersOrderUpdate);
       socket.off("gameRunning", handleGameRun);
 
       socket.off("firstStorytellerUpdated", handleFirstStorytellerUpdated);
+      socket.off("nextStorytellerUpdated", handleNextStorytellerUpdated);
       socket.off("playerGuessSuccess", handlePlayerGuessSuccess);
       socket.off("votingStarted", handleVotingStarted);
       socket.off("playerVoteSuccess", handlePlayerVoteSuccess);
       socket.off("roundFinishSuccess", handleRoundFinishSuccess);
-      socket.off("userDeletedFromGame", handleUserDeletedFromGame);
+      socket.off("startNewRoundSuccess", handleStartNewRoundSuccess);
 
       // if client runout from page (unmount component) before server responding
       // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
@@ -167,5 +174,6 @@ export const useSetupSocketListeners = () => {
     navigate,
     refetchAllGames,
     userCredentials,
+    userId,
   ]);
 };

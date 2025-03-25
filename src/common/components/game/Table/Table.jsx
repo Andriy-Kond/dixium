@@ -11,7 +11,9 @@ import {
   selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
+  selectIsCarouselModeTableScreen,
   selectIsSingleCardMode,
+  selectZoomCardId,
   selectRoundResults,
   selectStorytellerId,
   selectUserCredentials,
@@ -22,7 +24,11 @@ import Mask from "common/components/game/Mask";
 import Button from "common/components/ui/Button/index.js";
 import { useVote } from "hooks/useVote.js";
 import css from "./Table.module.scss";
-import { updateVotesLocal } from "redux/game/localPersonalSlice.js";
+import {
+  setIsCarouselModeTableScreen,
+  setZoomCardId,
+  updateVotesLocal,
+} from "redux/game/localPersonalSlice.js";
 import { capitalizeWords } from "utils/game/capitalizeWords.js";
 import LocalModal from "common/components/LocalModal";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
@@ -30,12 +36,12 @@ import { useStartNewRound } from "hooks/useStartNewRound.js";
 export default function Table({
   isActiveScreen,
   setMiddleButton,
-  isCarouselModeTableScreen,
-  setIsCarouselModeTableScreen,
+  // isCarouselModeTableScreen,
+  // setIsCarouselModeTableScreen,
   startVoting,
   finishRound,
-  toggleZoomCardId,
-  setToggleZoomCardId,
+  // toggleZoomCardId,
+  // setToggleZoomCardId,
 }) {
   const dispatch = useDispatch();
   const userCredentials = useSelector(selectUserCredentials);
@@ -50,6 +56,11 @@ export default function Table({
   const roundResults = useSelector(selectRoundResults(gameId));
   const playerVotes = useSelector(selectVotesLocal(gameId, playerId));
   const { firstVotedCardId, secondVotedCardId } = playerVotes;
+  const isCarouselModeTableScreen = useSelector(
+    selectIsCarouselModeTableScreen(gameId, playerId),
+  );
+
+  const zoomCardId = useSelector(selectZoomCardId(gameId, playerId));
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
@@ -97,15 +108,29 @@ export default function Table({
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
     setActiveCardIdx(idx);
-    setIsCarouselModeTableScreen(true);
+    // setIsCarouselModeTableScreen(true);
+    dispatch(
+      setIsCarouselModeTableScreen({
+        gameId,
+        playerId,
+        isCarouselModeTableScreen: true,
+      }),
+    );
     setIsMounted(true);
   };
 
   const exitCarouselMode = useCallback(() => {
     setIsMounted(false);
-    setIsCarouselModeTableScreen(false);
+    // setIsCarouselModeTableScreen(false);
+    dispatch(
+      setIsCarouselModeTableScreen({
+        gameId,
+        playerId,
+        isCarouselModeTableScreen: false,
+      }),
+    );
     setMiddleButton(null);
-  }, [setIsCarouselModeTableScreen, setMiddleButton]);
+  }, [dispatch, gameId, playerId, setMiddleButton]);
 
   // select card(s)
   const toggleCardSelection = useCallback(
@@ -162,15 +187,18 @@ export default function Table({
   );
 
   const showCard = cardId => {
-    setToggleZoomCardId(cardId);
+    // setToggleZoomCardId(cardId);
+    dispatch(setZoomCardId({ gameId, playerId, zoomCardId: cardId }));
   };
 
   const closeCard = useCallback(() => {
-    setToggleZoomCardId(null);
-  }, [setToggleZoomCardId]);
+    // setToggleZoomCardId(null);
+    dispatch(setZoomCardId({ gameId, playerId, zoomCardId: null }));
+  }, [dispatch, gameId, playerId]);
 
-  const toggleZoomCard = roundResults.find(
-    result => result.cardId === toggleZoomCardId,
+  const zoomCard = roundResults.find(
+    // result => result.cardId === toggleZoomCardId,
+    result => result.cardId === zoomCardId,
   );
 
   // reInit for emblaApiCardsVote
@@ -257,7 +285,7 @@ export default function Table({
       );
     } else {
       console.log("Non Carousel Mode");
-      if (toggleZoomCard) {
+      if (zoomCardId) {
         setMiddleButton(<Button btnText="<" onClick={closeCard} />);
       } else if (
         isCurrentPlayerHost &&
@@ -312,7 +340,7 @@ export default function Table({
                 disabled={!isCanVote || isCurrentPlayerVoted}
               />,
             );
-          } else if (gameStatus === ROUND_RESULTS && toggleZoomCard) {
+          } else if (gameStatus === ROUND_RESULTS && zoomCardId) {
             console.log("ROUND_RESULTS && toggleZoomCard");
             setMiddleButton(
               <Button btnText="Back" onClick={() => closeCard()} />,
@@ -345,11 +373,11 @@ export default function Table({
     storytellerId,
     toggleCardSelection,
     playerId,
-    toggleZoomCard,
     closeCard,
     isCurrentPlayerHost,
     isReadyToStartNewRound,
     startNewRound,
+    zoomCardId,
   ]);
 
   const getStarsMarksByVoteCount = voteCount => {
@@ -447,11 +475,11 @@ export default function Table({
       <>
         <p>Table gameStatus === ROUND_RESULTS</p>
 
-        {toggleZoomCard ? (
+        {zoomCardId ? (
           <LocalModal toggleModal={closeCard}>
             <TransformWrapper maxScale={5} panning={{ velocityDisabled: true }}>
               <TransformComponent>
-                <img src={toggleZoomCard.url} alt="enlarged card" />
+                <img src={zoomCard.url} alt="enlarged card" />
               </TransformComponent>
             </TransformWrapper>
           </LocalModal>

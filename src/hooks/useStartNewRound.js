@@ -1,72 +1,73 @@
 import { Notify } from "notiflix";
 import { useCallback } from "react";
-import { useSelector } from "react-redux";
-import {
-  selectCardsOnTable,
-  selectGame,
-  selectGamePlayers,
-  selectIsSingleCardMode,
-  selectPlayerHand,
-  selectUserCredentials,
-} from "redux/selectors.js";
+import { useDispatch, useSelector } from "react-redux";
+import { clearingForNewRound } from "redux/game/gameSlice.js";
+import { selectGame } from "redux/selectors.js";
 import socket from "services/socket.js";
-import { discardHandToTable } from "utils/game/discardHandToTable.js";
+import { distributeCards } from "utils/game/distributeCards.js";
+import { LOBBY } from "utils/generals/constants.js";
 
-export const useStartNewRound = (gameId, cardsSet) => {
-  const userCredentials = useSelector(selectUserCredentials);
+export const useStartNewRound = gameId => {
+  const dispatch = useDispatch();
+
   const currentGame = useSelector(selectGame(gameId));
-  const gamePlayers = useSelector(selectGamePlayers(gameId));
-  const cardsOnTable = useSelector(selectCardsOnTable(gameId));
-  const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
-  const playersMoreThanThree = gamePlayers.length > 3;
 
   const startNewRound = useCallback(() => {
-    const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
-    if (!firstGuessCardSet || (!playersMoreThanThree && !secondGuessCardSet)) {
-      console.warn("Invalid card selection!");
-      Notify.failure("Invalid card selection!");
-      return;
-    }
+    const updatedGame = distributeCards(currentGame); // роздаю карти
+    console.log(" startNewRound >> updatedGame:::", updatedGame);
 
-    const movedCards = playersMoreThanThree
-      ? // || firstGuessCardSet._id === secondGuessCardSet._id
-        [firstGuessCardSet]
-      : [firstGuessCardSet, secondGuessCardSet];
-
-    if (!movedCards.every(card => playerHand.some(c => c._id === card._id))) {
-      console.warn("Not right data in card!");
-      Notify.failure("Not right data in card!");
-      return;
-    }
-
-    const { updatedCardsOnTable, updatedPlayers } = discardHandToTable({
-      playerHand,
-      movedCards,
-      cardsOnTable,
-      userId: userCredentials._id,
-      gamePlayers,
+    // Обнуляю статуси гравців:
+    const updatedPlayers = updatedGame.players.map(player => {
+      return {
+        ...player,
+        isGuessed: false,
+        isVoted: false,
+      };
     });
 
-    const updatedGame = {
-      ...currentGame,
-      cardsOnTable: updatedCardsOnTable,
+    // Визначаю наступного оповідача:
+    if (updatedGame.players.length === 0) {
+      console.error("No players available to select a storyteller.");
+      Notify.failure("No players available to select a storyteller.");
+      return;
+    }
+
+    const storytellerIdx = updatedGame.players.findIndex(
+      player => player._id === updatedGame.storytellerId,
+    );
+
+    // Якщо оповідач останній в масиві, то треба повертатись по колу до першого:
+    const nextStorytellerIdx =
+      (storytellerIdx + 1) % updatedGame.players.length;
+    // Наприклад, для 4х гравців:
+    // Якщо storytellerIdx = 0 (перший гравець), то (0 + 1) % 4 = 1 → наступний індекс 1.
+    // Якщо storytellerIdx = 3 (останній гравець), то (3 + 1) % 4 = 4 % 4 = 0 → повертаємося до індексу 0 (перший гравець).
+
+    const newStoryteller = updatedGame.players[nextStorytellerIdx];
+
+    // Новий стан гри:
+    const finalUpdatedGame = {
+      ...updatedGame,
       players: updatedPlayers,
+      currentRound: updatedGame.currentRound + 1, // todo перевірити чи десь потрібен)
+      storytellerId: newStoryteller._id,
+      votes: {}, // обнуляю голосування
+      gameStatus: LOBBY, // встановлюю статус гри в початковий
+      roundResults: [], // обнуляю результати раунду
     };
 
-    socket.emit("playerGuessing", { updatedGame }, response => {
-      if (response?.error) {
-        console.error("Failed to update game:", response.error);
-      }
-    });
-  }, [
-    cardsOnTable,
-    cardsSet,
-    currentGame,
-    gamePlayers,
-    playerHand,
-    playersMoreThanThree,
-    userCredentials._id,
-  ]);
+    socket.emit(
+      "startNewRound",
+      { updatedGame: finalUpdatedGame },
+      response => {
+        if (response?.error) {
+          console.error("Failed to update game:", response.error);
+        }
+      },
+    );
+
+    // dispatch(clearingForNewRound(gameId)); // move to response from server
+  }, [currentGame]);
 
   return startNewRound;
 };

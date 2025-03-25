@@ -12,11 +12,12 @@ import {
   selectStorytellerId,
   selectUserCredentials,
 } from "redux/selectors.js";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Notify } from "notiflix";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
 
 export const useTellStory = gameId => {
+  console.log("useTellStory");
   const currentGame = useSelector(selectGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
@@ -28,9 +29,21 @@ export const useTellStory = gameId => {
   const gameStatus = useSelector(selectGameStatus(gameId));
   const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
 
+  // Локальний стан для відстеження обробки запиту
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const tellStory = useCallback(() => {
+    console.log("tellStory");
+    console.log(" storytellerId:::", storytellerId);
+
+    // Якщо оповідач уже є і це не я, нічого не робимо
+    if (storytellerId && storytellerId !== playerId) {
+      Notify.info("Someone else is already the storyteller!");
+      return;
+    }
+
     if (!selectedCardId) {
-      console.warn("No card selected!");
+      console.log("No card selected!");
       Notify.failure("No card selected!");
       return;
     }
@@ -42,6 +55,7 @@ export const useTellStory = gameId => {
       Notify.failure("Selected card not found in hand!");
       return;
     }
+
     // If storyteller not defined, the player becomes the first storyteller
     // todo: logic for storytellerId === true (maybe just add "&& !isFirstTurn"?)
     if (!isFirstTurn) {
@@ -56,6 +70,7 @@ export const useTellStory = gameId => {
 
       const updatedGame = {
         ...currentGame,
+        // storytellerId: storytellerId ? storytellerId : playerId,
         storytellerId: playerId,
         gameStatus: GUESSING,
         cardsOnTable: updatedCardsOnTable,
@@ -63,21 +78,29 @@ export const useTellStory = gameId => {
         isFirstTurn: gameStatus === LOBBY ? true : false,
       };
 
-      socket.emit("setFirstStoryteller", { updatedGame }, response => {
+      setIsSubmitting(true); // Блокуємо повторні натискання
+
+      const event = storytellerId
+        ? "setNextStoryteller"
+        : "setFirstStoryteller";
+
+      socket.emit(event, { updatedGame }, response => {
+        setIsSubmitting(false); // Розблокуємо після відповіді
         if (response?.error) {
           console.error("Failed to update game:", response.error);
         }
       });
     }
   }, [
-    cardsOnTable,
-    currentGame,
-    gamePlayers,
-    gameStatus,
-    isFirstTurn,
-    playerHand,
+    storytellerId,
     selectedCardId,
+    playerHand,
+    isFirstTurn,
+    cardsOnTable,
     playerId,
+    gamePlayers,
+    currentGame,
+    gameStatus,
   ]);
 
   return tellStory;

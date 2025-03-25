@@ -2,16 +2,19 @@ import storage from "redux-persist/lib/storage";
 import { createSlice } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 
-const initialState = {
+const localInitialState = {
   screens: {}, // Об’єкт виду { "gameId_playerId": screen }
   isShowMask: {}, // Об’єкт виду { "gameId_playerId": Boolean }
   votes: {}, // {"gameId_playerId": {firstVotedCardId: null, secondVotedCardId: null}}
-  selectedCardId: {},
+  selectedCardId: {}, // for first story(teller) mode
+  isCarouselModeHandScreen: {},
+  isCarouselModeTableScreen: {},
+  zoomCardId: {},
 };
 
 export const localPersonalSlice = createSlice({
   name: "activeScreen",
-  initialState,
+  initialState: localInitialState,
   reducers: {
     // When user set screen by himself
     setActiveScreen(state, action) {
@@ -21,16 +24,6 @@ export const localPersonalSlice = createSlice({
       // state.screens = { ...state.screens, key: screen };
       state.screens[key] = screen;
     },
-
-    // When screen setts by server pushing
-    // forceSetActiveScreen(state, action) {
-    //   const { gameId, screen } = action.payload;
-    //   Object.keys(state.screens).forEach(key => {
-    //     if (key.startsWith(`${gameId}_`)) {
-    //       state.screens[key] = screen;
-    //     }
-    //   });
-    // },
 
     removeActiveScreen(state, action) {
       const { gameId, playerId } = action.payload;
@@ -42,7 +35,6 @@ export const localPersonalSlice = createSlice({
 
     setIsShowMask(state, action) {
       const { gameId, playerId, isShow } = action.payload;
-
       const key = `${gameId}_${playerId}`;
       state.isShowMask[key] = isShow;
     },
@@ -63,9 +55,7 @@ export const localPersonalSlice = createSlice({
     updateVotesLocal: (state, action) => {
       const { gameId, playerId, firstVotedCardId, secondVotedCardId } =
         action.payload;
-
       const key = `${gameId}_${playerId}`;
-
       state.votes[key] = {
         firstVotedCardId,
         secondVotedCardId,
@@ -74,21 +64,35 @@ export const localPersonalSlice = createSlice({
 
     setSelectedCardId: (state, action) => {
       const { gameId, playerId, selectedCardId } = action.payload;
-
       const key = `${gameId}_${playerId}`;
-
       state.selectedCardId[key] = selectedCardId;
     },
 
     removeSelectedCardId: (state, action) => {
       const { gameId, playerId } = action.payload;
-
       const key = `${gameId}_${playerId}`;
-
       delete state.selectedCardId[key];
     },
 
-    clearState: () => initialState,
+    clearLocalState: () => localInitialState,
+
+    setIsCarouselModeHandScreen: (state, action) => {
+      const { gameId, playerId, isCarouselModeHandScreen } = action.payload;
+      const key = `${gameId}_${playerId}`;
+      state.isCarouselModeHandScreen[key] = isCarouselModeHandScreen;
+    },
+
+    setIsCarouselModeTableScreen: (state, action) => {
+      const { gameId, playerId, isCarouselModeTableScreen } = action.payload;
+      const key = `${gameId}_${playerId}`;
+      state.isCarouselModeTableScreen[key] = isCarouselModeTableScreen;
+    },
+
+    setZoomCardId: (state, action) => {
+      const { gameId, playerId, zoomCardId } = action.payload;
+      const key = `${gameId}_${playerId}`;
+      state.zoomCardId[key] = zoomCardId;
+    },
   },
 });
 
@@ -105,7 +109,6 @@ export const persistedActiveScreenReducer = persistReducer(
 
 export const {
   setActiveScreen,
-  // forceSetActiveScreen
   removeActiveScreen,
   setIsShowMask,
   removeIsShowMask,
@@ -114,5 +117,8 @@ export const {
   updateVotesLocal,
   setSelectedCardId,
   removeSelectedCardId,
-  clearState,
+  clearLocalState,
+  setIsCarouselModeHandScreen,
+  setIsCarouselModeTableScreen,
+  setZoomCardId,
 } = localPersonalSlice.actions;

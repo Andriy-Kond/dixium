@@ -1,7 +1,7 @@
 import { Notify } from "notiflix";
 
 export const playerJoined = (
-  game,
+  gameId,
   player,
   message,
   userCredentials,
@@ -9,12 +9,12 @@ export const playerJoined = (
   navigate,
 ) => {
   console.log("playerJoined");
-  if (!game) {
-    throw new Error(`The game is ${game}`);
+  if (!gameId) {
+    throw new Error(`The game is ${gameId}`);
   }
 
   message && Notify.success(message); // Notify about new player
 
-  if (player._id === userCredentials._id && currentGameId !== game._id)
-    navigate(`/game/${game._id}`);
+  if (player._id === userCredentials._id && currentGameId !== gameId)
+    navigate(`/game/${gameId}`);
 };

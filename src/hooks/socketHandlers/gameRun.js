@@ -1,5 +1,10 @@
 import { Notify } from "notiflix";
-import { setActiveScreen } from "redux/game/localPersonalSlice.js";
+import {
+  setActiveScreen,
+  setIsCarouselModeHandScreen,
+  setIsCarouselModeTableScreen,
+  setZoomCardId,
+} from "redux/game/localPersonalSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
@@ -29,10 +34,28 @@ export const gameRun = (game, message, dispatch, activeActions, playerId) => {
     dispatch(
       setActiveScreen({
         gameId: game._id,
-        playerId: playerId,
+        playerId,
         screen: 0,
       }),
     );
+
+    dispatch(
+      setIsCarouselModeTableScreen({
+        gameId: game._id,
+        playerId,
+        isCarouselModeTableScreen: false,
+      }),
+    );
+
+    dispatch(
+      setIsCarouselModeHandScreen({
+        gameId: game._id,
+        playerId,
+        isCarouselModeHandScreen: false,
+      }),
+    );
+
+    dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
 
     if (relatedAction?.meta?.timer) {
       clearTimeout(relatedAction.meta.timer);

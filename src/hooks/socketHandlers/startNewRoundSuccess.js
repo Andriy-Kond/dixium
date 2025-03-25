@@ -1,16 +1,28 @@
+import { updateGame } from "redux/game/gameSlice.js";
 import {
+  clearLocalState,
   setActiveScreen,
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
-  setIsShowMask,
   setZoomCardId,
 } from "redux/game/localPersonalSlice.js";
-import { updateGame } from "redux/game/gameSlice.js";
 
-export const firstStorytellerUpdated = (game, dispatch, playerId) => {
+export const startNewRoundSuccess = (
+  game,
+  message,
+  dispatch,
+  activeActions,
+  playerId,
+) => {
+  console.log("startNewRoundSuccess");
+
   if (!game) {
     throw new Error(`The game is ${game}`);
   }
+
+  dispatch(updateGame(game));
+
+  dispatch(clearLocalState());
 
   dispatch(
     setActiveScreen({
@@ -37,14 +49,4 @@ export const firstStorytellerUpdated = (game, dispatch, playerId) => {
   );
 
   dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
-
-  dispatch(
-    setIsShowMask({
-      gameId: game._id,
-      playerId,
-      isShow: true,
-    }),
-  );
-
-  dispatch(updateGame(game));
 };

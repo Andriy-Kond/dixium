@@ -1,6 +1,6 @@
 import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction } from "redux/game/gameSlice.js";
-import { clearState } from "redux/game/localPersonalSlice.js";
+import { clearLocalState } from "redux/game/localPersonalSlice.js";
 
 export const gameDelete = (
   gameId,
@@ -29,7 +29,7 @@ export const gameDelete = (
   );
 
   dispatch(clearActiveAction({}));
-  dispatch(clearState());
+  dispatch(clearLocalState());
 
   if (currentGameId === gameId) {
     navigate(`/game`, { replace: true });
