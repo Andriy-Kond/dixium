@@ -260,11 +260,13 @@ export default function Table({
           <Button btnText="<" onClick={exitCarouselMode} />
 
           {!isCurrentPlayerStoryteller && (
-            <>
+            <div className={css.carouselModeBtnsWrapper}>
               <Button
                 onClick={() => toggleCardSelection("firstVoteCardSet")}
                 disabled={isDisabledFirstBtn || isCurrentPlayerVoted}
-                localClassName={firstVotedCardId && css.btnActive}>
+                localClassName={`${firstVotedCardId && css.btnActive} ${
+                  css.currentWidth
+                }`}>
                 <MdOutlineStarOutline
                   style={{ width: "20px", height: "20px" }}
                 />
@@ -273,13 +275,15 @@ export default function Table({
                 <Button
                   onClick={() => toggleCardSelection("secondVoteCardSet")}
                   disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
-                  localClassName={secondVotedCardId && css.btnActive}>
+                  localClassName={`${secondVotedCardId && css.btnActive} ${
+                    css.currentWidth
+                  }`}>
                   <MdOutlineStarOutline
                     style={{ width: "20px", height: "20px" }}
                   />
                 </Button>
               )}
-            </>
+            </div>
           )}
         </>,
       );

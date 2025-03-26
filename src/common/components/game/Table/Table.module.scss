@@ -203,6 +203,16 @@
   color: #5d7e9e;
 }
 
+.carouselModeBtnsWrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+}
+
+.currentWidth {
+  width: 90px;
+}
+
 .btnActive {
   background-color: #0f7dff1f;
 }

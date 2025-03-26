@@ -1,6 +1,6 @@
 // import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
-import { MdOutlineStarOutline, MdCheck } from "react-icons/md";
+import { MdCheck } from "react-icons/md";
 
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -47,8 +47,6 @@ import { useStartNewRound } from "hooks/useStartNewRound.js";
 export default function Hand({
   isActiveScreen,
   setMiddleButton,
-  // isCarouselModeHandScreen,
-  // setIsCarouselModeHandScreen,
   startVoting,
   finishRound,
   isZoomed,
@@ -79,14 +77,14 @@ export default function Hand({
     firstGuessCardSet: null,
     secondGuessCardSet: null,
   });
-  const [isMountedCarousel, setIsMountedCarousel] = useState(false); // is mounted carousel
+  const [isMountedCarousel, setIsMountedCarousel] = useState(false); // is mounted carousel for zooming (in next version)
 
   const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
   const currentPlayer = gamePlayers.find(p => p._id === playerId);
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const isCurrentPlayerStoryteller = storytellerId === playerId;
   const playersMoreThanThree = gamePlayers.length > 3;
-  const playersMoreThanSix = gamePlayers.length > 6;
+  // const playersMoreThanSix = gamePlayers.length > 6;
   const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
 
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
@@ -94,17 +92,23 @@ export default function Hand({
 
   const isCurrentPlayerHost = hostPlayerId === playerId;
 
+  // const isCanGuess = useCallback(() => {
+  //   if ((playersMoreThanSix && !isSingleCardMode) || !playersMoreThanThree) {
+  //     return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+  //   } else return !!firstGuessCardSet?._id;
+  // }, [
+  //   firstGuessCardSet?._id,
+  //   isSingleCardMode,
+  //   playersMoreThanSix,
+  //   playersMoreThanThree,
+  //   secondGuessCardSet?._id,
+  // ]);
+
   const isCanGuess = useCallback(() => {
-    if ((playersMoreThanSix && !isSingleCardMode) || !playersMoreThanThree) {
+    if (!playersMoreThanThree) {
       return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
     } else return !!firstGuessCardSet?._id;
-  }, [
-    firstGuessCardSet?._id,
-    isSingleCardMode,
-    playersMoreThanSix,
-    playersMoreThanThree,
-    secondGuessCardSet?._id,
-  ]);
+  }, [firstGuessCardSet?._id, playersMoreThanThree, secondGuessCardSet?._id]);
 
   const isCurrentPlayerGuessed = gamePlayers.some(
     player => player._id === playerId && player.isGuessed,
@@ -154,7 +158,7 @@ export default function Hand({
 
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
-    // setIsCarouselModeHandScreen(true);
+
     dispatch(
       setIsCarouselModeHandScreen({
         gameId,
@@ -168,7 +172,6 @@ export default function Hand({
   };
 
   const exitCarouselMode = useCallback(() => {
-    // setIsCarouselModeHandScreen(false);
     dispatch(
       setIsCarouselModeHandScreen({
         gameId,
@@ -255,9 +258,9 @@ export default function Hand({
     ],
   );
 
+  //~ is show mask
   useEffect(() => {
     if (isShowMask) {
-      // setIsCarouselModeHandScreen(false);
       dispatch(
         setIsCarouselModeHandScreen({
           gameId,
@@ -270,7 +273,7 @@ export default function Hand({
     }
   }, [dispatch, gameId, isShowMask, playerId]);
 
-  // reInit for emblaApiCardsGuess
+  //~ reInit for emblaApiCardsGuess
   useEffect(() => {
     if (!emblaApiCardsGuess) return;
 
@@ -284,8 +287,7 @@ export default function Hand({
   //   if (gameStatus === GUESSING) dispatch(removeSelectedCardId({ gameId, playerId })); // todo перевірити чи потрібно ще?
   // }, [dispatch, gameId, gameStatus, playerId]);
 
-  // Get active card's index
-
+  //~ Get active card's index
   useEffect(() => {
     if (!emblaApiCardsGuess) return;
 
@@ -296,7 +298,7 @@ export default function Hand({
     return () => emblaApiCardsGuess.off("select", onSelect);
   }, [emblaApiCardsGuess]);
 
-  // KB events handler
+  //~ KB events handler
   useEffect(() => {
     const handleKeyPress = event => {
       if (!emblaApiCardsGuess) return;
@@ -350,7 +352,7 @@ export default function Hand({
 
       setMiddleButton(
         <>
-          <Button btnText="<" onClick={exitCarouselMode} />
+          <Button btnText="<<" onClick={exitCarouselMode} />
 
           {!storytellerId ||
           (!isCurrentPlayerStoryteller && storyteller?.isGuessed) ? (
@@ -418,11 +420,8 @@ export default function Hand({
       //   console.log("це хост і почався новий раунд (LOBBY)");
       //   setMiddleButton(null);
       // }
-      else if (
-        isCurrentPlayerHost &&
-        isReadyToVote &&
-        gameStatus === GUESSING
-      ) {
+
+      if (isCurrentPlayerHost && isReadyToVote && gameStatus === GUESSING) {
         console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button
@@ -437,7 +436,7 @@ export default function Hand({
         isReadyToCalculatePoints &&
         gameStatus === VOTING
       ) {
-        console.log("це хост і всі обрали проголосували - можна рахувати бали");
+        console.log("це хост і всі проголосували - можна рахувати бали");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
@@ -548,6 +547,7 @@ export default function Hand({
     return marks;
   };
 
+  // for zooming in next version
   // const Controls = ({ zoomIn, zoomOut, resetTransform }) => (
   //   <>
   //     <button onClick={() => zoomIn()}>+</button>
