@@ -1,5 +1,4 @@
 {
-  "homepage": "https://Andriy-Kond.github.io/dixium",
   "name": "dixium",
   "version": "0.1.0",
   "private": true,
@@ -15,7 +14,6 @@
     "@testing-library/user-event": "^14.5.2",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.5.2",
-    "gh-pages": "^6.2.0",
     "just-clone": "^6.2.0",
     "notiflix": "^3.2.8",
     "react": "^18.3.1",
@@ -31,8 +29,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "start": "set BROWSER=none&& react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
