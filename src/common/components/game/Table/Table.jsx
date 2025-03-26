@@ -36,12 +36,8 @@ import { useStartNewRound } from "hooks/useStartNewRound.js";
 export default function Table({
   isActiveScreen,
   setMiddleButton,
-  // isCarouselModeTableScreen,
-  // setIsCarouselModeTableScreen,
   startVoting,
   finishRound,
-  // toggleZoomCardId,
-  // setToggleZoomCardId,
 }) {
   const dispatch = useDispatch();
   const userCredentials = useSelector(selectUserCredentials);
@@ -257,7 +253,7 @@ export default function Table({
 
       setMiddleButton(
         <>
-          <Button btnText="<" onClick={exitCarouselMode} />
+          <Button btnText="<<" onClick={exitCarouselMode} />
 
           {!isCurrentPlayerStoryteller && (
             <div className={css.carouselModeBtnsWrapper}>
@@ -385,26 +381,32 @@ export default function Table({
   ]);
 
   const getStarsMarksByVoteCount = voteCount => {
-    const marks = [];
-    if (voteCount === 1)
-      marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
-    if (voteCount === 2)
-      marks.push(<MdOutlineStarOutline className={css.checkboxCard} />);
-    return marks;
+    const marksVote = [];
+    if (voteCount === 1) {
+      marksVote.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+    }
+
+    if (voteCount === 2) {
+      marksVote.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+      marksVote.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+    }
+
+    return marksVote;
   };
 
-  const getStarsMarksByCardId = useCallback(
-    cardId => {
-      const marks = [];
+  const getStarsMarksByCardId = cardId => {
+    const marks = [];
 
-      if (firstVotedCardId === cardId)
-        marks.push(<MdOutlineStar className={css.carouselCheckbox} />);
-      if (secondVotedCardId === cardId)
-        marks.push(<MdOutlineStar className={css.carouselCheckbox} />);
-      return marks;
-    },
-    [firstVotedCardId, secondVotedCardId],
-  );
+    if (firstVotedCardId === cardId) {
+      marks.push(<MdOutlineStar className={css.carouselCheckbox} />);
+    }
+
+    if (secondVotedCardId === cardId) {
+      marks.push(<MdOutlineStar className={css.carouselCheckbox} />);
+    }
+
+    return marks;
+  };
 
   //^ Render
   if (gameStatus === VOTING) {
@@ -503,18 +505,20 @@ export default function Table({
                   </span>
 
                   <ul className={css.resultVotes}>
-                    {result.votesForThisCard.map((vote, voteIdx) => (
-                      <li className={css.voterContainer} key={voteIdx}>
-                        {capitalizeWords(vote.playerName)}
-                        <div className={css.resultCheckboxContainer}>
-                          {getStarsMarksByVoteCount(vote.voteCount).map(
-                            (mark, index) => (
+                    {result.votesForThisCard.map((vote, voteIdx) => {
+                      const stars = getStarsMarksByVoteCount(vote.voteCount);
+
+                      return (
+                        <li className={css.voterContainer} key={voteIdx}>
+                          {capitalizeWords(vote.playerName)}
+                          <div className={css.resultCheckboxContainer}>
+                            {stars.map((mark, index) => (
                               <span key={index}>{mark}</span>
-                            ),
-                          )}
-                        </div>
-                      </li>
-                    ))}
+                            ))}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </li>

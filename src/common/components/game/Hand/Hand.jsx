@@ -65,6 +65,9 @@ export default function Hand({
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
+  useEffect(() => {
+    console.log("isShowMask :>> ", isShowMask);
+  }, [isShowMask]);
   const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
@@ -420,8 +423,11 @@ export default function Hand({
       //   console.log("це хост і почався новий раунд (LOBBY)");
       //   setMiddleButton(null);
       // }
-
-      if (isCurrentPlayerHost && isReadyToVote && gameStatus === GUESSING) {
+      else if (
+        isCurrentPlayerHost &&
+        isReadyToVote &&
+        gameStatus === GUESSING
+      ) {
         console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button
