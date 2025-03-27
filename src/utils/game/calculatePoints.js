@@ -62,8 +62,9 @@ export function calculatePoints({
     });
   } else {
     console.log(
-      "хтось вгадав карту оповідача, але не всі: оповідачу - 3 бали, всім вгадавшим теж по 3 бали",
+      "хтось вгадав карту оповідача, але не всі: оповідачу - 3 бали, всім вгадавшим теж по 3 бали. Серед цих гравців:",
     );
+
     updatedScores[storytellerId] += 3; // Оповідач отримує 3
     // console.log("Оповідач отримує 3 бали updatedScores:::", updatedScores);
 
@@ -74,7 +75,10 @@ export function calculatePoints({
           vote.secondVotedCardId === storytellerCardId)
       ) {
         updatedScores[voterId] += 3; // Вгадали карту оповідача - 3 бали
-        console.log(`Гравець ${voterId} отримує 3 бали (вгадав)`);
+        console.log(`Гравець ${voterId} отримує 3 бали (бо вгадав)`);
+        console.log(
+          `І у гравця ${voterId} стає ${updatedScores[voterId]} балів`,
+        );
       }
     });
   }
@@ -97,7 +101,7 @@ export function calculatePoints({
         if (card && card.ownerId !== voterId) {
           // Якщо проголосована гравцем карта знайдена на столі і це не його карта, то додатковий бонусний бал власнику карти:
           bonusPoints[card.ownerId] = (bonusPoints[card.ownerId] || 0) + 1;
-          console.log(`Гравець ${card.ownerId} отримує +1 бал`);
+          console.log(`Гравець ${card.ownerId} отримує +1 бал у {bonusPoints}`);
         }
       }
     });
@@ -108,7 +112,9 @@ export function calculatePoints({
       console.log(
         `Гравець ${ownerId} отримав додатково ${points} балів (але зарахується не більше 3)`,
       );
+
       updatedScores[ownerId] += Math.min(points, 3); // гравець може отримати максимум 3 бали, навіть якщо його points більше.
+      console.log(`Тепер у гравця ${ownerId} ${updatedScores[ownerId]} балів`);
     }
   });
 
