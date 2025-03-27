@@ -9,6 +9,7 @@ const resources = {
       button_save: "Save",
       error_message: "Something went wrong",
       deck: "Deck",
+      logout: "Logout",
     },
   },
   uk: {
@@ -17,6 +18,7 @@ const resources = {
       button_save: "Зберегти",
       error_message: "Щось пішло не так",
       deck: "Колода",
+      logout: "Вихід",
     },
   },
 };
