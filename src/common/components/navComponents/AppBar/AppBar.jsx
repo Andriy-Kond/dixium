@@ -6,6 +6,7 @@ import AuthNav from "common/components/navComponents/AuthNav";
 import UserMenu from "common/components/navComponents/UserMenu";
 
 import css from "./AppBar.module.scss";
+import LangSwitcher from "common/components/navComponents/LangSwitcher";
 
 export default function AppBar() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
@@ -16,8 +17,11 @@ export default function AppBar() {
       <NavigationMenu />
 
       {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
-      {isUserToken && isLoggedIn && <UserMenu />}
-      {!isUserToken && <AuthNav />}
+      <div className={css.appBarContainer}>
+        {isUserToken && isLoggedIn && <UserMenu />}
+        {!isUserToken && <AuthNav />}
+        <LangSwitcher></LangSwitcher>
+      </div>
     </nav>
   );
 }

@@ -2,6 +2,8 @@ import {
   useGetAllDecksQuery,
   useGetCurrentDeckQuery,
 } from "redux/game/gameApi.js";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentDeckId, setIsCreatingGame } from "redux/game/gameSlice.js";
@@ -12,6 +14,7 @@ import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import { LOBBY } from "utils/generals/constants.js";
 
 export default function DecksList() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const currentDeckId = useSelector(selectCurrentDeckId);
   const userCredentials = useSelector(selectUserCredentials);
@@ -63,7 +66,8 @@ export default function DecksList() {
               onClick={() => {
                 pullDeck(currentDeckId === deck._id ? null : deck._id);
               }}
-              btnText={`Deck: ${deck.name}`}
+              btnText={`${t("deck")}: ${deck.name}`}
+              // btnText={`Deck: ${deck.name}`}
               btnStyle={["twoBtnsInRow"]}
               localClassName={currentDeck?._id === deck._id && css.btnActive}
             />

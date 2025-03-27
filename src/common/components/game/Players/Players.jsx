@@ -1,4 +1,4 @@
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 import { useEffect } from "react";
 import { useSelector } from "react-redux";

@@ -16,15 +16,13 @@ export default function Button({
   );
 
   return (
-    <>
-      <button
-        className={buttonClassNames}
-        type="submit"
-        onClick={onClick}
-        disabled={disabled}>
-        {children}
-        {btnText.toUpperCase()}
-      </button>
-    </>
+    <button
+      className={buttonClassNames}
+      type="submit"
+      onClick={onClick}
+      disabled={disabled}>
+      {children}
+      {btnText.toUpperCase()}
+    </button>
   );
 }

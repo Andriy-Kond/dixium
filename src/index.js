@@ -7,6 +7,7 @@ import { persistor, store } from "redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 
 import "styles/main.scss";
+import "./locales/en-uk/translation.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
