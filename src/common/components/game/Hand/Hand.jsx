@@ -21,6 +21,7 @@ import {
   selectPlayerHand,
   selectSelectedCardId,
   selectStorytellerId,
+  selectToastIdRef,
   selectUserCredentials,
 } from "redux/selectors.js";
 
@@ -42,6 +43,7 @@ import {
   removeSelectedCardId,
   setIsShowMask,
   setIsCarouselModeHandScreen,
+  removeToastIdRef,
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 
@@ -52,7 +54,6 @@ export default function Hand({
   finishRound,
   isZoomed,
   setIsZoomed,
-  toastIdRef,
 }) {
   const dispatch = useDispatch();
   const { gameId } = useParams();
@@ -74,6 +75,7 @@ export default function Hand({
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
   );
+  const toastIdRef = useSelector(selectToastIdRef(gameId));
 
   // const [selectedCardId, setSelectedCardId] = useState(null); // for first story(teller) mode
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
@@ -160,7 +162,8 @@ export default function Hand({
 
     dispatch(removeSelectedCardId({ gameId, playerId })); // clear
 
-    toast.dismiss(toastIdRef.current); // Закриє відповідне повідомлення
+    toast.dismiss(toastIdRef); // Закриє відповідне повідомлення
+    dispatch(removeToastIdRef({ gameId, playerId }));
   }, [currentGame, dispatch, gameId, playerId, toastIdRef]);
 
   const carouselModeOn = idx => {
@@ -372,18 +375,28 @@ export default function Hand({
                 localClassName={
                   (firstGuessCardSet || selectedCardId) && css.btnActive
                 }></Button>
-
+              {/* 
               {!playersMoreThanThree && (
                 <Button
                   btnText={gameStatus === LOBBY ? "Select card" : "Choose card"}
                   onClick={() => toggleCardSelection("secondGuessCardSet")}
                   disabled={isDisabledSecondBtn() || isCurrentPlayerGuessed}
                   localClassName={secondGuessCardSet && css.btnActive}>
-                  {/* <MdOutlineStarOutline
-                    style={{ width: "20px", height: "20px" }}
-                  /> */}
                 </Button>
-              )}
+              )} */}
+
+              {!playersMoreThanThree &&
+                (gameStatus === LOBBY ? (
+                  ""
+                ) : (
+                  <Button
+                    btnText={"Choose card"}
+                    onClick={() => toggleCardSelection("secondGuessCardSet")}
+                    disabled={isDisabledSecondBtn() || isCurrentPlayerGuessed}
+                    localClassName={
+                      secondGuessCardSet && css.btnActive
+                    }></Button>
+                ))}
             </>
           ) : (
             isCurrentPlayerStoryteller &&

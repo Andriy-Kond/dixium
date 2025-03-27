@@ -10,6 +10,7 @@ const localInitialState = {
   isCarouselModeHandScreen: {},
   isCarouselModeTableScreen: {},
   zoomCardId: {},
+  toastIdRef: {},
 };
 
 export const localPersonalSlice = createSlice({
@@ -93,6 +94,18 @@ export const localPersonalSlice = createSlice({
       const key = `${gameId}_${playerId}`;
       state.zoomCardId[key] = zoomCardId;
     },
+
+    setToastIdRef: (state, action) => {
+      const { gameId, playerId, toastIdRef } = action.payload;
+      const key = `${gameId}_${playerId}`;
+      state.selectedCardId[key] = toastIdRef;
+    },
+
+    removeToastIdRef: (state, action) => {
+      const { gameId, playerId } = action.payload;
+      const key = `${gameId}_${playerId}`;
+      delete state.selectedCardId[key];
+    },
   },
 });
 
@@ -121,4 +134,6 @@ export const {
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
   setZoomCardId,
+  setToastIdRef,
+  removeToastIdRef,
 } = localPersonalSlice.actions;

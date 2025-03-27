@@ -4,7 +4,11 @@ import { useEffect } from "react";
 import { Notify } from "notiflix";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
-import { selectActiveActions, selectUserCredentials } from "redux/selectors.js";
+import {
+  selectActiveActions,
+  selectToastIdRef,
+  selectUserCredentials,
+} from "redux/selectors.js";
 
 import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import {
@@ -33,21 +37,21 @@ export const useSetupSocketListeners = () => {
   const { _id: userId } = userCredentials;
   const location = useLocation();
   const match = location.pathname.match(/game\/([\w\d]+)/);
-  const currentGameId = match ? match[1] : null;
+  const gameId = match ? match[1] : null;
   const activeActions = useSelector(selectActiveActions);
+  const toastIdRef = useSelector(selectToastIdRef(gameId));
 
   const { refetch: refetchAllGames } = useGetAllGamesQuery();
 
   useEffect(() => {
-    joinToGameRoom(socket, currentGameId, userCredentials); // Handle of initial connection
+    joinToGameRoom(socket, gameId, userCredentials); // Handle of initial connection
 
     // Обробка події "connect": перше або повторне підключення після оновлення сторінки
-    const handleConnect = () =>
-      joinToGameRoom(socket, currentGameId, userCredentials);
+    const handleConnect = () => joinToGameRoom(socket, gameId, userCredentials);
 
     // Обробка події "reconnect": перепідключення після втрати з'єднання (через мережеві проблеми)
     const handleReconnect = () =>
-      joinToGameRoom(socket, currentGameId, userCredentials);
+      joinToGameRoom(socket, gameId, userCredentials);
 
     const handleError = err => Notify.failure(err.errorMessage);
 
@@ -66,7 +70,7 @@ export const useSetupSocketListeners = () => {
         player,
         message,
         userCredentials,
-        currentGameId,
+        gameId,
         navigate,
       );
 
@@ -74,7 +78,15 @@ export const useSetupSocketListeners = () => {
       userDeletedFromGame(game, dispatch);
 
     const handleGameDeleted = ({ game, message }) => {
-      gameDelete(game._id, message, dispatch, currentGameId, userId, navigate);
+      gameDelete(
+        game._id,
+        message,
+        dispatch,
+        gameId,
+        userId,
+        navigate,
+        toastIdRef,
+      );
     };
 
     const handlePlayersOrderUpdate = ({ game, message }) =>
@@ -169,7 +181,7 @@ export const useSetupSocketListeners = () => {
     };
   }, [
     activeActions,
-    currentGameId,
+    gameId,
     dispatch,
     navigate,
     refetchAllGames,

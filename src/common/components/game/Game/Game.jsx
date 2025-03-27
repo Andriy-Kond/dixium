@@ -1,6 +1,6 @@
 import useEmblaCarousel from "embla-carousel-react";
 
-import { cloneElement, useCallback, useEffect, useRef, useState } from "react";
+import { cloneElement, useCallback, useEffect, useState } from "react";
 import Hand from "common/components/game/Hand";
 import Players from "common/components/game/Players";
 import Table from "common/components/game/Table";
@@ -26,12 +26,15 @@ import {
   selectStorytellerId,
   selectUserCredentials,
   selectVotes,
+  selectToastIdRef,
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
-import { setActiveScreen } from "redux/game/localPersonalSlice.js";
+import {
+  setActiveScreen,
+  setToastIdRef,
+} from "redux/game/localPersonalSlice.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
-import { Notify } from "notiflix";
 import { toast } from "react-toastify";
 
 export default function Game() {
@@ -51,6 +54,7 @@ export default function Game() {
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
 
   const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
+  const toastIdRef = useSelector(selectToastIdRef(gameId));
 
   // const [localActiveScreen, setLocalActiveScreen] = useState(activeScreen);
 
@@ -228,28 +232,13 @@ export default function Game() {
     zoomCardId,
   ]);
 
-  const toastIdRef = useRef(null);
-
   useEffect(() => {
     if (isShowMask) {
-      // Notify.info(
-      //   `Player ${storyteller?.name} told first story. <br> Let's go to guess it!`,
-      //   {
-      //     position: "center-center",
-      //     backOverlay: false,
-      //     clickToClose: true,
-      //     closeButton: true,
-      //     plainText: false,
-      //   },
-      // );
-
-      console.log(" useEffect >> isShowMask:::", isShowMask);
-
-      if (!toastIdRef.current) {
-        toastIdRef.current = toast.info(
+      if (!toastIdRef && !isCurrentPlayerStoryteller) {
+        const newToastId = toast.info(
           <>
             <p>
-              Player <b>{storyteller?.name.toUpperCase()}</b> told first story.{" "}
+              Player <b>{storyteller?.name.toUpperCase()}</b> told first story.
               <br /> Let's go to guess it!
             </p>
           </>,
@@ -266,9 +255,19 @@ export default function Game() {
             // transition: Bounce,
           },
         );
+
+        dispatch(setToastIdRef({ gameId, playerId, toastIdRef: newToastId }));
       }
     }
-  }, [isShowMask, storyteller?.name]);
+  }, [
+    dispatch,
+    gameId,
+    isCurrentPlayerStoryteller,
+    isShowMask,
+    playerId,
+    storyteller?.name,
+    toastIdRef,
+  ]);
 
   return (
     <div className={css.gameContainer}>

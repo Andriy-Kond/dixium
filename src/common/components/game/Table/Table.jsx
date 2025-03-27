@@ -267,7 +267,7 @@ export default function Table({
                   style={{ width: "20px", height: "20px" }}
                 />
               </Button>
-              {playersMoreThanSix && (
+              {playersMoreThanSix && !isSingleCardMode && (
                 <Button
                   onClick={() => toggleCardSelection("secondVoteCardSet")}
                   disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
@@ -378,6 +378,7 @@ export default function Table({
     isReadyToStartNewRound,
     startNewRound,
     zoomCardId,
+    isSingleCardMode,
   ]);
 
   const getStarsMarksByVoteCount = voteCount => {

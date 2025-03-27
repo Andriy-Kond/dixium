@@ -57,6 +57,12 @@ export const selectZoomCardId = (gameId, playerId) => state => {
   return zoomCardId || null;
 };
 
+export const selectToastIdRef = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const toastIdRef = state.localPersonalSlice.toastIdRef[key];
+  return toastIdRef || null;
+};
+
 // gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
