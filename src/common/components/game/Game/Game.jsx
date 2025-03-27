@@ -1,6 +1,6 @@
 import useEmblaCarousel from "embla-carousel-react";
 
-import { cloneElement, useCallback, useEffect, useState } from "react";
+import { cloneElement, useCallback, useEffect, useRef, useState } from "react";
 import Hand from "common/components/game/Hand";
 import Players from "common/components/game/Players";
 import Table from "common/components/game/Table";
@@ -31,6 +31,8 @@ import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
 import { setActiveScreen } from "redux/game/localPersonalSlice.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
+import { Notify } from "notiflix";
+import { toast } from "react-toastify";
 
 export default function Game() {
   const dispatch = useDispatch();
@@ -40,6 +42,7 @@ export default function Game() {
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
+  const storyteller = gamePlayers.find(p => p._id === storytellerId);
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const scores = useSelector(selectScores(gameId));
   const votes = useSelector(selectVotes(gameId));
@@ -55,7 +58,6 @@ export default function Game() {
   const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
 
   const [middleButton, setMiddleButton] = useState(null);
-  // const [toggleZoomCardId, setToggleZoomCardId] = useState(null);
 
   const stabilizedSetMiddleButton = useCallback(value => {
     setMiddleButton(value);
@@ -68,12 +70,6 @@ export default function Game() {
   const isCarouselModeTableScreen = useSelector(
     selectIsCarouselModeTableScreen(gameId, playerId),
   );
-
-  // const [isCarouselModeHandScreen, setIsCarouselModeHandScreen] =
-  //   useState(false);
-
-  // const [isCarouselModeTableScreen, setIsCarouselModeTableScreen] =
-  //   useState(false);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -232,6 +228,48 @@ export default function Game() {
     zoomCardId,
   ]);
 
+  const toastIdRef = useRef(null);
+
+  useEffect(() => {
+    if (isShowMask) {
+      // Notify.info(
+      //   `Player ${storyteller?.name} told first story. <br> Let's go to guess it!`,
+      //   {
+      //     position: "center-center",
+      //     backOverlay: false,
+      //     clickToClose: true,
+      //     closeButton: true,
+      //     plainText: false,
+      //   },
+      // );
+
+      console.log(" useEffect >> isShowMask:::", isShowMask);
+
+      if (!toastIdRef.current) {
+        toastIdRef.current = toast.info(
+          <>
+            <p>
+              Player <b>{storyteller?.name.toUpperCase()}</b> told first story.{" "}
+              <br /> Let's go to guess it!
+            </p>
+          </>,
+
+          {
+            position: "top-center",
+            autoClose: false,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: 1,
+            theme: "colored",
+            // transition: Bounce,
+          },
+        );
+      }
+    }
+  }, [isShowMask, storyteller?.name]);
+
   return (
     <div className={css.gameContainer}>
       <p>Game</p>
@@ -255,6 +293,7 @@ export default function Game() {
                 startVoting,
                 // toggleZoomCardId,
                 // setToggleZoomCardId,
+                toastIdRef,
               })}
             </li>
           ))}

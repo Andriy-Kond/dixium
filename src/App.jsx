@@ -11,6 +11,7 @@ import { useGetUserByTokenQuery } from "redux/auth/authApi";
 import { setIsLoggedIn } from "redux/auth/authSlice";
 import { selectUserToken } from "./redux/selectors";
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
+import { ToastContainer } from "react-toastify";
 
 Notify.init({
   clickToClose: true,
@@ -47,7 +48,7 @@ export default function App() {
       {!isFetching && (
         <Routes>
           <Route path="/" element={<SharedLayout />}>
-            <Route index element={<HomePage />} />
+            {/* <Route index element={<HomePage />} /> */}
 
             <Route element={<PrivateRoute redirectTo="/login" />}>
               <Route path="/game/:gameId" element={<GameStartedPage />} />
@@ -63,6 +64,18 @@ export default function App() {
           </Route>
         </Routes>
       )}
+
+      <ToastContainer
+        position="top-center"
+        autoClose={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        theme="light"
+        // transition="Bounce"
+      />
     </>
   );
 }

@@ -31,7 +31,10 @@ export default function UserMenu() {
             src={userCredentials.avatarURL}
             alt="avatar"
           />
-          <span className={css.text}>{`Welcome, ${userCredentials.name}`}</span>
+          <span
+            className={
+              css.text
+            }>{`Welcome, ${userCredentials.name.toUpperCase()}`}</span>
           <Button
             onClick={handleLogout}
             btnText={"Logout"}

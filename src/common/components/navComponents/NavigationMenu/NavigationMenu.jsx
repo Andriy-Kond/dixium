@@ -11,11 +11,11 @@ export default function NavigationMenu() {
 
   return (
     <div className={css.navBar}>
-      <NavLink
+      {/* <NavLink
         to="/"
         className={({ isActive }) => clsx(css.link, isActive && css.active)}>
         Home
-      </NavLink>
+      </NavLink> */}
 
       {isLoggedIn && (
         <>
@@ -24,7 +24,7 @@ export default function NavigationMenu() {
             className={({ isActive }) =>
               clsx(css.link, isActive && css.active)
             }>
-            Game
+            {"Games".toUpperCase()}
           </NavLink>
         </>
       )}

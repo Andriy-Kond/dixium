@@ -1,4 +1,5 @@
 // import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { ToastContainer, toast } from "react-toastify";
 
 import { MdCheck } from "react-icons/md";
 
@@ -51,6 +52,7 @@ export default function Hand({
   finishRound,
   isZoomed,
   setIsZoomed,
+  toastIdRef,
 }) {
   const dispatch = useDispatch();
   const { gameId } = useParams();
@@ -157,7 +159,9 @@ export default function Hand({
     });
 
     dispatch(removeSelectedCardId({ gameId, playerId })); // clear
-  }, [currentGame, dispatch, gameId, playerId]);
+
+    toast.dismiss(toastIdRef.current); // Закриє відповідне повідомлення
+  }, [currentGame, dispatch, gameId, playerId, toastIdRef]);
 
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
@@ -413,7 +417,7 @@ export default function Hand({
           setMiddleButton(
             <Button
               btnStyle={["btnFlexGrow"]}
-              btnText={"Close mask"}
+              btnText={"Go to guess the story"}
               onClick={returnToHand}
             />,
           );
