@@ -57,7 +57,7 @@ export default function LoginPage() {
       {!isLoggedIn && (
         <div className={css.container}>
           <div className={css.pageHeader}>
-            <p className={css.pageHeader_title}>Вхід</p>
+            <p className={css.pageHeader_title}>Enter</p>
           </div>
 
           <div className={css.pageMain}>

@@ -20,7 +20,7 @@ export default function AppBar() {
       <div className={css.appBarContainer}>
         {isUserToken && isLoggedIn && <UserMenu />}
         {!isUserToken && <AuthNav />}
-        <LangSwitcher></LangSwitcher>
+        <LangSwitcher />
       </div>
     </nav>
   );

@@ -51,7 +51,7 @@ export default function RegisterPage() {
   return (
     <div className={css.container}>
       <div className={css.pageHeader}>
-        <p className={css.pageHeader_title}>Реєстрація</p>
+        <p className={css.pageHeader_title}>Register</p>
       </div>
 
       <div className={css.pageMain}>

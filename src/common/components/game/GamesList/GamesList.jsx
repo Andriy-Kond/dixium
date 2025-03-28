@@ -80,7 +80,7 @@ export default function GamesList() {
               <li key={game._id} className={css.item}>
                 <img
                   src={game.gamePoster}
-                  alt="Game title"
+                  alt="game title"
                   className={css.img}
                 />
                 <div className={css.wrapper}>

@@ -3,7 +3,6 @@ import {
   useGetCurrentDeckQuery,
 } from "redux/game/gameApi.js";
 import { useTranslation } from "react-i18next";
-import { t } from "i18next";
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentDeckId, setIsCreatingGame } from "redux/game/gameSlice.js";
@@ -58,7 +57,7 @@ export default function DecksList() {
 
   return (
     <div className={css.container}>
-      <p className={css.deckTitle}>Select your deck</p>
+      <p className={css.deckTitle}>Select deck</p>
       <ul className={css.deckList}>
         {allDecks?.map(deck => (
           <li className={css.deck} key={deck._id}>
@@ -66,8 +65,7 @@ export default function DecksList() {
               onClick={() => {
                 pullDeck(currentDeckId === deck._id ? null : deck._id);
               }}
-              btnText={`${t("deck")}: ${deck.name}`}
-              // btnText={`Deck: ${deck.name}`}
+              btnText={`Deck: ${deck.name}`}
               btnStyle={["twoBtnsInRow"]}
               localClassName={currentDeck?._id === deck._id && css.btnActive}
             />

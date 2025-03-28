@@ -7,10 +7,8 @@ import { selectUserCredentials } from "redux/selectors";
 import Button from "common/components/ui/Button";
 
 import css from "./UserMenu.module.scss";
-import { useTranslation } from "react-i18next";
 
 export default function UserMenu() {
-  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [logoutUser] = useLogoutUserMutation();
   const userCredentials = useSelector(selectUserCredentials);
@@ -33,12 +31,13 @@ export default function UserMenu() {
             src={userCredentials.avatarURL}
             alt="avatar"
           />
-          <span className={css.text}>{`${t(
-            "welcome",
-          )}, ${userCredentials.name.toUpperCase()}`}</span>
+          <span
+            className={
+              css.text
+            }>{`Welcome, ${userCredentials.name.toUpperCase()}`}</span>
           <Button
             onClick={handleLogout}
-            btnText={t("logout")}
+            btnText={"Logout"}
             btnStyle={btnStyle}
           />
         </div>

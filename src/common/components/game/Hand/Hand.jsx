@@ -374,7 +374,8 @@ export default function Hand({
                 btnStyle={["btnFlexGrow"]}
                 localClassName={
                   (firstGuessCardSet || selectedCardId) && css.btnActive
-                }></Button>
+                }
+              />
               {/* 
               {!playersMoreThanThree && (
                 <Button
@@ -393,9 +394,8 @@ export default function Hand({
                     btnText={"Choose card"}
                     onClick={() => toggleCardSelection("secondGuessCardSet")}
                     disabled={isDisabledSecondBtn() || isCurrentPlayerGuessed}
-                    localClassName={
-                      secondGuessCardSet && css.btnActive
-                    }></Button>
+                    localClassName={secondGuessCardSet && css.btnActive}
+                  />
                 ))}
             </>
           ) : (
