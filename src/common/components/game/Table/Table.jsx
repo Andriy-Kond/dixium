@@ -32,6 +32,7 @@ import {
 import { capitalizeWords } from "utils/game/capitalizeWords.js";
 import LocalModal from "common/components/LocalModal";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
+import { useTranslation } from "react-i18next";
 
 export default function Table({
   isActiveScreen,
@@ -40,6 +41,7 @@ export default function Table({
   finishRound,
 }) {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
   const { gameId } = useParams();
@@ -97,7 +99,7 @@ export default function Table({
   });
 
   const handleVote = useCallback(() => {
-    console.log("handleVote");
+    // console.log("handleVote");
     vote();
   }, [vote]);
 
@@ -135,8 +137,8 @@ export default function Table({
       const currentCard = cardsOnTable[currentCardIndex];
 
       if (!currentCard) {
-        Notify.failure("error: card not found");
         console.log("error: card not found");
+        Notify.failure(t("err_card_not_found"));
         return;
       }
 
@@ -179,6 +181,7 @@ export default function Table({
       playerId,
       playerVotes,
       secondVotedCardId,
+      t,
     ],
   );
 
@@ -197,7 +200,7 @@ export default function Table({
     result => result.cardId === zoomCardId,
   );
 
-  // reInit for emblaApiCardsVote
+  //~ reInit for emblaApiCardsVote
   useEffect(() => {
     if (!emblaApiCardsVote) return;
 
@@ -210,7 +213,7 @@ export default function Table({
     if (emblaApiCardsVote) emblaApiCardsVote.scrollTo(activeCardIdx);
   }, [activeCardIdx, emblaApiCardsVote]);
 
-  // Get active card's index
+  //~ Get active card's index
   useEffect(() => {
     if (!emblaApiCardsVote) return;
 
@@ -221,7 +224,7 @@ export default function Table({
     return () => emblaApiCardsVote.off("select", onSelect);
   }, [emblaApiCardsVote]);
 
-  // KB events handler
+  //~ KB events handler
   useEffect(() => {
     const handleKeyPress = event => {
       if (!emblaApiCardsVote) return;
@@ -237,10 +240,11 @@ export default function Table({
     if (!isActiveScreen) return;
 
     if (isCarouselModeTableScreen) {
-      console.log("Carousel Mode");
+      // console.log("Carousel Mode");
       const activeCard = cardsOnTable[activeCardIdx];
       if (!activeCard) {
         console.log("error: card not found");
+        Notify.failure(t("err_card_not_found"));
         return;
       }
 
@@ -284,7 +288,7 @@ export default function Table({
         </>,
       );
     } else {
-      console.log("Non Carousel Mode");
+      // console.log("Non Carousel Mode");
       if (zoomCardId) {
         setMiddleButton(<Button btnText="<" onClick={closeCard} />);
       } else if (
@@ -292,11 +296,11 @@ export default function Table({
         isReadyToVote &&
         gameStatus === GUESSING
       ) {
-        console.log("це хост і всі обрали карти - готові до голосування");
+        // console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
-            btnText={"Start voting"}
+            btnText={t("start_voting")}
             onClick={startVoting}
             disabled={isStartVotingDisabled}
           />,
@@ -306,44 +310,44 @@ export default function Table({
         isReadyToCalculatePoints &&
         gameStatus === VOTING
       ) {
-        console.log("це хост і всі обрали проголосували - можна рахувати бали");
+        // console.log("це хост і всі обрали проголосували - можна рахувати бали");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
-            btnText={"Finish round"}
+            btnText={t("finish_round")}
             onClick={finishRound}
           />,
         );
       } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
-        console.log("це хост і можна починати новий раунд");
+        // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
-            btnText={"Start new round"}
+            btnText={t("start_new_round")}
             onClick={startNewRound}
           />,
         );
       } else {
         if (isCurrentPlayerStoryteller) {
-          console.log("встановлюю кнопку в нуль для сторітелера");
+          // console.log("встановлюю кнопку в нуль для сторітелера");
           setMiddleButton(null);
         } else if (gameStatus === VOTING) {
-          console.log("блок для gameStatus VOTING");
+          // console.log("блок для gameStatus VOTING");
 
           if (!isCurrentPlayerStoryteller) {
             // Якщо це не сторітеллер і може голосувати (вже обрані карти)
             setMiddleButton(
               <Button
                 btnStyle={["btnFlexGrow"]}
-                btnText={"Vote card"}
+                btnText={t("vote_card")}
                 onClick={handleVote}
                 disabled={!isCanVote || isCurrentPlayerVoted}
               />,
             );
           } else if (gameStatus === ROUND_RESULTS && zoomCardId) {
-            console.log("ROUND_RESULTS && toggleZoomCard");
+            // console.log("ROUND_RESULTS && toggleZoomCard");
             setMiddleButton(
-              <Button btnText="Back" onClick={() => closeCard()} />,
+              <Button btnText={t("back")} onClick={() => closeCard()} />,
             );
           } else setMiddleButton(null);
         } else setMiddleButton(null);
@@ -379,6 +383,7 @@ export default function Table({
     startNewRound,
     zoomCardId,
     isSingleCardMode,
+    t,
   ]);
 
   const getStarsMarksByVoteCount = voteCount => {
@@ -413,7 +418,7 @@ export default function Table({
   if (gameStatus === VOTING) {
     return (
       <>
-        <p>Table gameStatus === VOTING - cards face up</p>
+        {/* <p>Table gameStatus === VOTING - cards face up</p> */}
 
         {isCarouselModeTableScreen ? (
           <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
@@ -501,8 +506,14 @@ export default function Table({
                 <div className={css.resultPlayers}>
                   <span>
                     {result.ownerId === storytellerId
-                      ? `Storyteller ${result.ownerName.toUpperCase()} guessed the card:`
-                      : `${result.ownerName.toUpperCase()}'s card`}
+                      ? // `Storyteller ${result.ownerName.toUpperCase()} was guessed the card:`
+                        t("storyteller_guessed_card", {
+                          storyteller: result.ownerName.toUpperCase(),
+                        })
+                      : // `${result.ownerName.toUpperCase()}'s card`
+                        t("storytellers_card", {
+                          storyteller: result.ownerName.toUpperCase(),
+                        })}
                   </span>
 
                   <ul className={css.resultVotes}>

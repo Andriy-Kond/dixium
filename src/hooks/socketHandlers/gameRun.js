@@ -9,7 +9,7 @@ import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
 export const gameRun = (game, message, dispatch, activeActions, playerId) => {
-  console.log("gameRun");
+  // console.log("gameRun");
   if (!game) {
     throw new Error(`The game is ${game}`);
   }

@@ -1,11 +1,11 @@
 import { Notify } from "notiflix";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import {
   selectCardsOnTable,
   selectGame,
   selectGamePlayers,
-  selectIsSingleCardMode,
   selectPlayerHand,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -13,6 +13,7 @@ import socket from "services/socket.js";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
 
 export const useGuess = (gameId, cardsSet) => {
+  const { t } = useTranslation();
   const userCredentials = useSelector(selectUserCredentials);
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
@@ -24,7 +25,7 @@ export const useGuess = (gameId, cardsSet) => {
     const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
     if (!firstGuessCardSet || (!playersMoreThanThree && !secondGuessCardSet)) {
       console.warn("guess Story: Invalid card selection!");
-      Notify.failure("Invalid card selection!");
+      Notify.failure(t("err_invalid_card_selection"));
       return;
     }
 
@@ -35,7 +36,7 @@ export const useGuess = (gameId, cardsSet) => {
 
     if (!movedCards.every(card => playerHand.some(c => c._id === card._id))) {
       console.warn("Not right data in card!");
-      Notify.failure("Not right data in card!");
+      Notify.failure(t("err_not_right_data_in_card"));
       return;
     }
 

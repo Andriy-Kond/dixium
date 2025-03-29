@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import DecksList from "../../../components/game/DecksList/DecksList.jsx";
 import Button from "common/components/ui/Button";
 import GamesList from "../../../components/game/GamesList/GamesList.jsx";
+import { useTranslation } from "react-i18next";
 
 export default function GameInitialPage() {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const isCreatingGame = useSelector(selectIsCreatingGame);
 
   const createGame = () => {
@@ -17,7 +19,9 @@ export default function GameInitialPage() {
     // navigate("/game/create");
   };
 
-  const headerTitleText = isCreatingGame ? "Creating game" : "Available games";
+  const headerTitleText = isCreatingGame
+    ? t("creating_game")
+    : t("available_games");
 
   return (
     <>
@@ -36,7 +40,7 @@ export default function GameInitialPage() {
               <div className={css.bottomBar}>
                 <Button
                   onClick={createGame}
-                  btnText={"Create new game"}
+                  btnText={t("create_new_game")}
                   btnStyle={["btnFlexGrow"]}
                 />
               </div>

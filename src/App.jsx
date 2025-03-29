@@ -48,7 +48,7 @@ export default function App() {
       {!isFetching && (
         <Routes>
           <Route path="/" element={<SharedLayout />}>
-            {/* <Route index element={<HomePage />} /> */}
+            <Route index element={<HomePage />} />
 
             <Route element={<PrivateRoute redirectTo="/login" />}>
               <Route path="/game/:gameId" element={<GameStartedPage />} />

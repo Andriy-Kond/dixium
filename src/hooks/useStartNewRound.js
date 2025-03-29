@@ -1,5 +1,6 @@
 import { Notify } from "notiflix";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { clearingForNewRound } from "redux/game/gameSlice.js";
 import { selectGame } from "redux/selectors.js";
@@ -8,13 +9,13 @@ import { distributeCards } from "utils/game/distributeCards.js";
 import { LOBBY } from "utils/generals/constants.js";
 
 export const useStartNewRound = gameId => {
-  const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const currentGame = useSelector(selectGame(gameId));
 
   const startNewRound = useCallback(() => {
     const updatedGame = distributeCards(currentGame); // роздаю карти
-    console.log(" startNewRound >> updatedGame:::", updatedGame);
+    // console.log(" startNewRound >> updatedGame:::", updatedGame);
 
     // Обнуляю статуси гравців:
     const updatedPlayers = updatedGame.players.map(player => {
@@ -28,7 +29,7 @@ export const useStartNewRound = gameId => {
     // Визначаю наступного оповідача:
     if (updatedGame.players.length === 0) {
       console.error("No players available to select a storyteller.");
-      Notify.failure("No players available to select a storyteller.");
+      Notify.failure(t("err_no_players_available_to_select_storyteller"));
       return;
     }
 

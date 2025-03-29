@@ -57,7 +57,7 @@ export default function DecksList() {
 
   return (
     <div className={css.container}>
-      <p className={css.deckTitle}>Select deck</p>
+      <p className={css.deckTitle}>{t("select_deck")}</p>
       <ul className={css.deckList}>
         {allDecks?.map(deck => (
           <li className={css.deck} key={deck._id}>
@@ -65,7 +65,8 @@ export default function DecksList() {
               onClick={() => {
                 pullDeck(currentDeckId === deck._id ? null : deck._id);
               }}
-              btnText={`Deck: ${deck.name}`}
+              // btnText={`Deck: ${deck.name}`}
+              btnText={t("deck", { name: deck.name })}
               btnStyle={["twoBtnsInRow"]}
               localClassName={currentDeck?._id === deck._id && css.btnActive}
             />
@@ -87,12 +88,12 @@ export default function DecksList() {
       <div className={css.bottomBar}>
         <Button
           onClick={toPreviousPage}
-          btnText={"Back"}
+          btnText={t("back")}
           btnStyle={["twoBtnsInRow"]}
         />
         <Button
           onClick={createNewGame}
-          btnText={"Select deck"}
+          btnText={t("select_deck")}
           btnStyle={["twoBtnsInRow"]}
           disabled={!currentDeck}
         />

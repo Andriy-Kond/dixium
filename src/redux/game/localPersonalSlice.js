@@ -10,7 +10,8 @@ const localInitialState = {
   isCarouselModeHandScreen: {},
   isCarouselModeTableScreen: {},
   zoomCardId: {},
-  toastIdRef: {},
+  toastId: {},
+  lang: "en",
 };
 
 export const localPersonalSlice = createSlice({
@@ -75,7 +76,13 @@ export const localPersonalSlice = createSlice({
       delete state.selectedCardId[key];
     },
 
-    clearLocalState: () => localInitialState,
+    clearLocalState: state => {
+      const currentLang = state.lang;
+      return {
+        ...localInitialState,
+        lang: currentLang,
+      };
+    },
 
     setIsCarouselModeHandScreen: (state, action) => {
       const { gameId, playerId, isCarouselModeHandScreen } = action.payload;
@@ -95,16 +102,20 @@ export const localPersonalSlice = createSlice({
       state.zoomCardId[key] = zoomCardId;
     },
 
-    setToastIdRef: (state, action) => {
-      const { gameId, playerId, toastIdRef } = action.payload;
+    setToastId: (state, action) => {
+      const { gameId, playerId, toastId } = action.payload;
       const key = `${gameId}_${playerId}`;
-      state.selectedCardId[key] = toastIdRef;
+      state.selectedCardId[key] = toastId;
     },
 
     removeToastIdRef: (state, action) => {
       const { gameId, playerId } = action.payload;
       const key = `${gameId}_${playerId}`;
       delete state.selectedCardId[key];
+    },
+
+    setLang: (state, action) => {
+      state.lang = action.payload;
     },
   },
 });
@@ -134,6 +145,7 @@ export const {
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
   setZoomCardId,
-  setToastIdRef,
+  setToastId,
   removeToastIdRef,
+  setLang,
 } = localPersonalSlice.actions;

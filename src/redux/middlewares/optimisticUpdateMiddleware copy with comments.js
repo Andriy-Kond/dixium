@@ -5,6 +5,7 @@ import {
 } from "redux/game/gameSlice.js";
 import { Notify } from "notiflix";
 import socket from "services/socket.js";
+import { t } from "i18next";
 
 const optimisticUpdateMiddleware =
   ({ dispatch, getState }) =>
@@ -33,9 +34,7 @@ const optimisticUpdateMiddleware =
 
       // Таймер для відкатування
       const timer = setTimeout(() => {
-        Notify.failure(
-          `No response from server for ${eventName}. Reverting state.`,
-        );
+        Notify.failure(t("err_no_response_server"), { eventName });
         dispatch(updateGame(previousGameState));
         dispatch(clearActiveAction(key));
       }, timeout);

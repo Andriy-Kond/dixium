@@ -44,7 +44,7 @@ export default function SortablePlayer({ player }) {
     currentGame.hostPlayerId === userCredentials._id;
 
   const removePlayer = userId => {
-    console.log(" SortablePlayer >> userId:::", userId);
+    // console.log(" SortablePlayer >> userId:::", userId);
     if (!currentGame || !currentGame.players) return;
 
     const players = [...currentGame.players];
@@ -66,8 +66,8 @@ export default function SortablePlayer({ player }) {
       <Button
         disabled={!isCurrentPlayerIsHost}
         onClick={e => {
-          console.log("onclick");
-          console.log("Button clicked, userId:", userCredentials._id);
+          // console.log("onclick");
+          // console.log("Button clicked, userId:", userCredentials._id);
           e.stopPropagation(); // зупинка поширення події не працює
 
           removePlayer(player._id);

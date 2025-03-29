@@ -1,6 +1,6 @@
 import useEmblaCarousel from "embla-carousel-react";
 
-import { cloneElement, useCallback, useEffect, useState } from "react";
+import { cloneElement, useCallback, useEffect, useRef, useState } from "react";
 import Hand from "common/components/game/Hand";
 import Players from "common/components/game/Players";
 import Table from "common/components/game/Table";
@@ -26,19 +26,18 @@ import {
   selectStorytellerId,
   selectUserCredentials,
   selectVotes,
-  selectToastIdRef,
+  selectToastId,
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
-import {
-  setActiveScreen,
-  setToastIdRef,
-} from "redux/game/localPersonalSlice.js";
+import { setActiveScreen, setToastId } from "redux/game/localPersonalSlice.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import { toast } from "react-toastify";
+import { Trans, useTranslation } from "react-i18next";
 
 export default function Game() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
@@ -54,9 +53,7 @@ export default function Game() {
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
 
   const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
-  const toastIdRef = useSelector(selectToastIdRef(gameId));
-
-  // const [localActiveScreen, setLocalActiveScreen] = useState(activeScreen);
+  const toastId = useSelector(selectToastId(gameId));
 
   const isCurrentPlayerStoryteller = storytellerId === playerId;
   const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
@@ -232,14 +229,25 @@ export default function Game() {
     zoomCardId,
   ]);
 
+  const localToastRef = useRef(toastId || null); // fore show toast.info 1 time after refresh
+
   useEffect(() => {
     if (isShowMask) {
-      if (!toastIdRef && !isCurrentPlayerStoryteller) {
+      if (!localToastRef.current && !isCurrentPlayerStoryteller) {
+        localToastRef.current = true;
         const newToastId = toast.info(
           <>
-            <p>
+            {/* <p>
               Player <b>{storyteller?.name.toUpperCase()}</b> told first story.
               <br /> Let's go to guess it!
+            </p> */}
+
+            <p>
+              <Trans
+                i18nKey="player_told_first_story"
+                values={{ storytellerName: storyteller?.name.toUpperCase() }}
+                components={{ bold: <b />, br: <br /> }} // components - об'єкт, де ключі відповідають тегам у перекладі (<bold>, <br/>), а значення — JSX-компоненти, які мають бути вставлені на їх місце.
+              />
             </p>
           </>,
 
@@ -256,7 +264,7 @@ export default function Game() {
           },
         );
 
-        dispatch(setToastIdRef({ gameId, playerId, toastIdRef: newToastId }));
+        dispatch(setToastId({ gameId, playerId, toastId: newToastId }));
       }
     }
   }, [
@@ -266,12 +274,13 @@ export default function Game() {
     isShowMask,
     playerId,
     storyteller?.name,
-    toastIdRef,
+    t,
+    toastId,
   ]);
 
   return (
     <div className={css.gameContainer}>
-      <p>Game</p>
+      {/* <p>Game</p> */}
 
       <div
         className={`${css.screenCarouselWrapper} ${
@@ -292,7 +301,7 @@ export default function Game() {
                 startVoting,
                 // toggleZoomCardId,
                 // setToggleZoomCardId,
-                toastIdRef,
+                toastId,
               })}
             </li>
           ))}

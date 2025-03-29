@@ -6,8 +6,8 @@ import enTranslation from "locales/en/translation.json";
 import ukTranslation from "locales/uk/translation.json";
 
 i18n.use(initReactI18next).init({
-  lng: "en",
-  fallbackLng: "en",
+  lng: "en", // Мова за замовчуванням (не обов'язково, бо встановлюється у useI18n)
+  fallbackLng: "en", // Мова на випадок, якщо переклад відсутній
   supportedLngs: ["en", "uk"],
   interpolation: {
     escapeValue: false,

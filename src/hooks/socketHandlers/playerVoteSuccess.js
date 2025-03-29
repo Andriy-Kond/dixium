@@ -2,7 +2,7 @@ import { Notify } from "notiflix";
 import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
 export const playerVoteSuccess = (game, message, dispatch, activeActions) => {
-  console.log("playerVoteSuccess");
+  // console.log("playerVoteSuccess");
   if (!game) {
     throw new Error(`The game is ${game}`);
   }

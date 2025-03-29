@@ -10,10 +10,12 @@ import { selectUserCredentials, selectUserIsLoggedIn } from "redux/selectors";
 import AuthForm from "common/components/ui/AuthForm";
 import css from "common/components/ui/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
+import { useTranslation } from "react-i18next";
 // import { useLocation, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
   const user = useSelector(selectUserCredentials);
   const [loginUser] = useLoginUserMutation();
@@ -48,7 +50,8 @@ export default function LoginPage() {
       }
     } catch (err) {
       dispatch(setIsLoggedIn(false));
-      console.log("submitCredentials >> err:::", err);
+      Notify.failure(t("err_no_access"));
+      console.log("Error: no access", err);
     }
   };
 
@@ -57,7 +60,7 @@ export default function LoginPage() {
       {!isLoggedIn && (
         <div className={css.container}>
           <div className={css.pageHeader}>
-            <p className={css.pageHeader_title}>Enter</p>
+            <p className={css.pageHeader_title}>{t("enter")}</p>
           </div>
 
           <div className={css.pageMain}>
@@ -67,7 +70,7 @@ export default function LoginPage() {
           <div className={css.pageFooter}></div>
         </div>
       )}
-      {isLoggedIn && <div>User: {user.name}</div>}
+      {isLoggedIn && <div>{(t("user"), { user: user.name })}</div>}
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -14,11 +15,11 @@ import Button from "common/components/ui/Button/index.js";
 import { selectGame, selectUserCredentials } from "redux/selectors.js";
 import css from "./PrepareGame.module.scss";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
-
-import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
   const { gameId } = useParams();
@@ -101,7 +102,7 @@ export default function PrepareGame() {
             onChange={() => setIsSingleCardModeCheckbox(prev => !prev)}
             checked={isSingleCardModeCheckbox}
           />
-          {"Single Card Mode".toUpperCase()}
+          {t("single_card_mode").toUpperCase()}
         </label>
       </div>
 
@@ -121,13 +122,13 @@ export default function PrepareGame() {
       <div className={css.bottomBar}>
         <Button
           onClick={toGamePage}
-          btnText={"Back"}
+          btnText={t("back")}
           btnStyle={[["twoBtnsInRow"], ["btnFlexGrow"]]}
         />
         {userCredentials._id === currentGame?.hostPlayerId && (
           <Button
             onClick={runGame}
-            btnText={"Run game"}
+            btnText={t("run_game")}
             btnStyle={["twoBtnsInRow"]}
             disabled={
               currentGame.players.length < 3 || currentGame.players.length > 12

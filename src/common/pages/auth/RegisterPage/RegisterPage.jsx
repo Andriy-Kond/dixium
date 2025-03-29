@@ -9,9 +9,11 @@ import {
 import AuthForm from "common/components/ui/AuthForm";
 import css from "common/components/ui/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
+import { useTranslation } from "react-i18next";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [signupUser] = useSignupUserMutation();
 
   const submitCredentials = async e => {
@@ -44,14 +46,15 @@ export default function RegisterPage() {
       }
     } catch (err) {
       dispatch(setIsLoggedIn(false));
-      console.log("RegisterPage >> err:::", err);
+      Notify.failure(t("err_no_access"));
+      console.log("Error: no access", err);
     }
   };
 
   return (
     <div className={css.container}>
       <div className={css.pageHeader}>
-        <p className={css.pageHeader_title}>Register</p>
+        <p className={css.pageHeader_title}>{t("register")}</p>
       </div>
 
       <div className={css.pageMain}>

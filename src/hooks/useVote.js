@@ -10,9 +10,11 @@ import {
 } from "redux/selectors.js";
 
 import { useOptimisticDispatch } from "./useOptimisticDispatch.js";
+import { useTranslation } from "react-i18next";
 // import { updatePlayerVote } from "redux/game/gameSlice.js";
 
 export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
+  const { t } = useTranslation();
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
 
   const userCredentials = useSelector(selectUserCredentials);
@@ -29,12 +31,11 @@ export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
       (!isSingleCardMode && playersMoreThanSix && !secondVotedCardId)
     ) {
       console.warn("Vote: Invalid card selection!");
-      Notify.failure("Invalid card selection!");
+      Notify.failure(t("err_invalid_card_selection"));
       return;
     }
 
     const updatedPlayers = gamePlayers.map(player =>
-      // todo скинути isVoted перед наступним раундом
       player._id === playerId ? { ...player, isVoted: true } : player,
     );
 
@@ -63,6 +64,7 @@ export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
     playerId,
     playersMoreThanSix,
     secondVotedCardId,
+    t,
     votes,
   ]);
 

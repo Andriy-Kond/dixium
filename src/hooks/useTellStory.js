@@ -6,17 +6,18 @@ import {
   selectGame,
   selectGamePlayers,
   selectGameStatus,
-  selectIsFirstTurn,
   selectPlayerHand,
   selectSelectedCardId,
   selectStorytellerId,
   selectUserCredentials,
 } from "redux/selectors.js";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { Notify } from "notiflix";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
+import { useTranslation } from "react-i18next";
 
 export const useTellStory = gameId => {
+  const { t } = useTranslation();
   const currentGame = useSelector(selectGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
@@ -32,18 +33,18 @@ export const useTellStory = gameId => {
   // const [isSubmitting, setIsSubmitting] = useState(false);
 
   const tellStory = useCallback(() => {
-    console.log("tellStory");
-    console.log(" storytellerId:::", storytellerId);
+    // console.log("tellStory");
+    // console.log(" storytellerId:::", storytellerId);
 
     // Якщо оповідач уже є і це не я, нічого не робимо
     if (storytellerId && storytellerId !== playerId) {
-      Notify.info("Someone else is already the storyteller!");
+      Notify.info(t("info_someone_else_is_already_the_storyteller"));
       return;
     }
 
     if (!selectedCardId) {
       console.log("No card selected!");
-      Notify.failure("No card selected!");
+      Notify.failure(t("err_no_card_selected"));
       return;
     }
 
@@ -51,13 +52,13 @@ export const useTellStory = gameId => {
 
     if (!movedCard) {
       console.warn("Selected card not found in hand!");
-      Notify.failure("Selected card not found in hand!");
+      Notify.failure(t("err_selected_card_not_found_in_hand"));
       return;
     }
 
     // If storyteller not defined, the player becomes the first storyteller
     // todo: logic for storytellerId === true (maybe just add "&& !isFirstTurn"?)
-    console.log("emit to soket :>> ");
+    // console.log("emit to soket :>> ");
     // if (!isFirstTurn) {
     const { updatedCardsOnTable, updatedPlayers } = discardHandToTable({
       playerHand,
@@ -91,14 +92,14 @@ export const useTellStory = gameId => {
     // }
   }, [
     storytellerId,
+    playerId,
     selectedCardId,
     playerHand,
-    // isFirstTurn,
     cardsOnTable,
-    playerId,
     gamePlayers,
     currentGame,
     gameStatus,
+    t,
   ]);
 
   return tellStory;

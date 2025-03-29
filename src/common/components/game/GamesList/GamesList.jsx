@@ -6,9 +6,11 @@ import Button from "common/components/ui/Button/index.js";
 import { addGamesList } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import css from "./GamesList.module.scss";
+import { useTranslation } from "react-i18next";
 
 export default function GamesList() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const userCredentials = useSelector(selectUserCredentials);
   const {
@@ -84,16 +86,22 @@ export default function GamesList() {
                   className={css.img}
                 />
                 <div className={css.wrapper}>
-                  <p>{game.gameName}</p>
-                  <p>Host: {game.hostPlayerName}</p>
+                  <p>{game.gameName.toUpperCase()}</p>
+                  <p>
+                    {t("host", {
+                      hostPlayerName: game.hostPlayerName.toUpperCase(),
+                    })}
+                  </p>
                   <div className={css.btnsContainer}>
                     <Button
                       btnText={
                         playerId === game.hostPlayerId
-                          ? "Start game"
+                          ? t("start_game")
                           : game.isGameRunning
-                          ? `Game running`
-                          : `Join to ${game.hostPlayerName}'s game`
+                          ? t("game_running")
+                          : t("join_to_game", {
+                              hostPlayerName: game.hostPlayerName,
+                            })
                       }
                       onClick={() => {
                         startOrJoinToGame(game);
@@ -106,7 +114,7 @@ export default function GamesList() {
                     />
                     {playerId === game.hostPlayerId && (
                       <Button
-                        btnText="Delete game"
+                        btnText={t("delete_game")}
                         onClick={() => removeCurrentGame(game._id)}
                       />
                     )}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import css from "./AuthForm.module.scss";
 import Button from "../Button/index.js";
+import { useTranslation } from "react-i18next";
 
 const initialState = {
   name: "",
@@ -9,24 +10,25 @@ const initialState = {
 };
 
 export default function AuthForm({ isRegister, onSubmit }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState(initialState);
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
   };
 
-  const btnText = isRegister ? "Register" : "Login";
+  const btnText = isRegister ? t("register") : t("login");
 
   return (
     <form className={css.authForm} onSubmit={onSubmit}>
       {isRegister && (
         <label className={css.formLabel}>
-          Name
+          {t("name")}
           <input
             className={css.formInput}
             type="text"
             name="name"
-            placeholder="Enter name"
+            placeholder={t("enter_name")}
             value={formData.name}
             onChange={handleChange}
           />
@@ -34,24 +36,24 @@ export default function AuthForm({ isRegister, onSubmit }) {
       )}
 
       <label className={css.formLabel}>
-        Email
+        {t("email")}
         <input
           className={css.formInput}
           type="text"
           name="email"
-          placeholder="Enter email"
+          placeholder={t("enter_email")}
           value={formData?.email}
           onChange={handleChange}
         />
       </label>
 
       <label className={css.formLabel}>
-        Password
+        {t("password")}
         <input
           className={css.formInput}
           type="password"
           name="password"
-          placeholder="Enter password"
+          placeholder={t("enter_password")}
           value={formData?.password}
           onChange={handleChange}
         />

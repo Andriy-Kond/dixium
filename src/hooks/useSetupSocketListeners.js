@@ -6,7 +6,7 @@ import { clearActiveAction } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import {
   selectActiveActions,
-  selectToastIdRef,
+  selectToastId,
   selectUserCredentials,
 } from "redux/selectors.js";
 
@@ -24,14 +24,16 @@ import {
   playerGuessSuccess,
   playerVoteSuccess,
   roundFinishSuccess,
-  gameEntry,
+  // gameEntry,
   startNewRoundSuccess,
   nextStorytellerUpdated,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
+import { useTranslation } from "react-i18next";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: userId } = userCredentials;
@@ -39,7 +41,7 @@ export const useSetupSocketListeners = () => {
   const match = location.pathname.match(/game\/([\w\d]+)/);
   const gameId = match ? match[1] : null;
   const activeActions = useSelector(selectActiveActions);
-  const toastIdRef = useSelector(selectToastIdRef(gameId));
+  const toastId = useSelector(selectToastId(gameId));
 
   const { refetch: refetchAllGames } = useGetAllGamesQuery();
 
@@ -61,8 +63,8 @@ export const useSetupSocketListeners = () => {
     const handleGameCreateOrUpdate = ({ game }) =>
       gameCreateOrUpdate(game, dispatch);
 
-    const handleGameEntry = ({ game, player }) =>
-      gameEntry(game, player, dispatch);
+    // const handleGameEntry = ({ game, player }) =>
+    //   gameEntry(game, player, dispatch);
 
     const handlePlayerJoined = ({ game, player, message }) =>
       playerJoined(
@@ -85,7 +87,7 @@ export const useSetupSocketListeners = () => {
         gameId,
         userId,
         navigate,
-        toastIdRef,
+        toastId,
       );
     };
 
@@ -187,5 +189,6 @@ export const useSetupSocketListeners = () => {
     refetchAllGames,
     userCredentials,
     userId,
+    toastId,
   ]);
 };

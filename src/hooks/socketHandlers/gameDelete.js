@@ -6,7 +6,7 @@ import {
   clearLocalState,
   removeToastIdRef,
 } from "redux/game/localPersonalSlice.js";
-import { selectToastIdRef } from "redux/selectors.js";
+import { selectToastId } from "redux/selectors.js";
 
 export const gameDelete = (
   gameId,
@@ -15,7 +15,7 @@ export const gameDelete = (
   currentGameId,
   playerId,
   navigate,
-  toastIdRef,
+  toastId,
 ) => {
   if (!gameId) {
     throw new Error(`The gameId is ${gameId}`);
@@ -35,7 +35,7 @@ export const gameDelete = (
     }),
   );
 
-  toast.dismiss(toastIdRef); // Закриє відповідне повідомлення
+  toast.dismiss(toastId); // Закриє відповідне повідомлення
   dispatch(removeToastIdRef({ gameId, playerId }));
   dispatch(clearActiveAction({}));
   dispatch(clearLocalState());
