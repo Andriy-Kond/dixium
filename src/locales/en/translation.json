@@ -65,5 +65,6 @@
   "err_selected_card_not_found_in_hand": "Error: Selected card not found in hand!",
   "err_no_access": "Error: no access",
   "err_no_response_server": "Error: No response from server for {{eventName}}. Reverting state.",
-  "info_someone_else_is_already_the_storyteller": "Someone else is already the storyteller!"
+  "info_someone_else_is_already_the_storyteller": "Someone else is already the storyteller!",
+  "player_joined": "Player {{playerName}} joined to game"
 }
