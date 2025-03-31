@@ -11,20 +11,33 @@ import {
 } from "redux/selectors.js";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
+import {
+  HAND,
+  HAND_COLOR,
+  PLAYERS,
+  PLAYERS_COLOR,
+  TABLE,
+  TABLE_COLOR,
+} from "utils/generals/constants.js";
 
 export default function GameStartedPage() {
   const { t } = useTranslation();
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
-  const { isGameRunning, gameName } = useSelector(selectGame(gameId));
 
+  const { isGameRunning, gameName } = useSelector(selectGame(gameId));
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
-  const [badgeColor, setBadgeColor] = useState(null); // Колір нового бейджа
-  const [prevBadgeColor, setPrevBadgeColor] = useState(null); // Колір старого бейджа
-  const [pageBadgeName, setPageBadgeName] = useState(null);
-  const [prevPageBadgeName, setPrevPageBadgeName] = useState(null);
+
+  const [color, setColor] = useState(null);
+  const [prevColor, setPrevColor] = useState(null);
+  const [pageName, setPageName] = useState(null);
+  const [prevPageName, setPrevPageName] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [direction, setDirection] = useState(null); // "left" або "right"
+  const [prevActiveScreen, setPrevActiveScreen] = useState(null);
+
+  const totalScreens = 3; // Кількість сторінок (0, 1, 2)
 
   useEffect(() => {
     let newColor, newPageName;
@@ -46,27 +59,38 @@ export default function GameStartedPage() {
         return;
     }
 
-    // Якщо є попередній бейдж і він відрізняється від нового, запускаємо анімацію
-    if (pageBadgeName && pageBadgeName !== newPageName) {
-      setPrevPageBadgeName(pageBadgeName);
-      setPrevBadgeColor(badgeColor);
+    // Визначаємо напрямок руху з урахуванням циклічності через %
+    if (prevActiveScreen !== null && activeScreen !== prevActiveScreen) {
+      const delta =
+        (activeScreen - prevActiveScreen + totalScreens) % totalScreens;
+      const reverseDelta =
+        (prevActiveScreen - activeScreen + totalScreens) % totalScreens;
+
+      // Вибираємо найкоротший шлях
+      const direction = delta <= reverseDelta ? "right" : "left"; // delta — вперед, reverseDelta — назад
+
+      setDirection(direction);
+      setPrevPageName(pageName);
+      setPrevColor(color);
       setIsAnimating(true);
     }
 
-    // Встановлюємо нові значення
-    setBadgeColor(newColor);
-    setPageBadgeName(newPageName);
+    // Оновлюємо стан
+    setColor(newColor);
+    setPageName(newPageName);
+    setPrevActiveScreen(activeScreen);
 
-    // Завершуємо анімацію після її тривалості
+    // Завершуємо анімацію
     if (isAnimating) {
       const timeout = setTimeout(() => {
         setIsAnimating(false);
-        setPrevPageBadgeName(null);
-        setPrevBadgeColor(null);
-      }, 300); // Тривалість анімації — 0.3s
+        setPrevPageName(null);
+        setPrevColor(null);
+        setDirection(null);
+      }, 300);
       return () => clearTimeout(timeout);
     }
-  }, [activeScreen, badgeColor, pageBadgeName, isAnimating]);
+  }, [activeScreen, color, pageName, isAnimating, prevActiveScreen]);
 
   return (
     <div className={css.container}>
@@ -74,25 +98,25 @@ export default function GameStartedPage() {
         <p className={css.pageHeader_title}>
           {t("game_name", { gameName: gameName.toUpperCase() })}
         </p>
-
         <div className={css.pageBadge}>
-          {/* Старий бейдж із ефектом зникнення */}
-          {prevPageBadgeName && isAnimating && (
+          {prevPageName && isAnimating && (
             <span
-              className={`${css.pageBadgeName} ${css.fadeOut}`}
-              style={{ "--badgeBgColor": prevBadgeColor }}>
-              {prevPageBadgeName.toUpperCase()}
+              className={`${css.pageName} ${css.fadeOut}`}
+              style={{ "--badgeBgColor": prevColor }}>
+              {prevPageName}
             </span>
           )}
-
-          {/* Новий бeyдж із анімацією наїзду */}
-          {pageBadgeName && (
+          {pageName && (
             <span
-              className={`${css.pageBadgeName} ${
-                isAnimating ? css.slideIn : ""
+              className={`${css.pageName} ${
+                isAnimating
+                  ? direction === "right"
+                    ? css.slideInRight
+                    : css.slideInLeft
+                  : ""
               }`}
-              style={{ "--badgeBgColor": badgeColor }}>
-              {pageBadgeName.toUpperCase()}
+              style={{ "--badgeBgColor": color }}>
+              {pageName}
             </span>
           )}
         </div>

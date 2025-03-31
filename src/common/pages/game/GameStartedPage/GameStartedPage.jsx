@@ -11,6 +11,14 @@ import {
 } from "redux/selectors.js";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
+import {
+  HAND,
+  HAND_COLOR,
+  PLAYERS,
+  PLAYERS_COLOR,
+  TABLE,
+  TABLE_COLOR,
+} from "utils/generals/constants.js";
 
 export default function GameStartedPage() {
   const { t } = useTranslation();
@@ -21,10 +29,11 @@ export default function GameStartedPage() {
   const { isGameRunning, gameName } = useSelector(selectGame(gameId));
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
 
-  const [color, setColor] = useState(null);
-  const [prevColor, setPrevColor] = useState(null);
-  const [pageName, setPageName] = useState(null);
-  const [prevPageName, setPrevPageName] = useState(null);
+  const [color, setColor] = useState(HAND_COLOR);
+  const [prevColor, setPrevColor] = useState(HAND_COLOR);
+  const [pageName, setPageName] = useState(HAND);
+  const [prevPageName, setPrevPageName] = useState(HAND);
+
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState(null); // "left" або "right"
   const [prevActiveScreen, setPrevActiveScreen] = useState(null);
@@ -36,36 +45,52 @@ export default function GameStartedPage() {
 
     switch (activeScreen) {
       case 0:
-        newColor = "#00ca22";
-        newPageName = "Home";
+        newColor = HAND_COLOR;
+        newPageName = HAND;
         break;
       case 1:
-        newColor = "#2294ff";
-        newPageName = "Players";
+        newColor = PLAYERS_COLOR;
+        newPageName = PLAYERS;
         break;
       case 2:
-        newColor = "#ff2f2f";
-        newPageName = "Table";
+        newColor = TABLE_COLOR;
+        newPageName = TABLE;
         break;
       default:
         return;
     }
 
-    // Визначаємо напрямок руху з урахуванням циклічності
+    // // Визначаємо напрямок руху з урахуванням циклічності
+    // if (prevActiveScreen !== null && activeScreen !== prevActiveScreen) {
+    //   const delta = activeScreen - prevActiveScreen;
+    //   let adjustedDirection;
+
+    //   // Обробка циклічних переходів
+    //   if (Math.abs(delta) > totalScreens / 2) {
+    //     // Якщо перехід через межу (наприклад, 0 -> 2 або 2 -> 0)
+    //     adjustedDirection = delta > 0 ? "left" : "right"; // З 0 до 2 — зліва, з 2 до 0 — справа
+    //   } else {
+    //     // Звичайний перехід
+    //     adjustedDirection = delta > 0 ? "right" : "left"; // 0 -> 1 — справа, 1 -> 0 — зліва
+    //   }
+
+    //   setDirection(adjustedDirection);
+    //   setPrevPageName(pageName);
+    //   setPrevColor(color);
+    //   setIsAnimating(true);
+    // }
+
+    // Визначаємо напрямок руху з урахуванням циклічності через % (більш універсальний для будь-якої кількості сторінок)
     if (prevActiveScreen !== null && activeScreen !== prevActiveScreen) {
-      const delta = activeScreen - prevActiveScreen;
-      let adjustedDirection;
+      const delta =
+        (activeScreen - prevActiveScreen + totalScreens) % totalScreens;
+      const reverseDelta =
+        (prevActiveScreen - activeScreen + totalScreens) % totalScreens;
 
-      // Обробка циклічних переходів
-      if (Math.abs(delta) > totalScreens / 2) {
-        // Якщо перехід через межу (наприклад, 0 -> 2 або 2 -> 0)
-        adjustedDirection = delta > 0 ? "left" : "right"; // З 0 до 2 — зліва, з 2 до 0 — справа
-      } else {
-        // Звичайний перехід
-        adjustedDirection = delta > 0 ? "right" : "left"; // 0 -> 1 — справа, 1 -> 0 — зліва
-      }
+      // Вибираємо найкоротший шлях
+      const direction = delta <= reverseDelta ? "right" : "left"; // delta — вперед, reverseDelta — назад
 
-      setDirection(adjustedDirection);
+      setDirection(direction);
       setPrevPageName(pageName);
       setPrevColor(color);
       setIsAnimating(true);

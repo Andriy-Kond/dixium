@@ -9,3 +9,8 @@ export const FINISHED = "FINISHED";
 export const HAND = "HAND";
 export const PLAYERS = "PLAYERS";
 export const TABLE = "TABLE";
+
+// colors of page badge
+export const HAND_COLOR = "#00ca22";
+export const PLAYERS_COLOR = "#2294ff";
+export const TABLE_COLOR = "#ff2f2f";
