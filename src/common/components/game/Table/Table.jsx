@@ -542,7 +542,7 @@ export default function Table({
   } else {
     return (
       <>
-        <p>Table default - cards face down</p>
+        {/* <p>Table default - cards face down</p> */}
         <ul className={css.cardsListFaceDown}>
           {cardsOnTable.map((card, idx) => (
             <li key={card._id}>

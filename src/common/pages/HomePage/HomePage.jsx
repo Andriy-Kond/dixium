@@ -10,7 +10,7 @@ export default function HomePage() {
 
       <img
         className={css.tileImg}
-        src="https://res.cloudinary.com/dixium/image/upload/v1/dixium/dixium_title/_70be603e-c777-4e80-a291-fb235da25228_n6v7c1?_a=BAMCkGRg0"
+        src="https://res.cloudinary.com/dixium/image/upload/v1743245347/dixium/dixium_title/2Q_1_xjrxdx.jpg"
         alt="title"
       />
     </div>

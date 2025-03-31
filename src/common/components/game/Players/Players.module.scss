@@ -39,7 +39,7 @@
 }
 
 .playerState {
-  position: relative;
+  position: relative; // для цифри в колі для оповідача
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,7 +92,7 @@
   }
 }
 
-// // Стан "походив" з галочкою
+// Стан "походив" з галочкою
 .guessed {
   width: 20px;
   height: 20px;

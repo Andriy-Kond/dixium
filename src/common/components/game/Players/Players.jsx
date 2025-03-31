@@ -12,8 +12,6 @@ import {
   selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
-  selectIsShowMask,
-  selectIsSingleCardMode,
   selectScores,
   selectStorytellerId,
   selectUserCredentials,
@@ -26,8 +24,9 @@ import {
   VOTING,
   LOBBY,
 } from "utils/generals/constants.js";
-import { useVote } from "hooks/useVote.js";
+
 import { useStartNewRound } from "hooks/useStartNewRound.js";
+import { useTranslation } from "react-i18next";
 
 export default function Players({
   isActiveScreen,
@@ -35,6 +34,7 @@ export default function Players({
   startVoting,
   finishRound,
 }) {
+  const { t } = useTranslation();
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
@@ -42,20 +42,13 @@ export default function Players({
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
-  const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
+
   const scores = useSelector(selectScores(gameId));
   const gameStatus = useSelector(selectGameStatus(gameId));
 
-  const isCurrentPlayerStoryteller = storytellerId === playerId;
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
 
-  const isCurrentPlayerVoted = gamePlayers.some(
-    player => player._id === playerId && player.isVoted,
-  );
-
-  const playersMoreThanThree = gamePlayers.length > 3;
-  const isCanVote = playersMoreThanThree && isSingleCardMode;
   const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
   const isCurrentPlayerHost = hostPlayerId === playerId;
   const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
@@ -72,7 +65,7 @@ export default function Players({
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
-            btnText={"Start voting"}
+            btnText={t("start_voting")}
             onClick={startVoting}
             disabled={isStartVotingDisabled}
           />,
@@ -84,18 +77,18 @@ export default function Players({
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
-            btnText={"Finish round"}
+            btnText={t("finish_round")}
             onClick={finishRound}
           />,
         );
       } else setMiddleButton(null);
     } else if (gameStatus === ROUND_RESULTS) {
       if (isCurrentPlayerHost && isReadyToStartNewRound) {
-        console.log("це хост і можна починати новий раунд");
+        // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
           <Button
             btnStyle={["btnFlexGrow"]}
-            btnText={"Start new round"}
+            btnText={t("start_new_round")}
             onClick={startNewRound}
           />,
         );
@@ -115,6 +108,7 @@ export default function Players({
     isCurrentPlayerHost,
     isReadyToStartNewRound,
     startNewRound,
+    t,
   ]);
 
   const getIconOfPlayerState = (player, playerScore) => {
@@ -163,7 +157,7 @@ export default function Players({
 
   return (
     <>
-      <p>Players</p>
+      {/* <p>Players</p> */}
 
       <ul className={css.playersList}>
         {players.map(player => {

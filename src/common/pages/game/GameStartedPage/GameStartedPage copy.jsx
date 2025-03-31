@@ -22,9 +22,9 @@ export default function GameStartedPage() {
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
   const [badgeColor, setBadgeColor] = useState(null); // Колір нового бейджа
   const [prevBadgeColor, setPrevBadgeColor] = useState(null); // Колір старого бейджа
-  const [pageBadgeName, setPageBadgeName] = useState(null);
-  const [prevPageBadgeName, setPrevPageBadgeName] = useState(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [pageBadgeName, setPageBadgeName] = useState(null); // Ім'я нового бейджа
+  const [prevPageBadgeName, setPrevPageBadgeName] = useState(null); // Ім'я старого бейджа
+  const [isAnimating, setIsAnimating] = useState(false); // Для контролю анімації
 
   useEffect(() => {
     let newColor, newPageName;
@@ -43,7 +43,7 @@ export default function GameStartedPage() {
         newPageName = "Table";
         break;
       default:
-        return;
+        return; // Якщо activeScreen не визначений, нічого не робимо
     }
 
     // Якщо є попередній бейдж і він відрізняється від нового, запускаємо анімацію
@@ -57,50 +57,52 @@ export default function GameStartedPage() {
     setBadgeColor(newColor);
     setPageBadgeName(newPageName);
 
-    // Завершуємо анімацію після її тривалості
+    // Завершуємо анімацію після її тривалості (0.3s)
     if (isAnimating) {
       const timeout = setTimeout(() => {
         setIsAnimating(false);
         setPrevPageBadgeName(null);
         setPrevBadgeColor(null);
-      }, 300); // Тривалість анімації — 0.3s
+      }, 300);
       return () => clearTimeout(timeout);
     }
-  }, [activeScreen, badgeColor, pageBadgeName, isAnimating]);
+  }, [activeScreen, badgeColor, isAnimating, pageBadgeName]);
 
   return (
-    <div className={css.container}>
-      <div className={css.pageHeader}>
-        <p className={css.pageHeader_title}>
-          {t("game_name", { gameName: gameName.toUpperCase() })}
-        </p>
+    <>
+      <div className={css.container}>
+        <div className={css.pageHeader}>
+          <p className={css.pageHeader_title}>
+            {t("game_name", { gameName: gameName.toUpperCase() })}
+          </p>
 
-        <div className={css.pageBadge}>
-          {/* Старий бейдж із ефектом зникнення */}
-          {prevPageBadgeName && isAnimating && (
-            <span
-              className={`${css.pageBadgeName} ${css.fadeOut}`}
-              style={{ "--badgeBgColor": prevBadgeColor }}>
-              {prevPageBadgeName.toUpperCase()}
-            </span>
-          )}
+          <div className={css.pageBadge}>
+            {/* Старий бейдж із анімацією зникнення */}
+            {prevPageBadgeName && isAnimating && (
+              <span
+                className={`${css.pageBadgeName} ${css.slideOut}`}
+                style={{ "--badgeBgColor": prevBadgeColor }}>
+                {prevPageBadgeName.toUpperCase()}
+              </span>
+            )}
 
-          {/* Новий бeyдж із анімацією наїзду */}
-          {pageBadgeName && (
-            <span
-              className={`${css.pageBadgeName} ${
-                isAnimating ? css.slideIn : ""
-              }`}
-              style={{ "--badgeBgColor": badgeColor }}>
-              {pageBadgeName.toUpperCase()}
-            </span>
-          )}
+            {/* Новий бейдж із анімацією появи */}
+            {pageBadgeName && (
+              <span
+                className={`${css.pageBadgeName} ${
+                  isAnimating ? css.slideIn : ""
+                }`}
+                style={{ "--badgeBgColor": badgeColor }}>
+                {pageBadgeName.toUpperCase()}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className={css.pageMain}>
+          {!isGameRunning && <PrepareGame />}
+          {isGameRunning && <Game />}
         </div>
       </div>
-      <div className={css.pageMain}>
-        {!isGameRunning && <PrepareGame />}
-        {isGameRunning && <Game />}
-      </div>
-    </div>
+    </>
   );
 }

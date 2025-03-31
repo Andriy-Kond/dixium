@@ -38,16 +38,20 @@ import { Trans, useTranslation } from "react-i18next";
 export default function Game() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
+
   const currentGame = useSelector(selectGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
+
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const scores = useSelector(selectScores(gameId));
   const votes = useSelector(selectVotes(gameId));
+
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
