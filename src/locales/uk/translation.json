@@ -63,5 +63,8 @@
   "err_selected_card_not_found_in_hand": "Помилка: Вибраної карти немає в руці!",
   "err_no_access": "Помилка: Не можу надати доступ",
   "info_someone_else_is_already_the_storyteller": "Хтось інший уже є оповідачем!",
-  "player_joined": "Гравець {{playerName}} доєднався до гри"
+  "player_joined": "Гравець {{playerName}} доєднався до гри",
+  "HAND": "Рука",
+  "PLAYERS": "Гравці",
+  "TABLE": "Стіл"
 }

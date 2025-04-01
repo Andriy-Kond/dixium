@@ -55,56 +55,38 @@ export default function Game() {
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
-
-  const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
   const toastId = useSelector(selectToastId(gameId));
-
-  const isCurrentPlayerStoryteller = storytellerId === playerId;
-  const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
-
-  const [middleButton, setMiddleButton] = useState(null);
-
-  const stabilizedSetMiddleButton = useCallback(value => {
-    setMiddleButton(value);
-  }, []);
+  const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
 
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
   );
-
   const isCarouselModeTableScreen = useSelector(
     selectIsCarouselModeTableScreen(gameId, playerId),
   );
 
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
+  const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
+  const screens = isBlockScreens
+    ? [<Hand />]
+    : [<Hand />, <Players />, <Table />];
+
+  const [middleButton, setMiddleButton] = useState(null);
+  const [isEmblaReady, setIsEmblaReady] = useState(false);
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
-    align: "start", // Вирівнювання слайдів:
-    // 'start' — Слайди вирівнюються по лівому краю.
-    // 'center' — Слайди центруються (за замовчуванням).
-    // 'end' — Слайди вирівнюються по правому краю.
-    // dragFree: false, // Вільне прокручування без прив'язки до слайдів якщо true
-    // slidesToScroll: 1, // Кількість слайдів, які прокручуються за один раз
-    // duration: 30, // Швидкість анімації прокручування (не в мілісекундах, а в умовних одиницях, рекомендовано 20–60)
-    // skipSnaps: false, // Дозволяє пропускати слайди при сильному свайпі якщо true
-    // startIndex: activeScreen, // Початковий індекс береться з Redux (!не працюють стилі слайдінгу)
+    align: "start", // Вирівнювання слайдів
     watchDrag: !(
       isCarouselModeHandScreen ||
       isCarouselModeTableScreen ||
       zoomCardId
     ), // дозвіл на слайдінг при цій умові
-    // isCarouselModeHandScreen || isCarouselModeTableScreen
-    //   ? ""
-    //   : "is-draggable",
-
-    // Адаптивні налаштування для різних розмірів екрану
-    // breakpoints: {
-    //   "(min-width: 768px)": { loop: true }, // увімкнути зациклення на екранах ширше 768px.
-    // },
   });
 
-  const screens = isBlockScreens
-    ? [<Hand />]
-    : [<Hand />, <Players />, <Table />];
+  const stabilizedSetMiddleButton = useCallback(value => {
+    setMiddleButton(value);
+  }, []);
 
   // Навігація через Embla API
   const prevScreen = () => {
@@ -159,14 +141,11 @@ export default function Game() {
     votes,
   ]);
 
-  const [isEmblaReady, setIsEmblaReady] = useState(false);
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {
     if (emblaApi) {
       isShowMask ? emblaApi.scrollTo(0) : emblaApi.scrollTo(activeScreen);
-
-      // Щоб карусель після F5 одразу була на останньому активному екрані без ефекту перемотування
-      setIsEmblaReady(true);
+      setIsEmblaReady(true); // Щоб карусель після F5 одразу була на останньому активному екрані без ефекту перемотування
     }
   }, [activeScreen, emblaApi, isShowMask]);
 

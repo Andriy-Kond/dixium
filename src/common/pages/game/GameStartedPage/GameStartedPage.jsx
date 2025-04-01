@@ -35,7 +35,7 @@ export default function GameStartedPage() {
   const [prevPageName, setPrevPageName] = useState(HAND);
 
   const [isAnimating, setIsAnimating] = useState(false);
-  const [direction, setDirection] = useState(null); // "left" або "right"
+  const [direction, setDirection] = useState(null); // "left" or "right"
   const [prevActiveScreen, setPrevActiveScreen] = useState(null);
 
   const totalScreens = 3; // Кількість сторінок (0, 1, 2)
@@ -60,34 +60,14 @@ export default function GameStartedPage() {
         return;
     }
 
-    // // Визначаємо напрямок руху з урахуванням циклічності
-    // if (prevActiveScreen !== null && activeScreen !== prevActiveScreen) {
-    //   const delta = activeScreen - prevActiveScreen;
-    //   let adjustedDirection;
-
-    //   // Обробка циклічних переходів
-    //   if (Math.abs(delta) > totalScreens / 2) {
-    //     // Якщо перехід через межу (наприклад, 0 -> 2 або 2 -> 0)
-    //     adjustedDirection = delta > 0 ? "left" : "right"; // З 0 до 2 — зліва, з 2 до 0 — справа
-    //   } else {
-    //     // Звичайний перехід
-    //     adjustedDirection = delta > 0 ? "right" : "left"; // 0 -> 1 — справа, 1 -> 0 — зліва
-    //   }
-
-    //   setDirection(adjustedDirection);
-    //   setPrevPageName(pageName);
-    //   setPrevColor(color);
-    //   setIsAnimating(true);
-    // }
-
-    // Визначаємо напрямок руху з урахуванням циклічності через % (більш універсальний для будь-якої кількості сторінок)
+    // Визначення напрямку руху з урахуванням циклічності через % (більш універсальний для будь-якої кількості сторінок)
     if (prevActiveScreen !== null && activeScreen !== prevActiveScreen) {
       const delta =
         (activeScreen - prevActiveScreen + totalScreens) % totalScreens;
       const reverseDelta =
         (prevActiveScreen - activeScreen + totalScreens) % totalScreens;
 
-      // Вибираємо найкоротший шлях
+      // Вибір найкоротшого шляху
       const direction = delta <= reverseDelta ? "right" : "left"; // delta — вперед, reverseDelta — назад
 
       setDirection(direction);
@@ -124,7 +104,7 @@ export default function GameStartedPage() {
             <span
               className={`${css.pageName} ${css.fadeOut}`}
               style={{ "--badgeBgColor": prevColor }}>
-              {prevPageName}
+              {t(prevPageName).toUpperCase()}
             </span>
           )}
           {pageName && (
@@ -137,7 +117,7 @@ export default function GameStartedPage() {
                   : ""
               }`}
               style={{ "--badgeBgColor": color }}>
-              {pageName}
+              {t(pageName).toUpperCase()}
             </span>
           )}
         </div>

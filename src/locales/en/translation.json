@@ -9,10 +9,8 @@
   "delete_game": "Delete game",
   "be_the_first": "Be the first to think of an history for one of your cards. Choose it and make a move. Tell about your history.",
   "player_told_first_story": "Player <bold>{{storytellerName}}</bold> told first story. <br/> Let's go to guess it!",
-
   "you_have_told": "You have told your story. Waiting for other players to choose their associations cards.",
   "player_has_told": "Player {{storyteller}} has told his history. Choose a card to associate with it.",
-
   "select_card": "Select card",
   "choose_card": "Choose card",
   "go_to_guess_story": "Go to guess the story",
@@ -66,5 +64,8 @@
   "err_no_access": "Error: no access",
   "err_no_response_server": "Error: No response from server for {{eventName}}. Reverting state.",
   "info_someone_else_is_already_the_storyteller": "Someone else is already the storyteller!",
-  "player_joined": "Player {{playerName}} joined to game"
+  "player_joined": "Player {{playerName}} joined to game",
+  "HAND": "Hand",
+  "PLAYERS": "Players",
+  "TABLE": "Table"
 }
