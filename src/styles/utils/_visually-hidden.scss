@@ -1,4 +1,4 @@
-.visually-hidden {
+.visually-hidden_standard {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -12,7 +12,7 @@
 }
 
 /* Старий варіант: */
-.visually-hidden {
+.visually-hidden_old {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -24,7 +24,7 @@
 }
 
 /* Новий варіант: */
-.visually-hidden {
+.visually-hidden_modern {
   position: fixed;
   transform: scale(0);
 }

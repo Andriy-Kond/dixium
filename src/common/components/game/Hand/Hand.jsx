@@ -42,6 +42,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
+import ImbGen from "common/components/game/ImbGen";
 
 export default function Hand({
   isActiveScreen,
@@ -607,19 +608,16 @@ export default function Hand({
                       </div>
                     )}
 
-                    <img
-                      className={`${css.carouselImage} ${css.visible}`}
-                      src={card.url}
-                      alt="enlarged card"
-                    />
-
                     {/* <img
-                      className={`${css.carouselImage} ${
-                        isMountedCarousel ? css.visible : ""
-                      }`}
-                      src={card.url}
+                      className={`${css.carouselImage} ${css.visible}`}
                       alt="enlarged card"
+                      src={card.url}
                     /> */}
+                    <ImbGen
+                      className={`${css.carouselImage} ${css.visible}`}
+                      publicId={card.public_id}
+                      isBig
+                    />
 
                     {/* // todo add zoom by modal window
                      <TransformWrapper
@@ -679,7 +677,9 @@ export default function Hand({
                       ))}
                     </div>
                   )}
-                  <img className={css.img} src={card.url} alt="card" />
+
+                  {/* <img className={css.img} src={card.url} alt="card" /> */}
+                  <ImbGen className={css.img} publicId={card.public_id} />
                 </li>
               );
             })}

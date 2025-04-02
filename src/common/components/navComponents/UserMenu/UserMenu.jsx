@@ -33,6 +33,7 @@ export default function UserMenu() {
             src={userCredentials.avatarURL}
             alt="avatar"
           />
+
           <span className={css.text}>
             {
               t("welcome_user", { user: userCredentials.name.toUpperCase() })

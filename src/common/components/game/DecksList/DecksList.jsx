@@ -3,6 +3,7 @@ import {
   useGetCurrentDeckQuery,
 } from "redux/game/gameApi.js";
 import { useTranslation } from "react-i18next";
+
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentDeckId, setIsCreatingGame } from "redux/game/gameSlice.js";
@@ -11,6 +12,8 @@ import Button from "common/components/ui/Button";
 import socket from "services/socket.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import { LOBBY } from "utils/generals/constants.js";
+import { getImageUrl } from "utils/generals/getImageUrl.js";
+import ImbGen from "common/components/game/ImbGen";
 
 export default function DecksList() {
   const { t } = useTranslation();
@@ -77,7 +80,27 @@ export default function DecksList() {
               }`}>
               {deck.cards?.map(card => (
                 <li className={css.card} key={card._id}>
-                  <img className={css.img} src={card.url} alt="card" />
+                  <ImbGen className={css.img} publicId={card.public_id} />
+                  {/* <img
+                    className={css.img}
+                    alt="card"
+                    src={getImageUrl({ publicId: card.public_id, width: 100 })} // Базовий розмір
+                    // Доступні розміри зображень:
+                    srcSet={`${getImageUrl({
+                      publicId: card.public_id,
+                      width: 100,
+                    })} 100w,            
+                    ${getImageUrl({
+                      publicId: card.public_id,
+                      width: 200,
+                    })} 200w,            
+                    ${getImageUrl({
+                      publicId: card.public_id,
+                      width: 400,
+                    })} 400w`}
+                    // підказує браузеру, який розмір зображення потрібен залежно від ширини в'юпорту
+                    sizes="(max-width: 320px) 100px, (max-width: 768px) 200px, 400px"
+                  /> */}
                 </li>
               ))}
             </ul>

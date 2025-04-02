@@ -32,7 +32,7 @@ export function prepareRoundResults({
     return {
       cardId: card._id,
       cardName: card.cardName,
-      url: card.url,
+      public_id: card.public_id,
       ownerId: card.ownerId,
       ownerName: ownerPlayer.name,
       votesForThisCard,

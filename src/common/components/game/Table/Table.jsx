@@ -33,6 +33,8 @@ import { capitalizeWords } from "utils/game/capitalizeWords.js";
 import LocalModal from "common/components/LocalModal";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
+import { getImageUrl } from "utils/generals/getImageUrl.js";
+import ImbGen from "common/components/game/ImbGen";
 
 export default function Table({
   isActiveScreen,
@@ -439,12 +441,19 @@ export default function Table({
                         </div>
                       )}
 
-                      <img
+                      {/* <img
                         className={`${css.carouselImage} ${
                           isMounted ? css.visible : ""
                         }`}
                         src={card.url}
-                        alt="card"
+                        alt="enlarged card"
+                      /> */}
+                      <ImbGen
+                        className={`${css.carouselImage} ${
+                          isMounted ? css.visible : ""
+                        }`}
+                        publicId={card.public_id}
+                        isBig
                       />
                     </div>
                   </li>
@@ -473,7 +482,8 @@ export default function Table({
                       </div>
                     )}
 
-                    <img className={css.img} src={card.url} alt="card" />
+                    {/* <img className={css.img} src={card.url} alt="card" /> */}
+                    <ImbGen className={css.img} publicId={card.public_id} />
                   </li>
                 );
               })}
@@ -485,13 +495,18 @@ export default function Table({
   } else if (gameStatus === ROUND_RESULTS) {
     return (
       <>
-        <p>Table gameStatus === ROUND_RESULTS</p>
+        {/* <p>Table gameStatus === ROUND_RESULTS</p> */}
 
         {zoomCardId ? (
           <LocalModal toggleModal={closeCard}>
             <TransformWrapper maxScale={5} panning={{ velocityDisabled: true }}>
               <TransformComponent>
-                <img src={zoomCard.url} alt="enlarged card" />
+                {/* <img src={zoomCard.url} alt="enlarged card" /> */}
+                <ImbGen
+                  className={css.zoomImg}
+                  publicId={zoomCard.public_id}
+                  isBig
+                />
               </TransformComponent>
             </TransformWrapper>
           </LocalModal>
@@ -502,7 +517,8 @@ export default function Table({
                 className={css.resultItem}
                 key={result.cardId}
                 onClick={() => showCard(result.cardId)}>
-                <img className={css.resultImg} src={result.url} alt="card" />
+                {/* <img className={css.resultImg} src={result.url} alt="card" /> */}
+                <ImbGen className={css.resultImg} publicId={result.public_id} />
                 <div className={css.resultPlayers}>
                   <span>
                     {result.ownerId === storytellerId

@@ -5,8 +5,11 @@
 }
 
 .img {
-  width: 50%;
-  height: 250px;
+  // max-width: 50%;
+  // min-width: 100px;
+  // max-height: 250px;
+  width: 100px;
+  height: auto;
   border-radius: 10px;
 }
 

@@ -8,7 +8,7 @@ export default function SharedLayout() {
   const { t } = useTranslation();
   return (
     <>
-      <main>
+      <main className={css.mainContainer}>
         <header className={css.navHeader}>
           <AppBar />
         </header>

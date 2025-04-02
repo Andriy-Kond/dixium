@@ -42,6 +42,7 @@
 }
 
 .slideContainer {
+  height: 100%;
   position: relative;
   padding-top: 26px;
   padding-bottom: 8px;
@@ -75,7 +76,8 @@
 //Стилі для появи першого слайду
 .carouselImage {
   width: 100%;
-  // height: auto;
+  height: 100%;
+  object-fit: fill;
 
   // Початковий стан для всіх слайдів
   transform: scale(0);
@@ -135,8 +137,10 @@
 }
 
 .card {
+  height: 160px;
   position: relative;
   flex-basis: calc((100% - 4px) / 3);
+
   // overflow: hidden;
 }
 
@@ -173,15 +177,21 @@
 }
 
 .resultImg {
-  max-height: 152px;
+  // width: 100%;
+  // height: 100%;
+
+  height: 160px;
+  min-width: 100px;
+  object-fit: fill;
+
   // width: 104px;
 }
 
 .resultPlayers {
+  width: 100%;
   display: flex;
   gap: 24px;
   flex-direction: column;
-  width: 100%;
 }
 
 .resultVotes {
@@ -215,4 +225,12 @@
 
 .btnActive {
   background-color: #0f7dff1f;
+}
+
+.zoomImg {
+  // todo переробити під правильні розміри
+  width: 100%;
+  height: 600px;
+
+  object-fit: fill;
 }
