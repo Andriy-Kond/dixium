@@ -1,13 +1,12 @@
 .item {
   position: relative;
+  height: 44px;
   display: flex;
-  // justify-content: space-between;
   justify-content: end;
   align-items: center;
-  // padding: 10px;
-  margin: 5px;
-  background-color: #d4d4d4;
-  border-radius: 5px;
+
+  background-color: #fff;
+
   user-select: none;
   caret-color: transparent;
   opacity: 0.5;
@@ -30,7 +29,19 @@
   flex-grow: 1;
   align-items: center; /* Вирівнювання тексту по вертикалі */
   align-self: stretch; // розтягнути на всю площину li.item:
-  padding: 10px;
+  padding-left: 16px;
+  padding-right: 8px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.dndIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+  padding: 2px;
+
+  color: #5d7e9e;
 }
 
 .removePlayerBtn {

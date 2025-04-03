@@ -1,4 +1,6 @@
 import { FaRegTrashAlt } from "react-icons/fa";
+import { PiTrashLight } from "react-icons/pi";
+import { BsArrowsExpand } from "react-icons/bs";
 
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
@@ -8,9 +10,11 @@ import { useSelector } from "react-redux";
 import { selectGame, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
 import socket from "services/socket.js";
+import { useTranslation } from "react-i18next";
 
 // Component for each dnd player
 export default function SortablePlayer({ player }) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: player._id,
@@ -61,7 +65,10 @@ export default function SortablePlayer({ player }) {
       className={`${css.item}
                 ${isCurrentPlayerIsHost && css.host}`}>
       <div {...attributes} {...listeners} className={css.dragHandle}>
-        {player.name.toUpperCase()}
+        <BsArrowsExpand className={css.dndIcon} />
+        {`${player.name.toUpperCase()} ${
+          player._id === currentGame.hostPlayerId ? t("the_host") : ""
+        }`}
       </div>
       <Button
         disabled={!isCurrentPlayerIsHost}
@@ -74,7 +81,8 @@ export default function SortablePlayer({ player }) {
         }}
         btnStyle={["btnTransparentBorder"]}
         localClassName={css.removePlayerBtn}>
-        <FaRegTrashAlt />
+        {/* <FaRegTrashAlt /> */}
+        <PiTrashLight />
       </Button>
     </li>
   );

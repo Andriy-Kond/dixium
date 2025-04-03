@@ -111,7 +111,7 @@ export default function PrepareGame() {
           items={currentGame?.players.map(p => p._id)}
           strategy={verticalListSortingStrategy}
           disabled={currentGame.hostPlayerId !== userCredentials._id}>
-          <ul>
+          <ul className={css.playersList}>
             {currentGame?.players.map(player => (
               <SortablePlayer key={player._id} player={player} />
             ))}
