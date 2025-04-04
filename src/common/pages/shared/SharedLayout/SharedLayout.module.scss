@@ -4,14 +4,14 @@
 // $desktop: 1200px;
 
 .mainContainer {
-  // @media screen and (min-width: ($tablet)) and (max-width: ($desktop - 1)) {
-  // }
-
-  // @media screen and (min-width: ($desktop)) {
-  // }
 }
 
 .navHeader {
   height: 44px;
   background-color: var(--status_bar_color);
+  // @media screen and (min-width: ($tablet)) and (max-width: ($desktop - 1)) {
+  // }
+
+  // @media screen and (min-width: ($desktop)) {
+  // }
 }

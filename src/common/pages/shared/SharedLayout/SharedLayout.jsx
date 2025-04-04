@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 export default function SharedLayout() {
   const { t } = useTranslation();
+
   return (
     <>
       <main className={css.mainContainer}>

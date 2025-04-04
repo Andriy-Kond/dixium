@@ -9,16 +9,24 @@ import Button from "common/components/ui/Button";
 import css from "./UserMenu.module.scss";
 import { useTranslation } from "react-i18next";
 
-export default function UserMenu() {
+export default function UserMenu({ setIsOpen, isOpen }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [logoutUser] = useLogoutUserMutation();
   const userCredentials = useSelector(selectUserCredentials);
 
+  const handleLinkClick = () => {
+    if (isOpen) {
+      setIsOpen(false); // Закриваємо меню, якщо воно відкрите
+    }
+  };
+
   const handleLogout = async () => {
     await logoutUser();
     dispatch(clearGameInitialState());
     dispatch(clearAuthInitialState());
+
+    handleLinkClick();
   };
 
   const btnStyle = ["btnBarMenu"];
@@ -27,25 +35,26 @@ export default function UserMenu() {
     <>
       {/* Умова userCredentials.name необхідно, щоб span не блимав при завантаженні користувача */}
       {userCredentials.name && (
-        <div className={css.userCredentialsBox}>
-          <img
-            className={css.avatar}
-            src={userCredentials.avatarURL}
-            alt="avatar"
-          />
+        <>
+          <div className={css.userCredentialsBox}>
+            <img
+              className={css.avatar}
+              src={userCredentials.avatarURL}
+              alt="avatar"
+            />
 
-          <span className={css.text}>
-            {
-              t("welcome_user", { user: userCredentials.name.toUpperCase() })
-              // `Welcome, ${userCredentials.name.toUpperCase()}`
-            }
-          </span>
-          <Button
-            onClick={handleLogout}
-            btnText={t("logout")}
-            btnStyle={btnStyle}
-          />
-        </div>
+            <span className={css.text}>
+              {/* `Welcome, ${userCredentials.name.toUpperCase()}` */}
+              {t("welcome_user", { user: userCredentials.name.toUpperCase() })}
+            </span>
+
+            <Button
+              onClick={handleLogout}
+              btnText={t("logout")}
+              btnStyle={btnStyle}
+            />
+          </div>
+        </>
       )}
     </>
   );
