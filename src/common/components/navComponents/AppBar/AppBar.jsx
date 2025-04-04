@@ -31,6 +31,17 @@ export default function AppBar() {
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
+  const toggleMenu = e => {
+    e.stopPropagation(); // Зупиняємо просочування події до <ul>
+    setIsOpen(prev => !prev);
+  };
+
+  const handleBackdropClick = e => {
+    if (e.target === e.currentTarget) {
+      setIsOpen(false);
+    }
+  };
+
   const menuClass = isMobile
     ? `mobileMenu`
     : isTablet
@@ -42,31 +53,29 @@ export default function AppBar() {
   return (
     <nav className={css.navMenu}>
       {isMobile && (
-        <button className={css.burgerBtn} onClick={() => setIsOpen(!isOpen)}>
+        <button className={css.burgerBtn} onClick={toggleMenu}>
           ☰
         </button>
       )}
 
-      {(isOpen || !menuClass.includes("mobileMenu")) && (
-        <div className={css.backdrop} onClick={() => setIsOpen(!isOpen)}>
-          <ul className={`${css.menuList} ${css[menuClass]}`}>
-            <li>
-              <NavigationMenu setIsOpen={setIsOpen} isOpen={isOpen} />
-            </li>
-            <li>
-              {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
-              {isUserToken && isLoggedIn ? (
-                <UserMenu setIsOpen={setIsOpen} isOpen={isOpen} />
-              ) : (
-                <AuthNav setIsOpen={setIsOpen} isOpen={isOpen} />
-              )}
-            </li>
-            <li>
-              <LangSwitcher />
-            </li>
-          </ul>
-        </div>
-      )}
+      <ul
+        className={`${css[menuClass]} ${isOpen && css.isOpen}`}
+        onClick={handleBackdropClick}>
+        <li>
+          <NavigationMenu setIsOpen={setIsOpen} isOpen={isOpen} />
+        </li>
+        <li>
+          {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
+          {isUserToken && isLoggedIn ? (
+            <UserMenu setIsOpen={setIsOpen} isOpen={isOpen} />
+          ) : (
+            <AuthNav setIsOpen={setIsOpen} isOpen={isOpen} />
+          )}
+        </li>
+        <li>
+          <LangSwitcher />
+        </li>
+      </ul>
 
       {/* <NavigationMenu />
       <div className={css.appBarContainer}>
