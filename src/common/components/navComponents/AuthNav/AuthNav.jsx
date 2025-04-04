@@ -3,28 +3,22 @@ import clsx from "clsx";
 import css from "common/components/navComponents/navigation.module.scss";
 import { useTranslation } from "react-i18next";
 
-export default function AuthNav({ setIsOpen, isOpen }) {
+export default function AuthNav({ toggleMenu }) {
   const { t } = useTranslation();
-
-  const handleLinkClick = () => {
-    if (isOpen) {
-      setIsOpen(false); // Закриваємо меню, якщо воно відкрите
-    }
-  };
 
   return (
     <>
       <div className={css.navBar}>
         <NavLink
           to="/register"
-          onClick={handleLinkClick}
+          onClick={toggleMenu}
           className={({ isActive }) => clsx(css.link, isActive && css.active)}>
           {t("register").toUpperCase()}
         </NavLink>
 
         <NavLink
           to="/login"
-          onClick={handleLinkClick}
+          onClick={toggleMenu}
           className={({ isActive }) => clsx(css.link, isActive && css.active)}>
           {t("login").toUpperCase()}
         </NavLink>

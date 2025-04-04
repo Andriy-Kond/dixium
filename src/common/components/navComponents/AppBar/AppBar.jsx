@@ -7,7 +7,7 @@ import UserMenu from "common/components/navComponents/UserMenu";
 
 import css from "./AppBar.module.scss";
 import LangSwitcher from "common/components/navComponents/LangSwitcher";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function AppBar() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
@@ -17,6 +17,21 @@ export default function AppBar() {
   const [isTablet, setIsTablet] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false); // Стан для монтування, щоб запобігти миганню мобільного меню при оновленні сторінки (або після переходу після login)
+
+  const toggleMenu = useCallback(() => {
+    setIsOpen(prev => !prev);
+  }, []);
+
+  const handleBackdropClick = e => {
+    if (e.target === e.currentTarget) {
+      toggleMenu();
+    }
+  };
+
+  useEffect(() => {
+    setIsOpen(false); // Закриваємо меню при логіні або логауті
+  }, [isLoggedIn, isUserToken]);
 
   useEffect(() => {
     const updateViewport = () => {
@@ -27,20 +42,25 @@ export default function AppBar() {
     };
 
     updateViewport();
+
+    setIsMounted(true); // Позначаємо, що компонент змонтовано
+
     window.addEventListener("resize", updateViewport);
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
-  const toggleMenu = e => {
-    e.stopPropagation(); // Зупиняємо просочування події до <ul>
-    setIsOpen(prev => !prev);
-  };
+  useEffect(() => {
+    const handleKeydownEsc = e => {
+      if (e.code === "Escape") {
+        toggleMenu();
+      }
+    };
 
-  const handleBackdropClick = e => {
-    if (e.target === e.currentTarget) {
-      setIsOpen(false);
-    }
-  };
+    window.addEventListener("keydown", handleKeydownEsc);
+    return () => {
+      window.removeEventListener("keydown", handleKeydownEsc);
+    };
+  }, [toggleMenu]);
 
   const menuClass = isMobile
     ? `mobileMenu`
@@ -60,29 +80,24 @@ export default function AppBar() {
 
       <ul
         className={`${css[menuClass]} ${isOpen && css.isOpen}`}
-        onClick={handleBackdropClick}>
+        onClick={handleBackdropClick}
+        style={{ display: isMounted ? "flex" : "none" }} // Ховаємо до монтування
+      >
         <li>
-          <NavigationMenu setIsOpen={setIsOpen} isOpen={isOpen} />
+          <NavigationMenu toggleMenu={toggleMenu} />
         </li>
         <li>
           {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
           {isUserToken && isLoggedIn ? (
-            <UserMenu setIsOpen={setIsOpen} isOpen={isOpen} />
+            <UserMenu toggleMenu={toggleMenu} />
           ) : (
-            <AuthNav setIsOpen={setIsOpen} isOpen={isOpen} />
+            <AuthNav toggleMenu={toggleMenu} />
           )}
         </li>
         <li>
           <LangSwitcher />
         </li>
       </ul>
-
-      {/* <NavigationMenu />
-      <div className={css.appBarContainer}>
-        {isUserToken && isLoggedIn && <UserMenu />}
-        {!isUserToken && <AuthNav />}
-        <LangSwitcher />
-      </div> */}
     </nav>
   );
 }

@@ -7,22 +7,16 @@ import { selectUserIsLoggedIn } from "redux/selectors";
 import css from "../navigation.module.scss";
 import { useTranslation } from "react-i18next";
 
-export default function NavigationMenu({ setIsOpen, isOpen }) {
+export default function NavigationMenu({ toggleMenu }) {
   const { t } = useTranslation();
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
-
-  const handleLinkClick = () => {
-    if (isOpen) {
-      setIsOpen(false); // Закриваємо меню, якщо воно відкрите
-    }
-  };
 
   return (
     <>
       <div className={css.navBar}>
         <NavLink
           to="/"
-          onClick={handleLinkClick}
+          onClick={toggleMenu}
           className={({ isActive }) => clsx(css.link, isActive && css.active)}>
           {t("home").toUpperCase()}
         </NavLink>
@@ -31,7 +25,7 @@ export default function NavigationMenu({ setIsOpen, isOpen }) {
           <>
             <NavLink
               to="/game"
-              onClick={handleLinkClick}
+              onClick={toggleMenu}
               className={({ isActive }) =>
                 clsx(css.link, isActive && css.active)
               }>

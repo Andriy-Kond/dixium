@@ -9,24 +9,18 @@ import Button from "common/components/ui/Button";
 import css from "./UserMenu.module.scss";
 import { useTranslation } from "react-i18next";
 
-export default function UserMenu({ setIsOpen, isOpen }) {
+export default function UserMenu({ toggleMenu }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [logoutUser] = useLogoutUserMutation();
   const userCredentials = useSelector(selectUserCredentials);
-
-  const handleLinkClick = () => {
-    if (isOpen) {
-      setIsOpen(false); // Закриваємо меню, якщо воно відкрите
-    }
-  };
 
   const handleLogout = async () => {
     await logoutUser();
     dispatch(clearGameInitialState());
     dispatch(clearAuthInitialState());
 
-    handleLinkClick();
+    toggleMenu();
   };
 
   const btnStyle = ["btnBarMenu"];
@@ -44,7 +38,6 @@ export default function UserMenu({ setIsOpen, isOpen }) {
             />
 
             <span className={css.text}>
-              {/* `Welcome, ${userCredentials.name.toUpperCase()}` */}
               {t("welcome_user", { user: userCredentials.name.toUpperCase() })}
             </span>
 
