@@ -14,7 +14,12 @@ export default function SharedLayout() {
           <AppBar />
         </header>
 
-        <Suspense fallback={<div>{t("loading")}</div>}>
+        <Suspense
+          fallback={
+            <div className={css.suspenseContainer}>
+              <span className={css.loader} />
+            </div>
+          }>
           <Outlet />
         </Suspense>
       </main>
