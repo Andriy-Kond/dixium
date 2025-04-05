@@ -1,0 +1,42 @@
+:root {
+  --primary_color: #5d7e9e;
+  --secondary_color: #ebf0f5;
+  --status_bar_color: #476078;
+
+  --bg_color: #f7f254;
+  --disable_color: rgba(0, 0, 0, 0.239);
+  --header_active_color: #0f7dff;
+  --white_color: #fff;
+
+  --font_family: "Roboto";
+  --font_color: #000000de;
+  --font_size: 14px;
+  --font_line-height: 16px;
+  --font_weight: 400;
+
+  --btn-hover-bg-color: #0f7dff1f;
+}
+
+[data-theme="dark"] {
+  --primary_color: #ebf0f5;
+  --secondary_color: #5d7e9e;
+  --status_bar_color: #9bbfe1;
+
+  --bg_color: #096fd5;
+  --disable_color: rgba(232, 225, 225, 0.239);
+  --header_active_color: #ecc52c;
+
+  --font_color: #fff;
+
+  --btn-hover-bg-color: #76f21d1f;
+}
+
+main {
+  background-color: var(--secondary_color);
+  color: var(--font_color);
+}
+
+button {
+  background-color: var(--bg_color);
+  color: var(--font_color);
+}

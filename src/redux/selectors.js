@@ -1,5 +1,4 @@
-// const { t } = useTranslation();
-// import { useTranslation } from "react-i18next";
+import { LIGHT } from "utils/generals/constants.js";
 
 // authSlice:
 export const selectUserIsLoggedIn = state => state.authSlice.isLoggedIn;
@@ -67,6 +66,7 @@ export const selectToastId = (gameId, playerId) => state => {
 };
 
 export const selectLang = state => state.localPersonalSlice.lang || "en";
+export const selectTheme = state => state.localPersonalSlice.theme || LIGHT;
 
 // gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;

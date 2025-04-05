@@ -1,6 +1,7 @@
 import storage from "redux-persist/lib/storage";
 import { createSlice } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
+import { DARK, LIGHT } from "utils/generals/constants.js";
 
 const localInitialState = {
   screens: {}, // Об’єкт виду { "gameId_playerId": screen }
@@ -12,6 +13,7 @@ const localInitialState = {
   zoomCardId: {},
   toastId: {},
   lang: "en",
+  theme: LIGHT,
 };
 
 export const localPersonalSlice = createSlice({
@@ -117,6 +119,14 @@ export const localPersonalSlice = createSlice({
     setLang: (state, action) => {
       state.lang = action.payload;
     },
+
+    toggleTheme: state => {
+      state.theme = state.theme === LIGHT ? DARK : LIGHT;
+    },
+
+    setTheme: (state, action) => {
+      state.theme = action.payload;
+    },
   },
 });
 
@@ -148,4 +158,7 @@ export const {
   setToastId,
   removeToastIdRef,
   setLang,
+
+  toggleTheme,
+  setTheme,
 } = localPersonalSlice.actions;

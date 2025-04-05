@@ -67,5 +67,7 @@
   "player_joined": "Player {{playerName}} joined to game",
   "HAND": "Hand",
   "PLAYERS": "Players",
-  "TABLE": "Table"
+  "TABLE": "Table",
+  "switch_to_light_theme": "Switch to light theme",
+  "switch_to_dark_theme": "Switch to dark theme"
 }
