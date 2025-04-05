@@ -36,8 +36,8 @@ export default function AppBar() {
   useEffect(() => {
     const updateViewport = () => {
       const width = window.innerWidth;
-      setIsMobile(width <= 320);
-      setIsTablet(width > 320 && width <= 768);
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1200);
       setIsDesktop(width >= 1200);
     };
 
