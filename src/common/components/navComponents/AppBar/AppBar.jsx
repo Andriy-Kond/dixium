@@ -43,12 +43,23 @@ export default function AppBar() {
 
   return (
     <nav className={css.navMenu}>
-      <button className={css.burgerBtn} onClick={toggleMenu}>
-        ☰
-      </button>
+      {/* <button className={css.burgerBtn} onClick={toggleMenu}>
+        ☰<span></span>
+      </button> */}
+
+      <input
+        id="menu__toggle"
+        type="checkbox"
+        className={css.menuToggle}
+        onChange={toggleMenu}
+      />
+      <label className={css.menu__btn} htmlFor="menu__toggle">
+        <span></span>
+      </label>
 
       <div
-        className={`${css.barList} ${isOpen && css.isOpen} `}
+        className={`${css.barList} ${isOpen && css.isOpen} ${css.menu__box} `}
+        // className={css.menu__box}
         onClick={handleBackdropClick}>
         <NavigationMenu toggleMenu={toggleMenu} />
 
