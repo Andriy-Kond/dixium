@@ -17,6 +17,10 @@
   background: none;
   cursor: pointer;
   z-index: 1;
+
+  @media screen and (min-width: $tablet) {
+    display: none;
+  }
 }
 
 /* Mobile */
@@ -28,7 +32,7 @@
   right: 0;
   padding: 40px 10px;
 
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: start;
   gap: 10px;
@@ -41,6 +45,14 @@
   &.isOpen {
     transform: translateX(0);
     opacity: 1;
+  }
+
+  &.isMounted {
+    display: flex;
+  }
+
+  &.isNone {
+    display: none;
   }
 }
 
@@ -72,8 +84,50 @@
   }
 }
 
+.barList {
+  @media screen and (max-width: ($tablet - 1)) {
+    position: fixed;
+    top: 44px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40px 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 10px;
+    background-color: rgba(69, 241, 244, 0.95);
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: transform 750ms cubic-bezier(0.48, 1.75, 0.55, 0.91),
+      opacity 750ms cubic-bezier(0.48, 1.75, 0.55, 0.91);
+
+    &.isOpen {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @media screen and (min-width: $tablet) {
+    display: flex; // Завжди видно
+    flex-grow: 1;
+    align-items: center;
+
+    background: #476078;
+    padding: 10px;
+    width: 100%;
+
+    .serviceMenuContainer {
+      margin-left: auto;
+    }
+  }
+
+  // @media screen and (min-width: $desktop) {
+  // }
+}
 .serviceMenuContainer {
-  @media screen and (min-width: ($tablet)) and (max-width: ($desktop - 1)) {
+  @media screen and (min-width: ($tablet)) {
     display: flex;
     align-items: center;
   }

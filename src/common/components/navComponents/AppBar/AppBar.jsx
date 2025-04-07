@@ -1,9 +1,5 @@
 import { useSelector } from "react-redux";
-import {
-  selectTheme,
-  selectUserIsLoggedIn,
-  selectUserToken,
-} from "redux/selectors";
+import { selectUserIsLoggedIn, selectUserToken } from "redux/selectors";
 
 import NavigationMenu from "common/components/navComponents/NavigationMenu";
 import AuthNav from "common/components/navComponents/AuthNav";
@@ -17,14 +13,8 @@ import ThemeToggle from "common/components/ui/ThemeToggle";
 export default function AppBar() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
   const isUserToken = useSelector(selectUserToken);
-  const theme = useSelector(selectTheme);
 
-  const [isMobile, setIsMobile] = useState(null);
-  const [isTablet, setIsTablet] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
-  const [isMounted, setIsMounted] = useState(false); // Стан для монтування, щоб запобігти миганню мобільного меню при оновленні сторінки (або після переходу після login)
 
   const toggleMenu = useCallback(() => {
     setIsOpen(prev => !prev);
@@ -40,70 +30,26 @@ export default function AppBar() {
     setIsOpen(false); // Закриваємо меню при логіні або логауті
   }, [isLoggedIn, isUserToken]);
 
-  useEffect(() => {
-    const updateViewport = () => {
-      const width = window.innerWidth;
-      setIsMobile(width < 768);
-      setIsTablet(width >= 768 && width < 1200);
-      setIsDesktop(width >= 1200);
-    };
-
-    updateViewport();
-
-    setIsMounted(true); // Позначаємо, що компонент змонтовано
-
-    window.addEventListener("resize", updateViewport);
-    return () => window.removeEventListener("resize", updateViewport);
-  }, []);
-
+  // Exit by press Esc key
   useEffect(() => {
     const handleKeydownEsc = e => {
-      if (e.code === "Escape") {
-        toggleMenu();
-      }
+      if (e.code === "Escape") setIsOpen(false);
     };
 
-    window.addEventListener("keydown", handleKeydownEsc);
-    return () => {
-      window.removeEventListener("keydown", handleKeydownEsc);
-    };
-  }, [toggleMenu]);
+    if (isOpen) window.addEventListener("keydown", handleKeydownEsc);
 
-  // const menuClass = isMobile
-  //   ? `mobileMenu`
-  //   : isTablet
-  //   ? "tabletMenu"
-  //   : isDesktop
-  //   ? "desktopMenu"
-  //   : "tabletMenu"; // За замовчуванням для проміжних розмірів
-
-  const menuClass = isMobile
-    ? `mobileMenu`
-    : isTablet
-    ? "tabletMenu"
-    : "desktopMenu";
-
-  // // Інлайн-стиль лише для мобільних до монтування
-  // const mobileStyle =
-  //   isMobile === true && !isMounted ? { display: "none" } : {};
+    return () => window.removeEventListener("keydown", handleKeydownEsc);
+  }, [isOpen]);
 
   return (
     <nav className={css.navMenu}>
-      {isMobile && (
-        <button className={css.burgerBtn} onClick={toggleMenu}>
-          ☰
-        </button>
-      )}
+      <button className={css.burgerBtn} onClick={toggleMenu}>
+        ☰
+      </button>
 
       <div
-        className={`${css[menuClass]} ${isOpen && css.isOpen} ${
-          isMounted && css.isMounted
-        }`}
-        onClick={handleBackdropClick}
-        style={{ display: isMounted ? "flex" : "none" }} // Ховаємо до монтування
-        // style={{ display: mobileStyle }}
-        //
-      >
+        className={`${css.barList} ${isOpen && css.isOpen} `}
+        onClick={handleBackdropClick}>
         <NavigationMenu toggleMenu={toggleMenu} />
 
         <div className={css.serviceMenuContainer}>
