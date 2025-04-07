@@ -19,10 +19,11 @@ export default function AppBar() {
   const isUserToken = useSelector(selectUserToken);
   const theme = useSelector(selectTheme);
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(null);
   const [isTablet, setIsTablet] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
   const [isMounted, setIsMounted] = useState(false); // Стан для монтування, щоб запобігти миганню мобільного меню при оновленні сторінки (або після переходу після login)
 
   const toggleMenu = useCallback(() => {
@@ -68,13 +69,23 @@ export default function AppBar() {
     };
   }, [toggleMenu]);
 
+  // const menuClass = isMobile
+  //   ? `mobileMenu`
+  //   : isTablet
+  //   ? "tabletMenu"
+  //   : isDesktop
+  //   ? "desktopMenu"
+  //   : "tabletMenu"; // За замовчуванням для проміжних розмірів
+
   const menuClass = isMobile
     ? `mobileMenu`
     : isTablet
     ? "tabletMenu"
-    : isDesktop
-    ? "desktopMenu"
-    : "tabletMenu"; // За замовчуванням для проміжних розмірів
+    : "desktopMenu";
+
+  // // Інлайн-стиль лише для мобільних до монтування
+  // const mobileStyle =
+  //   isMobile === true && !isMounted ? { display: "none" } : {};
 
   return (
     <nav className={css.navMenu}>
@@ -84,29 +95,30 @@ export default function AppBar() {
         </button>
       )}
 
-      <ul
-        className={`${css[menuClass]} ${isOpen && css.isOpen}`}
+      <div
+        className={`${css[menuClass]} ${isOpen && css.isOpen} ${
+          isMounted && css.isMounted
+        }`}
         onClick={handleBackdropClick}
         style={{ display: isMounted ? "flex" : "none" }} // Ховаємо до монтування
+        // style={{ display: mobileStyle }}
+        //
       >
-        <li>
-          <NavigationMenu toggleMenu={toggleMenu} />
-        </li>
-        <li>
+        <NavigationMenu toggleMenu={toggleMenu} />
+
+        <div className={css.serviceMenuContainer}>
           {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
           {isUserToken && isLoggedIn ? (
             <UserMenu toggleMenu={toggleMenu} />
           ) : (
             <AuthNav toggleMenu={toggleMenu} />
           )}
-        </li>
-        <li>
+
           <LangSwitcher />
-        </li>
-        <li>
+
           <ThemeToggle />
-        </li>
-      </ul>
+        </div>
+      </div>
     </nav>
   );
 }

@@ -13,7 +13,7 @@
 .pageHeader_title {
   font-size: 16px;
   line-height: 22px;
-  color: #ffffff;
+  color: var(--revers_font_color);
 }
 
 .pageMain {
@@ -21,7 +21,8 @@
   flex-direction: column;
 
   background-color: var(--secondary_color);
-  height: calc(100vh - 44px - 44px - 32px);
+  // height: calc(100vh - 44px - 44px - 32px);
+  height: var(--main_screen_height);
 }
 
 .authForm {

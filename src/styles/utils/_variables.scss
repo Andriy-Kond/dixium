@@ -1,21 +1,22 @@
-// :root {
-//   --primary_color: #5d7e9e;
-//   --secondary_color: #ebf0f5;
-//   --status_bar_color: #476078;
+:root {
+  // --primary_color: #5d7e9e;
+  // --secondary_color: #ebf0f5;
+  // --status_bar_color: #476078;
 
-//   --bg_color: #aec2d6;
-//   --disable_color: #0000003d;
-//   --header_active_color: #0f7dff;
-//   --white_color: #fff;
+  // --bg_color: #aec2d6;
+  // --disable_color: #0000003d;
+  // --header_active_color: #0f7dff;
+  // --white_color: #fff;
 
-//   --font_family: "Roboto";
-//   --font_color: #000000de;
-//   --font_size: 14px;
-//   --font_line-height: 16px;
-//   --font_weight: 400;
+  // --font_family: "Roboto";
+  // --font_color: #000000de;
+  // --font_size: 14px;
+  // --font_line-height: 16px;
+  // --font_weight: 400;
 
-//   --btn-hover-bg-color: #0f7dff1f;
-// }
+  // --btn-hover-bg-color: #0f7dff1f;
+  --main_screen_height: calc(100vh - 62px - 44px - 32px);
+}
 
 //% css-variables
 // :root {

@@ -21,7 +21,8 @@
   flex-direction: column;
 
   background-color: var(--secondary_color);
-  min-height: calc(100vh - 44px - 44px - 32px);
+  // min-height: calc(100vh - 44px - 44px - 32px);
+  min-height: var(--main_screen_height);
 }
 
 .bottomBar {

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import clsx from "clsx";
-import css from "common/components/navComponents/navigation.module.scss";
+import css from "./AuthNav.module.scss";
 import { useTranslation } from "react-i18next";
 
 export default function AuthNav({ toggleMenu }) {

@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 import { selectUserIsLoggedIn } from "redux/selectors";
 
-import css from "../navigation.module.scss";
+import css from "./NavigationMenu.module.scss";
 import { useTranslation } from "react-i18next";
 
 export default function NavigationMenu({ toggleMenu }) {
