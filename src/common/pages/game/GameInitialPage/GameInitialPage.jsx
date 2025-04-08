@@ -31,11 +31,6 @@ export default function GameInitialPage() {
   return (
     <>
       <div className={css.container}>
-        {/* <div className={css.pageHeader}>
-          <p className={css.pageHeader_title}>
-            {headerTitleText.toUpperCase()}
-          </p>
-        </div> */}
         <div className={css.pageMain}>
           {isCreatingGame && <DecksList />}
 

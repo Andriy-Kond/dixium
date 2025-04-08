@@ -68,5 +68,7 @@
   "players": "Гравці",
   "table": "Стіл",
   "switch_to_light_theme": "Перемкнути на світлу тему",
-  "switch_to_dark_theme": "Перемкнути на темну тему"
+  "switch_to_dark_theme": "Перемкнути на темну тему",
+  "first_turn": "Перший хід",
+  "players_taking_turn": "Гравці ходять"
 }

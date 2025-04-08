@@ -7,7 +7,7 @@ import { selectUserIsLoggedIn } from "redux/selectors";
 import css from "./NavigationMenu.module.scss";
 import { useTranslation } from "react-i18next";
 
-export default function NavigationMenu({ toggleMenu }) {
+export default function NavigationMenu({ closeMenu }) {
   const { t } = useTranslation();
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
 
@@ -16,7 +16,7 @@ export default function NavigationMenu({ toggleMenu }) {
       <div className={css.navBar}>
         <NavLink
           to="/"
-          onClick={toggleMenu}
+          onClick={closeMenu}
           className={({ isActive }) => clsx(css.link, isActive && css.active)}>
           {t("home").toUpperCase()}
         </NavLink>
@@ -25,7 +25,7 @@ export default function NavigationMenu({ toggleMenu }) {
           <>
             <NavLink
               to="/game"
-              onClick={toggleMenu}
+              onClick={closeMenu}
               className={({ isActive }) =>
                 clsx(css.link, isActive && css.active)
               }>

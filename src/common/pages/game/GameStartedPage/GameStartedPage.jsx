@@ -4,7 +4,12 @@ import Game from "common/components/game/Game";
 import css from "./GameStartedPage.module.scss";
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectGame } from "redux/selectors.js";
+import {
+  selectGame,
+  // selectPageHeaderBgColor,
+  // selectPageHeaderText,
+  // selectPageHeaderTextColor,
+} from "redux/selectors.js";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 
@@ -15,6 +20,10 @@ export default function GameStartedPage() {
   const { t } = useTranslation();
   const { gameId } = useParams();
 
+  // const pageHeaderText = useSelector(selectPageHeaderText);
+  // const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
+  // const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
+
   const { isGameRunning, gameName } = useSelector(selectGame(gameId));
 
   useEffect(() => {
@@ -22,9 +31,21 @@ export default function GameStartedPage() {
   }, [dispatch, gameName, t]);
 
   return (
-    <div className={css.container}>
-      {!isGameRunning && <PrepareGame />}
-      {isGameRunning && <Game />}
-    </div>
+    <>
+      {/* <div className={css.gameBodyContainer}>
+        <div
+          className={css.gameHeader}
+          style={{
+            "--pageHeaderBgColor": pageHeaderBgColor,
+            "--pageHeaderTextColor": pageHeaderTextColor,
+          }}>
+          {pageHeaderText.toUpperCase()}
+        </div>
+      </div> */}
+      <div className={css.container}>
+        {!isGameRunning && <PrepareGame />}
+        {isGameRunning && <Game />}
+      </div>
+    </>
   );
 }

@@ -135,7 +135,7 @@
 }
 
 // Toggle menu btn ====================
-.menuToggle {
+.menuInput {
   opacity: 0;
   display: none;
 }
@@ -179,16 +179,16 @@
 }
 
 // Стили для стану :checked
-.menuBtn > .menuToggle:checked ~ span {
+.menuBtn > .menuInput:checked ~ span {
   transform: rotate(45deg);
   background-color: #668bad;
 }
-.menuBtn > .menuToggle:checked ~ span::before {
+.menuBtn > .menuInput:checked ~ span::before {
   top: 0;
   transform: rotate(0deg);
   background-color: #668bad;
 }
-.menuBtn > .menuToggle:checked ~ span::after {
+.menuBtn > .menuInput:checked ~ span::after {
   top: 0;
   transform: rotate(90deg);
   background-color: #668bad;

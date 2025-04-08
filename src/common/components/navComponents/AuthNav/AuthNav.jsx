@@ -3,7 +3,7 @@ import clsx from "clsx";
 import css from "./AuthNav.module.scss";
 import { useTranslation } from "react-i18next";
 
-export default function AuthNav({ toggleMenu }) {
+export default function AuthNav({ closeMenu }) {
   const { t } = useTranslation();
 
   return (
@@ -11,14 +11,14 @@ export default function AuthNav({ toggleMenu }) {
       <div className={css.navBar}>
         <NavLink
           to="/register"
-          onClick={toggleMenu}
+          onClick={closeMenu}
           className={({ isActive }) => clsx(css.link, isActive && css.active)}>
           {t("register").toUpperCase()}
         </NavLink>
 
         <NavLink
           to="/login"
-          onClick={toggleMenu}
+          onClick={closeMenu}
           className={({ isActive }) => clsx(css.link, isActive && css.active)}>
           {t("login").toUpperCase()}
         </NavLink>

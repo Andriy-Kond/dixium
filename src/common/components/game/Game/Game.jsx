@@ -30,7 +30,12 @@ import {
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
-import { setActiveScreen, setToastId } from "redux/game/localPersonalSlice.js";
+import {
+  setActiveScreen,
+  setPageHeaderBgColor,
+  setPageHeaderText,
+  setToastId,
+} from "redux/game/localPersonalSlice.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import { toast } from "react-toastify";
 import { Trans, useTranslation } from "react-i18next";
@@ -141,6 +146,17 @@ export default function Game() {
     storytellerId,
     votes,
   ]);
+
+  // Page header color and text
+  useEffect(() => {
+    if (!storytellerId || isShowMask) {
+      dispatch(setPageHeaderText(t("first_turn")));
+      dispatch(setPageHeaderBgColor("#0F7DFF"));
+    } else if (isCurrentPlayerStoryteller) {
+      dispatch(setPageHeaderText(t("players_taking_turn")));
+      dispatch(setPageHeaderBgColor("#5D7E9E"));
+    }
+  }, [dispatch, isCurrentPlayerStoryteller, isShowMask, storytellerId, t]);
 
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {

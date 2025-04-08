@@ -9,7 +9,7 @@ import Button from "common/components/ui/Button";
 import css from "./UserMenu.module.scss";
 import { useTranslation } from "react-i18next";
 
-export default function UserMenu({ toggleMenu }) {
+export default function UserMenu({ closeMenu }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [logoutUser] = useLogoutUserMutation();
@@ -20,7 +20,7 @@ export default function UserMenu({ toggleMenu }) {
     dispatch(clearGameInitialState());
     dispatch(clearAuthInitialState());
 
-    toggleMenu();
+    closeMenu();
   };
 
   const btnStyle = ["btnBarMenu"];

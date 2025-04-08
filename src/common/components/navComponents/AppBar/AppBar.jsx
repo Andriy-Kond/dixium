@@ -20,32 +20,35 @@ export default function AppBar() {
     setIsOpen(prev => !prev);
   }, []);
 
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+  const openMenu = useCallback(() => setIsOpen(true), []);
+
   const handleBackdropClick = e => {
     if (e.target === e.currentTarget) {
-      toggleMenu();
+      closeMenu();
     }
   };
 
   useEffect(() => {
-    setIsOpen(false); // Закриваємо меню при логіні або логауті
-  }, [isLoggedIn, isUserToken]);
+    closeMenu(); // Close menu after login or logout
+  }, [closeMenu, isLoggedIn, isUserToken]);
 
   // Exit by press Esc key
   useEffect(() => {
     const handleKeydownEsc = e => {
-      if (e.code === "Escape") setIsOpen(false);
+      if (e.code === "Escape") closeMenu();
     };
 
     if (isOpen) window.addEventListener("keydown", handleKeydownEsc);
 
     return () => window.removeEventListener("keydown", handleKeydownEsc);
-  }, [isOpen]);
+  }, [closeMenu, isOpen]);
 
   return (
     <nav className={css.navMenu}>
       <label className={css.menuBtn}>
         <input
-          className={css.menuToggle}
+          className={css.menuInput}
           type="checkbox"
           checked={isOpen}
           onChange={toggleMenu}
@@ -62,14 +65,14 @@ export default function AppBar() {
         className={`${css.barList} ${isOpen && css.isOpen} `}
         // className={css.menu__box}
         onClick={handleBackdropClick}>
-        <NavigationMenu toggleMenu={toggleMenu} />
+        <NavigationMenu closeMenu={closeMenu} />
 
         <div className={css.serviceMenuContainer}>
           {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
           {isUserToken && isLoggedIn ? (
-            <UserMenu toggleMenu={toggleMenu} />
+            <UserMenu closeMenu={closeMenu} />
           ) : (
-            <AuthNav toggleMenu={toggleMenu} />
+            <AuthNav closeMenu={closeMenu} />
           )}
 
           <LangSwitcher />
