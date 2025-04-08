@@ -11,7 +11,8 @@ import AuthForm from "common/components/ui/AuthForm";
 import css from "common/components/ui/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
-// import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -19,8 +20,10 @@ export default function LoginPage() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
   const user = useSelector(selectUserCredentials);
   const [loginUser] = useLoginUserMutation();
-  // const navigate = useNavigate();
-  // const location = useLocation();
+
+  useEffect(() => {
+    dispatch(setPageHeaderText(t("enter")));
+  }, [dispatch, t]);
 
   const submitCredentials = async e => {
     e.preventDefault();
@@ -59,15 +62,14 @@ export default function LoginPage() {
     <>
       {!isLoggedIn && (
         <div className={css.container}>
-          <div className={css.pageHeader}>
+          {/* <div className={css.pageHeader}>
             <p className={css.pageHeader_title}>{t("enter")}</p>
-          </div>
+          </div> */}
 
           <div className={css.pageMain}>
             <AuthForm isRegister={false} onSubmit={submitCredentials} />
+            <div className={css.pageFooter}></div>
           </div>
-
-          <div className={css.pageFooter}></div>
         </div>
       )}
       {isLoggedIn && <div>{(t("user"), { user: user.name })}</div>}

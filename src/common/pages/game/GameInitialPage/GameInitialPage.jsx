@@ -7,30 +7,35 @@ import DecksList from "../../../components/game/DecksList/DecksList.jsx";
 import Button from "common/components/ui/Button";
 import GamesList from "../../../components/game/GamesList/GamesList.jsx";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
 
 export default function GameInitialPage() {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const isCreatingGame = useSelector(selectIsCreatingGame);
+  const headerTitleText = isCreatingGame
+    ? t("creating_game")
+    : t("available_games");
+
+  useEffect(() => {
+    dispatch(setPageHeaderText(headerTitleText));
+  }, [dispatch, headerTitleText]);
 
   const createGame = () => {
     dispatch(setIsCreatingGame(true));
     // navigate("/game/create");
   };
 
-  const headerTitleText = isCreatingGame
-    ? t("creating_game")
-    : t("available_games");
-
   return (
     <>
       <div className={css.container}>
-        <div className={css.pageHeader}>
+        {/* <div className={css.pageHeader}>
           <p className={css.pageHeader_title}>
             {headerTitleText.toUpperCase()}
           </p>
-        </div>
+        </div> */}
         <div className={css.pageMain}>
           {isCreatingGame && <DecksList />}
 

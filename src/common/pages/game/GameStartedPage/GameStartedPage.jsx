@@ -3,7 +3,7 @@ import PrepareGame from "common/components/game/PrepareGame";
 import Game from "common/components/game/Game";
 import css from "./GameStartedPage.module.scss";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveScreen,
   selectGame,
@@ -19,8 +19,10 @@ import {
   TABLE,
   TABLE_COLOR,
 } from "utils/generals/constants.js";
+import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
 
 export default function GameStartedPage() {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
@@ -39,6 +41,10 @@ export default function GameStartedPage() {
   const [prevActiveScreen, setPrevActiveScreen] = useState(null);
 
   const totalScreens = 3; // Кількість сторінок (0, 1, 2)
+
+  useEffect(() => {
+    dispatch(setPageHeaderText(t("game_name", { gameName: gameName })));
+  }, [dispatch, gameName, t]);
 
   useEffect(() => {
     let newColor, newPageName;
@@ -95,7 +101,7 @@ export default function GameStartedPage() {
 
   return (
     <div className={css.container}>
-      <div className={css.pageHeader}>
+      {/* <div className={css.pageHeader}>
         <p className={css.pageHeader_title}>
           {t("game_name", { gameName: gameName.toUpperCase() })}
         </p>
@@ -121,7 +127,31 @@ export default function GameStartedPage() {
             </span>
           )}
         </div>
-      </div>
+      </div> */}
+      {isGameRunning && (
+        <div className={css.pageBadge}>
+          {prevPageName && isAnimating && (
+            <span
+              className={`${css.pageName} ${css.fadeOut}`}
+              style={{ "--badgeBgColor": prevColor }}>
+              {t(prevPageName).toUpperCase()}
+            </span>
+          )}
+          {pageName && (
+            <span
+              className={`${css.pageName} ${
+                isAnimating
+                  ? direction === "right"
+                    ? css.slideInRight
+                    : css.slideInLeft
+                  : ""
+              }`}
+              style={{ "--badgeBgColor": color }}>
+              {t(pageName).toUpperCase()}
+            </span>
+          )}
+        </div>
+      )}
       <div className={css.pageMain}>
         {!isGameRunning && <PrepareGame />}
         {isGameRunning && <Game />}

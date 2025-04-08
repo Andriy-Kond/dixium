@@ -14,6 +14,10 @@ const localInitialState = {
   toastId: {},
   lang: "en",
   theme: LIGHT,
+
+  pageHeaderText: "text",
+  pageHeaderBgColor: "#5d7e9e",
+  pageHeaderTextColor: "#fff",
 };
 
 export const localPersonalSlice = createSlice({
@@ -127,6 +131,16 @@ export const localPersonalSlice = createSlice({
     setTheme: (state, action) => {
       state.theme = action.payload;
     },
+
+    setPageHeaderText: (state, action) => {
+      state.pageHeaderText = action.payload;
+    },
+    setPageHeaderBgColor: (state, action) => {
+      state.pageHeaderBgColor = action.payload;
+    },
+    setPageHeaderTextColor: (state, action) => {
+      state.pageHeaderTextColor = action.payload;
+    },
   },
 });
 
@@ -161,4 +175,8 @@ export const {
 
   toggleTheme,
   setTheme,
+
+  setPageHeaderText,
+  setPageHeaderBgColor,
+  setPageHeaderTextColor,
 } = localPersonalSlice.actions;

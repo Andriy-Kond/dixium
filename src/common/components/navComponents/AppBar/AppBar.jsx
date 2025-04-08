@@ -49,13 +49,16 @@ export default function AppBar() {
 
       <label className={css.menuBtn}>
         <input
-          type="checkbox"
           className={css.menuToggle}
+          type="checkbox"
+          checked={isOpen}
           onChange={toggleMenu}
         />
         <span></span>
       </label>
+
       <div className={`${css.menuBg} ${isOpen && css.changeBg}`}></div>
+
       <div
         className={`${css.barList} ${isOpen && css.isOpen} `}
         // className={css.menu__box}

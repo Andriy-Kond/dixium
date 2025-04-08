@@ -68,6 +68,13 @@ export const selectToastId = (gameId, playerId) => state => {
 export const selectLang = state => state.localPersonalSlice.lang || "en";
 export const selectTheme = state => state.localPersonalSlice.theme || LIGHT;
 
+export const selectPageHeaderText = state =>
+  state.localPersonalSlice.pageHeaderText;
+export const selectPageHeaderBgColor = state =>
+  state.localPersonalSlice.pageHeaderBgColor;
+export const selectPageHeaderTextColor = state =>
+  state.localPersonalSlice.pageHeaderTextColor;
+
 // gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;

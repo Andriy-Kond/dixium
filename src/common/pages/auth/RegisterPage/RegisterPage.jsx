@@ -10,11 +10,17 @@ import AuthForm from "common/components/ui/AuthForm";
 import css from "common/components/ui/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [signupUser] = useSignupUserMutation();
+
+  useEffect(() => {
+    dispatch(setPageHeaderText(t("register")));
+  }, [dispatch, t]);
 
   const submitCredentials = async e => {
     e.preventDefault();
@@ -53,15 +59,14 @@ export default function RegisterPage() {
 
   return (
     <div className={css.container}>
-      <div className={css.pageHeader}>
+      {/* <div className={css.pageHeader}>
         <p className={css.pageHeader_title}>{t("register")}</p>
-      </div>
+      </div> */}
 
       <div className={css.pageMain}>
         <AuthForm isRegister={true} onSubmit={submitCredentials} />
+        <div className={css.pageFooter}></div>
       </div>
-
-      <div className={css.pageFooter}></div>
     </div>
   );
 }

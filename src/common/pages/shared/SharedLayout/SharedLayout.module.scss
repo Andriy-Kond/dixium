@@ -23,7 +23,7 @@
   // }
 }
 
-.suspenseContainer {
+.suspenseLoaderContainer {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,4 +67,20 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.suspenseMainContainer {
+  margin: auto;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+
+  height: 44px;
+  padding: 11px 16px;
+  padding-left: 44px;
+
+  background-color: var(--pageHeaderBgColor);
+  color: var(--pageHeaderTextColor);
 }
