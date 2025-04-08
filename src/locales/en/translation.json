@@ -65,9 +65,9 @@
   "err_no_response_server": "Error: No response from server for {{eventName}}. Reverting state.",
   "info_someone_else_is_already_the_storyteller": "Someone else is already the storyteller!",
   "player_joined": "Player {{playerName}} joined to game",
-  "HAND": "Hand",
-  "PLAYERS": "Players",
-  "TABLE": "Table",
+  "hand": "Hand",
+  "players": "Players",
+  "table": "Table",
   "switch_to_light_theme": "Switch to light theme",
   "switch_to_dark_theme": "Switch to dark theme"
 }

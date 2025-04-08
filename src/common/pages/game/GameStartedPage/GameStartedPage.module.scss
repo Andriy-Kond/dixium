@@ -1,8 +1,13 @@
 .container {
-  // height: 100%;
-  // min-height: calc(100vh - 44px - 44px - 32px);
+  display: flex;
+  flex-direction: column;
+
   max-width: 320px;
+  height: 100%;
+  min-height: var(--main_screen_height);
   margin: auto;
+
+  background-color: var(--secondary_color);
 }
 
 .pageHeader {
@@ -22,15 +27,15 @@
   color: #ffffff;
 }
 
-.pageMain {
-  display: flex;
-  flex-direction: column;
+// .pageMain {
+//   display: flex;
+//   flex-direction: column;
 
-  background-color: var(--secondary_color);
-  // min-height: calc(100vh - 44px - 44px - 32px);
-  min-height: var(--main_screen_height);
-  height: 100%;
-}
+//   background-color: var(--secondary_color);
+//   // min-height: calc(100vh - 44px - 44px - 32px);
+//   min-height: var(--main_screen_height);
+//   height: 100%;
+// }
 
 // .pageMain > * {
 //   // height: 100%; /* Передаємо висоту всім прямим дочірнім елементам */
@@ -68,75 +73,75 @@
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
 }
 
-// ==========================
-.pageBadge {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 0;
-  width: 80px;
-  height: 30px;
-  overflow: hidden;
-}
+// // ==========================
+// .pageBadge {
+//   position: absolute;
+//   top: 50%;
+//   transform: translateY(-50%);
+//   right: 0;
+//   width: 80px;
+//   height: 30px;
+//   overflow: hidden;
+// }
 
-.pageName {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  padding: 5px;
-  background-color: var(--badgeBgColor);
-  color: #fff;
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  z-index: 1;
-}
+// .pageName {
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   width: 80px;
+//   padding: 5px;
+//   background-color: var(--badgeBgColor);
+//   color: #fff;
+//   border-top-left-radius: 2px;
+//   border-bottom-left-radius: 2px;
+//   position: absolute;
+//   top: 50%;
+//   right: 0;
+//   transform: translateY(-50%);
+//   z-index: 1;
+// }
 
-/* Анімація наїзду зправа наліво (коли індекс збільшується) */
-.slideInRight {
-  z-index: 2;
-  animation: slideInRight 0.3s ease-in-out forwards;
-}
+// /* Анімація наїзду зправа наліво (коли індекс збільшується) */
+// .slideInRight {
+//   z-index: 2;
+//   animation: slideInRight 0.3s ease-in-out forwards;
+// }
 
-/* Анімація наїзду зліва направо (коли індекс зменшується) */
-.slideInLeft {
-  z-index: 2;
-  animation: slideInLeft 0.3s ease-in-out forwards;
-}
+// /* Анімація наїзду зліва направо (коли індекс зменшується) */
+// .slideInLeft {
+//   z-index: 2;
+//   animation: slideInLeft 0.3s ease-in-out forwards;
+// }
 
-/* Анімація зникнення старого бейджа */
-.fadeOut {
-  z-index: 1;
-  animation: fadeOut 0.3s ease-in-out forwards;
-}
+// /* Анімація зникнення старого бейджа */
+// .fadeOut {
+//   z-index: 1;
+//   animation: fadeOut 0.3s ease-in-out forwards;
+// }
 
-@keyframes slideInRight {
-  0% {
-    transform: translateY(-50%) translateX(100%);
-  }
-  100% {
-    transform: translateY(-50%) translateX(0);
-  }
-}
+// @keyframes slideInRight {
+//   0% {
+//     transform: translateY(-50%) translateX(100%);
+//   }
+//   100% {
+//     transform: translateY(-50%) translateX(0);
+//   }
+// }
 
-@keyframes slideInLeft {
-  0% {
-    transform: translateY(-50%) translateX(-100%);
-  }
-  100% {
-    transform: translateY(-50%) translateX(0);
-  }
-}
+// @keyframes slideInLeft {
+//   0% {
+//     transform: translateY(-50%) translateX(-100%);
+//   }
+//   100% {
+//     transform: translateY(-50%) translateX(0);
+//   }
+// }
 
-@keyframes fadeOut {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
+// @keyframes fadeOut {
+//   0% {
+//     opacity: 1;
+//   }
+//   100% {
+//     opacity: 0;
+//   }
+// }

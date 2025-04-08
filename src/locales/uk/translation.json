@@ -64,9 +64,9 @@
   "err_no_access": "Помилка: Не можу надати доступ",
   "info_someone_else_is_already_the_storyteller": "Хтось інший уже є оповідачем!",
   "player_joined": "Гравець {{playerName}} доєднався до гри",
-  "HAND": "Рука",
-  "PLAYERS": "Гравці",
-  "TABLE": "Стіл",
+  "hand": "Рука",
+  "players": "Гравці",
+  "table": "Стіл",
   "switch_to_light_theme": "Перемкнути на світлу тему",
   "switch_to_dark_theme": "Перемкнути на темну тему"
 }

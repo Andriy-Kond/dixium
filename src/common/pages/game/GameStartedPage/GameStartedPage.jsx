@@ -20,6 +20,7 @@ import {
   TABLE_COLOR,
 } from "utils/generals/constants.js";
 import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
+import PageBadge from "common/components/ui/PageBadge";
 
 export default function GameStartedPage() {
   const dispatch = useDispatch();
@@ -128,7 +129,7 @@ export default function GameStartedPage() {
           )}
         </div>
       </div> */}
-      {isGameRunning && (
+      {/* {isGameRunning && (
         <div className={css.pageBadge}>
           {prevPageName && isAnimating && (
             <span
@@ -151,11 +152,14 @@ export default function GameStartedPage() {
             </span>
           )}
         </div>
-      )}
-      <div className={css.pageMain}>
-        {!isGameRunning && <PrepareGame />}
-        {isGameRunning && <Game />}
-      </div>
+      )} */}
+
+      {/* {isGameRunning && <PageBadge />} */}
+
+      {/* <div className={css.pageMain}> */}
+      {!isGameRunning && <PrepareGame />}
+      {isGameRunning && <Game />}
+      {/* </div> */}
     </div>
   );
 }

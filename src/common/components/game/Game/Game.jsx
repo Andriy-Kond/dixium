@@ -34,6 +34,7 @@ import { setActiveScreen, setToastId } from "redux/game/localPersonalSlice.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import { toast } from "react-toastify";
 import { Trans, useTranslation } from "react-i18next";
+import PageBadge from "common/components/ui/PageBadge/index.js";
 
 export default function Game() {
   const dispatch = useDispatch();
@@ -264,7 +265,7 @@ export default function Game() {
   return (
     <div className={css.gameContainer}>
       {/* <p>Game</p> */}
-
+      <PageBadge />
       <div
         className={`${css.screenCarouselWrapper} ${
           !isEmblaReady && css.visuallyHidden
