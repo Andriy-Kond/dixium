@@ -266,6 +266,7 @@ export default function Game() {
     <div className={css.gameContainer}>
       {/* <p>Game</p> */}
       <PageBadge />
+
       <div
         className={`${css.screenCarouselWrapper} ${
           !isEmblaReady && css.visuallyHidden

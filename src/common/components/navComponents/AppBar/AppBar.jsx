@@ -43,10 +43,6 @@ export default function AppBar() {
 
   return (
     <nav className={css.navMenu}>
-      {/* <button className={css.burgerBtn} onClick={toggleMenu}>
-        ☰<span></span>
-      </button> */}
-
       <label className={css.menuBtn}>
         <input
           className={css.menuToggle}
@@ -57,7 +53,10 @@ export default function AppBar() {
         <span></span>
       </label>
 
-      <div className={`${css.menuBg} ${isOpen && css.changeBg}`}></div>
+      <div
+        className={`${css.menuBg} ${isOpen && css.changeBg}`}
+        onClick={handleBackdropClick}
+      />
 
       <div
         className={`${css.barList} ${isOpen && css.isOpen} `}

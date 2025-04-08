@@ -10,20 +10,6 @@
   // padding: 11px 16px;
 }
 
-// .burgerBtn {
-//   position: absolute;
-//   top: 12px;
-//   left: 12px;
-//   font-size: 24px;
-//   background: none;
-//   cursor: pointer;
-//   z-index: 1;
-
-//   @media screen and (min-width: $tablet) {
-//     display: none;
-//   }
-// }
-
 /* Mobile */
 .mobileMenu {
   position: fixed;
@@ -89,27 +75,29 @@
   @media screen and (max-width: ($tablet - 1)) {
     position: fixed;
     top: 0;
-    bottom: 0;
+    // bottom: 0;
     // left: 0;
     z-index: 1;
 
     right: -320;
-    width: calc(100vw - 20px);
-    max-width: 300px;
-    padding: 40px 10px;
+    // width: calc(100vw - 20px);
+    // max-width: 300px;
+    padding-top: 40px;
+    padding-left: 10px;
 
     display: flex;
     flex-direction: column;
     align-items: start;
     gap: 10px;
+
+    color: #476078;
     // background-color: rgba(69, 241, 244, 0.95);
     // background-color: #cacccd;
     // background-color: #f30e0e;
     // box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
 
-    transform: translateX(-100%);
     opacity: 0;
-
+    transform: translateX(-100%);
     transition: transform 250ms ease-in-out, opacity 250ms ease-in-out;
 
     &.isOpen {
@@ -178,7 +166,7 @@
   position: absolute;
   width: 100%;
   height: 2px;
-  background-color: #cacccd;
+  background-color: #fff;
   transition-duration: 0.25s;
 }
 .menuBtn > span::before {
@@ -215,6 +203,7 @@
   height: 0;
   margin: 30px 0 20px 20px;
   background: radial-gradient(circle, #cacccd, #cacccd);
+
   border-radius: 50%;
   opacity: 0;
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
@@ -223,6 +212,6 @@
 .changeBg {
   width: 520px;
   height: 460px;
-  opacity: 0.95;
+  opacity: 0.989;
   transform: translate(-60%, -30%);
 }
