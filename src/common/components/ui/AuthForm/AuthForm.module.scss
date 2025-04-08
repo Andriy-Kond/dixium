@@ -1,6 +1,10 @@
+@import "styles/utils/breakpoints.scss";
 .container {
-  // max-width: 414px;
   margin: auto;
+
+  @media screen and (min-width: $tablet) {
+    width: 320px;
+  }
 }
 
 .pageHeader {

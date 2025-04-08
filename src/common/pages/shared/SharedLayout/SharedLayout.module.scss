@@ -4,9 +4,13 @@
 // $desktop: 1200px;
 
 .mainContainer {
-  max-width: 320px;
+  max-width: $mobile;
   margin: 0 auto;
   height: 100vh;
+
+  @media screen and (min-width: $tablet) {
+    max-width: $desktop;
+  }
 }
 
 .navHeader {

@@ -47,18 +47,17 @@ export default function AppBar() {
         ☰<span></span>
       </button> */}
 
-      <input
-        id="menu__toggle"
-        type="checkbox"
-        className={css.menuToggle}
-        onChange={toggleMenu}
-      />
-      <label className={css.menu__btn} htmlFor="menu__toggle">
+      <label className={css.menuBtn}>
+        <input
+          type="checkbox"
+          className={css.menuToggle}
+          onChange={toggleMenu}
+        />
         <span></span>
       </label>
-
+      <div className={`${css.menuBg} ${isOpen && css.changeBg}`}></div>
       <div
-        className={`${css.barList} ${isOpen && css.isOpen} ${css.menu__box} `}
+        className={`${css.barList} ${isOpen && css.isOpen} `}
         // className={css.menu__box}
         onClick={handleBackdropClick}>
         <NavigationMenu toggleMenu={toggleMenu} />
