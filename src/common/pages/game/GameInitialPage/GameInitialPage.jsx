@@ -8,7 +8,10 @@ import Button from "common/components/ui/Button";
 import GamesList from "../../../components/game/GamesList/GamesList.jsx";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
+import {
+  setPageHeaderBgColor,
+  setPageHeaderText,
+} from "redux/game/localPersonalSlice.js";
 
 export default function GameInitialPage() {
   // const navigate = useNavigate();
@@ -21,6 +24,7 @@ export default function GameInitialPage() {
 
   useEffect(() => {
     dispatch(setPageHeaderText(headerTitleText));
+    dispatch(setPageHeaderBgColor("#5D7E9E"));
   }, [dispatch, headerTitleText]);
 
   const createGame = () => {

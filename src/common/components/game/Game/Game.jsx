@@ -27,6 +27,8 @@ import {
   selectUserCredentials,
   selectVotes,
   selectToastId,
+  selectIsPlayerVoted,
+  selectIsPlayerGuessed,
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
@@ -63,6 +65,8 @@ export default function Game() {
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
   const toastId = useSelector(selectToastId(gameId));
   const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
+  const isPlayerVoted = useSelector(selectIsPlayerVoted(gameId, playerId));
+  const isPlayerGuessed = useSelector(selectIsPlayerGuessed(gameId, playerId));
 
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
@@ -149,14 +153,14 @@ export default function Game() {
 
   // Page header color and text
   useEffect(() => {
-    if (!storytellerId || isShowMask) {
+    if (!storytellerId || isShowMask || !isPlayerGuessed || !isPlayerVoted) {
       dispatch(setPageHeaderText(t("first_turn")));
       dispatch(setPageHeaderBgColor("#0F7DFF"));
-    } else if (isCurrentPlayerStoryteller) {
+    } else {
       dispatch(setPageHeaderText(t("players_taking_turn")));
       dispatch(setPageHeaderBgColor("#5D7E9E"));
     }
-  }, [dispatch, isCurrentPlayerStoryteller, isShowMask, storytellerId, t]);
+  }, [dispatch, isPlayerGuessed, isPlayerVoted, isShowMask, storytellerId, t]);
 
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {

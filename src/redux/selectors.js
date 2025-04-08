@@ -65,6 +65,13 @@ export const selectToastId = (gameId, playerId) => state => {
   return toastId || null;
 };
 
+const emptyCardsSet = { firstGuessCardSet: null, secondGuessCardSet: null };
+export const selectCardsSet = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const cardsSet = state.localPersonalSlice.cardsSet[key];
+  return cardsSet || emptyCardsSet;
+};
+
 export const selectLang = state => state.localPersonalSlice.lang || "en";
 export const selectTheme = state => state.localPersonalSlice.theme || LIGHT;
 
@@ -126,6 +133,12 @@ export const selectIsGameRunning = gameId => state =>
 
 export const selectIsSingleCardMode = gameId => state =>
   state.gameSlice.games[gameId].isSingleCardMode;
+
+export const selectIsPlayerGuessed = (gameId, playerId) => state => {
+  const game = state.gameSlice.games[gameId];
+  const player = game.players.find(p => p._id === playerId);
+  return player.isGuessed;
+};
 
 export const selectIsPlayerVoted = (gameId, playerId) => state => {
   const game = state.gameSlice.games[gameId];
