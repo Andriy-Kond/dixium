@@ -126,6 +126,7 @@ export const localPersonalSlice = createSlice({
 
     setCardsSet: (state, action) => {
       const { gameId, playerId, cardsSet } = action.payload;
+      console.log("cardsSet :>> ", cardsSet);
 
       const key = `${gameId}_${playerId}`;
       state.cardsSet[key] = cardsSet;

@@ -77,10 +77,14 @@ export default function Hand({
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
 
   const cardsSet = useSelector(selectCardsSet(gameId, playerId));
-  const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
 
+  // const [cardsSet, setCardsSet] = useState({
+  //   firstGuessCardSet: null,
+  //   secondGuessCardSet: null,
+  // });
   // const [isMountedCarousel, setIsMountedCarousel] = useState(false); // is mounted carousel for zooming (for next version)
 
+  const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
   const currentPlayer = gamePlayers.find(p => p._id === playerId);
 
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
@@ -93,6 +97,18 @@ export default function Hand({
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
 
   const isCurrentPlayerHost = hostPlayerId === playerId;
+
+  // const isCanGuess = useCallback(() => {
+  //   if ((playersMoreThanSix && !isSingleCardMode) || !playersMoreThanThree) {
+  //     return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+  //   } else return !!firstGuessCardSet?._id;
+  // }, [
+  //   firstGuessCardSet?._id,
+  //   isSingleCardMode,
+  //   playersMoreThanSix,
+  //   playersMoreThanThree,
+  //   secondGuessCardSet?._id,
+  // ]);
 
   const isCanGuess = useCallback(() => {
     if (!playersMoreThanThree) {
@@ -182,6 +198,7 @@ export default function Hand({
 
   const toggleCardSelection = useCallback(
     btnKey => {
+      console.log("btnKey");
       if (isSingleCardMode && btnKey === "secondGuessCardSet") {
         console.log("error: only one card allowed");
         Notify.failure(t("err_only_one_card_allowed"));
@@ -205,7 +222,7 @@ export default function Hand({
           firstGuessCardSet?._id === currentCard._id ||
           secondGuessCardSet?._id === currentCard._id;
 
-        if (isSelected && cardsSet[btnKey]?._id === currentCard._id) {
+        if (isSelected && [btnKey]?._id === currentCard._id)
           dispatch(
             setCardsSet({
               gameId,
@@ -213,9 +230,6 @@ export default function Hand({
               cardsSet: { ...cardsSet, [btnKey]: null },
             }),
           );
-
-          return;
-        }
 
         const otherCard =
           btnKey === "firstGuessCardSet"
@@ -228,15 +242,15 @@ export default function Hand({
           if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
             Notify.failure(t("err_cards_must_be_different"));
             console.log("error: cards must be different");
-          } else {
-            dispatch(
-              setCardsSet({
-                gameId,
-                playerId,
-                cardsSet: { ...cardsSet, [btnKey]: currentCard },
-              }),
-            );
           }
+
+          dispatch(
+            setCardsSet({
+              gameId,
+              playerId,
+              cardsSet: { ...cardsSet, [btnKey]: currentCard },
+            }),
+          );
         }
       } else if (gameStatus === LOBBY) {
         if (currentCard._id === selectedCardId) {
