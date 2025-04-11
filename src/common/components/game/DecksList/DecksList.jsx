@@ -12,8 +12,7 @@ import Button from "common/components/ui/Button";
 import socket from "services/socket.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import { LOBBY } from "utils/generals/constants.js";
-import { getImageUrl } from "utils/generals/getImageUrl.js";
-import ImbGen from "common/components/game/ImbGen";
+import ImgGen from "common/components/ui/ImgGen";
 
 export default function DecksList() {
   const { t } = useTranslation();
@@ -74,36 +73,18 @@ export default function DecksList() {
               localClassName={currentDeck?._id === deck._id && css.btnActive}
             />
 
-            <ul
-              className={`${css.currentDeck} ${
-                currentDeckId === deck._id && css.show
-              }`}>
-              {deck.cards?.map(card => (
-                <li className={css.card} key={card._id}>
-                  <ImbGen className={css.img} publicId={card.public_id} />
-                  {/* <img
-                    className={css.img}
-                    alt="card"
-                    src={getImageUrl({ publicId: card.public_id, width: 100 })} // Базовий розмір
-                    // Доступні розміри зображень:
-                    srcSet={`${getImageUrl({
-                      publicId: card.public_id,
-                      width: 100,
-                    })} 100w,            
-                    ${getImageUrl({
-                      publicId: card.public_id,
-                      width: 200,
-                    })} 200w,            
-                    ${getImageUrl({
-                      publicId: card.public_id,
-                      width: 400,
-                    })} 400w`}
-                    // підказує браузеру, який розмір зображення потрібен залежно від ширини в'юпорту
-                    sizes="(max-width: 320px) 100px, (max-width: 768px) 200px, 400px"
-                  /> */}
-                </li>
-              ))}
-            </ul>
+            {currentDeckId === deck._id && (
+              <ul
+                className={`${css.currentDeck} ${
+                  currentDeckId === deck._id && css.show
+                }`}>
+                {deck.cards?.map(card => (
+                  <li className={css.card} key={card._id}>
+                    <ImgGen className={css.img} publicId={card.public_id} />
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ul>

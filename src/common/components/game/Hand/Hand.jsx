@@ -41,10 +41,14 @@ import {
   setIsCarouselModeHandScreen,
   removeToastIdRef,
   setCardsSet,
+  setTotalPreviews,
+  resetPreload,
+  addPreviewId,
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
-import ImbGen from "common/components/game/ImbGen";
+import ImgGen from "common/components/ui/ImgGen";
+import { getImageUrl } from "utils/generals/getImageUrl.js";
 
 export default function Hand({
   isActiveScreen,
@@ -580,6 +584,23 @@ export default function Hand({
   //   </>
   // );
 
+  // // Встановлення totalPreviews (для попереднього завантаження великих зображень після завантаження усіх прев'ю-зображень)
+  // useEffect(() => {
+  //   console.log("Hand setTotalPreviews :>> ", playerHand.length);
+  //   dispatch(setTotalPreviews(playerHand.length));
+
+  //   return () => dispatch(resetPreload());
+  // }, [playerHand.length, dispatch]);
+
+  // useEffect(() => {
+  //   console.log("Hand previewIds :>> ", playerHand.length);
+
+  //   playerHand.forEach(card => {
+  //     dispatch(addPreviewId(card.public_id));
+  //   });
+  //   return () => dispatch(resetPreload());
+  // }, [playerHand, dispatch]);
+
   // ^Render
   if (!isCurrentPlayerStoryteller && isShowMask) {
     return (
@@ -615,12 +636,7 @@ export default function Hand({
                       </div>
                     )}
 
-                    {/* <img
-                      className={`${css.carouselImage} ${css.visible}`}
-                      alt="enlarged card"
-                      src={card.url}
-                    /> */}
-                    <ImbGen
+                    <ImgGen
                       className={`${css.carouselImage} ${css.visible}`}
                       publicId={card.public_id}
                       isBig
@@ -667,7 +683,7 @@ export default function Hand({
       ) : (
         <div className={css.currentDeckContainer}>
           <ul className={`${css.currentDeck}`}>
-            {currentPlayer.hand.map((card, idx) => {
+            {playerHand.map((card, idx) => {
               const marks = getStarsMarksByCardId(card._id);
 
               return (
@@ -686,7 +702,11 @@ export default function Hand({
                   )}
 
                   {/* <img className={css.img} src={card.url} alt="card" /> */}
-                  <ImbGen className={css.img} publicId={card.public_id} />
+                  <ImgGen
+                    className={css.img}
+                    publicId={card.public_id}
+                    isNeedPreload={true}
+                  />
                 </li>
               );
             })}

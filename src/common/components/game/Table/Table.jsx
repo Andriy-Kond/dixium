@@ -25,7 +25,10 @@ import Button from "common/components/ui/Button/index.js";
 import { useVote } from "hooks/useVote.js";
 import css from "./Table.module.scss";
 import {
+  addPreviewId,
+  resetPreload,
   setIsCarouselModeTableScreen,
+  setTotalPreviews,
   setZoomCardId,
   updateVotesLocal,
 } from "redux/game/localPersonalSlice.js";
@@ -33,8 +36,7 @@ import { capitalizeWords } from "utils/game/capitalizeWords.js";
 import LocalModal from "common/components/LocalModal";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
-import { getImageUrl } from "utils/generals/getImageUrl.js";
-import ImbGen from "common/components/game/ImbGen";
+import ImgGen from "common/components/ui/ImgGen";
 
 export default function Table({
   isActiveScreen,
@@ -416,12 +418,26 @@ export default function Table({
     return marks;
   };
 
+  // // Встановлення totalPreviews
+  // useEffect(() => {
+  //   console.log("Table setTotalPreviews :>> ", cardsOnTable.length);
+  //   dispatch(setTotalPreviews(cardsOnTable.length));
+
+  //   return () => dispatch(resetPreload());
+  // }, [cardsOnTable.length, dispatch]);
+
+  // useEffect(() => {
+  //   console.log("Table previewIds :>> ", cardsOnTable.length);
+  //   cardsOnTable.forEach(card => {
+  //     dispatch(addPreviewId(card.public_id));
+  //   });
+  //   return () => dispatch(resetPreload());
+  // }, [cardsOnTable, dispatch]);
+
   //^ Render
   if (gameStatus === VOTING) {
     return (
       <>
-        {/* <p>Table gameStatus === VOTING - cards face up</p> */}
-
         {isCarouselModeTableScreen ? (
           <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
             <ul className={css.carouselContainer}>
@@ -440,15 +456,7 @@ export default function Table({
                           ))}
                         </div>
                       )}
-
-                      {/* <img
-                        className={`${css.carouselImage} ${
-                          isMounted ? css.visible : ""
-                        }`}
-                        src={card.url}
-                        alt="enlarged card"
-                      /> */}
-                      <ImbGen
+                      <ImgGen
                         className={`${css.carouselImage} ${
                           isMounted ? css.visible : ""
                         }`}
@@ -483,7 +491,11 @@ export default function Table({
                     )}
 
                     {/* <img className={css.img} src={card.url} alt="card" /> */}
-                    <ImbGen className={css.img} publicId={card.public_id} />
+                    <ImgGen
+                      className={css.img}
+                      publicId={card.public_id}
+                      isNeedPreload={true}
+                    />
                   </li>
                 );
               })}
@@ -502,7 +514,7 @@ export default function Table({
             <TransformWrapper maxScale={5} panning={{ velocityDisabled: true }}>
               <TransformComponent>
                 {/* <img src={zoomCard.url} alt="enlarged card" /> */}
-                <ImbGen
+                <ImgGen
                   className={css.zoomImg}
                   publicId={zoomCard.public_id}
                   isBig
@@ -518,7 +530,11 @@ export default function Table({
                 key={result.cardId}
                 onClick={() => showCard(result.cardId)}>
                 {/* <img className={css.resultImg} src={result.url} alt="card" /> */}
-                <ImbGen className={css.resultImg} publicId={result.public_id} />
+                <ImgGen
+                  className={css.resultImg}
+                  publicId={result.public_id}
+                  isNeedPreload={true}
+                />
                 <div className={css.resultPlayers}>
                   <span>
                     {result.ownerId === storytellerId

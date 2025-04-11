@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import { selectAllGames, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
@@ -7,8 +7,8 @@ import { addGamesList } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import css from "./GamesList.module.scss";
 import { useTranslation } from "react-i18next";
-import { getImageUrl } from "utils/generals/getImageUrl.js";
-import ImbGen from "common/components/game/ImbGen";
+
+import ImgGen from "common/components/ui/ImgGen";
 
 export default function GamesList() {
   const dispatch = useDispatch();
@@ -82,34 +82,7 @@ export default function GamesList() {
           {Object.values(allGames)?.map(game => {
             return (
               <li key={game._id} className={css.item}>
-                {/* <img
-                  src={game.gamePoster}
-                  alt="game title"
-                  className={css.img}
-                /> */}
-
-                <ImbGen className={css.img} publicId={game.gamePoster} />
-
-                {/* <img
-                  className={css.img}
-                  alt="game title"
-                  src={getImageUrl({ publicId: game.gamePoster, width: 100 })} // Базовий розмір
-                  // Доступні розміри зображень:
-                  srcSet={`${getImageUrl({
-                    publicId: game.gamePoster,
-                    width: 100,
-                  })} 100w,         
-                   ${getImageUrl({
-                     publicId: game.gamePoster,
-                     width: 200,
-                   })} 200w,            
-                  ${getImageUrl({
-                    publicId: game.gamePoster,
-                    width: 400,
-                  })} 400w`}
-                  // підказує браузеру, який розмір зображення потрібен залежно від ширини в'юпорту
-                  sizes="(max-width: 320px) 100px, (max-width: 768px) 200px, 400px"
-                /> */}
+                <ImgGen className={css.img} publicId={game.gamePoster} />
 
                 <div className={css.wrapper}>
                   <p>{game.gameName.toUpperCase()}</p>

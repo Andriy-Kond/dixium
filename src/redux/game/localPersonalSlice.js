@@ -22,6 +22,14 @@ const localInitialState = {
   pageHeaderText: "text",
   pageHeaderBgColor: "#5d7e9e",
   pageHeaderTextColor: "#fff",
+  preloadImg: {
+    // previewIds: [], // Унікальні publicId прев’ю-зображень
+    previewIds: {}, // Унікальні publicId прев’ю-зображень
+    totalPreviews: 0, // Загальна кількість унікальних прев’ю
+    loadedPreviews: 0, // Кількість завантажених унікальних прев’ю
+    preloadUrls: [], // Спільний список URL для предзавантаження
+    hasPreloaded: false, // Глобальний прапор щоб не завантажувати дублікати link (Чи виконано предзавантаження)
+  },
 };
 
 export const localPersonalSlice = createSlice({
@@ -87,10 +95,13 @@ export const localPersonalSlice = createSlice({
     },
 
     clearLocalState: state => {
+      console.log("clearLocalState");
       const currentLang = state.lang;
+      const currentPreloadImg = state.preloadImg;
       return {
         ...localInitialState,
         lang: currentLang,
+        preloadImg: currentPreloadImg,
       };
     },
 
@@ -139,7 +150,6 @@ export const localPersonalSlice = createSlice({
     toggleTheme: state => {
       state.theme = state.theme === LIGHT ? DARK : LIGHT;
     },
-
     setTheme: (state, action) => {
       state.theme = action.payload;
     },
@@ -153,6 +163,81 @@ export const localPersonalSlice = createSlice({
     setPageHeaderTextColor: (state, action) => {
       state.pageHeaderTextColor = action.payload;
     },
+
+    // & previewIds as array:
+    // addPreviewId: (state, action) => {
+    //   const publicId = action.payload;
+    //   if (!state.preloadImg.previewIds.includes(publicId)) {
+    //     state.preloadImg.previewIds.push(publicId);
+    //     state.preloadImg.totalPreviews = state.preloadImg.previewIds.length;
+    //   }
+    // },
+    // addPreloadUrl: (state, action) => {
+    //   const { url, publicId } = action.payload;
+    //   if (!state.preloadImg.preloadUrls.includes(url)) {
+    //     state.preloadImg.preloadUrls.push(url);
+    //     if (state.preloadImg.previewIds.includes(publicId)) {
+    //       state.preloadImg.loadedPreviews += 1;
+    //     }
+    //   }
+    // },
+    // setHasPreloaded: state => {
+    //   state.preloadImg.hasPreloaded = true;
+    // },
+    // resetPreload: state => {
+    //   state.preloadImg.previewIds = [];
+    //   state.preloadImg.totalPreviews = 0;
+    //   state.preloadImg.loadedPreviews = 0;
+    //   state.preloadImg.preloadUrls = [];
+    //   state.preloadImg.hasPreloaded = false;
+    // },
+
+    // & previewIds as obj:
+    addPreviewId: (state, action) => {
+      const publicId = action.payload;
+      if (!state.preloadImg.previewIds[publicId]) {
+        state.preloadImg.previewIds[publicId] = true;
+        state.preloadImg.totalPreviews = Object.keys(
+          state.preloadImg.previewIds,
+        ).length;
+      }
+    },
+    addPreloadUrl: (state, action) => {
+      const { url, publicId } = action.payload;
+      if (!state.preloadImg.preloadUrls.includes(url)) {
+        state.preloadImg.preloadUrls.push(url);
+        if (state.preloadImg.previewIds[publicId]) {
+          state.preloadImg.loadedPreviews += 1;
+        }
+      }
+    },
+    setHasPreloaded: state => {
+      state.preloadImg.hasPreloaded = true;
+    },
+    resetPreload: state => {
+      console.log("reset preload :>> ");
+      state.preloadImg.previewIds = {};
+      state.preloadImg.totalPreviews = 0;
+      state.preloadImg.loadedPreviews = 0;
+      state.preloadImg.preloadUrls = [];
+      state.preloadImg.hasPreloaded = false;
+    },
+    setTotalPreviews(state, action) {
+      state.preloadImg.totalPreviews = action.payload;
+    },
+    // addPreloadUrl(state, action) {
+    //   state.preloadImg.loadedPreviews += 1;
+    //   state.preloadImg.preloadUrls.push(action.payload);
+    // },
+    // setHasPreloaded(state) {
+    //   state.preloadImg.hasPreloaded = true;
+    // },
+    // resetPreload(state) {
+    //   state.preloadImg.loadedPreviews = 0;
+    //   state.preloadImg.totalPreviews = 0;
+    //   state.preloadImg.previews = [];
+    //   state.preloadImg.preloadUrls = [];
+    // },
   },
 });
 
@@ -183,7 +268,6 @@ export const {
   setZoomCardId,
   setToastId,
   removeToastIdRef,
-
   setCardsSet,
 
   setLang,
@@ -194,4 +278,16 @@ export const {
   setPageHeaderText,
   setPageHeaderBgColor,
   setPageHeaderTextColor,
+
+  addPreviewId,
+  addPreloadUrl,
+  setHasPreloaded,
+  resetPreload,
+
+  setTotalPreviews,
+  // addLoadedPreview,
+  // addPreloadUrl,
+  // updatePreloadUrl,
+  // setHasPreloaded,
+  // resetPreload,
 } = localPersonalSlice.actions;

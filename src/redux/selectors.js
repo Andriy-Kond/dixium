@@ -1,11 +1,11 @@
 import { LIGHT } from "utils/generals/constants.js";
 
-// authSlice:
+//* authSlice:
 export const selectUserIsLoggedIn = state => state.authSlice.isLoggedIn;
 export const selectUserToken = state => state.authSlice.userToken;
 export const selectUserCredentials = state => state.authSlice.user;
 
-// localPersonalSlice selectors:
+//* localPersonalSlice selectors:
 export const selectActiveScreen = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
   const screen = state.localPersonalSlice.screens[key];
@@ -82,7 +82,9 @@ export const selectPageHeaderBgColor = state =>
 export const selectPageHeaderTextColor = state =>
   state.localPersonalSlice.pageHeaderTextColor;
 
-// gameSlice:
+export const selectPreloadImg = state => state.localPersonalSlice.preloadImg;
+
+//* gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
 export const selectActiveActions = state => state.gameSlice.activeActions;

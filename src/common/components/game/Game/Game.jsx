@@ -29,11 +29,16 @@ import {
   selectToastId,
   selectIsPlayerVoted,
   selectIsPlayerGuessed,
+  selectPlayerHand,
+  selectPreloadImg,
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
 import {
+  addPreviewId,
+  resetPreload,
   setActiveScreen,
+  setHasPreloaded,
   setPageHeaderBgColor,
   setPageHeaderText,
   setToastId,
@@ -56,9 +61,77 @@ export default function Game() {
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const storyteller = gamePlayers.find(p => p._id === storytellerId);
 
+  const playerHand = useSelector(selectPlayerHand(gameId, playerId));
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const scores = useSelector(selectScores(gameId));
   const votes = useSelector(selectVotes(gameId));
+
+  const { totalPreviews, loadedPreviews, preloadUrls, hasPreloaded } =
+    useSelector(selectPreloadImg);
+  const linksRef = useRef([]);
+
+  // Додаємо всі publicId з Hand і Table
+  useEffect(() => {
+    const allCards = [...playerHand, ...cardsOnTable];
+    console.log("Adding previewIds for", allCards.length, "cards");
+    allCards.forEach(card => {
+      dispatch(addPreviewId(card.public_id));
+    });
+  }, [playerHand, cardsOnTable, dispatch]);
+
+  // Предзавантаження великих зображень
+  useEffect(() => {
+    console.log("Preload check:", {
+      loadedPreviews,
+      totalPreviews,
+      hasPreloaded,
+      preloadUrls,
+    });
+
+    // Очищаємо старі лінки, якщо кількість URL змінилася
+
+    if (linksRef.current.length > preloadUrls.length) {
+      console.log("очищення linksRef.current");
+      linksRef.current.forEach(link => document.head.removeChild(link));
+      linksRef.current = [];
+    }
+
+    // Завантажити лише нові URL, які ще не предзавантажені (ще не є в linksRef.current)
+    const urlsToPreload = preloadUrls.filter(
+      url => !linksRef.current.some(link => link.href === url),
+    );
+
+    if (urlsToPreload.length > 0) {
+      console.log("Starting preload for new URLs:", urlsToPreload);
+      urlsToPreload.slice(0, 10).forEach(preloadUrl => {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = preloadUrl;
+        link.fetchpriority = "high";
+        link.crossorigin = "anonymous";
+        link.onerror = () =>
+          console.log(`Failed to preload image: ${preloadUrl}`);
+        document.head.appendChild(link);
+        linksRef.current.push(link);
+      });
+      console.log("Links in head:", linksRef.current.length);
+
+      if (loadedPreviews === totalPreviews && totalPreviews > 0) {
+        dispatch(setHasPreloaded());
+      }
+    }
+  }, [dispatch, loadedPreviews, preloadUrls, totalPreviews]);
+
+  // Очищення при розмонтуванні Game
+  useEffect(() => {
+    return () => {
+      console.log("Game unmounted, cleaning up...");
+      linksRef.current.forEach(link => document.head.removeChild(link));
+      linksRef.current = [];
+      dispatch(resetPreload());
+    };
+  }, [dispatch]);
 
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
@@ -235,6 +308,7 @@ export default function Game() {
 
   const localToastRef = useRef(toastId || null); // fore show toast.info 1 time after refresh
 
+  // Повідомлення. що хтось став першим оповідачем
   useEffect(() => {
     if (isShowMask) {
       if (!localToastRef.current && !isCurrentPlayerStoryteller) {

@@ -1,5 +1,6 @@
 .item {
   display: flex;
+  align-items: center;
   gap: 10px;
   padding: 5px;
 }
@@ -9,7 +10,7 @@
   // min-width: 100px;
   // max-height: 250px;
   width: 100px;
-  height: auto;
+  height: 134px;
   border-radius: 10px;
 }
 
