@@ -1,8 +1,8 @@
 import { Notify } from "notiflix";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { clearingForNewRound } from "redux/game/gameSlice.js";
+import { useSelector } from "react-redux";
+
 import { selectGame } from "redux/selectors.js";
 import socket from "services/socket.js";
 import { distributeCards } from "utils/game/distributeCards.js";
@@ -66,9 +66,7 @@ export const useStartNewRound = gameId => {
         }
       },
     );
-
-    // dispatch(clearingForNewRound(gameId)); // move to response from server
-  }, [currentGame]);
+  }, [currentGame, t]);
 
   return startNewRound;
 };

@@ -1,4 +1,3 @@
-// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { toast } from "react-toastify";
 import { MdCheck } from "react-icons/md";
 import { useCallback, useEffect, useState } from "react";
@@ -41,14 +40,10 @@ import {
   setIsCarouselModeHandScreen,
   removeToastIdRef,
   setCardsSet,
-  setTotalPreviews,
-  resetPreload,
-  addPreviewId,
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
-import { getImageUrl } from "utils/generals/getImageUrl.js";
 
 export default function Hand({
   isActiveScreen,
@@ -380,15 +375,6 @@ export default function Hand({
                   (firstGuessCardSet || selectedCardId) && css.btnActive
                 }
               />
-              {/* 
-              {!playersMoreThanThree && (
-                <Button
-                  btnText={gameStatus === LOBBY ? "Select card" : "Choose card"}
-                  onClick={() => toggleCardSelection("secondGuessCardSet")}
-                  disabled={isDisabledSecondBtn() || isCurrentPlayerGuessed}
-                  localClassName={secondGuessCardSet && css.btnActive}>
-                </Button>
-              )} */}
 
               {!playersMoreThanThree &&
                 (gameStatus === LOBBY ? (
@@ -583,23 +569,6 @@ export default function Hand({
   //     <button onClick={() => resetTransform()}>x</button>
   //   </>
   // );
-
-  // // Встановлення totalPreviews (для попереднього завантаження великих зображень після завантаження усіх прев'ю-зображень)
-  // useEffect(() => {
-  //   console.log("Hand setTotalPreviews :>> ", playerHand.length);
-  //   dispatch(setTotalPreviews(playerHand.length));
-
-  //   return () => dispatch(resetPreload());
-  // }, [playerHand.length, dispatch]);
-
-  // useEffect(() => {
-  //   console.log("Hand previewIds :>> ", playerHand.length);
-
-  //   playerHand.forEach(card => {
-  //     dispatch(addPreviewId(card.public_id));
-  //   });
-  //   return () => dispatch(resetPreload());
-  // }, [playerHand, dispatch]);
 
   // ^Render
   if (!isCurrentPlayerStoryteller && isShowMask) {

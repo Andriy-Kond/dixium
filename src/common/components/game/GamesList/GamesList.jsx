@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import { selectAllGames, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";

@@ -225,19 +225,6 @@ export const localPersonalSlice = createSlice({
     setTotalPreviews(state, action) {
       state.preloadImg.totalPreviews = action.payload;
     },
-    // addPreloadUrl(state, action) {
-    //   state.preloadImg.loadedPreviews += 1;
-    //   state.preloadImg.preloadUrls.push(action.payload);
-    // },
-    // setHasPreloaded(state) {
-    //   state.preloadImg.hasPreloaded = true;
-    // },
-    // resetPreload(state) {
-    //   state.preloadImg.loadedPreviews = 0;
-    //   state.preloadImg.totalPreviews = 0;
-    //   state.preloadImg.previews = [];
-    //   state.preloadImg.preloadUrls = [];
-    // },
   },
 });
 
@@ -285,9 +272,4 @@ export const {
   resetPreload,
 
   setTotalPreviews,
-  // addLoadedPreview,
-  // addPreloadUrl,
-  // updatePreloadUrl,
-  // setHasPreloaded,
-  // resetPreload,
 } = localPersonalSlice.actions;

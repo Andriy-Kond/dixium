@@ -20,11 +20,6 @@ export const selectIsShowMask = (gameId, playerId) => state => {
   return isShowMask;
 };
 
-// export const selectVotesLocal = (gameId, playerId) => state => {
-//   const key = `${gameId}_${playerId}`;
-//   return state.localPersonalSlice.votes[key]; // Поверне undefined, якщо немає
-// };
-
 // selector without using memoization (new obj must be alway the same)
 const defaultVotes = { firstVotedCardId: null, secondVotedCardId: null };
 export const selectVotesLocal = (gameId, playerId) => state => {
@@ -127,9 +122,6 @@ export const selectGameDeck = gameId => state =>
 export const selectGameDiscardPile = gameId => state =>
   state.gameSlice.games[gameId].discardPile;
 
-// export const selectIsFirstTurn = gameId => state =>
-//   state.gameSlice.games[gameId].isFirstTurn;
-
 export const selectIsGameRunning = gameId => state =>
   state.gameSlice.games[gameId].isGameRunning;
 
@@ -159,11 +151,3 @@ export const selectScores = gameId => state =>
 
 export const selectRoundResults = gameId => state =>
   state.gameSlice.games[gameId].roundResults;
-
-//   export const isReadyToVote = gameId => {
-//     if (selectGamePlayers(gameId).some(player => !player.isGuessed)) {
-//       return true
-//     }
-//   };
-//  export  const isReadyToCalculatePoints =() => { gamePlayers.every(player => player.isVoted);}
-//   export const isReadyToStartNewRound = () => {gameStatus === ROUND_RESULTS;}

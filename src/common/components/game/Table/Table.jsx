@@ -25,10 +25,7 @@ import Button from "common/components/ui/Button/index.js";
 import { useVote } from "hooks/useVote.js";
 import css from "./Table.module.scss";
 import {
-  addPreviewId,
-  resetPreload,
   setIsCarouselModeTableScreen,
-  setTotalPreviews,
   setZoomCardId,
   updateVotesLocal,
 } from "redux/game/localPersonalSlice.js";
@@ -417,22 +414,6 @@ export default function Table({
 
     return marks;
   };
-
-  // // Встановлення totalPreviews
-  // useEffect(() => {
-  //   console.log("Table setTotalPreviews :>> ", cardsOnTable.length);
-  //   dispatch(setTotalPreviews(cardsOnTable.length));
-
-  //   return () => dispatch(resetPreload());
-  // }, [cardsOnTable.length, dispatch]);
-
-  // useEffect(() => {
-  //   console.log("Table previewIds :>> ", cardsOnTable.length);
-  //   cardsOnTable.forEach(card => {
-  //     dispatch(addPreviewId(card.public_id));
-  //   });
-  //   return () => dispatch(resetPreload());
-  // }, [cardsOnTable, dispatch]);
 
   //^ Render
   if (gameStatus === VOTING) {

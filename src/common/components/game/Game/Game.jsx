@@ -70,69 +70,6 @@ export default function Game() {
     useSelector(selectPreloadImg);
   const linksRef = useRef([]);
 
-  // Додаємо всі publicId з Hand і Table
-  useEffect(() => {
-    const allCards = [...playerHand, ...cardsOnTable];
-    console.log("Adding previewIds for", allCards.length, "cards");
-    allCards.forEach(card => {
-      dispatch(addPreviewId(card.public_id));
-    });
-  }, [playerHand, cardsOnTable, dispatch]);
-
-  // Предзавантаження великих зображень
-  useEffect(() => {
-    console.log("Preload check:", {
-      loadedPreviews,
-      totalPreviews,
-      hasPreloaded,
-      preloadUrls,
-    });
-
-    // Очищаємо старі лінки, якщо кількість URL змінилася
-
-    if (linksRef.current.length > preloadUrls.length) {
-      console.log("очищення linksRef.current");
-      linksRef.current.forEach(link => document.head.removeChild(link));
-      linksRef.current = [];
-    }
-
-    // Завантажити лише нові URL, які ще не предзавантажені (ще не є в linksRef.current)
-    const urlsToPreload = preloadUrls.filter(
-      url => !linksRef.current.some(link => link.href === url),
-    );
-
-    if (urlsToPreload.length > 0) {
-      console.log("Starting preload for new URLs:", urlsToPreload);
-      urlsToPreload.slice(0, 10).forEach(preloadUrl => {
-        const link = document.createElement("link");
-        link.rel = "preload";
-        link.as = "image";
-        link.href = preloadUrl;
-        link.fetchpriority = "high";
-        link.crossorigin = "anonymous";
-        link.onerror = () =>
-          console.log(`Failed to preload image: ${preloadUrl}`);
-        document.head.appendChild(link);
-        linksRef.current.push(link);
-      });
-      console.log("Links in head:", linksRef.current.length);
-
-      if (loadedPreviews === totalPreviews && totalPreviews > 0) {
-        dispatch(setHasPreloaded());
-      }
-    }
-  }, [dispatch, loadedPreviews, preloadUrls, totalPreviews]);
-
-  // Очищення при розмонтуванні Game
-  useEffect(() => {
-    return () => {
-      console.log("Game unmounted, cleaning up...");
-      linksRef.current.forEach(link => document.head.removeChild(link));
-      linksRef.current = [];
-      dispatch(resetPreload());
-    };
-  }, [dispatch]);
-
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
@@ -223,6 +160,70 @@ export default function Game() {
     storytellerId,
     votes,
   ]);
+
+  // Add all publicId card's from Hand and Table to addPreviewId in Redux state
+  useEffect(() => {
+    const allCards = [...playerHand, ...cardsOnTable];
+    // console.log("Adding previewIds for", allCards.length, "cards");
+    allCards.forEach(card => {
+      dispatch(addPreviewId(card.public_id));
+      // console.log("Adding previewId in Game", card.public_id);
+    });
+  }, [playerHand, cardsOnTable, dispatch]);
+
+  // Preload large imgs (by add <link> to document.head)
+  useEffect(() => {
+    // console.log("Preload check:", {
+    //   loadedPreviews,
+    //   totalPreviews,
+    //   hasPreloaded,
+    //   preloadUrls,
+    // });
+
+    // Очищаємо старі лінки, якщо кількість URL змінилася
+
+    if (linksRef.current.length > preloadUrls.length) {
+      // console.log("очищення linksRef.current");
+      linksRef.current.forEach(link => document.head.removeChild(link));
+      linksRef.current = [];
+    }
+
+    // Завантажити лише нові URL, які ще не предзавантажені (ще не є в linksRef.current)
+    const urlsToPreload = preloadUrls.filter(
+      url => !linksRef.current.some(link => link.href === url),
+    );
+
+    if (urlsToPreload.length > 0) {
+      // console.log("Starting preload for new URLs:", urlsToPreload);
+      urlsToPreload.slice(0, 10).forEach(preloadUrl => {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = preloadUrl;
+        link.fetchpriority = "high";
+        link.crossorigin = "anonymous";
+        link.onerror = () =>
+          console.log(`Failed to preload image: ${preloadUrl}`);
+        document.head.appendChild(link);
+        linksRef.current.push(link);
+      });
+      console.log("Links in head:", linksRef.current.length);
+
+      if (loadedPreviews === totalPreviews && totalPreviews > 0) {
+        dispatch(setHasPreloaded());
+      }
+    }
+  }, [dispatch, loadedPreviews, preloadUrls, totalPreviews]);
+
+  // Clear <link> from document.head after unmount Game.jsx
+  useEffect(() => {
+    return () => {
+      console.log("Game unmounted, cleaning up...");
+      linksRef.current.forEach(link => document.head.removeChild(link));
+      linksRef.current = [];
+      dispatch(resetPreload());
+    };
+  }, [dispatch]);
 
   // Page header color and text
   useEffect(() => {
