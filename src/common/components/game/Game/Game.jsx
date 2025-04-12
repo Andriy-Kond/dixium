@@ -85,6 +85,7 @@ export default function Game() {
   const isPlayerVoted = useSelector(selectIsPlayerVoted(gameId, playerId));
   const isPlayerGuessed = useSelector(selectIsPlayerGuessed(gameId, playerId));
   const gameStatus = useSelector(selectGameStatus(gameId));
+  const hostPlayerId = useSelector(selectHostPlayerId(gameId));
 
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
@@ -93,6 +94,9 @@ export default function Game() {
     selectIsCarouselModeTableScreen(gameId, playerId),
   );
 
+  const isCurrentPlayerHost = hostPlayerId === playerId;
+  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
   const isCurrentPlayerStoryteller = storytellerId === playerId;
   const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
   const screens = isBlockScreens
@@ -169,6 +173,77 @@ export default function Game() {
     votes,
   ]);
 
+  const textAndColorOfHeader = useCallback(() => {
+    if (!storytellerId || isShowMask)
+      return { isMustMakeMove: true, text: t("first_turn") };
+
+    if (gameStatus === GUESSING && !isPlayerGuessed)
+      return { isMustMakeMove: true, text: t("please_choose_card") };
+
+    if (gameStatus === VOTING && !isPlayerVoted)
+      return { isMustMakeMove: true, text: t("please_vote") };
+
+    if (gameStatus === GUESSING && isCurrentPlayerHost && isReadyToVote)
+      return { isMustMakeMove: true, text: t("all_players_guessed") };
+
+    if (
+      gameStatus === VOTING &&
+      isCurrentPlayerHost &&
+      isReadyToCalculatePoints
+    )
+      return { isMustMakeMove: true, text: t("all_players_voted") };
+
+    if (gameStatus === ROUND_RESULTS)
+      return {
+        isMustMakeMove: isCurrentPlayerHost ? true : false,
+        text: t("rounds_results"),
+      };
+
+    if (gameStatus === LOBBY)
+      return {
+        isMustMakeMove: isCurrentPlayerStoryteller ? true : false,
+        text: isCurrentPlayerStoryteller
+          ? t("choose_card")
+          : t("storyteller_choses_card", {
+              storytellerName: storyteller?.name,
+            }),
+      };
+
+    return { isMustMakeMove: false, text: t("players_taking_turn") };
+  }, [
+    gameStatus,
+    isCurrentPlayerHost,
+    isCurrentPlayerStoryteller,
+    isPlayerGuessed,
+    isPlayerVoted,
+    isReadyToCalculatePoints,
+    isReadyToVote,
+    isShowMask,
+    storyteller?.name,
+    storytellerId,
+    t,
+  ]);
+
+  //# Page header - color and text
+  useEffect(() => {
+    // console.log("condition for", {
+    //   storytellerId: !storytellerId,
+    //   isShowMask,
+    //   isPlayerGuessed: !isPlayerGuessed,
+    //   isPlayerVoted: !isPlayerVoted,
+    // });
+
+    const { isMustMakeMove, text } = textAndColorOfHeader();
+
+    if (isMustMakeMove) {
+      dispatch(setPageHeaderText(text));
+      dispatch(setPageHeaderBgColor("#0F7DFF"));
+    } else {
+      dispatch(setPageHeaderText(text));
+      dispatch(setPageHeaderBgColor("#5D7E9E"));
+    }
+  }, [dispatch, textAndColorOfHeader, t]);
+
   // Add all publicId card's from Hand and Table to addPreviewId in Redux state
   useEffect(() => {
     const allCards = [...playerHand, ...cardsOnTable];
@@ -232,80 +307,6 @@ export default function Game() {
       dispatch(resetPreload());
     };
   }, [dispatch]);
-
-  const hostPlayerId = useSelector(selectHostPlayerId(gameId));
-  const isCurrentPlayerHost = hostPlayerId === playerId;
-  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
-  const textAndColorOfHeader = useCallback(() => {
-    if (!storytellerId || isShowMask)
-      return { isMustMakeMove: true, text: t("first_turn") };
-
-    if (gameStatus === GUESSING && !isPlayerGuessed)
-      return { isMustMakeMove: true, text: t("please_choose_card") };
-
-    if (gameStatus === VOTING && !isPlayerVoted)
-      return { isMustMakeMove: true, text: t("please_vote") };
-
-    if (gameStatus === GUESSING && isCurrentPlayerHost && isReadyToVote)
-      return { isMustMakeMove: true, text: t("all_players_guessed") };
-
-    if (
-      gameStatus === VOTING &&
-      isCurrentPlayerHost &&
-      isReadyToCalculatePoints
-    )
-      return { isMustMakeMove: true, text: t("all_players_voted") };
-
-    if (gameStatus === ROUND_RESULTS)
-      return {
-        isMustMakeMove: isCurrentPlayerHost ? true : false,
-        text: t("rounds_results"),
-      };
-
-    if (gameStatus === LOBBY)
-      return {
-        isMustMakeMove: isCurrentPlayerStoryteller ? true : false,
-        text: isCurrentPlayerStoryteller
-          ? t("choose_card")
-          : t("storyteller_choses_card", {
-              storytellerName: storyteller?.name,
-            }),
-      };
-
-    return { isMustMakeMove: false, text: t("players_taking_turn") };
-  }, [
-    gameStatus,
-    isCurrentPlayerHost,
-    isCurrentPlayerStoryteller,
-    isPlayerGuessed,
-    isPlayerVoted,
-    isReadyToCalculatePoints,
-    isReadyToVote,
-    isShowMask,
-    storyteller?.name,
-    storytellerId,
-    t,
-  ]);
-
-  //# Page header color and text
-  useEffect(() => {
-    // console.log("condition for", {
-    //   storytellerId: !storytellerId,
-    //   isShowMask,
-    //   isPlayerGuessed: !isPlayerGuessed,
-    //   isPlayerVoted: !isPlayerVoted,
-    // });
-
-    const { isMustMakeMove, text } = textAndColorOfHeader();
-    if (isMustMakeMove) {
-      dispatch(setPageHeaderText(text));
-      dispatch(setPageHeaderBgColor("#0F7DFF"));
-    } else {
-      dispatch(setPageHeaderText(text));
-      dispatch(setPageHeaderBgColor("#5D7E9E"));
-    }
-  }, [dispatch, textAndColorOfHeader, t]);
 
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {
