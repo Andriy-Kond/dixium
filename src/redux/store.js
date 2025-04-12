@@ -12,7 +12,7 @@ import {
 } from "redux-persist";
 import { persistedUserAuthReducer } from "redux/auth/authSlice";
 
-import { usersApi } from "redux/auth/authApi";
+import { authApi } from "redux/auth/authApi";
 import { gameApi } from "redux/game/gameApi.js";
 import { persistedGameReducer } from "redux/game/gameSlice.js";
 import optimisticUpdateMiddleware from "redux/middlewares/optimisticUpdateMiddleware.js";
@@ -24,7 +24,8 @@ export const store = configureStore({
     gameSlice: persistedGameReducer,
     localPersonalSlice: persistedActiveScreenReducer,
 
-    [usersApi.reducerPath]: usersApi.reducer,
+    [authApi.reducerPath]: authApi.reducer,
+
     [gameApi.reducerPath]: gameApi.reducer,
   },
 
@@ -35,7 +36,7 @@ export const store = configureStore({
       },
     }),
 
-    usersApi.middleware,
+    authApi.middleware,
     gameApi.middleware,
     optimisticUpdateMiddleware,
     // Перевірка серіалізації

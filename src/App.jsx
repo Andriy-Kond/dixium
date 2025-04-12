@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notify } from "notiflix";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import PrivateRoute from "common/components/navigation/PvivateRoute";
 import PublicRoute from "common/components/navigation/PublicRoute";
@@ -16,6 +17,8 @@ import { ToastContainer } from "react-toastify";
 Notify.init({
   clickToClose: true,
 });
+
+console.log("Google Client ID:", process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
 const RegisterPage = lazy(() => import("common/pages/auth/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/auth/LoginPage"));
@@ -45,37 +48,39 @@ export default function App() {
   return (
     <>
       {/* Перевірка !isFetching && - щоб при залогіненому користувачі не мигала спочатку сторінка Login і потім Contacts */}
-      {!isFetching && (
-        <Routes>
-          <Route path="/" element={<SharedLayout />}>
-            <Route index element={<HomePage />} />
+      <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+        {!isFetching && (
+          <Routes>
+            <Route path="/" element={<SharedLayout />}>
+              <Route index element={<HomePage />} />
 
-            <Route element={<PrivateRoute redirectTo="/login" />}>
-              <Route path="/game/:gameId" element={<GameStartedPage />} />
-              <Route path="/game" element={<GameInitialPage />} />
+              <Route element={<PrivateRoute redirectTo="/login" />}>
+                <Route path="/game/:gameId" element={<GameStartedPage />} />
+                <Route path="/game" element={<GameInitialPage />} />
+              </Route>
+
+              <Route element={<PublicRoute redirectTo="/game" />}>
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
+              </Route>
+
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
+          </Routes>
+        )}
 
-            <Route element={<PublicRoute redirectTo="/game" />}>
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/login" element={<LoginPage />} />
-            </Route>
-
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
-      )}
-
-      <ToastContainer
-        position="top-center"
-        autoClose={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        theme="light"
-        // transition="Bounce"
-      />
+        <ToastContainer
+          position="top-center"
+          autoClose={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          theme="light"
+          // transition="Bounce"
+        />
+      </GoogleOAuthProvider>
     </>
   );
 }

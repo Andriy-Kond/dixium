@@ -31,8 +31,8 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   return result;
 };
 
-export const usersApi = createApi({
-  reducerPath: "usersApi",
+export const authApi = createApi({
+  reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
   keepUnusedDataFor: 0, // видаляє очікування 60 сек перед очищенням кешу
   endpoints: build => ({
@@ -56,6 +56,15 @@ export const usersApi = createApi({
       invalidatesTags: ["User"],
     }),
 
+    googleLogin: build.mutation({
+      query: token => ({
+        url: `/api/auth/google`,
+        method: "POST",
+        body: { token },
+      }),
+      invalidatesTags: ["User"],
+    }),
+
     logoutUser: build.mutation({
       query: () => ({
         url: `/api/auth/logout`,
@@ -71,9 +80,9 @@ export const usersApi = createApi({
 
       async queryFulfilled({ dispatch, queryFulfilled }) {
         await queryFulfilled; // чекаємо завершення виконання мутації
-        // dispatch(usersApi.util.invalidateTags([])); // Інвалідовує всі теги
-        // dispatch(usersApi.util.unsubscribeQueries([])); // Відписка від запитів
-        dispatch(usersApi.util.resetApiState());
+        // dispatch(authApi.util.invalidateTags([])); // Інвалідовує всі теги
+        // dispatch(authApi.util.unsubscribeQueries([])); // Відписка від запитів
+        dispatch(authApi.util.resetApiState());
         dispatch(gameApi.util.resetApiState());
       },
     }),
@@ -100,7 +109,8 @@ export const usersApi = createApi({
 export const {
   useSignupUserMutation,
   useLoginUserMutation,
+  useGoogleLoginMutation,
   useLogoutUserMutation,
   useGetUserByTokenQuery,
   useUploadAvatarMutation,
-} = usersApi;
+} = authApi;

@@ -1,6 +1,6 @@
 // Clear gameSlice state when token is not valid or user was deleted from db
 // You must add this middleware to app/store.js
-// Otherwise need to use api.dispatch(clearGameInitialState()); in usersApi.js
+// Otherwise need to use api.dispatch(clearGameInitialState()); in authApi.js
 
 // or You can modify logoutUser in authSlice.js:
 // logoutUser: state => {

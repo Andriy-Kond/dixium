@@ -1,6 +1,11 @@
+import { GoogleLogin } from "@react-oauth/google";
+
 import { useDispatch, useSelector } from "react-redux";
 
-import { useLoginUserMutation } from "redux/auth/authApi";
+import {
+  useGoogleLoginMutation,
+  useLoginUserMutation,
+} from "redux/auth/authApi";
 import {
   setIsLoggedIn,
   setUserCredentials,
@@ -20,6 +25,7 @@ export default function LoginPage() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
   const user = useSelector(selectUserCredentials);
   const [loginUser] = useLoginUserMutation();
+  const [googleLogin] = useGoogleLoginMutation();
 
   useEffect(() => {
     dispatch(setPageHeaderText(t("login")));
@@ -58,6 +64,20 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleLogin = async credentialResponse => {
+    try {
+      // Відправляємо токен на сервер через RTK Query
+      const result = await googleLogin(credentialResponse.credential).unwrap(); // .unwrap() для отримання результату мутації без обгортки.
+      const user = { ...result };
+      dispatch(setUserCredentials(user));
+      dispatch(setUserToken(user.token));
+      dispatch(setIsLoggedIn(true));
+    } catch (error) {
+      Notify.failure(t("err_google_login"));
+      console.log("Google Login Error:", error);
+    }
+  };
+
   return (
     <>
       {!isLoggedIn && (
@@ -67,6 +87,14 @@ export default function LoginPage() {
           </div> */}
 
           <div className={css.pageMain}>
+            <GoogleLogin
+              onSuccess={handleGoogleLogin} // Отримуємо токен Google
+              onError={() => {
+                Notify.failure(t("err_google_login"));
+                console.log("Google Login Failed");
+              }}
+            />
+
             <AuthForm isRegister={false} onSubmit={submitCredentials} />
             <div className={css.pageFooter}></div>
           </div>
