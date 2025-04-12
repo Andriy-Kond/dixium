@@ -30,6 +30,7 @@ import {
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
+import { gameEnd } from "./socketHandlers/gameEnd.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -124,6 +125,10 @@ export const useSetupSocketListeners = () => {
 
     // startNewRoundSuccess;
 
+    // handleGameEnd;
+    const handleGameEnd = ({ game, message }) =>
+      gameEnd(game, message, dispatch);
+
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
     socket.on("error", handleError);
@@ -145,6 +150,10 @@ export const useSetupSocketListeners = () => {
     socket.on("playerVoteSuccess", handlePlayerVoteSuccess);
     socket.on("roundFinishSuccess", handleRoundFinishSuccess);
     socket.on("startNewRoundSuccess", handleStartNewRoundSuccess);
+
+    socket.on("gameEnd", handleGameEnd);
+
+    // gameEnd;
 
     return () => {
       // console.log("Cleaning up socket listeners");
@@ -169,6 +178,8 @@ export const useSetupSocketListeners = () => {
       socket.off("playerVoteSuccess", handlePlayerVoteSuccess);
       socket.off("roundFinishSuccess", handleRoundFinishSuccess);
       socket.off("startNewRoundSuccess", handleStartNewRoundSuccess);
+
+      socket.off("gameEnd", handleGameEnd);
 
       // if client runout from page (unmount component) before server responding
       // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)

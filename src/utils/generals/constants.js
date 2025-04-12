@@ -3,7 +3,7 @@ export const LOBBY = "lobby";
 export const GUESSING = "guessing";
 export const VOTING = "voiting";
 export const ROUND_RESULTS = "round_results";
-export const FINISHED = "finished";
+export const FINISH = "finish";
 
 // screens
 export const HAND = "hand";

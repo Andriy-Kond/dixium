@@ -82,6 +82,8 @@
   // Початковий стан для всіх слайдів
   transform: scale(0);
   opacity: 0.5;
+  border: 4px solid #5d7e9e;
+  border-radius: 4px;
 
   // Анімація для плавної появи слайду
   &.visible {
@@ -104,6 +106,8 @@
 .img {
   width: 100%;
   height: 100%;
+  border: 4px solid #5d7e9e;
+  border-radius: 4px;
 }
 
 .carouselCheckbox {
@@ -183,6 +187,8 @@
   height: 134px;
   min-width: 100px;
   object-fit: fill;
+  border: 4px solid #5d7e9e;
+  border-radius: 4px;
 
   // width: 104px;
 }
@@ -233,4 +239,6 @@
   height: 600px;
 
   object-fit: fill;
+  border: 4px solid #5d7e9e;
+  border-radius: 4px;
 }

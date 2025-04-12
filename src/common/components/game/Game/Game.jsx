@@ -232,6 +232,29 @@ export default function Game() {
     //   isPlayerGuessed: !isPlayerGuessed,
     //   isPlayerVoted: !isPlayerVoted,
     // });
+    const gameScores = Object.values(currentGame.scores);
+
+    const [maxId, maxVal] = Object.entries(currentGame.scores).reduce(
+      ([maxKey, maxValue], [key, value]) =>
+        value > maxValue ? [key, value] : [maxKey, maxValue],
+      [null, -Infinity],
+    );
+
+    const maxEntries = Object.entries(currentGame.scores).filter(
+      ([key, value]) => value === maxVal,
+    );
+
+    const winners = currentGame.players.filter(p =>
+      maxEntries.some(([key, value]) => key === p._id),
+    );
+    console.log("maxEntries:", maxEntries);
+    console.log("winners:", winners);
+
+    // currentGame.players.filter(p => {
+    //   const winnersP = maxEntries.filter(([key, value]) => key === p._id);
+    //   console.log(" useEffect >> maxEntries:::", maxEntries);
+    //       console.log(" gameEnd >> winnersP:::", winnersP);
+    // });
 
     const { isMustMakeMove, text } = textAndColorOfHeader();
 
