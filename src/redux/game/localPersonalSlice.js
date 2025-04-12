@@ -95,7 +95,7 @@ export const localPersonalSlice = createSlice({
     },
 
     clearLocalState: state => {
-      console.log("clearLocalState");
+      // console.log("clearLocalState");
       const currentLang = state.lang;
       const currentPreloadImg = state.preloadImg;
       return {
@@ -137,7 +137,6 @@ export const localPersonalSlice = createSlice({
 
     setCardsSet: (state, action) => {
       const { gameId, playerId, cardsSet } = action.payload;
-      console.log("cardsSet :>> ", cardsSet);
 
       const key = `${gameId}_${playerId}`;
       state.cardsSet[key] = cardsSet;
@@ -215,7 +214,6 @@ export const localPersonalSlice = createSlice({
       state.preloadImg.hasPreloaded = true;
     },
     resetPreload: state => {
-      console.log("reset preload :>> ");
       state.preloadImg.previewIds = {};
       state.preloadImg.totalPreviews = 0;
       state.preloadImg.loadedPreviews = 0;

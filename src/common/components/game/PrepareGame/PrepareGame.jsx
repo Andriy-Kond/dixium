@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
@@ -16,9 +16,11 @@ import { selectGame, selectUserCredentials } from "redux/selectors.js";
 import css from "./PrepareGame.module.scss";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import { useTranslation } from "react-i18next";
+import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
@@ -83,6 +85,12 @@ export default function PrepareGame() {
   const toGamePage = () => {
     navigate(`/game`);
   };
+
+  const { gameName } = useSelector(selectGame(gameId));
+
+  useEffect(() => {
+    dispatch(setPageHeaderText(t("game_name", { gameName: gameName })));
+  }, [dispatch, gameName, t]);
 
   return (
     <>

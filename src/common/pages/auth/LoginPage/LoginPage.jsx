@@ -22,7 +22,7 @@ export default function LoginPage() {
   const [loginUser] = useLoginUserMutation();
 
   useEffect(() => {
-    dispatch(setPageHeaderText(t("enter")));
+    dispatch(setPageHeaderText(t("login")));
   }, [dispatch, t]);
 
   const submitCredentials = async e => {

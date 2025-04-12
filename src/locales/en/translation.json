@@ -11,8 +11,8 @@
   "player_told_first_story": "Player <bold>{{storytellerName}}</bold> told first story. <br/> Let's go to guess it!",
   "you_have_told": "You have told your story. Waiting for other players to choose their associations cards.",
   "player_has_told": "Player {{storyteller}} has told his history. Choose a card to associate with it.",
-  "select_card": "Select card",
-  "choose_card": "Choose card",
+  "select_card": "Select a card",
+  "choose_card": "Choose a card",
   "go_to_guess_story": "Go to guess the story",
   "start_voting": "Start voting",
   "finish_round": "Finish round",
@@ -71,5 +71,11 @@
   "switch_to_light_theme": "Switch to light theme",
   "switch_to_dark_theme": "Switch to dark theme",
   "first_turn": "First turn",
-  "players_taking_turn": "Players taking turn"
+  "please_vote": "Please vote",
+  "please_choose_card": "Please choose a card",
+  "players_taking_turn": "Players taking turn",
+  "all_players_guessed": "All players have chosen cards",
+  "all_players_voted": "All players have voted",
+  "rounds_results": "Round's results",
+  "storyteller_choses_card": "Storyteller {{storytellerName}} chooses a card"
 }

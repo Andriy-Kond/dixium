@@ -22,6 +22,7 @@ export default function GameInitialPage() {
     ? t("creating_game")
     : t("available_games");
 
+  //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(headerTitleText));
     dispatch(setPageHeaderBgColor("#5D7E9E"));

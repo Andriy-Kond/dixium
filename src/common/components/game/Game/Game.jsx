@@ -10,7 +10,12 @@ import GameNavigationBar from "common/components/game/GameNavigationBar";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useParams } from "react-router-dom";
-import { ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
+import {
+  GUESSING,
+  LOBBY,
+  ROUND_RESULTS,
+  VOTING,
+} from "utils/generals/constants.js";
 import socket from "services/socket.js";
 import {
   selectActiveScreen,
@@ -31,6 +36,8 @@ import {
   selectIsPlayerGuessed,
   selectPlayerHand,
   selectPreloadImg,
+  selectGameStatus,
+  selectHostPlayerId,
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
@@ -77,6 +84,7 @@ export default function Game() {
   const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
   const isPlayerVoted = useSelector(selectIsPlayerVoted(gameId, playerId));
   const isPlayerGuessed = useSelector(selectIsPlayerGuessed(gameId, playerId));
+  const gameStatus = useSelector(selectGameStatus(gameId));
 
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
@@ -207,7 +215,7 @@ export default function Game() {
         document.head.appendChild(link);
         linksRef.current.push(link);
       });
-      console.log("Links in head:", linksRef.current.length);
+      // console.log("Links in head:", linksRef.current.length);
 
       if (loadedPreviews === totalPreviews && totalPreviews > 0) {
         dispatch(setHasPreloaded());
@@ -218,23 +226,86 @@ export default function Game() {
   // Clear <link> from document.head after unmount Game.jsx
   useEffect(() => {
     return () => {
-      console.log("Game unmounted, cleaning up...");
+      // console.log("Game unmounted, cleaning up...");
       linksRef.current.forEach(link => document.head.removeChild(link));
       linksRef.current = [];
       dispatch(resetPreload());
     };
   }, [dispatch]);
 
-  // Page header color and text
+  const hostPlayerId = useSelector(selectHostPlayerId(gameId));
+  const isCurrentPlayerHost = hostPlayerId === playerId;
+  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
+  const textAndColorOfHeader = useCallback(() => {
+    if (!storytellerId || isShowMask)
+      return { isMustMakeMove: true, text: t("first_turn") };
+
+    if (gameStatus === GUESSING && !isPlayerGuessed)
+      return { isMustMakeMove: true, text: t("please_choose_card") };
+
+    if (gameStatus === VOTING && !isPlayerVoted)
+      return { isMustMakeMove: true, text: t("please_vote") };
+
+    if (gameStatus === GUESSING && isCurrentPlayerHost && isReadyToVote)
+      return { isMustMakeMove: true, text: t("all_players_guessed") };
+
+    if (
+      gameStatus === VOTING &&
+      isCurrentPlayerHost &&
+      isReadyToCalculatePoints
+    )
+      return { isMustMakeMove: true, text: t("all_players_voted") };
+
+    if (gameStatus === ROUND_RESULTS)
+      return {
+        isMustMakeMove: isCurrentPlayerHost ? true : false,
+        text: t("rounds_results"),
+      };
+
+    if (gameStatus === LOBBY)
+      return {
+        isMustMakeMove: isCurrentPlayerStoryteller ? true : false,
+        text: isCurrentPlayerStoryteller
+          ? t("choose_card")
+          : t("storyteller_choses_card", {
+              storytellerName: storyteller?.name,
+            }),
+      };
+
+    return { isMustMakeMove: false, text: t("players_taking_turn") };
+  }, [
+    gameStatus,
+    isCurrentPlayerHost,
+    isCurrentPlayerStoryteller,
+    isPlayerGuessed,
+    isPlayerVoted,
+    isReadyToCalculatePoints,
+    isReadyToVote,
+    isShowMask,
+    storyteller?.name,
+    storytellerId,
+    t,
+  ]);
+
+  //# Page header color and text
   useEffect(() => {
-    if (!storytellerId || isShowMask || !isPlayerGuessed || !isPlayerVoted) {
-      dispatch(setPageHeaderText(t("first_turn")));
+    // console.log("condition for", {
+    //   storytellerId: !storytellerId,
+    //   isShowMask,
+    //   isPlayerGuessed: !isPlayerGuessed,
+    //   isPlayerVoted: !isPlayerVoted,
+    // });
+
+    const { isMustMakeMove, text } = textAndColorOfHeader();
+    if (isMustMakeMove) {
+      dispatch(setPageHeaderText(text));
       dispatch(setPageHeaderBgColor("#0F7DFF"));
     } else {
-      dispatch(setPageHeaderText(t("players_taking_turn")));
+      dispatch(setPageHeaderText(text));
       dispatch(setPageHeaderBgColor("#5D7E9E"));
     }
-  }, [dispatch, isPlayerGuessed, isPlayerVoted, isShowMask, storytellerId, t]);
+  }, [dispatch, textAndColorOfHeader, t]);
 
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {
