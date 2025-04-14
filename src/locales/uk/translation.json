@@ -76,5 +76,11 @@
   "all_players_guessed": "Всі гравці обрали карти",
   "all_players_voted": "Всі гравці проголосували",
   "rounds_results": "Підсумки раунду",
-  "storyteller_choses_card": "Оповідач {{storytellerName}} обирає карту"
+  "storyteller_choses_card": "Оповідач {{storytellerName}} обирає карту",
+  "player_has_active_game": "Ви вже почали одну гру. Завершіть її або видаліть перед створенням нової",
+  "search_game_by_number": "Пошук гри по номеру",
+  "search": "Пошук",
+  "clear": "Очистити",
+  "enter_exactly_4_digits": "Введіть 4 цифри",
+  "found_game_success": "Гра з номером {{gameNumber}} знайдена"
 }

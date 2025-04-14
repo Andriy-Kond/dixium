@@ -1,6 +1,6 @@
 import { Notify } from "notiflix";
-import { gameApi } from "redux/game/gameApi.js";
-import { setGameStatus, updateCurrentPlayer } from "redux/game/gameSlice.js";
+
+import { setGameStatus } from "redux/game/gameSlice.js";
 import { FINISH } from "utils/generals/constants.js";
 
 export const gameEnd = (game, message, dispatch) => {

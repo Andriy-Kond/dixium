@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { useGetAllGamesQuery } from "redux/game/gameApi.js";
-import { selectAllGames, selectUserCredentials } from "redux/selectors.js";
+import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
+import { selectActiveGame, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
-import { addGamesList } from "redux/game/gameSlice.js";
+import { setActiveGame } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import css from "./GamesList.module.scss";
 import { useTranslation } from "react-i18next";
@@ -21,21 +21,25 @@ export default function GamesList() {
     isGuessed,
     isVoted,
     _id: playerId,
+    playerGameId,
   } = userCredentials;
+  const foundActiveGame = useSelector(selectActiveGame);
 
-  const { data: allGames, isFetching } = useGetAllGamesQuery();
-  const games = useSelector(selectAllGames); // більш актуальні дані, ніж з сирих allGames
+  const hostIdOfFoundActiveGame = foundActiveGame?.hostPlayerId;
+  const isCurrentPlayerHost = hostIdOfFoundActiveGame === playerId;
+
+  // const { data: allGames, isFetchingAllGames } = useGetAllGamesQuery();
+  const { data: playerGame, isFetchingActiveGame } =
+    useGetCurrentGameQuery(playerGameId);
 
   useEffect(() => {
-    if (allGames) {
-      dispatch(addGamesList(allGames)); // Записуємо список доступних ігор у стейт
+    if (playerGame) {
+      dispatch(setActiveGame(playerGame));
     }
-  }, [allGames, dispatch]);
+  }, [dispatch, playerGame]);
 
   const startOrJoinToGame = game => {
-    const currentGame = games[game._id];
-
-    const isPlayerInGame = currentGame.players.some(
+    const isPlayerInGame = foundActiveGame.players.some(
       player => player._id === playerId,
     );
 
@@ -74,55 +78,47 @@ export default function GamesList() {
 
   return (
     <>
-      {!isFetching && (
-        <ul>
-          {/* //# якщо games - це масив: */}
-          {/* {allGames?.map(game => { */}
-          {/* //# якщо games - це об'єкт: */}
-          {Object.values(allGames)?.map(game => {
-            return (
-              <li key={game._id} className={css.item}>
-                <ImgGen className={css.img} publicId={game.gamePoster} />
+      {foundActiveGame && (
+        <div key={foundActiveGame._id} className={css.item}>
+          <ImgGen className={css.img} publicId={foundActiveGame.gamePoster} />
 
-                <div className={css.wrapper}>
-                  <p>{game.gameName.toUpperCase()}</p>
-                  <p>
-                    {t("host", {
-                      hostPlayerName: game.hostPlayerName.toUpperCase(),
-                    })}
-                  </p>
-                  <div className={css.btnsContainer}>
-                    <Button
-                      btnText={
-                        playerId === game.hostPlayerId
-                          ? t("start_game")
-                          : game.isGameRunning
-                          ? t("game_running")
-                          : t("join_to_game", {
-                              hostPlayerName: game.hostPlayerName,
-                            })
-                      }
-                      onClick={() => {
-                        startOrJoinToGame(game);
-                      }}
-                      disabled={
-                        (game.isGameRunning &&
-                          !game.players.find(p => p._id === playerId)) ||
-                        (!game.isGameStarted && playerId !== game.hostPlayerId) // disabled when it is not creator button (i.e. Join to) and game not started
-                      }
-                    />
-                    {playerId === game.hostPlayerId && (
-                      <Button
-                        btnText={t("delete_game")}
-                        onClick={() => removeCurrentGame(game._id)}
-                      />
-                    )}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+          <div className={css.wrapper}>
+            <p>{foundActiveGame.gameName.toUpperCase()}</p>
+            <p>
+              {t("host", {
+                hostPlayerName: foundActiveGame.hostPlayerName.toUpperCase(),
+              })}
+            </p>
+            <div className={css.btnsContainer}>
+              <Button
+                btnText={
+                  playerId === foundActiveGame.hostPlayerId
+                    ? t("start_game")
+                    : foundActiveGame.isGameRunning
+                    ? t("game_running")
+                    : t("join_to_game", {
+                        hostPlayerName: foundActiveGame.hostPlayerName,
+                      })
+                }
+                onClick={() => {
+                  startOrJoinToGame(foundActiveGame);
+                }}
+                disabled={
+                  (foundActiveGame.isGameRunning &&
+                    !foundActiveGame.players.find(p => p._id === playerId)) ||
+                  (!foundActiveGame.isGameStarted &&
+                    playerId !== foundActiveGame.hostPlayerId) // disabled when it is not creator button (i.e. Join to) and game not started
+                }
+              />
+              {playerId === foundActiveGame.hostPlayerId && (
+                <Button
+                  btnText={t("delete_game")}
+                  onClick={() => removeCurrentGame(foundActiveGame._id)}
+                />
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

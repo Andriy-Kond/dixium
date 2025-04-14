@@ -27,10 +27,11 @@ import {
   // gameEntry,
   startNewRoundSuccess,
   nextStorytellerUpdated,
+  gameEnd,
+  gameFindActiveSuccess,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
-import { gameEnd } from "./socketHandlers/gameEnd.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -56,7 +57,22 @@ export const useSetupSocketListeners = () => {
     const handleReconnect = () =>
       joinToGameRoom(socket, gameId, userCredentials);
 
-    const handleError = err => Notify.failure(err.errorMessage);
+    const handleError = err => {
+      let errMessage = "";
+      // console.log("err.errorMessage:::", err.errorMessage);
+
+      switch (err.errorMessage) {
+        case "Error creating game: You already have an active game. Finish or delete it first.":
+          errMessage = t("player_has_active_game");
+          break;
+
+        default:
+          errMessage = err.errorMessage;
+          break;
+      }
+
+      Notify.failure(errMessage);
+    };
 
     const handleGameFirstTurnUpdate = ({ game }) =>
       gameFirstTurnUpdate(game, dispatch, userId);
@@ -125,9 +141,11 @@ export const useSetupSocketListeners = () => {
 
     // startNewRoundSuccess;
 
-    // handleGameEnd;
     const handleGameEnd = ({ game, message }) =>
       gameEnd(game, message, dispatch);
+
+    const handleGameFindActiveSuccess = ({ game, message }) =>
+      gameFindActiveSuccess(game, message, dispatch);
 
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
@@ -152,6 +170,7 @@ export const useSetupSocketListeners = () => {
     socket.on("startNewRoundSuccess", handleStartNewRoundSuccess);
 
     socket.on("gameEnd", handleGameEnd);
+    socket.on("gameFindActiveSuccess", handleGameFindActiveSuccess);
 
     // gameEnd;
 
@@ -180,6 +199,7 @@ export const useSetupSocketListeners = () => {
       socket.off("startNewRoundSuccess", handleStartNewRoundSuccess);
 
       socket.off("gameEnd", handleGameEnd);
+      socket.off("gameFindActiveSuccess", handleGameFindActiveSuccess);
 
       // if client runout from page (unmount component) before server responding
       // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
@@ -194,12 +214,12 @@ export const useSetupSocketListeners = () => {
     };
   }, [
     activeActions,
-    gameId,
     dispatch,
+    gameId,
     navigate,
-    refetchAllGames,
+    t,
+    toastId,
     userCredentials,
     userId,
-    toastId,
   ]);
 };

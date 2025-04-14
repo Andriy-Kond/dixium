@@ -36,3 +36,89 @@
   background-color: var(--white_color);
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
 }
+
+// ================================
+// temp styles
+
+// .searchGameInput {
+//   width: 100%;
+//   padding: 0.5rem;
+//   font-size: 1rem;
+//   caret-color: auto;
+//   /* Уникайте стилів, які можуть впливати на курсор */
+// }
+
+// .hint {
+//   font-size: 0.875rem;
+//   color: #666;
+//   margin-top: 0.25rem;
+// }
+// .searchButton {
+//   padding: 0.5rem 1rem;
+//   background-color: #007bff;
+//   color: white;
+//   border: none;
+//   border-radius: 4px;
+//   &[disabled] {
+//     opacity: 0.5;
+//     cursor: not-allowed;
+//   }
+// }
+// .clearButton {
+//   padding: 0.5rem;
+//   background: none;
+//   border: none;
+//   color: #007bff;
+//   cursor: pointer;
+// }
+// .error {
+//   color: red;
+//   font-size: 0.875rem;
+//   margin-top: 0.5rem;
+// }
+
+.searchGameWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.searchGameLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.searchGameInput {
+  padding: 0.5rem;
+  font-size: 1rem;
+  caret-color: auto;
+}
+.displayValue {
+  font-size: 1rem;
+  color: #333;
+  margin-top: 0.25rem;
+}
+.hint {
+  font-size: 0.875rem;
+  color: #666;
+}
+.error {
+  color: red;
+  font-size: 0.875rem;
+}
+.clearButton {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+}
+.searchButton {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

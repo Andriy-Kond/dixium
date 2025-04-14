@@ -77,5 +77,11 @@
   "all_players_guessed": "All players have chosen cards",
   "all_players_voted": "All players have voted",
   "rounds_results": "Round's results",
-  "storyteller_choses_card": "Storyteller {{storytellerName}} chooses a card"
+  "storyteller_choses_card": "Storyteller {{storytellerName}} chooses a card",
+  "player_has_active_game": "You already have an active game. Finish or delete it first.",
+  "search_game_by_number": "Search game by number",
+  "search": "Search",
+  "clear": "Clear",
+  "enter_4_digits": "Enter 4 digits",
+  "found_game_success": "We found game with number {{gameNumber}}"
 }

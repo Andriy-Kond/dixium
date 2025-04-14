@@ -13,3 +13,5 @@ export * from "./playerGuessSuccess.js";
 export * from "./playerVoteSuccess.js";
 export * from "./roundFinishSuccess.js";
 export * from "./startNewRoundSuccess.js";
+export * from "./gameEnd.js";
+export * from "./gameFindActiveSuccess.js";

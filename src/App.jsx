@@ -18,8 +18,6 @@ Notify.init({
   clickToClose: true,
 });
 
-console.log("Google Client ID:", process.env.REACT_APP_GOOGLE_CLIENT_ID);
-
 const RegisterPage = lazy(() => import("common/pages/auth/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/auth/LoginPage"));
 const GameInitialPage = lazy(() => import("common/pages/game/GameInitialPage"));

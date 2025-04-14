@@ -56,6 +56,9 @@ const gameInitialState = {
   currentDeckId: null,
 
   activeActions: {},
+
+  // Для варіанта з пошуком по номеру гри
+  activeGame: null,
 };
 
 export const gameSlice = createSlice({
@@ -183,6 +186,17 @@ export const gameSlice = createSlice({
       game.cardsOnTable = {};
       game.votes = {};
     },
+
+    // Для варіанта з пошуком по номеру гри
+    setActiveGame: (state, action) => {
+      state.activeGame = action.payload;
+    },
+    deleteActiveGame: (state, action) => {
+      state.activeGame = null;
+    },
+    updateActiveGame: (state, action) => {
+      state.activeGame = action.payload;
+    },
   },
 });
 
@@ -215,6 +229,10 @@ export const {
   updatePlayerVote,
   updateCurrentPlayer,
   clearingForNewRound,
+
+  setActiveGame,
+  deleteActiveGame,
+  updateActiveGame,
 } = gameSlice.actions;
 
 // } else if (

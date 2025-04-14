@@ -83,7 +83,7 @@ export const selectPreloadImg = state => state.localPersonalSlice.preloadImg;
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
 export const selectActiveActions = state => state.gameSlice.activeActions;
-
+export const selectActiveGame = state => state.gameSlice.activeGame;
 export const selectAllGames = state => state.gameSlice.games;
 
 //# якщо games - це об'єкт:
