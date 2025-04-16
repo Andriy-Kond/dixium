@@ -2,7 +2,7 @@ import { gameApi } from "redux/game/gameApi.js";
 import { updateGame } from "redux/game/gameSlice.js";
 
 export const gameCreateOrUpdate = (game, isNew, dispatch) => {
-  console.log("gameCreateOrUpdate");
+  // console.log("gameCreateOrUpdate");
   if (!game) {
     throw new Error(`The game is ${game}`);
   }

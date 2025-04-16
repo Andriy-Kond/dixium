@@ -15,7 +15,6 @@ export default function UserMenu({ closeMenu }) {
   const { t } = useTranslation();
   const [logoutUser] = useLogoutUserMutation();
   const userCredentials = useSelector(selectUserCredentials);
-  console.log(" UserMenu >> userCredentials:::", userCredentials);
 
   const handleLogout = async () => {
     await logoutUser();
