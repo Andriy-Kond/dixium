@@ -1,6 +1,6 @@
 import { setIsShowMask } from "redux/game/localPersonalSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
-import { updateGame } from "redux/game/gameSlice.js";
+import { updateActiveGame, updateGame } from "redux/game/gameSlice.js";
 
 export const gameFirstTurnUpdate = (game, dispatch, playerId) => {
   if (!game) {
@@ -8,12 +8,22 @@ export const gameFirstTurnUpdate = (game, dispatch, playerId) => {
   }
 
   //# якщо games (draft === gameSlice.games) - це об'єкт
+  // dispatch(
+  //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+  //     if (game._id in draft) {
+  //       // Якщо гра вже є, оновлюємо її
+  //       dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
+  //       draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
+  //     }
+  //   }),
+  // );
+
   dispatch(
-    gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+    gameApi.util.updateQueryData("getCurrentGame", undefined, draft => {
       if (game._id in draft) {
-        // Якщо гра вже є, оновлюємо її
-        dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
-        draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
+        // Якщо гра вже є, то оновити її
+        dispatch(updateActiveGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
+        draft = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
       }
     }),
   );

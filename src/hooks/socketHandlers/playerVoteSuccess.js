@@ -1,5 +1,9 @@
 import { Notify } from "notiflix";
-import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
+import {
+  clearActiveAction,
+  updateActiveGame,
+  updateGame,
+} from "redux/game/gameSlice.js";
 
 export const playerVoteSuccess = (game, message, dispatch, activeActions) => {
   // console.log("playerVoteSuccess");
@@ -17,9 +21,13 @@ export const playerVoteSuccess = (game, message, dispatch, activeActions) => {
     const key = `${eventName}-${game._id}`;
 
     if (message) {
-      dispatch(updateGame(relatedAction.meta.previousGameState));
+      // dispatch(updateGame(relatedAction.meta.previousGameState));
+      dispatch(updateActiveGame(relatedAction.meta.previousGameState));
       Notify.failure(message);
-    } else dispatch(updateGame(game));
+    } else {
+      // dispatch(updateGame(game));
+      dispatch(updateActiveGame(game));
+    }
 
     if (relatedAction?.meta?.timer) {
       clearTimeout(relatedAction.meta.timer);
@@ -28,6 +36,7 @@ export const playerVoteSuccess = (game, message, dispatch, activeActions) => {
   } else {
     // Логіка для інших гравців
     if (message) Notify.failure(message);
-    else dispatch(updateGame(game));
+    // else dispatch(updateGame(game));
+    dispatch(updateActiveGame(game));
   }
 };

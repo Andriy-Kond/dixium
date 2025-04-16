@@ -34,6 +34,7 @@ export default function GamesList() {
   const { data: allGames, isFetchingAllGames } = useGetAllGamesQuery();
   const { data: playerGame, isFetchingActiveGame } =
     useGetCurrentGameQuery(playerGameId);
+  console.log(" GamesList >> playerGame:::", playerGame);
 
   useEffect(() => {
     if (playerGame) {

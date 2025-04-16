@@ -1,4 +1,8 @@
-import { setActiveAction, updateGame } from "redux/game/gameSlice.js";
+import {
+  setActiveAction,
+  updateActiveGame,
+  updateGame,
+} from "redux/game/gameSlice.js";
 import { Notify } from "notiflix";
 import socket from "services/socket.js";
 import { t } from "i18next";
@@ -15,7 +19,8 @@ const optimisticUpdateMiddleware =
       const previousGameState = getState().gameSlice.games[updatedGame._id];
 
       // Оптимістичне оновлення
-      dispatch(updateGame(updatedGame));
+      // dispatch(updateGame(updatedGame));
+      dispatch(updateActiveGame(updatedGame));
 
       // Відправка на сервер
       socket.emit(eventName, { updatedGame });
@@ -23,7 +28,9 @@ const optimisticUpdateMiddleware =
       // Таймер для відкатування
       const timer = setTimeout(() => {
         Notify.failure(t("err_no_response_server"), { eventName });
-        dispatch(updateGame(previousGameState));
+        // dispatch(updateGame(previousGameState));
+        dispatch(updateActiveGame(previousGameState));
+
         // dispatch(clearActiveAction(key));
       }, timeout);
 

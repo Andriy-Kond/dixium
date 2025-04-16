@@ -60,15 +60,6 @@ export const gameApi = createApi({
       ],
     }),
 
-    // removeGameFromServer: builder.mutation({
-    //   query: gameId => ({
-    //     url: `dixium/games/${gameId}`,
-    //     method: "DELETE", // add new game
-    //     body: gameId,
-    //   }),
-    //   invalidatesTags: ["AllGames"],
-    // }),
-
     // createGame: builder.mutation({
     //   query: game => ({
     //     url: `dixium/games`,
@@ -77,6 +68,17 @@ export const gameApi = createApi({
     //   }),
     //   invalidatesTags: ["AllGames"],
     // }),
+
+    deleteGame: builder.mutation({
+      query: gameId => ({
+        url: `dixium/games/${gameId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, gameId) => [
+        { type: "Game", id: gameId },
+        "AllGames",
+      ],
+    }),
   }),
 });
 

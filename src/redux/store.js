@@ -14,18 +14,25 @@ import { persistedUserAuthReducer } from "redux/auth/authSlice";
 
 import { authApi } from "redux/auth/authApi";
 import { gameApi } from "redux/game/gameApi.js";
+
 import { persistedGameReducer } from "redux/game/gameSlice.js";
+// import { persistedGameActiveReducer } from "./game/gameActiveSlice.js";
+// import { persistedGameAllReducer } from "./game/gameAllSlice.js";
+
 import optimisticUpdateMiddleware from "redux/middlewares/optimisticUpdateMiddleware.js";
 import { persistedActiveScreenReducer } from "./game/localPersonalSlice.js";
 
 export const store = configureStore({
   reducer: {
     authSlice: persistedUserAuthReducer,
+
     gameSlice: persistedGameReducer,
+    // gameActiveSlice: persistedGameActiveReducer,
+    // gameAllSlice: persistedGameAllReducer,
+
     localPersonalSlice: persistedActiveScreenReducer,
 
     [authApi.reducerPath]: authApi.reducer,
-
     [gameApi.reducerPath]: gameApi.reducer,
   },
 

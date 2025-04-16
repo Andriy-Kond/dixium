@@ -1,4 +1,4 @@
-import { updateGame } from "redux/game/gameSlice.js";
+import { updateActiveGame, updateGame } from "redux/game/gameSlice.js";
 
 export const nextStorytellerUpdated = (game, dispatch, playerId) => {
   console.log("nextStorytellerUpdated");
@@ -6,5 +6,6 @@ export const nextStorytellerUpdated = (game, dispatch, playerId) => {
     throw new Error(`The game is ${game}`);
   }
 
-  dispatch(updateGame(game));
+  // dispatch(updateGame(game));
+  dispatch(updateActiveGame(game));
 };

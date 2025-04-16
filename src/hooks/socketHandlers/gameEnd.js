@@ -1,6 +1,6 @@
 import { Notify } from "notiflix";
 
-import { setGameStatus } from "redux/game/gameSlice.js";
+import { setActiveGameStatus, setGameStatus } from "redux/game/gameSlice.js";
 import { FINISH } from "utils/generals/constants.js";
 
 export const gameEnd = (game, message, dispatch) => {
@@ -25,5 +25,6 @@ export const gameEnd = (game, message, dispatch) => {
   console.log(`The winner(s):`, winners);
   winners.map(winner => Notify.success(`Player ${winner.name} is winner!`));
 
-  dispatch(setGameStatus(FINISH));
+  // dispatch(setGameStatus({ gameId: game._id, status: FINISH }));
+  dispatch(setActiveGameStatus({ status: FINISH }));
 };

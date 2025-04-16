@@ -4,17 +4,18 @@ import { selectIsCreatingGame } from "redux/selectors.js";
 import css from "./GameInitialPage.module.scss";
 import { setIsCreatingGame } from "redux/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
-import DecksList from "../../../components/game/DecksList/DecksList.jsx";
+import DecksList from "common/components/game/DecksList";
 import Button from "common/components/ui/Button";
-import GamesList from "../../../components/game/GamesList/GamesList.jsx";
+
+import GamesList from "common/components/game/GamesList";
+import GameSearchResult from "common/components/game/GameSearchResult";
 import { useTranslation } from "react-i18next";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   setPageHeaderBgColor,
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
 import socket from "services/socket.js";
-import { myDebounce } from "utils/generals/myDebounce.js";
 
 export default function GameInitialPage() {
   // const navigate = useNavigate();
@@ -86,23 +87,6 @@ export default function GameInitialPage() {
     }
   };
 
-  // const handleSubmit = e => {
-  //   e.preventDefault();
-  //   // Відправка запиту, якщо є хоча б одна цифра
-  //   if (searchGame && searchGame <= 9999) {
-  //     socket.emit("gameFindActive", { searchGame });
-  //   } else {
-  //     console.log("error: player-game number is incorrect");
-  //   }
-  // };
-
-  // const resetSearchGame = () => {
-  //   setSearchGame(null);
-  //   setDisplayValue("");
-
-  //   // socket.emit("gameFindActive", { searchGame: null }); // todo налаштувати сервер на підтримку скидання запиту
-  // };
-
   const resetSearchGame = () => {
     setSearchGame(null);
     if (inputRef.current) {
@@ -141,15 +125,6 @@ export default function GameInitialPage() {
                     <p className={css.hint}>{t("enter_4_digits")}</p>
                   </label>
 
-                  {/* {displayValue && (
-                    <button
-                      className={css.clearButton}
-                      onClick={resetSearchGame}
-                      type="button">
-                      {t("clear")}
-                    </button>
-                  )} */}
-
                   {searchGame && (
                     <button
                       type="button"
@@ -172,6 +147,7 @@ export default function GameInitialPage() {
               </div>
 
               <GamesList />
+              <GameSearchResult />
               <div className={css.bottomBar}>
                 <Button
                   onClick={createGame}

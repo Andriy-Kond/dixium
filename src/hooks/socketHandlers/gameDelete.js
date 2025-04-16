@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { gameApi } from "redux/game/gameApi.js";
-import { clearActiveAction } from "redux/game/gameSlice.js";
+import { clearActiveAction, deleteActiveGame } from "redux/game/gameSlice.js";
 import {
   clearLocalState,
   removeToastIdRef,
@@ -29,16 +29,28 @@ export const gameDelete = (
   // );
 
   //# якщо games (draft === gameSlice.games) - це об'єкт
-  dispatch(
-    gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-      delete draft[gameId]; // Видаляємо гру за її _id
-    }),
-  );
+  // dispatch(
+  //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+  //     delete draft[gameId]; // Видаляємо гру за її _id
+  //   }),
+  // );
+
+  // !не правильно
+  // dispatch(
+  //   gameApi.util.updateQueryData("getCurrentGame", undefined, draft => {
+  //     draft.activeGame = null; // Видаляємо гру за її _id
+  //   }),
+  // );
+
+  // Інвалідація кешу для поточної гри
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: gameId }]));
+  // invalidateTags змусить RTK Query або очистити кеш, або повторно запитати дані, якщо потрібно.
 
   toast.dismiss(toastId); // Закриє відповідне повідомлення
   dispatch(removeToastIdRef({ gameId, playerId }));
   dispatch(clearActiveAction({}));
   dispatch(clearLocalState());
+  dispatch(deleteActiveGame());
 
   if (currentGameId === gameId) {
     navigate(`/game`, { replace: true });

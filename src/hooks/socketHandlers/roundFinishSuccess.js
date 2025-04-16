@@ -1,4 +1,4 @@
-import { updateGame } from "redux/game/gameSlice.js";
+import { updateActiveGame, updateGame } from "redux/game/gameSlice.js";
 import {
   setActiveScreen,
   setIsCarouselModeHandScreen,
@@ -17,7 +17,8 @@ export const roundFinishSuccess = (
     throw new Error(`The game is ${game}`);
   }
 
-  dispatch(updateGame(game));
+  // dispatch(updateGame(game));
+  dispatch(updateActiveGame(game));
 
   dispatch(
     setActiveScreen({

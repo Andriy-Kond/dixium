@@ -1,4 +1,4 @@
-import { updateGame } from "redux/game/gameSlice.js";
+import { updateActiveGame, updateGame } from "redux/game/gameSlice.js";
 import {
   clearLocalState,
   setActiveScreen,
@@ -20,7 +20,8 @@ export const startNewRoundSuccess = (
     throw new Error(`The game is ${game}`);
   }
 
-  dispatch(updateGame(game));
+  // dispatch(updateGame(game));
+  dispatch(updateActiveGame(game));
 
   dispatch(clearLocalState());
 
