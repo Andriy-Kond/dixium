@@ -12,11 +12,13 @@ import { Notify } from "notiflix";
 import SortablePlayer from "common/components/game/SortablePlayer";
 import { distributeCards } from "utils/game/distributeCards.js";
 import Button from "common/components/ui/Button/index.js";
-import { selectGame, selectUserCredentials } from "redux/selectors.js";
+
 import css from "./PrepareGame.module.scss";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import { useTranslation } from "react-i18next";
 import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import { selectGame } from "redux/selectors/selectorsGameSlice.js";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
@@ -66,6 +68,8 @@ export default function PrepareGame() {
   };
 
   const runGame = () => {
+    if (!isCurrentPlayerInGame) return; // задля додаткової безпеки
+
     const game = distributeCards(currentGame);
     if (game.message) return Notify.failure(game.message); // "Not enough cards in the deck"
 

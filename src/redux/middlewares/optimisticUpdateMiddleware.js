@@ -1,6 +1,6 @@
 import {
+  clearActiveAction,
   setActiveAction,
-  updateActiveGame,
   updateGame,
 } from "redux/game/gameSlice.js";
 import { Notify } from "notiflix";
@@ -16,11 +16,11 @@ const optimisticUpdateMiddleware =
       const key = `${eventName}-${updatedGame._id}`;
 
       // Зберігаємо попередній стан гри:
-      const previousGameState = getState().gameSlice.games[updatedGame._id];
+      // const previousGameState = getState().gameSlice.games[updatedGame._id];
+      const previousGameState = getState().gameSlice.activeGame;
 
       // Оптимістичне оновлення
-      // dispatch(updateGame(updatedGame));
-      dispatch(updateActiveGame(updatedGame));
+      dispatch(updateGame(updatedGame));
 
       // Відправка на сервер
       socket.emit(eventName, { updatedGame });
@@ -28,10 +28,9 @@ const optimisticUpdateMiddleware =
       // Таймер для відкатування
       const timer = setTimeout(() => {
         Notify.failure(t("err_no_response_server"), { eventName });
-        // dispatch(updateGame(previousGameState));
-        dispatch(updateActiveGame(previousGameState));
+        dispatch(updateGame(previousGameState));
 
-        // dispatch(clearActiveAction(key));
+        dispatch(clearActiveAction(key)); // очищення таймеру на випадок якщо сервер не відповів (не обов'язково, бо очищається у потрібних місцях коду, але хай буде для самодостатності коду - буде усувати застарілу подію одразу)
       }, timeout);
 
       // записую стан activeActions даними із meta:

@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLang } from "redux/selectors.js";
+
 import { useEffect } from "react";
 import { setLang } from "redux/game/localPersonalSlice.js";
+import { selectLang } from "redux/selectors/selectorsLocalPersonalSlice.js";
 
 const useI18n = () => {
   const dispatch = useDispatch();

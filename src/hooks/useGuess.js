@@ -2,13 +2,14 @@ import { Notify } from "notiflix";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
 import {
   selectCardsOnTable,
   selectGame,
   selectGamePlayers,
   selectPlayerHand,
-  selectUserCredentials,
-} from "redux/selectors.js";
+} from "redux/selectors/selectorsGameSlice.js";
+
 import socket from "services/socket.js";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
 

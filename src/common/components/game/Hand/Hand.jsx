@@ -5,21 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
 import socket from "services/socket.js";
-import {
-  selectCardsSet,
-  selectGame,
-  selectGamePlayers,
-  selectGameStatus,
-  selectHostPlayerId,
-  selectIsCarouselModeHandScreen,
-  selectIsShowMask,
-  selectIsSingleCardMode,
-  selectPlayerHand,
-  selectSelectedCardId,
-  selectStorytellerId,
-  selectToastId,
-  selectUserCredentials,
-} from "redux/selectors.js";
+
 import {
   LOBBY,
   GUESSING,
@@ -44,6 +30,23 @@ import {
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import {
+  selectGame,
+  selectGamePlayers,
+  selectGameStatus,
+  selectHostPlayerId,
+  selectIsSingleCardMode,
+  selectPlayerHand,
+  selectStorytellerId,
+} from "redux/selectors/selectorsGameSlice.js";
+import {
+  selectCardsSet,
+  selectIsCarouselModeHandScreen,
+  selectIsShowMask,
+  selectSelectedCardId,
+  selectToastId,
+} from "redux/selectors/selectorsLocalPersonalSlice.js";
 
 export default function Hand({
   isActiveScreen,
@@ -86,10 +89,10 @@ export default function Hand({
   const isCurrentPlayerStoryteller = storytellerId === playerId;
   const playersMoreThanThree = gamePlayers.length > 3;
   // const playersMoreThanSix = gamePlayers.length > 6;
-  const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
+  const isStartVotingDisabled = gamePlayers.some(p => !p.isGuessed);
 
-  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
+  const isReadyToVote = !gamePlayers.some(p => !p.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(p => p.isVoted);
 
   const isCurrentPlayerHost = hostPlayerId === playerId;
 
@@ -100,7 +103,7 @@ export default function Hand({
   }, [firstGuessCardSet?._id, playersMoreThanThree, secondGuessCardSet?._id]);
 
   const isCurrentPlayerGuessed = gamePlayers.some(
-    player => player._id === playerId && player.isGuessed,
+    p => p._id === playerId && p.isGuessed,
   );
 
   const paragraphText = !storytellerId

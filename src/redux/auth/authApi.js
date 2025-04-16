@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { logoutUser } from "redux/auth/authSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
 
-const { REACT_APP_BASE_URL } = process.env;
+const { REACT_APP_BASE_URL = "http://localhost:3001" } = process.env;
 
 const baseQuery = fetchBaseQuery({
   baseUrl: REACT_APP_BASE_URL,
@@ -34,14 +34,17 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
+
   keepUnusedDataFor: 0, // видаляє очікування 60 сек перед очищенням кешу
   endpoints: build => ({
     signupUser: build.mutation({
-      query: user => ({
-        url: `/api/auth/register`,
-        method: "POST",
-        body: user,
-      }),
+      query: user => {
+        return {
+          url: `/api/auth/register`,
+          method: "POST",
+          body: user,
+        };
+      },
 
       invalidatesTags: ["User"],
     }),

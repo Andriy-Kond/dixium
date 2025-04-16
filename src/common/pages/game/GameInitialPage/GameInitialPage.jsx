@@ -1,13 +1,11 @@
 // import { useNavigate } from "react-router-dom";
 
-import { selectIsCreatingGame } from "redux/selectors.js";
 import css from "./GameInitialPage.module.scss";
-import { setIsCreatingGame } from "redux/game/gameSlice.js";
+import { setIsCreatingGame, updateGame } from "redux/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import DecksList from "common/components/game/DecksList";
 import Button from "common/components/ui/Button";
 
-import GamesList from "common/components/game/GamesList";
 import GameSearchResult from "common/components/game/GameSearchResult";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
@@ -16,12 +14,35 @@ import {
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
 import socket from "services/socket.js";
+import {
+  selectGame,
+  selectIsCreatingGame,
+} from "redux/selectors/selectorsGameSlice.js";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 
 export default function GameInitialPage() {
-  // const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
+
+  const userCredentials = useSelector(selectUserCredentials);
+  const { _id: playerId, playerGameId } = userCredentials;
+
+  const { data: playerGame, isFetching: isFetchingActiveGame } =
+    useGetCurrentGameQuery(playerGameId, { skip: !playerGameId });
+
   const isCreatingGame = useSelector(selectIsCreatingGame);
+  const activeGame = useSelector(selectGame); // більш актуальні дані, ніж з сирого playerGame
+
+  useEffect(() => {
+    if (playerGame) {
+      dispatch(updateGame(playerGame));
+    }
+  }, [dispatch, playerGame]);
+
+  const hostId = activeGame?.hostPlayerId;
+  const isCurrentPlayerHost = hostId === playerId;
+
   const headerTitleText = isCreatingGame
     ? t("creating_game")
     : t("available_games");
@@ -34,11 +55,9 @@ export default function GameInitialPage() {
 
   const createGame = () => {
     dispatch(setIsCreatingGame(true));
-    // navigate("/game/create");
   };
 
   const [searchGame, setSearchGame] = useState(null); // Чисте значення для пошуку (type: Number)
-  const [displayValue, setDisplayValue] = useState(""); // Значення для відображення з дефісом (type: String)
   const [error, setError] = useState(null);
   const inputRef = useRef(null);
 
@@ -49,13 +68,6 @@ export default function GameInitialPage() {
 
     const numericValue = inputValue ? parseInt(inputValue, 10) : null; // Якщо inputValue порожній, numericValue буде null, що унеможливлює NaN при відправці на сервер у emitSearch
     setSearchGame(numericValue); // type: Number
-
-    // // Форматування для відображення
-    // if (inputValue.length <= 2) {
-    //   setDisplayValue(inputValue);
-    // } else {
-    //   setDisplayValue(`${inputValue.slice(0, 2)}-${inputValue.slice(2)}`);
-    // }
 
     // Форматування для відображення
     let formattedValue = inputRawValue;
@@ -70,9 +82,7 @@ export default function GameInitialPage() {
   };
 
   // Допоміжна функція для підрахунку кількості цифр
-  const getDigitCount = () => {
-    return searchGame ? String(searchGame).length : 0;
-  };
+  const getDigitCount = () => (searchGame ? String(searchGame).length : 0);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -112,11 +122,7 @@ export default function GameInitialPage() {
                       className={css.searchGameInput}
                       type="text"
                       onChange={handleChange}
-                      // value={displayValue}
                       placeholder="Search by number..."
-                      // pattern="[0-9]*" // валідація - лише цифри і порожній рядок
-                      // pattern="\d*" // теж лише цифри, але з арабськими у юнікоді
-
                       inputMode="numeric" // одразу відкриє мобільну клавіатуру з цифрами на моб. пристроях
                       maxLength={5} // 4 цифри + дефіс
                       aria-label={t("search_game_by_number")}
@@ -137,17 +143,15 @@ export default function GameInitialPage() {
                   <button
                     className={css.searchButton}
                     type="submit"
-                    disabled={getDigitCount() !== 4 || searchGame > 9999}
-                    // disabled={!searchGame || searchGame > 9999}
-                  >
+                    disabled={getDigitCount() !== 4 || searchGame > 9999}>
                     {t("search")}
                   </button>
                 </form>
                 {error && <p className={css.error}>{error}</p>}
               </div>
 
-              <GamesList />
-              <GameSearchResult />
+              {activeGame && <GameSearchResult />}
+
               <div className={css.bottomBar}>
                 <Button
                   onClick={createGame}
@@ -162,9 +166,3 @@ export default function GameInitialPage() {
     </>
   );
 }
-
-//  If use it as individual pages (without prop "isCreatingGame")
-//  <Routes>
-//    <Route path="/" element={<GameInitial />} />
-//    <Route path="/create" element={<CreateGame />} />
-//  </Routes>

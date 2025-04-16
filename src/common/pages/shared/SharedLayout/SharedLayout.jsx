@@ -3,12 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import AppBar from "common/components/navComponents/AppBar";
 import css from "./SharedLayout.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectPageHeaderBgColor,
-  selectPageHeaderText,
-  selectPageHeaderTextColor,
-  selectTheme,
-} from "redux/selectors.js";
+
 import {
   setPageHeaderBgColor,
   setPageHeaderText,
@@ -16,6 +11,12 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import { DARK, LIGHT } from "utils/generals/constants.js";
 import { useTranslation } from "react-i18next";
+import {
+  selectPageHeaderBgColor,
+  selectPageHeaderText,
+  selectPageHeaderTextColor,
+  selectTheme,
+} from "redux/selectors/selectorsLocalPersonalSlice.js";
 
 export default function SharedLayout() {
   const dispatch = useDispatch();

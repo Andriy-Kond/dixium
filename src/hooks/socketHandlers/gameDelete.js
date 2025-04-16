@@ -1,12 +1,10 @@
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { gameApi } from "redux/game/gameApi.js";
-import { clearActiveAction, deleteActiveGame } from "redux/game/gameSlice.js";
+import { clearActiveAction, deleteGame } from "redux/game/gameSlice.js";
 import {
   clearLocalState,
   removeToastIdRef,
 } from "redux/game/localPersonalSlice.js";
-import { selectToastId } from "redux/selectors.js";
 
 export const gameDelete = (
   gameId,
@@ -28,29 +26,30 @@ export const gameDelete = (
   //   }),
   // );
 
-  //# якщо games (draft === gameSlice.games) - це об'єкт
+  // # якщо games (draft === gameSlice.games) - це об'єкт
   // dispatch(
   //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
   //     delete draft[gameId]; // Видаляємо гру за її _id
   //   }),
   // );
 
-  // !не правильно
+  // Інвалідація кешу для поточної гри
+  // invalidateTags змусить RTK Query або очистити кеш, або повторно запитати дані, якщо потрібно.
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: gameId }]));
+  // // Якщо список ігор відображається (наприклад, через getAllGames), додайте інвалідизацию тегу "LIST":
+  // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: gameId }, { type: "Game", id: "LIST" }]));
+  // // Для миттєвого оновлення UI (якщо GameInitialPage відображає список ігор) можна додати updateQueryData для getAllGames (якщо цей запит існує):
   // dispatch(
-  //   gameApi.util.updateQueryData("getCurrentGame", undefined, draft => {
-  //     draft.activeGame = null; // Видаляємо гру за її _id
+  //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+  //     delete draft[gameId];
   //   }),
   // );
-
-  // Інвалідація кешу для поточної гри
-  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: gameId }]));
-  // invalidateTags змусить RTK Query або очистити кеш, або повторно запитати дані, якщо потрібно.
 
   toast.dismiss(toastId); // Закриє відповідне повідомлення
   dispatch(removeToastIdRef({ gameId, playerId }));
   dispatch(clearActiveAction({}));
   dispatch(clearLocalState());
-  dispatch(deleteActiveGame());
+  dispatch(deleteGame());
 
   if (currentGameId === gameId) {
     navigate(`/game`, { replace: true });

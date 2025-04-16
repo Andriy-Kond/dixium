@@ -5,7 +5,7 @@ import {
   selectScores,
   selectStorytellerId,
   selectVotes,
-} from "redux/selectors.js";
+} from "redux/selectors/selectorsGameSlice.js";
 
 // Ця функція враховує всі правила, включаючи бонуси за введення інших в оману:
 export const useCalculateRoundPoints = (gameId, selectedCardId) => {

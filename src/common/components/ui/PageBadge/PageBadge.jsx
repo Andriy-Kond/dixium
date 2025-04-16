@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectActiveScreen, selectUserCredentials } from "redux/selectors.js";
+
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import {
@@ -12,6 +12,8 @@ import {
   TABLE_COLOR,
 } from "utils/generals/constants.js";
 import css from "./PageBadge.module.scss";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import { selectActiveScreen } from "redux/selectors/selectorsLocalPersonalSlice.js";
 
 export default function PageBadge() {
   const { t } = useTranslation();

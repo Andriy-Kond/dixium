@@ -4,13 +4,7 @@ import { useEffect } from "react";
 import { Notify } from "notiflix";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
-import {
-  selectActiveActions,
-  selectToastId,
-  selectUserCredentials,
-} from "redux/selectors.js";
 
-import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import {
   firstStorytellerUpdated,
   gameCreateOrUpdate,
@@ -24,7 +18,6 @@ import {
   playerGuessSuccess,
   playerVoteSuccess,
   roundFinishSuccess,
-  // gameEntry,
   startNewRoundSuccess,
   nextStorytellerUpdated,
   gameEnd,
@@ -32,6 +25,9 @@ import {
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import { selectActiveActions } from "redux/selectors/selectorsGameSlice.js";
+import { selectToastId } from "redux/selectors/selectorsLocalPersonalSlice.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -44,8 +40,6 @@ export const useSetupSocketListeners = () => {
   const gameId = match ? match[1] : null;
   const activeActions = useSelector(selectActiveActions);
   const toastId = useSelector(selectToastId(gameId));
-
-  const { refetch: refetchAllGames } = useGetAllGamesQuery();
 
   useEffect(() => {
     joinToGameRoom(socket, gameId, userCredentials); // Handle of initial connection
@@ -77,11 +71,8 @@ export const useSetupSocketListeners = () => {
     const handleGameFirstTurnUpdate = ({ game }) =>
       gameFirstTurnUpdate(game, dispatch, userId);
 
-    const handleGameCreateOrUpdate = ({ game }) =>
-      gameCreateOrUpdate(game, dispatch);
-
-    // const handleGameEntry = ({ game, player }) =>
-    //   gameEntry(game, player, dispatch);
+    const handleGameCreateOrUpdate = ({ game, isNew }) =>
+      gameCreateOrUpdate(game, isNew, dispatch);
 
     const handlePlayerJoined = ({ game, player, message }) =>
       playerJoined(
@@ -144,8 +135,8 @@ export const useSetupSocketListeners = () => {
     const handleGameEnd = ({ game, message }) =>
       gameEnd(game, message, dispatch);
 
-    const handleGameFindActiveSuccess = ({ game, message }) =>
-      gameFindActiveSuccess(game, message, dispatch);
+    const handleGameFindActiveSuccess = ({ game, message, gameNumber }) =>
+      gameFindActiveSuccess(game, message, gameNumber, dispatch);
 
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
@@ -153,7 +144,6 @@ export const useSetupSocketListeners = () => {
 
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
     socket.on("gameCreatedOrUpdated", handleGameCreateOrUpdate);
-    // socket.on("gameEntry", handleGameEntry);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
     socket.on("gameWasDeleted", handleGameDeleted);
@@ -172,8 +162,6 @@ export const useSetupSocketListeners = () => {
     socket.on("gameEnd", handleGameEnd);
     socket.on("gameFindActiveSuccess", handleGameFindActiveSuccess);
 
-    // gameEnd;
-
     return () => {
       // console.log("Cleaning up socket listeners");
       socket.off("connect", handleConnect);
@@ -182,7 +170,6 @@ export const useSetupSocketListeners = () => {
 
       socket.off("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
       socket.off("gameCreatedOrUpdated", handleGameCreateOrUpdate);
-      // socket.off("gameEntry", handleGameEntry);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("userDeletedFromGame", handleUserDeletedFromGame);
       socket.off("gameWasDeleted", handleGameDeleted);

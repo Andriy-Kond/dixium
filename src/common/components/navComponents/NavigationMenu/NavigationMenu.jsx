@@ -2,10 +2,9 @@ import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import clsx from "clsx";
 
-import { selectUserIsLoggedIn } from "redux/selectors";
-
 import css from "./NavigationMenu.module.scss";
 import { useTranslation } from "react-i18next";
+import { selectUserIsLoggedIn } from "redux/selectors/selectorsAuthSlice.js";
 
 export default function NavigationMenu({ closeMenu }) {
   const { t } = useTranslation();

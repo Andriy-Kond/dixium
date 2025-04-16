@@ -7,12 +7,13 @@ import { useTranslation } from "react-i18next";
 import css from "./DecksList.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentDeckId, setIsCreatingGame } from "redux/game/gameSlice.js";
-import { selectCurrentDeckId, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button";
 import socket from "services/socket.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import { LOBBY } from "utils/generals/constants.js";
 import ImgGen from "common/components/ui/ImgGen";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import { selectCurrentDeckId } from "redux/selectors/selectorsGameSlice.js";
 
 export default function DecksList() {
   const { t } = useTranslation();
@@ -28,7 +29,7 @@ export default function DecksList() {
     dispatch(setCurrentDeckId(deckId));
   };
 
-  const createNewGame = async () => {
+  const handleCreateNewGame = async () => {
     const gameData = {
       gameStatus: LOBBY,
       isGameRunning: false,
@@ -97,7 +98,7 @@ export default function DecksList() {
           btnStyle={["twoBtnsInRow"]}
         />
         <Button
-          onClick={createNewGame}
+          onClick={handleCreateNewGame}
           btnText={t("select_deck")}
           btnStyle={["twoBtnsInRow"]}
           disabled={!currentDeck}

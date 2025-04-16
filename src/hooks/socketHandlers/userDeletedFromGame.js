@@ -1,28 +1,19 @@
 import { gameApi } from "redux/game/gameApi.js";
-import { updateActiveGame, updateGame } from "redux/game/gameSlice.js";
+import { updateGame } from "redux/game/gameSlice.js";
 
 export const userDeletedFromGame = (game, dispatch) => {
   if (!game) {
     throw new Error(`The game is ${game}`);
   }
 
-  //# якщо games (draft === gameSlice.games) - це об'єкт
-  // dispatch(
-  //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-  //     if (game._id in draft) {
-  //       // Якщо гра вже є, оновлюємо її
-  //       dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
-  //       draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
-  //     }
-  //   }),
-  // );
   dispatch(
-    gameApi.util.updateQueryData("getCurrentGame", undefined, draft => {
-      if (game._id in draft) {
-        // Якщо гра вже є, оновлюємо її
-        dispatch(updateActiveGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
-        draft = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
-      }
+    gameApi.util.updateQueryData("getCurrentGame", game._id, draft => {
+      // Другий аргумент - це game._id, оскільки gameApi -> getCurrentGame очікує gameId
+      // Тут draft — це об'єкт гри, просто замінюємо його
+      Object.assign(draft, game); // Встановити чи оновити activeGame
     }),
   );
+
+  dispatch(updateGame(game)); // Оновити gameSlice для синхронізації
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }])); // запит на сервер для синхронізації стану
 };

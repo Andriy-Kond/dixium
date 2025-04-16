@@ -17,28 +17,7 @@ import {
   VOTING,
 } from "utils/generals/constants.js";
 import socket from "services/socket.js";
-import {
-  selectActiveScreen,
-  selectCardsOnTable,
-  selectGame,
-  selectGamePlayers,
-  selectIsCarouselModeHandScreen,
-  selectIsCarouselModeTableScreen,
-  selectIsShowMask,
-  selectIsSingleCardMode,
-  selectZoomCardId,
-  selectScores,
-  selectStorytellerId,
-  selectUserCredentials,
-  selectVotes,
-  selectToastId,
-  selectIsPlayerVoted,
-  selectIsPlayerGuessed,
-  selectPlayerHand,
-  selectPreloadImg,
-  selectGameStatus,
-  selectHostPlayerId,
-} from "redux/selectors.js";
+
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
 import {
@@ -54,6 +33,30 @@ import { shuffleDeck } from "utils/game/shuffleDeck.js";
 import { toast } from "react-toastify";
 import { Trans, useTranslation } from "react-i18next";
 import PageBadge from "common/components/ui/PageBadge/index.js";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import {
+  selectActiveScreen,
+  selectIsCarouselModeHandScreen,
+  selectIsCarouselModeTableScreen,
+  selectIsShowMask,
+  selectPreloadImg,
+  selectToastId,
+  selectZoomCardId,
+} from "redux/selectors/selectorsLocalPersonalSlice.js";
+import {
+  selectCardsOnTable,
+  selectGame,
+  selectGamePlayers,
+  selectGameStatus,
+  selectHostPlayerId,
+  selectIsPlayerGuessed,
+  selectIsPlayerVoted,
+  selectIsSingleCardMode,
+  selectPlayerHand,
+  selectScores,
+  selectStorytellerId,
+  selectVotes,
+} from "redux/selectors/selectorsGameSlice.js";
 
 export default function Game() {
   const dispatch = useDispatch();
@@ -95,8 +98,8 @@ export default function Game() {
   );
 
   const isCurrentPlayerHost = hostPlayerId === playerId;
-  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
+  const isReadyToVote = !gamePlayers.some(p => !p.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(p => p.isVoted);
   const isCurrentPlayerStoryteller = storytellerId === playerId;
   const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
   const screens = isBlockScreens

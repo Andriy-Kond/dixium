@@ -1,7 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useGetAllGamesQuery } from "redux/game/gameApi.js";
-import { selectAllGames, selectUserCredentials } from "redux/selectors.js";
+import {
+  selectAllGames,
+  selectUserCredentials,
+} from "redux/selectors/selectorsGameSlice.js";
 import Button from "common/components/ui/Button/index.js";
 import { addGamesList } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
@@ -91,6 +94,7 @@ export default function GamesList() {
                       hostPlayerName: game.hostPlayerName.toUpperCase(),
                     })}
                   </p>
+
                   <div className={css.btnsContainer}>
                     <Button
                       btnText={

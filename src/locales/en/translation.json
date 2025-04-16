@@ -83,5 +83,8 @@
   "search": "Search",
   "clear": "Clear",
   "enter_4_digits": "Enter 4 digits",
-  "found_game_success": "We found game with number {{gameNumber}}"
+  "found_game_success": "We found game with number {{gameNumber}}",
+  "game_with_number_not_found": "Game with number {{gameNumber}} not found",
+  "no_game_found": "Game not found",
+  "no_games_available": "No games available"
 }

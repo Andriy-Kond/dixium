@@ -4,14 +4,16 @@ import {
   useGetAllGamesQuery,
   useGetCurrentGameQuery,
 } from "redux/game/gameApi.js";
-import { selectActiveGame, selectUserCredentials } from "redux/selectors.js";
+import { selectGame } from "redux/selectors/selectorsGameSlice.js";
 import Button from "common/components/ui/Button/index.js";
-import { updateActiveGame } from "redux/game/gameSlice.js";
+
 import socket from "services/socket.js";
 import css from "./GamesList.module.scss";
 import { useTranslation } from "react-i18next";
 
 import ImgGen from "common/components/ui/ImgGen";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import { updateGame } from "redux/game/gameSlice.js";
 
 export default function GamesList() {
   const dispatch = useDispatch();
@@ -26,7 +28,7 @@ export default function GamesList() {
     _id: playerId,
     playerGameId,
   } = userCredentials;
-  const foundActiveGame = useSelector(selectActiveGame);
+  const foundActiveGame = useSelector(selectGame);
 
   const hostIdOfFoundActiveGame = foundActiveGame?.hostPlayerId;
   const isCurrentPlayerHost = hostIdOfFoundActiveGame === playerId;
@@ -34,11 +36,10 @@ export default function GamesList() {
   const { data: allGames, isFetchingAllGames } = useGetAllGamesQuery();
   const { data: playerGame, isFetchingActiveGame } =
     useGetCurrentGameQuery(playerGameId);
-  console.log(" GamesList >> playerGame:::", playerGame);
 
   useEffect(() => {
     if (playerGame) {
-      dispatch(updateActiveGame(playerGame));
+      dispatch(updateGame(playerGame));
     }
   }, [dispatch, playerGame]);
 

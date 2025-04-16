@@ -28,9 +28,11 @@ export default function RegisterPage() {
     const formData = new FormData(form);
     const userCredentials = Object.fromEntries(formData);
     userCredentials.email = userCredentials.email.toLowerCase();
+    console.log(" RegisterPage >> userCredentials:::", userCredentials);
 
     try {
       const result = await signupUser(userCredentials);
+      console.log(" RegisterPage >> result:::", result);
 
       if (result.error) {
         Notify.failure(result.error.data.message);

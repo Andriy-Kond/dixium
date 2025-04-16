@@ -10,9 +10,10 @@ import HomePage from "common/pages/HomePage";
 import SharedLayout from "common/pages/shared/SharedLayout";
 import { useGetUserByTokenQuery } from "redux/auth/authApi";
 import { setIsLoggedIn } from "redux/auth/authSlice";
-import { selectUserToken } from "./redux/selectors";
+
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
 import { ToastContainer } from "react-toastify";
+import { selectUserToken } from "redux/selectors/selectorsAuthSlice.js";
 
 Notify.init({
   clickToClose: true,

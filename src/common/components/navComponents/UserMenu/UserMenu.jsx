@@ -3,17 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLogoutUserMutation } from "redux/auth/authApi";
 import { clearAuthInitialState } from "redux/auth/authSlice";
 import { clearGameInitialState } from "redux/game/gameSlice.js";
-import { selectUserCredentials } from "redux/selectors";
+
 import Button from "common/components/ui/Button";
 
 import css from "./UserMenu.module.scss";
 import { useTranslation } from "react-i18next";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
 
 export default function UserMenu({ closeMenu }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [logoutUser] = useLogoutUserMutation();
   const userCredentials = useSelector(selectUserCredentials);
+  console.log(" UserMenu >> userCredentials:::", userCredentials);
 
   const handleLogout = async () => {
     await logoutUser();

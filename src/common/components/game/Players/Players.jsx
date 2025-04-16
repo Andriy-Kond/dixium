@@ -8,14 +8,6 @@ import { FaCheck } from "react-icons/fa6";
 // import { CgSpinnerTwoAlt } from "react-icons/cg";
 import { FaCircle } from "react-icons/fa6";
 
-import {
-  selectGamePlayers,
-  selectGameStatus,
-  selectHostPlayerId,
-  selectScores,
-  selectStorytellerId,
-  selectUserCredentials,
-} from "redux/selectors.js";
 import css from "./Players.module.scss";
 import Button from "common/components/ui/Button/index.js";
 import {
@@ -27,6 +19,14 @@ import {
 
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import {
+  selectGamePlayers,
+  selectGameStatus,
+  selectHostPlayerId,
+  selectScores,
+  selectStorytellerId,
+} from "redux/selectors/selectorsGameSlice.js";
 
 export default function Players({
   isActiveScreen,
@@ -46,10 +46,10 @@ export default function Players({
   const scores = useSelector(selectScores(gameId));
   const gameStatus = useSelector(selectGameStatus(gameId));
 
-  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
+  const isReadyToVote = !gamePlayers.some(p => !p.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(p => p.isVoted);
 
-  const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
+  const isStartVotingDisabled = gamePlayers.some(p => !p.isGuessed);
   const isCurrentPlayerHost = hostPlayerId === playerId;
   const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
 

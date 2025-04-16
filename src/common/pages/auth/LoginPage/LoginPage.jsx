@@ -11,13 +11,17 @@ import {
   setUserCredentials,
   setUserToken,
 } from "redux/auth/authSlice";
-import { selectUserCredentials, selectUserIsLoggedIn } from "redux/selectors";
+
 import AuthForm from "common/components/ui/AuthForm";
 import css from "common/components/ui/AuthForm/AuthForm.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
+import {
+  selectUserCredentials,
+  selectUserIsLoggedIn,
+} from "redux/selectors/selectorsAuthSlice.js";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -45,6 +49,7 @@ export default function LoginPage() {
         Notify.failure(result.error.data.message);
       } else {
         const user = { ...result?.data };
+        console.log(" LoginPage >> user:::", user);
         dispatch(setUserCredentials(user));
         dispatch(setUserToken(user.token));
         dispatch(setIsLoggedIn(true));

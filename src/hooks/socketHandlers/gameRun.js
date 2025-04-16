@@ -6,14 +6,10 @@ import {
   setZoomCardId,
 } from "redux/game/localPersonalSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
-import {
-  clearActiveAction,
-  updateActiveGame,
-  updateGame,
-} from "redux/game/gameSlice.js";
+import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
 export const gameRun = (game, message, dispatch, activeActions, playerId) => {
-  // console.log("gameRun");
+  console.log("gameRun");
   if (!game) {
     throw new Error(`The game is ${game}`);
   }
@@ -22,89 +18,70 @@ export const gameRun = (game, message, dispatch, activeActions, playerId) => {
     action => action.payload.updatedGame._id === game._id,
   );
 
+  // Перевірка оптимістичного оновлення (якщо є relatedAction, то це ініціатор)
   if (relatedAction) {
-    // Логіка для ініціатора
+    // Логіка для ініціатора оптимістичного оновлення:
     const { eventName } = relatedAction.payload;
     const key = `${eventName}-${game._id}`;
 
-    // If there is a message, then it is an error, rollback of the state
-    if (message) {
-      // dispatch(updateGame(relatedAction.meta.previousGameState));
-      dispatch(updateActiveGame(relatedAction.meta.previousGameState));
+    if (!message) {
+      // Спочатку оптимістичне оновлення стану Redux:
+      dispatch(
+        gameApi.util.updateQueryData("getCurrentGame", game._id, draft => {
+          Object.assign(draft, game);
+        }),
+      );
+
+      // Якщо отримана відповідь з сервера, або вона отримана з запізненням (більш ніж 10сек) то оновлюю стан на той, що прийшов від сервера
+      dispatch(updateGame(game));
+    } else {
+      // Якщо є message, то значить це помилка з сервера. Треба зупинити таймер і відновити стан до попереднього:
       Notify.failure(message);
-    }
-    // Server response or response late (more then 10 sec) -> state update
-    // else dispatch(updateGame(game));
-    else dispatch(updateActiveGame(game));
+      dispatch(updateGame(relatedAction.meta?.previousGameState));
 
-    dispatch(
-      setActiveScreen({
-        gameId: game._id,
-        playerId,
-        screen: 0,
-      }),
-    );
-
-    dispatch(
-      setIsCarouselModeTableScreen({
-        gameId: game._id,
-        playerId,
-        isCarouselModeTableScreen: false,
-      }),
-    );
-
-    dispatch(
-      setIsCarouselModeHandScreen({
-        gameId: game._id,
-        playerId,
-        isCarouselModeHandScreen: false,
-      }),
-    );
-
-    dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
-
-    if (relatedAction?.meta?.timer) {
-      clearTimeout(relatedAction.meta.timer);
+      // І скидаю таймер, якщо він ще не вийшов:
+      if (relatedAction.meta?.timer) clearTimeout(relatedAction.meta.timer); // очищаю таймер
       dispatch(clearActiveAction(key));
     }
   } else {
     // Логіка для інших гравців
     if (message) Notify.failure(message);
-    else {
-      // dispatch(
-      //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-      //     if (game._id in draft) {
-      //       // Якщо гра вже є, оновлюємо її
-      //       dispatch(updateGame(game)); // оновлення gameSlice (для актуального локального стейту)
-      //       draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
 
-      //       dispatch(
-      //         setActiveScreen({
-      //           gameId: game._id,
-      //           playerId: playerId,
-      //           screen: 0,
-      //         }),
-      //       );
-      //     }
-      //   }),
-      // );
-      dispatch(
-        gameApi.util.updateQueryData("getCurrentGame", undefined, draft => {
-          if (game._id in draft) {
-            // Якщо гра вже є, оновити її
-            dispatch(updateActiveGame(game)); // оновлення gameSlice (для актуального локального стейту)
-            draft = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
+    // Тут просто запит на синхронізацію з сервером для оновлення локального стану:
+    // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
 
-            dispatch(
-              setActiveScreen({
-                gameId: game._id,
-                playerId: playerId,
-                screen: 0,
-              }),
-            );
-          }
-        }),
-      );
-    }
+    dispatch(
+      gameApi.util.updateQueryData("getCurrentGame", game._id, draft => {
+        Object.assign(draft, game);
+      }),
+    );
+    dispatch(updateGame(game));
   }
+
+  // Логіка для усіх
+  // закриваю режими каруселі і zoom, якщо вони були відкриті
+  dispatch(
+    setIsCarouselModeTableScreen({
+      gameId: game._id,
+      playerId,
+      isCarouselModeTableScreen: false,
+    }),
+  );
+  dispatch(
+    setIsCarouselModeHandScreen({
+      gameId: game._id,
+      playerId,
+      isCarouselModeHandScreen: false,
+    }),
+  );
+  dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
+
+  // Перемикаю на потрібний екран:
+  dispatch(
+    setActiveScreen({
+      gameId: game._id,
+      playerId,
+      screen: 0, // перемикаю на потрібний екран
+    }),
+  );
 };

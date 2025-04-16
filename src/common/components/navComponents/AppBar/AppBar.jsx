@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-import { selectUserIsLoggedIn, selectUserToken } from "redux/selectors";
 
 import NavigationMenu from "common/components/navComponents/NavigationMenu";
 import AuthNav from "common/components/navComponents/AuthNav";
@@ -9,6 +8,10 @@ import css from "./AppBar.module.scss";
 import LangSwitcher from "common/components/navComponents/LangSwitcher";
 import { useCallback, useEffect, useState } from "react";
 import ThemeToggle from "common/components/ui/ThemeToggle";
+import {
+  selectUserIsLoggedIn,
+  selectUserToken,
+} from "redux/selectors/selectorsAuthSlice.js";
 
 export default function AppBar() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);

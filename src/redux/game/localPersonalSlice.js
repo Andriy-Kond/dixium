@@ -59,19 +59,6 @@ export const localPersonalSlice = createSlice({
       state.isShowMask[key] = isShow;
     },
 
-    setVotesLocal(state, action) {
-      // const { gameId, playerId, votes } = action.payload;
-      // const key = `${gameId}_${playerId}`;
-      // // state.screens = { ...state.screens, key: screen };
-      // state.votes[key] = votes;
-    },
-
-    resetVotesLocal(state, action) {
-      // const { gameId, playerId } = action.payload;
-      // const key = `${gameId}_${playerId}`;
-      // delete state.votes[key];
-    },
-
     updateVotesLocal: (state, action) => {
       const { gameId, playerId, firstVotedCardId, secondVotedCardId } =
         action.payload;
@@ -242,8 +229,7 @@ export const {
   removeActiveScreen,
   setIsShowMask,
   removeIsShowMask,
-  setVotesLocal,
-  resetVotesLocal,
+
   updateVotesLocal,
   setSelectedCardId,
   removeSelectedCardId,

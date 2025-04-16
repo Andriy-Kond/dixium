@@ -7,10 +7,12 @@ import { useSortable } from "@dnd-kit/sortable";
 import css from "./SortablePlayer.module.scss";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectGame, selectUserCredentials } from "redux/selectors.js";
+
 import Button from "common/components/ui/Button/index.js";
 import socket from "services/socket.js";
 import { useTranslation } from "react-i18next";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import { selectGame } from "redux/selectors/selectorsGameSlice.js";
 
 // Component for each dnd player
 export default function SortablePlayer({ player }) {

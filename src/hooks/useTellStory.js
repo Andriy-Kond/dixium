@@ -1,20 +1,21 @@
 import { useSelector } from "react-redux";
 import socket from "services/socket.js";
 import { GUESSING, LOBBY } from "utils/generals/constants.js";
+
+import { useCallback } from "react";
+import { Notify } from "notiflix";
+import { discardHandToTable } from "utils/game/discardHandToTable.js";
+import { useTranslation } from "react-i18next";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
 import {
   selectCardsOnTable,
   selectGame,
   selectGamePlayers,
   selectGameStatus,
   selectPlayerHand,
-  selectSelectedCardId,
   selectStorytellerId,
-  selectUserCredentials,
-} from "redux/selectors.js";
-import { useCallback } from "react";
-import { Notify } from "notiflix";
-import { discardHandToTable } from "utils/game/discardHandToTable.js";
-import { useTranslation } from "react-i18next";
+} from "redux/selectors/selectorsGameSlice.js";
+import { selectSelectedCardId } from "redux/selectors/selectorsLocalPersonalSlice.js";
 
 export const useTellStory = gameId => {
   const { t } = useTranslation();

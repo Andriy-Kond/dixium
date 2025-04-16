@@ -1,6 +1,5 @@
 // import { useNavigate } from "react-router-dom";
 
-import { selectIsCreatingGame } from "redux/selectors.js";
 import css from "./GameInitialPage.module.scss";
 import { setIsCreatingGame } from "redux/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +14,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import socket from "services/socket.js";
 import { myDebounce } from "utils/generals/myDebounce.js";
+import { selectIsCreatingGame } from "redux/selectors/selectorsGameSlice.js";
 
 export default function GameInitialPage() {
   // const navigate = useNavigate();

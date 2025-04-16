@@ -6,19 +6,7 @@ import { Notify } from "notiflix";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import {
-  selectCardsOnTable,
-  selectGamePlayers,
-  selectGameStatus,
-  selectHostPlayerId,
-  selectIsCarouselModeTableScreen,
-  selectIsSingleCardMode,
-  selectZoomCardId,
-  selectRoundResults,
-  selectStorytellerId,
-  selectUserCredentials,
-  selectVotesLocal,
-} from "redux/selectors.js";
+
 import { GUESSING, ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
 import Mask from "common/components/game/Mask";
 import Button from "common/components/ui/Button/index.js";
@@ -34,6 +22,21 @@ import LocalModal from "common/components/LocalModal";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
+import {
+  selectCardsOnTable,
+  selectGamePlayers,
+  selectGameStatus,
+  selectHostPlayerId,
+  selectIsSingleCardMode,
+  selectRoundResults,
+  selectStorytellerId,
+} from "redux/selectors/selectorsGameSlice.js";
+import {
+  selectIsCarouselModeTableScreen,
+  selectVotesLocal,
+  selectZoomCardId,
+} from "redux/selectors/selectorsLocalPersonalSlice.js";
 
 export default function Table({
   isActiveScreen,

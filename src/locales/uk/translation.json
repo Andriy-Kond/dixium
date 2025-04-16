@@ -82,5 +82,8 @@
   "search": "Пошук",
   "clear": "Очистити",
   "enter_exactly_4_digits": "Введіть 4 цифри",
-  "found_game_success": "Гра з номером {{gameNumber}} знайдена"
+  "found_game_success": "Гра з номером {{gameNumber}} знайдена",
+  "game_with_number_not_found": "Гра з номером {{gameNumber}} не знайдена",
+  "no_game_found": "Гра не знайдена",
+  "no_games_available": "Немає доступних ігор"
 }

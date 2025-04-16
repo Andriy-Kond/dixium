@@ -4,7 +4,7 @@ import storage from "redux-persist/lib/storage";
 import { LOBBY } from "utils/generals/constants.js";
 
 const gameInitialState = {
-  games: {},
+  // games: {},
   activeGame: null, // Для варіанта з однією грою
   isCreatingGame: false,
   currentDeckId: null,
@@ -23,6 +23,15 @@ export const gameSlice = createSlice({
       state.currentDeckId = action.payload;
     },
 
+    setActiveAction: (state, action) => {
+      const { key, value } = action.payload;
+      state.activeActions[key] = value;
+    },
+
+    clearActiveAction: (state, action) => {
+      delete state.activeActions[action.payload];
+    },
+
     setGameStatus: (state, action) => {
       const { status } = action.payload;
       const game = state.activeGame;
@@ -35,15 +44,6 @@ export const gameSlice = createSlice({
 
     updateGame: (state, action) => {
       state.activeGame = action.payload;
-    },
-
-    setActiveAction: (state, action) => {
-      const { key, value } = action.payload;
-      state.activeActions[key] = value;
-    },
-
-    clearActiveAction: (state, action) => {
-      delete state.activeActions[action.payload];
     },
 
     setFirstStoryteller: (state, action) => {
@@ -71,7 +71,7 @@ export const gameSlice = createSlice({
       const game = state.activeGame;
       if (!game) return;
 
-      state.activeGame.cardsOnTable.push(card);
+      game.cardsOnTable.push(card);
     },
 
     updatePlayerVote: (state, action) => {
@@ -79,7 +79,7 @@ export const gameSlice = createSlice({
       const game = state.activeGame;
       if (!game) return;
 
-      state.activeGame.votes = {
+      game.votes = {
         ...game.votes,
         [playerId]: {
           firstVotedCardId,
@@ -112,14 +112,14 @@ export const gameSlice = createSlice({
       state.activeGame = null;
     },
 
-    addGamesList: (state, action) => {
-      state.games = action.payload;
-    },
+    // addGamesList: (state, action) => {
+    //   state.games = action.payload;
+    // },
 
-    updateGameInGames: (state, action) => {
-      const updatedGame = action.payload;
-      state.games[updatedGame._id] = updatedGame;
-    },
+    // updateGameInGames: (state, action) => {
+    //   const updatedGame = action.payload;
+    //   state.games[updatedGame._id] = updatedGame;
+    // },
   },
 });
 
@@ -148,4 +148,6 @@ export const {
   updateCurrentPlayer,
   clearingForNewRound,
   deleteGame,
+  // addGamesList,
+  // updateGameInGames,
 } = gameSlice.actions;

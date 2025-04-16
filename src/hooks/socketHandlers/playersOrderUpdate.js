@@ -1,9 +1,6 @@
 import { Notify } from "notiflix";
-import {
-  clearActiveAction,
-  updateActiveGame,
-  updateGame,
-} from "redux/game/gameSlice.js";
+import { gameApi } from "redux/game/gameApi.js";
+import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
 
 export const playersOrderUpdate = (game, message, dispatch, activeActions) => {
   if (!game) {
@@ -20,13 +17,17 @@ export const playersOrderUpdate = (game, message, dispatch, activeActions) => {
     const key = `${eventName}-${game._id}`;
 
     if (message) {
-      // dispatch(updateGame(relatedAction.meta.previousGameState));
-      dispatch(updateActiveGame(relatedAction.meta.previousGameState));
+      dispatch(updateGame(relatedAction.meta.previousGameState));
       Notify.failure(message);
-    } else {
-      // dispatch(updateGame(game));
-      dispatch(updateActiveGame(game));
-    }
+
+      // // Не обов'язково для цього додатку, але хай буде на випадок майбутніх змін
+      // dispatch(
+      //   gameApi.util.updateQueryData("getCurrentGame", game._id, draft => {
+      //     Object.assign(draft, game);
+      //   }),
+      // );
+      // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+    } else dispatch(updateGame(game));
 
     if (relatedAction?.meta?.timer) {
       clearTimeout(relatedAction.meta.timer);
@@ -36,8 +37,15 @@ export const playersOrderUpdate = (game, message, dispatch, activeActions) => {
     // Логіка для інших гравців
     if (message) Notify.failure(message);
     else {
-      // dispatch(updateGame(game));
-      dispatch(updateActiveGame(game));
+      dispatch(updateGame(game));
+
+      // // Не обов'язково для цього додатку, але хай буде на випадок майбутніх змін
+      // dispatch(
+      //   gameApi.util.updateQueryData("getCurrentGame", game._id, draft => {
+      //     Object.assign(draft, game);
+      //   }),
+      // );
+      // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
     }
   }
 };

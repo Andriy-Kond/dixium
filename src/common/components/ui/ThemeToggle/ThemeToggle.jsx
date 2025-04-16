@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "redux/game/localPersonalSlice.js";
-import { selectTheme } from "redux/selectors.js";
+
 import { LIGHT } from "utils/generals/constants.js";
 import css from "./ThemeToggle.module.scss";
+import { selectTheme } from "redux/selectors/selectorsLocalPersonalSlice.js";
 
 export default function ThemeToggle() {
   const dispatch = useDispatch();

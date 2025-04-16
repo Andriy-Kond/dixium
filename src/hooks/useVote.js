@@ -1,17 +1,16 @@
 import { Notify } from "notiflix";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
+
+import { useOptimisticDispatch } from "./useOptimisticDispatch.js";
+import { useTranslation } from "react-i18next";
+import { selectUserCredentials } from "redux/selectors/selectorsAuthSlice.js";
 import {
   selectGame,
   selectGamePlayers,
   selectIsSingleCardMode,
-  selectUserCredentials,
   selectVotes,
-} from "redux/selectors.js";
-
-import { useOptimisticDispatch } from "./useOptimisticDispatch.js";
-import { useTranslation } from "react-i18next";
-// import { updatePlayerVote } from "redux/game/gameSlice.js";
+} from "redux/selectors/selectorsGameSlice.js";
 
 export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
   const { t } = useTranslation();
