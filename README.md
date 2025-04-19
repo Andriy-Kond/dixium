@@ -3,3 +3,5 @@
 ```
 npm install @cloudinary/url-gen @cloudinary/react
 ```
+
+try to node v22
