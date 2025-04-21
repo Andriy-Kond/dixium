@@ -4,7 +4,11 @@ import {
   useGetAllGamesQuery,
   useGetCurrentGameQuery,
 } from "redux/game/gameApi.js";
-import { selectAllGames, selectUserCredentials } from "redux/selectors.js";
+import {
+  selectAllGames,
+  selectLocalGames,
+  selectUserCredentials,
+} from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
 import { addGamesList } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
@@ -42,7 +46,7 @@ export default function GamesList() {
   //   }
   // }, [currentGame, dispatch]);
 
-  const games = useSelector(selectAllGames); // більш актуальні дані, ніж з сирих allGames
+  const games = useSelector(selectLocalGames); // більш актуальні дані, ніж з сирих allGames
 
   const startOrJoinToGame = game => {
     const currentGame = games[game._id];

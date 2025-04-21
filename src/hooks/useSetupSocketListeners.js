@@ -144,8 +144,8 @@ export const useSetupSocketListeners = () => {
     const handleGameEnd = ({ game, message }) =>
       gameEnd(game, message, dispatch);
 
-    const handleGameFindActiveSuccess = ({ game, message }) =>
-      gameFindActiveSuccess(game, message, dispatch);
+    const handleGameFindActiveSuccess = ({ game, message, gameNumber }) =>
+      gameFindActiveSuccess(game, message, gameNumber, dispatch);
 
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);

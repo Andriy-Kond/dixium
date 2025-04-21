@@ -4,6 +4,7 @@ import { persistReducer } from "redux-persist";
 import { DARK, LIGHT } from "utils/generals/constants.js";
 
 const localInitialState = {
+  games: {},
   screens: {}, // Об’єкт виду { "gameId_playerId": screen }
   isShowMask: {}, // Об’єкт виду { "gameId_playerId": Boolean }
   votes: {}, // {"gameId_playerId": {firstVotedCardId: null, secondVotedCardId: null}}
@@ -36,6 +37,16 @@ export const localPersonalSlice = createSlice({
   name: "activeScreen",
   initialState: localInitialState,
   reducers: {
+    addLocalGamesList: (state, action) => {
+      state.games = action.payload;
+    },
+
+    setLocalFoundGame: (state, action) => {
+      const game = action.payload;
+
+      state.games = { [game._id]: game };
+    },
+
     // When user set screen by himself
     setActiveScreen(state, action) {
       const { gameId, playerId, screen } = action.payload;
@@ -238,6 +249,9 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
+  addLocalGamesList,
+  setLocalFoundGame,
+
   setActiveScreen,
   removeActiveScreen,
   setIsShowMask,

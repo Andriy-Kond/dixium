@@ -6,6 +6,8 @@ export const selectUserToken = state => state.authSlice.userToken;
 export const selectUserCredentials = state => state.authSlice.user;
 
 //* localPersonalSlice selectors:
+export const selectLocalGames = state => state.localPersonalSlice.games;
+
 export const selectActiveScreen = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
   const screen = state.localPersonalSlice.screens[key];
