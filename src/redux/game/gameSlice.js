@@ -197,6 +197,12 @@ export const gameSlice = createSlice({
     updateActiveGame: (state, action) => {
       state.activeGame = action.payload;
     },
+
+    setFoundGame: (state, action) => {
+      const game = action.payload;
+
+      state.games = { [game._id]: game };
+    },
   },
 });
 
@@ -233,6 +239,8 @@ export const {
   setActiveGame,
   deleteActiveGame,
   updateActiveGame,
+
+  setFoundGame,
 } = gameSlice.actions;
 
 // } else if (
