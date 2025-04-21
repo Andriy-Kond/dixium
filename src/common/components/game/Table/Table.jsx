@@ -1,4 +1,4 @@
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MdOutlineStarOutline, MdOutlineStar } from "react-icons/md";
 
 import useEmblaCarousel from "embla-carousel-react";
@@ -13,7 +13,7 @@ import {
   selectHostPlayerId,
   selectIsCarouselModeTableScreen,
   selectIsSingleCardMode,
-  selectZoomCardId,
+  // selectZoomCardId,
   selectRoundResults,
   selectStorytellerId,
   selectUserCredentials,
@@ -26,11 +26,11 @@ import { useVote } from "hooks/useVote.js";
 import css from "./Table.module.scss";
 import {
   setIsCarouselModeTableScreen,
-  setZoomCardId,
+  // setZoomCardId,
   updateVotesLocal,
 } from "redux/game/localPersonalSlice.js";
 import { capitalizeWords } from "utils/game/capitalizeWords.js";
-import LocalModal from "common/components/LocalModal";
+// import LocalModal from "common/components/LocalModal";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
@@ -59,7 +59,7 @@ export default function Table({
     selectIsCarouselModeTableScreen(gameId, playerId),
   );
 
-  const zoomCardId = useSelector(selectZoomCardId(gameId, playerId));
+  // const zoomCardId = useSelector(selectZoomCardId(gameId, playerId));
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
@@ -186,20 +186,34 @@ export default function Table({
     ],
   );
 
-  const showCard = cardId => {
-    // setToggleZoomCardId(cardId);
-    dispatch(setZoomCardId({ gameId, playerId, zoomCardId: cardId }));
-  };
+  // const showCard = cardId => {
+  //   // setToggleZoomCardId(cardId);
+  //   // dispatch(setZoomCardId({ gameId, playerId, zoomCardId: cardId }));
+  //   dispatch(
+  //     setIsCarouselModeTableScreen({
+  //       gameId,
+  //       playerId,
+  //       isCarouselModeTableScreen: true,
+  //     }),
+  //   );
+  // };
 
-  const closeCard = useCallback(() => {
-    // setToggleZoomCardId(null);
-    dispatch(setZoomCardId({ gameId, playerId, zoomCardId: null }));
-  }, [dispatch, gameId, playerId]);
+  // const closeCard = useCallback(() => {
+  //   // setToggleZoomCardId(null);
+  //   // dispatch(setZoomCardId({ gameId, playerId, zoomCardId: null }));
+  //   dispatch(
+  //     setIsCarouselModeTableScreen({
+  //       gameId,
+  //       playerId,
+  //       isCarouselModeTableScreen: false,
+  //     }),
+  //   );
+  // }, [dispatch, gameId, playerId]);
 
-  const zoomCard = roundResults.find(
-    // result => result.cardId === toggleZoomCardId,
-    result => result.cardId === zoomCardId,
-  );
+  // const zoomCard = roundResults.find(
+  //   // result => result.cardId === toggleZoomCardId,
+  //   result => result.cardId === zoomCardId,
+  // );
 
   //~ reInit for emblaApiCardsVote
   useEffect(() => {
@@ -290,8 +304,10 @@ export default function Table({
       );
     } else {
       // console.log("Non Carousel Mode");
-      if (zoomCardId) {
-        setMiddleButton(<Button btnText="<" onClick={closeCard} />);
+      // if (zoomCardId) {
+      if (isCarouselModeTableScreen) {
+        // setMiddleButton(<Button btnText="<" onClick={closeCard} />);
+        setMiddleButton(<Button btnText="<" onClick={exitCarouselMode} />);
       } else if (
         isCurrentPlayerHost &&
         isReadyToVote &&
@@ -345,10 +361,18 @@ export default function Table({
                 disabled={!isCanVote || isCurrentPlayerVoted}
               />,
             );
-          } else if (gameStatus === ROUND_RESULTS && zoomCardId) {
+            //  } else if (gameStatus === ROUND_RESULTS && zoomCardId) {
+          } else if (
+            gameStatus === ROUND_RESULTS &&
+            isCarouselModeTableScreen
+          ) {
             // console.log("ROUND_RESULTS && toggleZoomCard");
+            // setMiddleButton(
+            //   <Button btnText={t("back")} onClick={() => closeCard()} />,
+            // );
+
             setMiddleButton(
-              <Button btnText={t("back")} onClick={() => closeCard()} />,
+              <Button btnText={t("back")} onClick={() => exitCarouselMode()} />,
             );
           } else setMiddleButton(null);
         } else setMiddleButton(null);
@@ -378,11 +402,11 @@ export default function Table({
     storytellerId,
     toggleCardSelection,
     playerId,
-    closeCard,
+    // closeCard,
     isCurrentPlayerHost,
     isReadyToStartNewRound,
     startNewRound,
-    zoomCardId,
+    // zoomCardId,
     isSingleCardMode,
     t,
   ]);
@@ -455,7 +479,6 @@ export default function Table({
             <ul className={`${css.currentDeck}`}>
               {cardsOnTable.map((card, idx) => {
                 const marks = getStarsMarksByCardId(card._id);
-
                 return (
                   <li
                     className={css.card}
@@ -489,28 +512,45 @@ export default function Table({
     return (
       <>
         {/* <p>Table gameStatus === ROUND_RESULTS</p> */}
+        {isCarouselModeTableScreen ? (
+          <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
+            <ul className={css.carouselContainer}>
+              {roundResults.map(card => {
+                const marks = getStarsMarksByCardId(card._id);
 
-        {zoomCardId ? (
-          <LocalModal toggleModal={closeCard}>
-            <TransformWrapper maxScale={5} panning={{ velocityDisabled: true }}>
-              <TransformComponent>
-                {/* <img src={zoomCard.url} alt="enlarged card" /> */}
-                <ImgGen
-                  className={css.zoomImg}
-                  publicId={zoomCard.public_id}
-                  isBig
-                />
-              </TransformComponent>
-            </TransformWrapper>
-          </LocalModal>
+                return (
+                  <li className={css.carouselSlide} key={card._id}>
+                    <div className={css.slideContainer}>
+                      {marks.length > 0 && (
+                        <div className={css.checkboxContainer}>
+                          {marks.map((mark, index) => (
+                            <span key={index} className={css.checkboxCard}>
+                              {mark}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <ImgGen
+                        // className={`${css.carouselImage} ${
+                        //   isMounted ? css.visible : ""
+                        // }`}
+                        className={css.zoomImg}
+                        publicId={card.public_id}
+                        isBig
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         ) : (
           <ul className={css.resultList}>
-            {roundResults.map(result => (
+            {roundResults.map((result, idx) => (
               <li
                 className={css.resultItem}
                 key={result.cardId}
-                onClick={() => showCard(result.cardId)}>
-                {/* <img className={css.resultImg} src={result.url} alt="card" /> */}
+                onClick={() => carouselModeOn(idx)}>
                 <ImgGen
                   className={css.resultImg}
                   publicId={result.public_id}
@@ -550,6 +590,65 @@ export default function Table({
             ))}
           </ul>
         )}
+
+        {/* {zoomCardId ? (
+          <LocalModal toggleModal={closeCard}>
+            <TransformWrapper maxScale={5} panning={{ velocityDisabled: true }}>
+              <TransformComponent>
+                <ImgGen
+                  className={css.zoomImg}
+                  publicId={zoomCard.public_id}
+                  isBig
+                />
+              </TransformComponent>
+            </TransformWrapper>
+          </LocalModal>
+        ) : (
+          <ul className={css.resultList}>
+            {roundResults.map(result => (
+              <li
+                className={css.resultItem}
+                key={result.cardId}
+                onClick={() => showCard(result.cardId)}>
+                <ImgGen
+                  className={css.resultImg}
+                  publicId={result.public_id}
+                  isNeedPreload={true}
+                />
+                <div className={css.resultPlayers}>
+                  <span>
+                    {result.ownerId === storytellerId
+                      ? // `Storyteller ${result.ownerName.toUpperCase()} was guessed the card:`
+                        t("storyteller_guessed_card", {
+                          storyteller: result.ownerName.toUpperCase(),
+                        })
+                      : // `${result.ownerName.toUpperCase()}'s card`
+                        t("storytellers_card", {
+                          storyteller: result.ownerName.toUpperCase(),
+                        })}
+                  </span>
+
+                  <ul className={css.resultVotes}>
+                    {result.votesForThisCard.map((vote, voteIdx) => {
+                      const stars = getStarsMarksByVoteCount(vote.voteCount);
+
+                      return (
+                        <li className={css.voterContainer} key={voteIdx}>
+                          {capitalizeWords(vote.playerName)}
+                          <div className={css.resultCheckboxContainer}>
+                            {stars.map((mark, index) => (
+                              <span key={index}>{mark}</span>
+                            ))}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )} */}
       </>
     );
   } else {
