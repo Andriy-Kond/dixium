@@ -494,6 +494,7 @@ export default function Table({
                       </div>
                     )}
 
+                    {/* <img className={css.img} src={card.url} alt="card" /> */}
                     <ImgGen
                       className={css.img}
                       publicId={card.public_id}
@@ -530,6 +531,9 @@ export default function Table({
                         </div>
                       )}
                       <ImgGen
+                        // className={`${css.carouselImage} ${
+                        //   isMounted ? css.visible : ""
+                        // }`}
                         className={css.zoomImg}
                         publicId={card.public_id}
                         isBig
@@ -555,10 +559,12 @@ export default function Table({
                 <div className={css.resultPlayers}>
                   <span>
                     {result.ownerId === storytellerId
-                      ? t("storyteller_guessed_card", {
+                      ? // `Storyteller ${result.ownerName.toUpperCase()} was guessed the card:`
+                        t("storyteller_guessed_card", {
                           storyteller: result.ownerName.toUpperCase(),
                         })
-                      : t("storytellers_card", {
+                      : // `${result.ownerName.toUpperCase()}'s card`
+                        t("storytellers_card", {
                           storyteller: result.ownerName.toUpperCase(),
                         })}
                   </span>
@@ -584,6 +590,65 @@ export default function Table({
             ))}
           </ul>
         )}
+
+        {/* {zoomCardId ? (
+          <LocalModal toggleModal={closeCard}>
+            <TransformWrapper maxScale={5} panning={{ velocityDisabled: true }}>
+              <TransformComponent>
+                <ImgGen
+                  className={css.zoomImg}
+                  publicId={zoomCard.public_id}
+                  isBig
+                />
+              </TransformComponent>
+            </TransformWrapper>
+          </LocalModal>
+        ) : (
+          <ul className={css.resultList}>
+            {roundResults.map(result => (
+              <li
+                className={css.resultItem}
+                key={result.cardId}
+                onClick={() => showCard(result.cardId)}>
+                <ImgGen
+                  className={css.resultImg}
+                  publicId={result.public_id}
+                  isNeedPreload={true}
+                />
+                <div className={css.resultPlayers}>
+                  <span>
+                    {result.ownerId === storytellerId
+                      ? // `Storyteller ${result.ownerName.toUpperCase()} was guessed the card:`
+                        t("storyteller_guessed_card", {
+                          storyteller: result.ownerName.toUpperCase(),
+                        })
+                      : // `${result.ownerName.toUpperCase()}'s card`
+                        t("storytellers_card", {
+                          storyteller: result.ownerName.toUpperCase(),
+                        })}
+                  </span>
+
+                  <ul className={css.resultVotes}>
+                    {result.votesForThisCard.map((vote, voteIdx) => {
+                      const stars = getStarsMarksByVoteCount(vote.voteCount);
+
+                      return (
+                        <li className={css.voterContainer} key={voteIdx}>
+                          {capitalizeWords(vote.playerName)}
+                          <div className={css.resultCheckboxContainer}>
+                            {stars.map((mark, index) => (
+                              <span key={index}>{mark}</span>
+                            ))}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )} */}
       </>
     );
   } else {
