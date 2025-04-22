@@ -11,32 +11,32 @@ export const gameEntry = (game, player, dispatch) => {
     throw new Error(`The player is ${player}`);
   }
 
-  dispatch(
-    gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-      // Якщо гра вже є, оновлюємо її
-      if (game._id in draft) {
-        const currentGame = draft[game._id];
+  // dispatch(
+  //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+  //     // Якщо гра вже є, оновлюємо її
+  //     if (game._id in draft) {
+  //       const currentGame = draft[game._id];
 
-        if (currentGame) {
-          draft[game._id].isGameStarted = game.isGameStarted;
+  //       if (currentGame) {
+  //         draft[game._id].isGameStarted = game.isGameStarted;
 
-          const playerIdx = currentGame.players.findIndex(
-            p => p._id === player._id,
-          );
+  //         const playerIdx = currentGame.players.findIndex(
+  //           p => p._id === player._id,
+  //         );
 
-          if (playerIdx !== -1) {
-            currentGame.players[playerIdx] = player;
-            // оновлення кешу gameApi Redux
-            // dispatch(updateCurrentPlayer({ gameId: game._id, player })); // оновлення gameSlice
-          } else {
-            currentGame.players.push(player);
-          }
-          dispatch(updateCurrentPlayer({ gameId: game._id, player })); // оновлення gameSlice
-        }
-      } else {
-        console.log(`Game ${game._id} not found`);
-        Notify.failure(`Game with ID ${game._id} not found`);
-      }
-    }),
-  );
+  //         if (playerIdx !== -1) {
+  //           currentGame.players[playerIdx] = player;
+  //           // оновлення кешу gameApi Redux
+  //           // dispatch(updateCurrentPlayer({ gameId: game._id, player })); // оновлення gameSlice
+  //         } else {
+  //           currentGame.players.push(player);
+  //         }
+  //         dispatch(updateCurrentPlayer({ gameId: game._id, player })); // оновлення gameSlice
+  //       }
+  //     } else {
+  //       console.log(`Game ${game._id} not found`);
+  //       Notify.failure(`Game with ID ${game._id} not found`);
+  //     }
+  //   }),
+  // );
 };

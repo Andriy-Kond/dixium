@@ -3,9 +3,9 @@ import socket from "services/socket.js";
 import { GUESSING, LOBBY } from "utils/generals/constants.js";
 import {
   selectCardsOnTable,
-  selectGame,
   selectGamePlayers,
   selectGameStatus,
+  selectLocalGame,
   selectPlayerHand,
   selectSelectedCardId,
   selectStorytellerId,
@@ -18,7 +18,8 @@ import { useTranslation } from "react-i18next";
 
 export const useTellStory = gameId => {
   const { t } = useTranslation();
-  const currentGame = useSelector(selectGame(gameId));
+  // const currentGame = useSelector(selectGame(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
   const playerHand = useSelector(selectPlayerHand(gameId, playerId));

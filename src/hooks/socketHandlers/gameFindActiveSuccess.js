@@ -2,7 +2,7 @@ import { t } from "i18next";
 import { Notify } from "notiflix";
 
 import { setActiveGame, setFoundGame } from "redux/game/gameSlice.js";
-import { setLocalFoundGame } from "redux/game/localPersonalSlice.js";
+import { setFoundGameId, setLocalGame } from "redux/game/localPersonalSlice.js";
 
 export const gameFindActiveSuccess = (game, message, gameNumber, dispatch) => {
   console.log("gameFindActiveSuccess");
@@ -12,6 +12,7 @@ export const gameFindActiveSuccess = (game, message, gameNumber, dispatch) => {
 
   // dispatch(setActiveGame(game));
   // dispatch(setFoundGame(game));
-  dispatch(setLocalFoundGame(game));
+  dispatch(setLocalGame(game));
+  dispatch(setFoundGameId(game._id));
   Notify.success(t("found_game_success", { gameNumber: game.playerGameId }));
 };

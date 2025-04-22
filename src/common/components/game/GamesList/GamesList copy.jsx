@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { useGetAllGamesQuery } from "redux/game/gameApi.js";
+// import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import { selectAllGames, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
 import { addGamesList } from "redux/game/gameSlice.js";
@@ -23,14 +23,14 @@ export default function GamesList() {
     _id: playerId,
   } = userCredentials;
 
-  const { data: allGames, isFetching } = useGetAllGamesQuery();
+  // const { data: allGames, isFetching } = useGetAllGamesQuery();
   const games = useSelector(selectAllGames); // більш актуальні дані, ніж з сирих allGames
 
-  useEffect(() => {
-    if (allGames) {
-      dispatch(addGamesList(allGames)); // Записуємо список доступних ігор у стейт
-    }
-  }, [allGames, dispatch]);
+  // useEffect(() => {
+  //   if (allGames) {
+  //     dispatch(addGamesList(allGames)); // Записуємо список доступних ігор у стейт
+  //   }
+  // }, [allGames, dispatch]);
 
   const startOrJoinToGame = game => {
     const currentGame = games[game._id];

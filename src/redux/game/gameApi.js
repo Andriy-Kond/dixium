@@ -32,15 +32,23 @@ export const gameApi = createApi({
       // providesTags: ["Deck"],
     }),
 
-    getAllGames: builder.query({
-      query: () => `dixium/games`, // Get available games
-      providesTags: ["AllGames"],
-    }),
+    // getAllGames: builder.query({
+    //   query: () => `dixium/games`, // Get available games
+    //   providesTags: ["AllGames"],
+    // }),
 
     getCurrentGame: builder.query({
       query: gameId => `dixium/games/${gameId}`, // Get current game
       // providesTags: ["Game"],
       providesTags: (result, error, gameId) => [{ type: "Game", id: gameId }],
+    }),
+
+    findGame: builder.query({
+      query: playerGameId => `dixium/games/find/${playerGameId}`, // Get current game
+      // providesTags: ["Game"],
+      providesTags: (result, error, playerGameId) => [
+        { type: "Game", id: playerGameId },
+      ],
     }),
 
     updateCurrentGame: builder.mutation({
@@ -84,7 +92,8 @@ export const {
   useGetAllDecksQuery,
   useGetCurrentDeckQuery,
 
-  useGetAllGamesQuery,
+  // useGetAllGamesQuery,
   useGetCurrentGameQuery,
+  useFindGameQuery,
   useUpdateCurrentGameMutation,
 } = gameApi;

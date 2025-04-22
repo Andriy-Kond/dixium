@@ -20,7 +20,6 @@ import socket from "services/socket.js";
 import {
   selectActiveScreen,
   selectCardsOnTable,
-  selectGame,
   selectGamePlayers,
   selectIsCarouselModeHandScreen,
   selectIsCarouselModeTableScreen,
@@ -38,6 +37,7 @@ import {
   selectPreloadImg,
   selectGameStatus,
   selectHostPlayerId,
+  selectLocalGame,
 } from "redux/selectors.js";
 import { calculatePoints } from "utils/game/calculatePoints.js";
 import { prepareRoundResults } from "utils/game/prepareRoundResults.js";
@@ -63,7 +63,8 @@ export default function Game() {
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
 
-  const currentGame = useSelector(selectGame(gameId));
+  // const currentGame = useSelector(selectGame(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const storyteller = gamePlayers.find(p => p._id === storytellerId);

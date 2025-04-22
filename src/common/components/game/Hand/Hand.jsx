@@ -7,13 +7,13 @@ import useEmblaCarousel from "embla-carousel-react";
 import socket from "services/socket.js";
 import {
   selectCardsSet,
-  selectGame,
   selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
   selectIsCarouselModeHandScreen,
   selectIsShowMask,
   selectIsSingleCardMode,
+  selectLocalGame,
   selectPlayerHand,
   selectSelectedCardId,
   selectStorytellerId,
@@ -61,7 +61,8 @@ export default function Hand({
   const { _id: playerId } = userCredentials;
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const playerHand = useSelector(selectPlayerHand(gameId, playerId));
-  const currentGame = useSelector(selectGame(gameId));
+  // const currentGame = useSelector(selectGame(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));

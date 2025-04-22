@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
+// import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 import { selectActiveGame, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
 import { setActiveGame } from "redux/game/gameSlice.js";
@@ -29,14 +29,14 @@ export default function GamesList() {
   const isCurrentPlayerHost = hostIdOfFoundActiveGame === playerId;
 
   // const { data: allGames, isFetchingAllGames } = useGetAllGamesQuery();
-  const { data: playerGame, isFetchingActiveGame } =
-    useGetCurrentGameQuery(playerGameId);
+  // const { data: playerGame, isFetchingActiveGame } =
+  //   useGetCurrentGameQuery(playerGameId);
 
-  useEffect(() => {
-    if (playerGame) {
-      dispatch(setActiveGame(playerGame));
-    }
-  }, [dispatch, playerGame]);
+  // useEffect(() => {
+  //   if (playerGame) {
+  //     dispatch(setActiveGame(playerGame));
+  //   }
+  // }, [dispatch, playerGame]);
 
   const startOrJoinToGame = game => {
     const isPlayerInGame = foundActiveGame.players.some(

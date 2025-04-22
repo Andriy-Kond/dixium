@@ -2,9 +2,9 @@ import { Notify } from "notiflix";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
-  selectGame,
   selectGamePlayers,
   selectIsSingleCardMode,
+  selectLocalGame,
   selectUserCredentials,
   selectVotes,
 } from "redux/selectors.js";
@@ -19,7 +19,8 @@ export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
-  const currentGame = useSelector(selectGame(gameId));
+  // const currentGame = useSelector(selectGame(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const votes = useSelector(selectVotes(gameId)); // { playerId: {firstVotedCardId, secondVotedCardIdn } }

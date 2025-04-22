@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import {
   selectCardsOnTable,
-  selectGame,
   selectGamePlayers,
+  selectLocalGame,
   selectPlayerHand,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -15,7 +15,8 @@ import { discardHandToTable } from "utils/game/discardHandToTable.js";
 export const useGuess = (gameId, cardsSet) => {
   const { t } = useTranslation();
   const userCredentials = useSelector(selectUserCredentials);
-  const currentGame = useSelector(selectGame(gameId));
+  // const currentGame = useSelector(selectGame(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));

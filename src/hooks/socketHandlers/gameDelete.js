@@ -29,11 +29,11 @@ export const gameDelete = (
   // );
 
   //# якщо games (draft === gameSlice.games) - це об'єкт
-  dispatch(
-    gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-      delete draft[gameId]; // Видаляємо гру за її _id
-    }),
-  );
+  // dispatch(
+  //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+  //     delete draft[gameId]; // Видаляємо гру за її _id
+  //   }),
+  // );
 
   toast.dismiss(toastId); // Закриє відповідне повідомлення
   dispatch(removeToastIdRef({ gameId, playerId }));

@@ -7,7 +7,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import css from "./SortablePlayer.module.scss";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectGame, selectUserCredentials } from "redux/selectors.js";
+import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
 import socket from "services/socket.js";
 import { useTranslation } from "react-i18next";
@@ -42,7 +42,8 @@ export default function SortablePlayer({ player }) {
   };
 
   const { gameId } = useParams();
-  const currentGame = useSelector(selectGame(gameId));
+  // const currentGame = useSelector(selectGame(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const isCurrentPlayerIsHost =
     currentGame.hostPlayerId === userCredentials._id;

@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 
-import { selectGame } from "redux/selectors.js";
+import { selectLocalGame } from "redux/selectors.js";
 import socket from "services/socket.js";
 import { distributeCards } from "utils/game/distributeCards.js";
 import { LOBBY } from "utils/generals/constants.js";
@@ -11,7 +11,8 @@ import { LOBBY } from "utils/generals/constants.js";
 export const useStartNewRound = gameId => {
   const { t } = useTranslation();
 
-  const currentGame = useSelector(selectGame(gameId));
+  // const currentGame = useSelector(selectGame(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
 
   const startNewRound = useCallback(() => {
     const updatedGame = distributeCards(currentGame); // роздаю карти

@@ -12,7 +12,7 @@ import { Notify } from "notiflix";
 import SortablePlayer from "common/components/game/SortablePlayer";
 import { distributeCards } from "utils/game/distributeCards.js";
 import Button from "common/components/ui/Button/index.js";
-import { selectGame, selectUserCredentials } from "redux/selectors.js";
+import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import css from "./PrepareGame.module.scss";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import { useTranslation } from "react-i18next";
@@ -25,7 +25,8 @@ export default function PrepareGame() {
 
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
   const { gameId } = useParams();
-  const currentGame = useSelector(selectGame(gameId));
+  // const currentGame = useSelector(selectGame(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const isCurrentPlayerIsHost =
     currentGame.hostPlayerId === userCredentials._id;
@@ -86,11 +87,11 @@ export default function PrepareGame() {
     navigate(`/game`);
   };
 
-  const { gameName } = useSelector(selectGame(gameId));
-
   useEffect(() => {
-    dispatch(setPageHeaderText(t("game_name", { gameName: gameName })));
-  }, [dispatch, gameName, t]);
+    dispatch(
+      setPageHeaderText(t("game_name", { gameName: currentGame.gameName })),
+    );
+  }, [currentGame.gameName, dispatch, t]);
 
   return (
     <>

@@ -1,7 +1,8 @@
 import { gameApi } from "redux/game/gameApi.js";
 import { updateGame } from "redux/game/gameSlice.js";
+import { setLocalGame } from "redux/game/localPersonalSlice.js";
 
-export const gameCreateOrUpdate = (game, dispatch) => {
+export const playerStartOrJoinToGame = (game, player, dispatch) => {
   // update Redux state:
   // refetchAllGames(); // призводить до оновлення всієї сторінки
   // or handle change of gameApi without refetchAllGames():
@@ -23,15 +24,20 @@ export const gameCreateOrUpdate = (game, dispatch) => {
   // );
 
   //# якщо games (draft === gameSlice.games) - це об'єкт
-  dispatch(
-    gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-      if (!(game._id in draft)) {
-        draft[game._id] = game; // Якщо гри немає в об’єкті, додаємо її
-      } else {
-        // Якщо гра вже є, оновлюємо її
-        dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
-        draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
-      }
-    }),
-  );
+  // dispatch(
+  //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+  //     console.log(" gameCreateOrUpdate >> draft:::", draft);
+  //     if (!(game._id in draft)) {
+  //       draft[game._id] = game; // Якщо гри немає в об’єкті, додаємо її
+  //     } else {
+  //       // Якщо гра вже є, оновлюємо її
+  //       dispatch(updateGame(game)); // оновлення gameSlice (для подальшої додачі гравців)
+  //       draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
+  //     }
+  //   }),
+  // );
+
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+
+  dispatch(setLocalGame(game));
 };

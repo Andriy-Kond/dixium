@@ -5,6 +5,7 @@ import { DARK, LIGHT } from "utils/generals/constants.js";
 
 const localInitialState = {
   games: {},
+  foundGameId: "",
   screens: {}, // Об’єкт виду { "gameId_playerId": screen }
   isShowMask: {}, // Об’єкт виду { "gameId_playerId": Boolean }
   votes: {}, // {"gameId_playerId": {firstVotedCardId: null, secondVotedCardId: null}}
@@ -37,14 +38,18 @@ export const localPersonalSlice = createSlice({
   name: "activeScreen",
   initialState: localInitialState,
   reducers: {
-    addLocalGamesList: (state, action) => {
-      state.games = action.payload;
+    // addLocalGamesList: (state, action) => {
+    //   state.games = action.payload;
+    // },
+
+    setLocalGame: (state, action) => {
+      const game = action.payload;
+      // state.games = { ...state.games, [game._id]: game };
+      state.games[game._id] = game; // add new or update exist
     },
 
-    setLocalFoundGame: (state, action) => {
-      const game = action.payload;
-
-      state.games = { [game._id]: game };
+    setFoundGameId: (state, action) => {
+      state.foundGameId = action.payload;
     },
 
     // When user set screen by himself
@@ -249,8 +254,9 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
-  addLocalGamesList,
-  setLocalFoundGame,
+  // addLocalGamesList,
+  setLocalGame,
+  setFoundGameId,
 
   setActiveScreen,
   removeActiveScreen,

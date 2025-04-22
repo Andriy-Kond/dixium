@@ -64,23 +64,24 @@ export const gameRun = (game, message, dispatch, activeActions, playerId) => {
   } else {
     // Логіка для інших гравців
     if (message) Notify.failure(message);
-    else
-      dispatch(
-        gameApi.util.updateQueryData("getAllGames", undefined, draft => {
-          if (game._id in draft) {
-            // Якщо гра вже є, оновлюємо її
-            dispatch(updateGame(game)); // оновлення gameSlice (для актуального локального стейту)
-            draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
+    // else {
+    // dispatch(
+    //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+    //     if (game._id in draft) {
+    //       // Якщо гра вже є, оновлюємо її
+    //       dispatch(updateGame(game)); // оновлення gameSlice (для актуального локального стейту)
+    //       draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
 
-            dispatch(
-              setActiveScreen({
-                gameId: game._id,
-                playerId: playerId,
-                screen: 0,
-              }),
-            );
-          }
-        }),
-      );
+    //       dispatch(
+    //         setActiveScreen({
+    //           gameId: game._id,
+    //           playerId: playerId,
+    //           screen: 0,
+    //         }),
+    //       );
+    //     }
+    //   }),
+    // );
+    // }
   }
 };

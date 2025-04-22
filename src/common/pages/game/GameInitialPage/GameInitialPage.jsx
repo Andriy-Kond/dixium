@@ -8,13 +8,12 @@ import DecksList from "../../../components/game/DecksList/DecksList.jsx";
 import Button from "common/components/ui/Button";
 import GamesList from "../../../components/game/GamesList/GamesList.jsx";
 import { useTranslation } from "react-i18next";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   setPageHeaderBgColor,
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
 import socket from "services/socket.js";
-import { myDebounce } from "utils/generals/myDebounce.js";
 
 export default function GameInitialPage() {
   // const navigate = useNavigate();
@@ -37,7 +36,7 @@ export default function GameInitialPage() {
   };
 
   const [searchGame, setSearchGame] = useState(null); // Чисте значення для пошуку (type: Number)
-  const [displayValue, setDisplayValue] = useState(""); // Значення для відображення з дефісом (type: String)
+  // const [displayValue, setDisplayValue] = useState(""); // Значення для відображення з дефісом (type: String)
   const [error, setError] = useState(null);
   const inputRef = useRef(null);
 

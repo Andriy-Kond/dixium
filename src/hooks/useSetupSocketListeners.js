@@ -10,10 +10,10 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 
-import { useGetAllGamesQuery } from "redux/game/gameApi.js";
+// import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import {
   firstStorytellerUpdated,
-  gameCreateOrUpdate,
+  playerStartOrJoinToGame,
   gameDelete,
   gameRun,
   gameFirstTurnUpdate,
@@ -29,6 +29,8 @@ import {
   nextStorytellerUpdated,
   gameEnd,
   gameFindActiveSuccess,
+  gameCreated,
+  updateUserCredentials,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
@@ -45,7 +47,7 @@ export const useSetupSocketListeners = () => {
   const activeActions = useSelector(selectActiveActions);
   const toastId = useSelector(selectToastId(gameId));
 
-  const { refetch: refetchAllGames } = useGetAllGamesQuery();
+  // const { refetch: refetchAllGames } = useGetAllGamesQuery();
 
   useEffect(() => {
     joinToGameRoom(socket, gameId, userCredentials); // Handle of initial connection
@@ -74,11 +76,17 @@ export const useSetupSocketListeners = () => {
       Notify.failure(errMessage);
     };
 
+    const handleUpdateUserCredentials = ({ user }) =>
+      updateUserCredentials(user, dispatch);
+
     const handleGameFirstTurnUpdate = ({ game }) =>
       gameFirstTurnUpdate(game, dispatch, userId);
 
-    const handleGameCreateOrUpdate = ({ game }) =>
-      gameCreateOrUpdate(game, dispatch);
+    const handlePlayerStartOrJoinToGame = ({ game, player }) =>
+      playerStartOrJoinToGame(game, player, dispatch);
+
+    const handleGameCreated = ({ game, isNew }) =>
+      gameCreated(game, isNew, dispatch);
 
     // const handleGameEntry = ({ game, player }) =>
     //   gameEntry(game, player, dispatch);
@@ -151,8 +159,12 @@ export const useSetupSocketListeners = () => {
     socket.on("reconnect", handleReconnect);
     socket.on("error", handleError);
 
+    socket.on("updateUserCredentials", handleUpdateUserCredentials);
+
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
-    socket.on("gameCreatedOrUpdated", handleGameCreateOrUpdate);
+    socket.on("playerStartOrJoinToGame", handlePlayerStartOrJoinToGame);
+    socket.on("gameCreated", handleGameCreated);
+
     // socket.on("gameEntry", handleGameEntry);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
@@ -180,8 +192,12 @@ export const useSetupSocketListeners = () => {
       socket.off("reconnect", handleReconnect);
       socket.off("error", handleError);
 
+      socket.off("updateUserCredentials", handleUpdateUserCredentials);
+
       socket.off("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
-      socket.off("gameCreatedOrUpdated", handleGameCreateOrUpdate);
+      socket.off("playerStartOrJoinToGame", handlePlayerStartOrJoinToGame);
+      socket.off("gameCreated", handleGameCreated);
+
       // socket.off("gameEntry", handleGameEntry);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("userDeletedFromGame", handleUserDeletedFromGame);

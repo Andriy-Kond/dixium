@@ -1,7 +1,10 @@
+export * from "./updateUserCredentials.js";
+
 export * from "./gameRun";
 export * from "./playersOrderUpdate";
 export * from "./gameDelete";
-export * from "./gameCreateOrUpdate.js";
+export * from "./playerStartOrJoinToGame.js";
+export * from "./gameCreated.js";
 export * from "./gameEntry.js";
 export * from "./joinToGameRoom.js";
 export * from "./playerJoined.js";
