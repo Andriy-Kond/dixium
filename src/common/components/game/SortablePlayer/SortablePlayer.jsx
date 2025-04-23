@@ -56,7 +56,7 @@ export default function SortablePlayer({ player }) {
     const newPlayers = players.filter(p => p._id !== userId);
     const updatedGame = { ...currentGame, players: newPlayers };
 
-    socket.emit("deleteUserFromGame", { updatedGame });
+    socket.emit("deleteUserFromGame", { updatedGame, deletedUserId: userId });
   };
 
   return (

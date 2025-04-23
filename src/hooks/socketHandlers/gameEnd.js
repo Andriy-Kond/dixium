@@ -1,13 +1,10 @@
 import { Notify } from "notiflix";
-
 import { setGameStatus } from "redux/game/gameSlice.js";
 import { FINISH } from "utils/generals/constants.js";
 
 export const gameEnd = (game, message, dispatch) => {
   console.log("gameEnd");
-  if (!game) {
-    throw new Error(`The game is ${game}`);
-  }
+  if (!game) throw new Error(`The game is ${game}`);
 
   const [maxId, maxVal] = Object.entries(game.scores).reduce(
     ([maxKey, maxValue], [key, value]) =>

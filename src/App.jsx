@@ -28,9 +28,11 @@ export default function App() {
   const dispatch = useDispatch();
 
   const authUserToken = useSelector(selectUserToken);
-  const { isSuccess, isFetching } = useGetUserByTokenQuery(undefined, {
-    skip: !authUserToken, // Пропускає запит, якщо токен відсутній
-  });
+  const {
+    data: userData,
+    isSuccess,
+    isFetching,
+  } = useGetUserByTokenQuery(undefined, { skip: !authUserToken }); // якщо токен нема, то запиту не буде
 
   useSetupSocketListeners(); // Підписка на всі слухачі сокетів
 
@@ -41,7 +43,7 @@ export default function App() {
       } else {
         dispatch(setIsLoggedIn(false));
       }
-  }, [dispatch, isFetching, isSuccess]);
+  }, [dispatch, isFetching, isSuccess, userData]);
 
   return (
     <>

@@ -6,7 +6,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: REACT_APP_BASE_URL,
   // For works by token:
   prepareHeaders: (headers, { getState }) => {
-    const token = getState().authSlice.userToken;
+    const token = getState().authSlice.user.token;
 
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
@@ -20,7 +20,7 @@ export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery,
   // keepUnusedDataFor: 5, // видаляє очікування 60 сек перед очищенням кешу
-  tagTypes: ["AllGames", "CurrentGame"],
+  tagTypes: ["AllGames", "CurrentGame", "Game"],
   endpoints: builder => ({
     getAllDecks: builder.query({
       query: () => `dixium/decks`, // Get available decks
@@ -51,22 +51,22 @@ export const gameApi = createApi({
       ],
     }),
 
-    updateCurrentGame: builder.mutation({
-      query: ({ gameId, data }) => ({
-        url: `dixium/games/${gameId}`,
-        method: "PATCH",
-        body: data,
-      }),
+    // updateCurrentGame: builder.mutation({
+    //   query: ({ gameId, data }) => ({
+    //     url: `dixium/games/${gameId}`,
+    //     method: "PATCH",
+    //     body: data,
+    //   }),
 
-      // Після оновлення, всі ігри будуть оновлені
-      // invalidatesTags: ["AllGames"],
+    //   // Після оновлення, всі ігри будуть оновлені
+    //   // invalidatesTags: ["AllGames"],
 
-      // Оновити конкретну гру, а не всі ігри:
-      invalidatesTags: (result, error, { gameId }) => [
-        { type: "Game", id: gameId }, // Оновлюється конкретна гра
-        // { type: "AllGames" }, // Оновлюється всі ігри
-      ],
-    }),
+    //   // Оновити конкретну гру, а не всі ігри:
+    //   invalidatesTags: (result, error, { gameId }) => [
+    //     { type: "Game", id: gameId }, // Оновлюється конкретна гра
+    //     // { type: "AllGames" }, // Оновлюється всі ігри
+    //   ],
+    // }),
 
     // removeGameFromServer: builder.mutation({
     //   query: gameId => ({

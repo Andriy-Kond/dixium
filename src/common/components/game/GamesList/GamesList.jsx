@@ -65,7 +65,7 @@ export default function GamesList() {
   const foundGameId = useSelector(selectFoundGameId);
   const foundGame = useSelector(selectLocalGame(foundGameId));
 
-  const currentGame = foundGame || activeGame;
+  // const currentGame = foundGame || activeGame;
 
   const startOrJoinToGame = game => {
     const currentGame = games[game._id];
@@ -109,7 +109,7 @@ export default function GamesList() {
 
   return (
     <>
-      {currentGame && (
+      {Object.keys(games).length > 0 && (
         <ul>
           {Object.values(games)?.map(game => {
             return (

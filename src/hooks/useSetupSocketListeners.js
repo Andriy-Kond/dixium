@@ -6,6 +6,8 @@ import { clearActiveAction } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import {
   selectActiveActions,
+  // selectLocalGame,
+  selectLocalGames,
   selectToastId,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -13,8 +15,8 @@ import {
 // import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import {
   firstStorytellerUpdated,
-  playerStartOrJoinToGame,
-  gameDelete,
+  // playerStartOrJoinToGame,
+  gameDeleted,
   gameRun,
   gameFirstTurnUpdate,
   joinToGameRoom,
@@ -28,7 +30,7 @@ import {
   startNewRoundSuccess,
   nextStorytellerUpdated,
   gameEnd,
-  gameFindActiveSuccess,
+  gameFound,
   gameCreated,
   updateUserCredentials,
 } from "./socketHandlers";
@@ -37,20 +39,22 @@ import { useTranslation } from "react-i18next";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const userCredentials = useSelector(selectUserCredentials);
-  const { _id: userId } = userCredentials;
+  const { t } = useTranslation();
   const location = useLocation();
   const match = location.pathname.match(/game\/([\w\d]+)/);
   const gameId = match ? match[1] : null;
-  const activeActions = useSelector(selectActiveActions);
+
+  const userCredentials = useSelector(selectUserCredentials);
+  const { _id: userId } = userCredentials;
   const toastId = useSelector(selectToastId(gameId));
+  const activeActions = useSelector(selectActiveActions);
+  const games = useSelector(selectLocalGames);
 
   // const { refetch: refetchAllGames } = useGetAllGamesQuery();
 
   useEffect(() => {
-    joinToGameRoom(socket, gameId, userCredentials); // Handle of initial connection
+    joinToGameRoom(socket, gameId, userCredentials); // Handle of
 
     // Обробка події "connect": перше або повторне підключення після оновлення сторінки
     const handleConnect = () => joinToGameRoom(socket, gameId, userCredentials);
@@ -62,6 +66,7 @@ export const useSetupSocketListeners = () => {
     const handleError = err => {
       let errMessage = "";
       // console.log("err.errorMessage:::", err.errorMessage);
+      console.log(" useEffect >> err:::", err);
 
       switch (err.errorMessage) {
         case "Error creating game: You already have an active game. Finish or delete it first.":
@@ -77,43 +82,38 @@ export const useSetupSocketListeners = () => {
     };
 
     const handleUpdateUserCredentials = ({ user }) =>
-      updateUserCredentials(user, dispatch);
+      updateUserCredentials(user, userCredentials, dispatch);
 
     const handleGameFirstTurnUpdate = ({ game }) =>
       gameFirstTurnUpdate(game, dispatch, userId);
 
-    const handlePlayerStartOrJoinToGame = ({ game, player }) =>
-      playerStartOrJoinToGame(game, player, dispatch);
+    // const handlePlayerStartOrJoinToGame = ({ game, player }) =>
+    //   playerStartOrJoinToGame(game, player, dispatch);
 
-    const handleGameCreated = ({ game, isNew }) =>
-      gameCreated(game, isNew, dispatch);
+    const handleGameCreated = ({ game }) => gameCreated(game, dispatch);
 
     // const handleGameEntry = ({ game, player }) =>
     //   gameEntry(game, player, dispatch);
 
     const handlePlayerJoined = ({ game, player, message }) =>
-      playerJoined(
-        game._id,
+      playerJoined({
+        game,
         player,
         message,
         userCredentials,
-        gameId,
+        currentGameId: gameId,
         navigate,
-      );
-
-    const handleUserDeletedFromGame = ({ game }) =>
-      userDeletedFromGame(game, dispatch);
-
-    const handleGameDeleted = ({ game, message }) => {
-      gameDelete(
-        game._id,
-        message,
         dispatch,
-        gameId,
-        userId,
-        navigate,
-        toastId,
-      );
+      });
+
+    const handleUserDeletedFromGame = ({ game, deletedUser }) =>
+      userDeletedFromGame({ game, deletedUser, userCredentials, dispatch });
+
+    const handleGameDeleted = ({ game }) => {
+      const isGameInList = games[game._id];
+
+      if (isGameInList)
+        gameDeleted(game, dispatch, gameId, userId, navigate, toastId);
     };
 
     const handlePlayersOrderUpdate = ({ game, message }) =>
@@ -152,8 +152,7 @@ export const useSetupSocketListeners = () => {
     const handleGameEnd = ({ game, message }) =>
       gameEnd(game, message, dispatch);
 
-    const handleGameFindActiveSuccess = ({ game, message, gameNumber }) =>
-      gameFindActiveSuccess(game, message, gameNumber, dispatch);
+    const handleGameFound = ({ game }) => gameFound(game, dispatch);
 
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
@@ -162,13 +161,13 @@ export const useSetupSocketListeners = () => {
     socket.on("updateUserCredentials", handleUpdateUserCredentials);
 
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
-    socket.on("playerStartOrJoinToGame", handlePlayerStartOrJoinToGame);
+    // socket.on("playerStartOrJoinToGame", handlePlayerStartOrJoinToGame);
     socket.on("gameCreated", handleGameCreated);
 
     // socket.on("gameEntry", handleGameEntry);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
-    socket.on("gameWasDeleted", handleGameDeleted);
+    socket.on("gameDeleted", handleGameDeleted);
 
     socket.on("playersOrderUpdated", handlePlayersOrderUpdate);
     socket.on("gameRunning", handleGameRun);
@@ -182,7 +181,7 @@ export const useSetupSocketListeners = () => {
     socket.on("startNewRoundSuccess", handleStartNewRoundSuccess);
 
     socket.on("gameEnd", handleGameEnd);
-    socket.on("gameFindActiveSuccess", handleGameFindActiveSuccess);
+    socket.on("gameFound", handleGameFound);
 
     // gameEnd;
 
@@ -195,13 +194,13 @@ export const useSetupSocketListeners = () => {
       socket.off("updateUserCredentials", handleUpdateUserCredentials);
 
       socket.off("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
-      socket.off("playerStartOrJoinToGame", handlePlayerStartOrJoinToGame);
+      // socket.off("playerStartOrJoinToGame", handlePlayerStartOrJoinToGame);
       socket.off("gameCreated", handleGameCreated);
 
       // socket.off("gameEntry", handleGameEntry);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("userDeletedFromGame", handleUserDeletedFromGame);
-      socket.off("gameWasDeleted", handleGameDeleted);
+      socket.off("gameDeleted", handleGameDeleted);
 
       socket.off("playersOrderUpdated", handlePlayersOrderUpdate);
       socket.off("gameRunning", handleGameRun);
@@ -215,7 +214,7 @@ export const useSetupSocketListeners = () => {
       socket.off("startNewRoundSuccess", handleStartNewRoundSuccess);
 
       socket.off("gameEnd", handleGameEnd);
-      socket.off("gameFindActiveSuccess", handleGameFindActiveSuccess);
+      socket.off("gameFound", handleGameFound);
 
       // if client runout from page (unmount component) before server responding
       // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
@@ -232,6 +231,7 @@ export const useSetupSocketListeners = () => {
     activeActions,
     dispatch,
     gameId,
+    games,
     navigate,
     t,
     toastId,

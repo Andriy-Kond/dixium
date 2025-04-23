@@ -1,25 +1,21 @@
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { gameApi } from "redux/game/gameApi.js";
+// import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import {
   clearLocalState,
   removeToastIdRef,
 } from "redux/game/localPersonalSlice.js";
-import { selectToastId } from "redux/selectors.js";
 
-export const gameDelete = (
-  gameId,
-  message,
+export const gameDeleted = (
+  game,
   dispatch,
   currentGameId,
   playerId,
   navigate,
   toastId,
 ) => {
-  if (!gameId) {
-    throw new Error(`The gameId is ${gameId}`);
-  }
+  const { _id: gameId } = game;
+  if (!gameId) throw new Error(`The gameId is ${gameId}`);
 
   //# якщо games (draft === gameSlice.games) - це масив
   // dispatch(
@@ -38,7 +34,7 @@ export const gameDelete = (
   toast.dismiss(toastId); // Закриє відповідне повідомлення
   dispatch(removeToastIdRef({ gameId, playerId }));
   dispatch(clearActiveAction({}));
-  dispatch(clearLocalState());
+  dispatch(clearLocalState(game._id));
 
   if (currentGameId === gameId) {
     navigate(`/game`, { replace: true });

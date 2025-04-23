@@ -3,7 +3,7 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const authInitialState = {
-  userToken: null,
+  // userToken: null,
   isLoggedIn: false,
   user: {
     //     {
@@ -21,22 +21,23 @@ export const authSlice = createSlice({
   initialState: authInitialState,
 
   reducers: {
-    setUserToken: (state, action) => {
-      state.userToken = action.payload;
-    },
+    // setUserToken: (state, action) => {
+    //   state.userToken = action.payload;
+    // },
 
     setIsLoggedIn: (state, action) => {
       state.isLoggedIn = action.payload;
     },
 
     logoutUser: state => {
-      state.userToken = null;
+      // state.token = null;
       state.isLoggedIn = false;
       state.user = {};
     },
 
     setUserCredentials: (state, action) => {
       state.user = action.payload;
+      console.log(" action.payload:::", action.payload);
     },
 
     clearAuthInitialState: () => authInitialState,
@@ -46,7 +47,6 @@ export const authSlice = createSlice({
 const persistConfig = {
   key: "authUserToken",
   storage,
-  // whitelist: ["userToken"],
 };
 
 export const persistedUserAuthReducer = persistReducer(
@@ -55,7 +55,7 @@ export const persistedUserAuthReducer = persistReducer(
 );
 
 export const {
-  setUserToken,
+  // setUserToken,
   setIsLoggedIn,
   logoutUser,
   setUserCredentials,

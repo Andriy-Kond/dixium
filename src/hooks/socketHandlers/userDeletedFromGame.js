@@ -1,9 +1,24 @@
-import { gameApi } from "redux/game/gameApi.js";
-import { updateGame } from "redux/game/gameSlice.js";
+import { authApi } from "redux/auth/authApi.js";
+// import { setUserCredentials } from "redux/auth/authSlice.js";
+import { setLocalGame } from "redux/game/localPersonalSlice.js";
 
-export const userDeletedFromGame = (game, dispatch) => {
-  if (!game) {
-    throw new Error(`The game is ${game}`);
+export const userDeletedFromGame = ({
+  game,
+  deletedUser,
+  userCredentials,
+  dispatch,
+}) => {
+  console.log("userDeletedFromGame");
+
+  if (!game) throw new Error(`The game is ${game}`);
+
+  //  deletedUser can be undefined if not found on server
+  if (deletedUser?._id === userCredentials._id) {
+    dispatch(setLocalGame({}));
+    // dispatch(setUserCredentials(deletedUser));
+    dispatch(authApi.util.invalidateTags(["User"]));
+  } else {
+    dispatch(setLocalGame(game));
   }
 
   //# якщо games (draft === gameSlice.games) - це об'єкт

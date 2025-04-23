@@ -2,7 +2,7 @@ import { LIGHT } from "utils/generals/constants.js";
 
 //* authSlice:
 export const selectUserIsLoggedIn = state => state.authSlice.isLoggedIn;
-export const selectUserToken = state => state.authSlice.userToken;
+export const selectUserToken = state => state.authSlice.user.token;
 export const selectUserCredentials = state => state.authSlice.user;
 
 //* localPersonalSlice selectors:

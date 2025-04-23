@@ -8,9 +8,10 @@ const baseQuery = fetchBaseQuery({
   baseUrl: REACT_APP_BASE_URL,
   // For works by token:
   prepareHeaders: (headers, { getState }) => {
-    const token = getState().authSlice.userToken;
+    const token = getState().authSlice.user.token;
 
     if (token) {
+      console.log(" token:::", token);
       headers.set("authorization", `Bearer ${token}`);
     }
 
@@ -22,14 +23,20 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   const result = await baseQuery(args, api, extraOptions);
 
-  if (result.error && result.error.status === 401) {
-    console.log("❌ Токен недійсний або прострочений. Виконується вихід...");
-
-    api.dispatch(logoutUser()); // clear auth state
+  if (result.error) {
+    if (result.error.status === 401) {
+      console.log("❌ Токен недійсний або прострочений. Виконується вихід...");
+      api.dispatch(logoutUser()); // clear auth state
+    } else {
+      console.error("Помилка запиту:", result.error);
+    }
   }
 
   return result;
 };
+
+// providesTags: Вказує, які теги (або "кеші") надає певний запит (query). Це дозволяє RTK Query знати, які дані кешуються для цього запиту.
+// invalidateTags: Вказує, які теги потрібно інвалідувати (очистити кеш) після виконання мутації. Це змушує запити, які надають ці теги, повторно виконатися для оновлення даних.
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -43,6 +50,7 @@ export const authApi = createApi({
         body: user,
       }),
 
+      providesTags: ["User"], // бо повертає дані користувача, які можуть бути використані в кеші
       invalidatesTags: ["User"],
     }),
 
@@ -53,6 +61,7 @@ export const authApi = createApi({
         body: user,
       }),
 
+      providesTags: ["User"], // бо повертає дані користувача, які можуть бути використані в кеші
       invalidatesTags: ["User"],
     }),
 
@@ -62,6 +71,7 @@ export const authApi = createApi({
         method: "POST",
         body: { token },
       }),
+      providesTags: ["User"], // бо повертає дані користувача, які можуть бути використані в кеші
       invalidatesTags: ["User"],
     }),
 
@@ -79,7 +89,7 @@ export const authApi = createApi({
       // Після виходу (UserMenu - handleLogout) я очищую стан за допомогою resetApiState(). Тому інвалідувати залежність тут не потрібно. Вона лише викликає додаткові запити на сервер після виходу. А вони не потрібні.
 
       async queryFulfilled({ dispatch, queryFulfilled }) {
-        await queryFulfilled; // чекаємо завершення виконання мутації
+        await queryFulfilled; // чекати завершення виконання мутації
         // dispatch(authApi.util.invalidateTags([])); // Інвалідовує всі теги
         // dispatch(authApi.util.unsubscribeQueries([])); // Відписка від запитів
         dispatch(authApi.util.resetApiState());

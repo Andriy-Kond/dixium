@@ -110,14 +110,24 @@ export const localPersonalSlice = createSlice({
       delete state.selectedCardId[key];
     },
 
-    clearLocalState: state => {
+    clearLocalState: (state, action) => {
       // console.log("clearLocalState");
+      const gameId = action.payload;
       const currentLang = state.lang;
       const currentPreloadImg = state.preloadImg;
+
+      // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
+      // .entries перетворює об'єкт state.games у масив пар [key, value]
+      const updateGameList = Object.fromEntries(
+        Object.entries(state.games).filter(([key]) => key !== gameId),
+      );
+
+      // console.log(" updateGameList:::", updateGameList);
       return {
         ...localInitialState,
         lang: currentLang,
         preloadImg: currentPreloadImg,
+        games: updateGameList,
       };
     },
 

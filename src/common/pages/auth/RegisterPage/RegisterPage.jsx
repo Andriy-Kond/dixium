@@ -3,7 +3,7 @@ import { useSignupUserMutation } from "redux/auth/authApi";
 import {
   setIsLoggedIn,
   setUserCredentials,
-  setUserToken,
+  // setUserToken,
 } from "redux/auth/authSlice";
 
 import AuthForm from "common/components/ui/AuthForm";
@@ -31,13 +31,14 @@ export default function RegisterPage() {
 
     try {
       const result = await signupUser(userCredentials);
+      console.log(" RegisterPage >> result:::", result);
 
       if (result.error) {
         Notify.failure(result.error.data.message);
       } else {
         const user = { ...result?.data };
         dispatch(setUserCredentials(user));
-        dispatch(setUserToken(user.token));
+        // dispatch(setUserToken(user.token));
 
         form.reset();
 

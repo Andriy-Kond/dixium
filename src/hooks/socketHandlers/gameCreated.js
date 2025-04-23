@@ -1,6 +1,6 @@
 import { setLocalGame } from "redux/game/localPersonalSlice.js";
 
-export const gameCreated = (game, isNew, dispatch) => {
+export const gameCreated = (game, dispatch) => {
   console.log("gameCreated");
 
   if (!game) {

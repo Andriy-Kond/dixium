@@ -2,8 +2,8 @@ export * from "./updateUserCredentials.js";
 
 export * from "./gameRun";
 export * from "./playersOrderUpdate";
-export * from "./gameDelete";
-export * from "./playerStartOrJoinToGame.js";
+export * from "./gameDeleted";
+// export * from "./playerStartOrJoinToGame.js";
 export * from "./gameCreated.js";
 export * from "./gameEntry.js";
 export * from "./joinToGameRoom.js";
@@ -17,4 +17,4 @@ export * from "./playerVoteSuccess.js";
 export * from "./roundFinishSuccess.js";
 export * from "./startNewRoundSuccess.js";
 export * from "./gameEnd.js";
-export * from "./gameFindActiveSuccess.js";
+export * from "./gameFound.js";

@@ -9,7 +9,7 @@ import {
 import {
   setIsLoggedIn,
   setUserCredentials,
-  setUserToken,
+  // setUserToken,
 } from "redux/auth/authSlice";
 import { selectUserCredentials, selectUserIsLoggedIn } from "redux/selectors";
 import AuthForm from "common/components/ui/AuthForm";
@@ -40,13 +40,14 @@ export default function LoginPage() {
 
     try {
       const result = await loginUser(userCredentials);
+      console.log(" LoginPage >> simple login result:::", result);
 
       if (result.error) {
         Notify.failure(result.error.data.message);
       } else {
         const user = { ...result?.data };
         dispatch(setUserCredentials(user));
-        dispatch(setUserToken(user.token));
+        // dispatch(setUserToken(user.token));
         dispatch(setIsLoggedIn(true));
 
         // const redirectTo = location.state?.from?.pathname || "/game";
@@ -68,9 +69,11 @@ export default function LoginPage() {
     try {
       // Відправляємо токен на сервер через RTK Query
       const result = await googleLogin(credentialResponse.credential).unwrap(); // .unwrap() для отримання результату мутації без обгортки.
+      console.log(" LoginPage >> google result:::", result);
       const user = { ...result };
+      console.log(" LoginPage >> google user:::", user);
       dispatch(setUserCredentials(user));
-      dispatch(setUserToken(user.token));
+      // dispatch(setUserToken(user.token));
       dispatch(setIsLoggedIn(true));
     } catch (error) {
       Notify.failure(t("err_google_login"));

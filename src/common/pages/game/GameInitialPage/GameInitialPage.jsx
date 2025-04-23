@@ -1,6 +1,9 @@
 // import { useNavigate } from "react-router-dom";
 
-import { selectIsCreatingGame } from "redux/selectors.js";
+import {
+  selectIsCreatingGame,
+  selectUserCredentials,
+} from "redux/selectors.js";
 import css from "./GameInitialPage.module.scss";
 import { setIsCreatingGame } from "redux/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +23,7 @@ export default function GameInitialPage() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const isCreatingGame = useSelector(selectIsCreatingGame);
+  const userCredentials = useSelector(selectUserCredentials);
   const headerTitleText = isCreatingGame
     ? t("creating_game")
     : t("available_games");
@@ -77,9 +81,13 @@ export default function GameInitialPage() {
     const digitCount = getDigitCount();
     // Відправка запиту, якщо є всі 4 цифри
     if (searchGame && digitCount === 4 && searchGame <= 9999) {
-      socket.emit("gameFindActive", { searchGameNumber: searchGame });
+      socket.emit("gameFindActive", {
+        searchGameNumber: searchGame,
+        initUserId: userCredentials._id,
+      });
       setError(null);
-      inputRef.current.value = ""; // todo скидати значення лише коли прийшла успішна відповідь від сервера. Інакше - залишати як є.
+      // inputRef.current.value = ""; // todo скидати значення лише коли прийшла успішна відповідь від сервера. Інакше - залишати як є.
+      // setSearchGame(null);
     } else {
       setError(t("error_invalid_game_number")); // todo додати t(тексти), якщо буде потрібно (можливо просто замінити повідомлення про помилку на глобальну від сервера)
     }
