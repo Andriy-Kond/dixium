@@ -47,6 +47,9 @@ export const localPersonalSlice = createSlice({
       // state.games = { ...state.games, [game._id]: game };
       state.games[game._id] = game; // add new or update exist
     },
+    clearLocalGames: (state, action) => {
+      state.games = {};
+    },
 
     setFoundGameId: (state, action) => {
       state.foundGameId = action.payload;
@@ -266,6 +269,7 @@ export const persistedActiveScreenReducer = persistReducer(
 export const {
   // addLocalGamesList,
   setLocalGame,
+  clearLocalGames,
   setFoundGameId,
 
   setActiveScreen,

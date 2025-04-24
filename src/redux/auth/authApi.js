@@ -9,11 +9,7 @@ const baseQuery = fetchBaseQuery({
   // For works by token:
   prepareHeaders: (headers, { getState }) => {
     const token = getState().authSlice.user.token;
-
-    if (token) {
-      console.log(" token:::", token);
-      headers.set("authorization", `Bearer ${token}`);
-    }
+    if (token) headers.set("authorization", `Bearer ${token}`);
 
     return headers;
   },

@@ -21,6 +21,7 @@ import ImgGen from "common/components/ui/ImgGen";
 // import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 import { useEffect } from "react";
 import {
+  clearLocalGames,
   // addLocalGamesList,
   setLocalGame,
 } from "redux/game/localPersonalSlice.js";
@@ -52,6 +53,7 @@ export default function GamesList() {
     userActiveGameId,
     { skip: !userActiveGameId },
   );
+  console.log(" GamesList >> activeGame:::", activeGame);
 
   useEffect(() => {
     if (activeGame) {

@@ -13,7 +13,7 @@ import {
 } from "redux/auth/authSlice";
 import { selectUserCredentials, selectUserIsLoggedIn } from "redux/selectors";
 import AuthForm from "common/components/ui/AuthForm";
-import css from "common/components/ui/AuthForm/AuthForm.module.scss";
+import css from "common/pages/auth/LoginPage/LoginPage.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
@@ -69,9 +69,9 @@ export default function LoginPage() {
     try {
       // Відправляємо токен на сервер через RTK Query
       const result = await googleLogin(credentialResponse.credential).unwrap(); // .unwrap() для отримання результату мутації без обгортки.
-      console.log(" LoginPage >> google result:::", result);
+      // console.log(" LoginPage >> google result:::", result);
       const user = { ...result };
-      console.log(" LoginPage >> google user:::", user);
+      // console.log(" LoginPage >> google user:::", user);
       dispatch(setUserCredentials(user));
       // dispatch(setUserToken(user.token));
       dispatch(setIsLoggedIn(true));

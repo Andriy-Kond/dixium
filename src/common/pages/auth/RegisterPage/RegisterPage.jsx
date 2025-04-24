@@ -7,7 +7,7 @@ import {
 } from "redux/auth/authSlice";
 
 import AuthForm from "common/components/ui/AuthForm";
-import css from "common/components/ui/AuthForm/AuthForm.module.scss";
+import css from "common/pages/auth/RegisterPage/RegisterPage.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";

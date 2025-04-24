@@ -1,0 +1,36 @@
+@import "styles/utils/breakpoints.scss";
+.container {
+  margin: auto;
+
+  @media screen and (min-width: $tablet) {
+    width: 320px;
+  }
+}
+
+.pageHeader {
+  height: 44px;
+
+  background-color: var(--primary_color);
+  padding: 11px 16px;
+  padding-left: 44px;
+}
+
+.pageHeader_title {
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--revers_font_color);
+}
+
+.pageMain {
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--secondary_color);
+  // height: calc(100vh - 44px - 44px - 32px);
+  height: var(--main_screen_height);
+}
+
+.pageFooter {
+  height: 32px;
+  background-color: var(--primary_color);
+}

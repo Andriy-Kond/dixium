@@ -37,7 +37,7 @@ export const authSlice = createSlice({
 
     setUserCredentials: (state, action) => {
       state.user = action.payload;
-      console.log(" action.payload:::", action.payload);
+      // console.log(" action.payload:::", action.payload);
     },
 
     clearAuthInitialState: () => authInitialState,
