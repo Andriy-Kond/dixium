@@ -6,13 +6,13 @@ const authInitialState = {
   // userToken: null,
   isLoggedIn: false,
   user: {
-    //     {
-    //     name: { String, },
-    //     email: { String, },
-    //     password: { String, },
-    //     token: { String, },
-    //     avatarURL: { String, },
-    // },
+    // _id,
+    // name,
+    // email,
+    // token,
+    // avatarURL,
+    // playerGameId,
+    // userActiveGameId,
   },
 };
 

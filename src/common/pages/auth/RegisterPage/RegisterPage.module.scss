@@ -34,3 +34,25 @@
   height: 32px;
   background-color: var(--primary_color);
 }
+
+.errorContainer {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #ffe6e6;
+  border: 1px solid #ff4d4d;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.actionButton {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #0056b3;
+  }
+}

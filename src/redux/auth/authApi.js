@@ -40,10 +40,10 @@ export const authApi = createApi({
   keepUnusedDataFor: 0, // видаляє очікування 60 сек перед очищенням кешу
   endpoints: build => ({
     signupUser: build.mutation({
-      query: user => ({
+      query: userCredentials => ({
         url: `/api/auth/register`,
         method: "POST",
-        body: user,
+        body: userCredentials,
       }),
 
       providesTags: ["User"], // бо повертає дані користувача, які можуть бути використані в кеші
@@ -51,10 +51,10 @@ export const authApi = createApi({
     }),
 
     loginUser: build.mutation({
-      query: user => ({
+      query: userCredentials => ({
         url: `/api/auth/login`,
         method: "POST",
-        body: user,
+        body: userCredentials,
       }),
 
       providesTags: ["User"], // бо повертає дані користувача, які можуть бути використані в кеші
@@ -69,6 +69,24 @@ export const authApi = createApi({
       }),
       providesTags: ["User"], // бо повертає дані користувача, які можуть бути використані в кеші
       invalidatesTags: ["User"],
+    }),
+
+    getUserByToken: build.query({
+      query: () => ({
+        url: `/api/auth/current`,
+      }),
+
+      providesTags: ["User"],
+    }),
+
+    setPassword: build.mutation({
+      query: ({ password }) => ({
+        url: "/api/auth/set-password",
+        method: "POST",
+        body: { password },
+      }),
+
+      invalidatesTags: ["User"], // Оновити кеш даних користувача
     }),
 
     logoutUser: build.mutation({
@@ -93,14 +111,6 @@ export const authApi = createApi({
       },
     }),
 
-    getUserByToken: build.query({
-      query: () => ({
-        url: `/api/auth/current`,
-      }),
-
-      providesTags: ["User"],
-    }),
-
     uploadAvatar: build.mutation({
       query: () => ({
         url: `/api/auth/avatars`,
@@ -119,4 +129,5 @@ export const {
   useLogoutUserMutation,
   useGetUserByTokenQuery,
   useUploadAvatarMutation,
+  useSetPasswordMutation,
 } = authApi;

@@ -39,6 +39,7 @@
   "enter_email": "Введіть email",
   "password": "Пароль",
   "enter_password": "Введіть пароль",
+
   "enter": "Увійти",
   "user": "Користувач: {{user}}",
   "creating_game": "Створення гри",
@@ -82,5 +83,20 @@
   "search": "Пошук",
   "clear": "Очистити",
   "enter_exactly_4_digits": "Введіть 4 цифри",
-  "found_game_success": "Гра з номером {{gameNumber}} знайдена"
+  "found_game_success": "Гра з номером {{gameNumber}} знайдена",
+  "too_many_requests": "Забагато запитів. Спробуйте ще раз пізніше.",
+  "google_account_error": "Цей обліковий запис зареєстровано через Google. Будь ласка, увійдіть через Google або встановіть пароль.",
+  "login_with_google": "Увійти через Google",
+  "set_password": "Встановити пароль",
+  "google_account_error_register": "Цей email зареєстровано через Google. Увійдіть через Google і встановіть пароль, щоб активувати вхід через email/пароль.",
+  "go_to_login": "Увійти через логін",
+  "password_set_success": "Пароль успішно встановлено!",
+  "submit": "Надіслати",
+  "cancel": "Відміна",
+  "login_and_set_password": "Увійти через гугл і встановити пароль",
+  "usual_google_login": "Увійти через Google",
+  "passwords_do_not_match": "Паролі не збігаються",
+  "hide_password": "Сховати пароль",
+  "show_password": "Показати пароль",
+  "confirm_password": "Підтвердить пароль"
 }

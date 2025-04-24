@@ -39,6 +39,7 @@
   "enter_email": "Enter email",
   "password": "Password",
   "enter_password": "Enter password",
+
   "enter": "Enter",
   "user": "User: {{user}}",
   "creating_game": "Creating game",
@@ -83,5 +84,20 @@
   "search": "Search",
   "clear": "Clear",
   "enter_4_digits": "Enter 4 digits",
-  "found_game_success": "We found game with number {{gameNumber}}"
+  "found_game_success": "We found game with number {{gameNumber}}",
+  "too_many_requests": "Too many requests. Try again later.",
+  "google_account_error": "This account is registered via Google. Please sign in via Google or set a password.",
+  "login_with_google": "Log In with Google",
+  "set_password": "Set Password",
+  "google_account_error_register": "This email is registered via Google. Log in with Google and set a password to enable email/password login.",
+  "go_to_login": "Go to Log In",
+  "password_set_success": "Password set successfully!",
+  "submit": "Submit",
+  "cancel": "Cancel",
+  "login_and_set_password": "Log In by Google and set password",
+  "usual_google_login": "Usual Log In by Google",
+  "passwords_do_not_match": "Passwords do not match",
+  "hide_password": "Hide password",
+  "show_password": "Show password",
+  "confirm_password": "Confirm password"
 }

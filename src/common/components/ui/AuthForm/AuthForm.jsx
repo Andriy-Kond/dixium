@@ -9,7 +9,7 @@ const initialState = {
   password: "",
 };
 
-export default function AuthForm({ isRegister, onSubmit }) {
+export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState(initialState);
 
@@ -59,7 +59,7 @@ export default function AuthForm({ isRegister, onSubmit }) {
         />
       </label>
 
-      <Button btnText={btnText} />
+      <Button btnText={btnText} disabled={isDisabled} />
     </form>
   );
 }

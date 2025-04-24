@@ -32,6 +32,8 @@ const localInitialState = {
     preloadUrls: [], // Спільний список URL для предзавантаження
     hasPreloaded: false, // Глобальний прапор щоб не завантажувати дублікати link (Чи виконано предзавантаження)
   },
+
+  isSetPassword: false,
 };
 
 export const localPersonalSlice = createSlice({
@@ -249,8 +251,12 @@ export const localPersonalSlice = createSlice({
       state.preloadImg.preloadUrls = [];
       state.preloadImg.hasPreloaded = false;
     },
-    setTotalPreviews(state, action) {
+    setTotalPreviews: (state, action) => {
       state.preloadImg.totalPreviews = action.payload;
+    },
+
+    setIsSetPassword: (state, action) => {
+      state.isSetPassword = action.payload;
     },
   },
 });
@@ -304,4 +310,6 @@ export const {
   resetPreload,
 
   setTotalPreviews,
+
+  setIsSetPassword,
 } = localPersonalSlice.actions;
