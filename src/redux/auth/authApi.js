@@ -111,6 +111,14 @@ export const authApi = createApi({
       },
     }),
 
+    resendVerificationEmail: build.mutation({
+      query: () => ({
+        url: "/api/auth/resend-verification",
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
     uploadAvatar: build.mutation({
       query: () => ({
         url: `/api/auth/avatars`,
@@ -130,4 +138,5 @@ export const {
   useGetUserByTokenQuery,
   useUploadAvatarMutation,
   useSetPasswordMutation,
+  useResendVerificationEmailMutation,
 } = authApi;

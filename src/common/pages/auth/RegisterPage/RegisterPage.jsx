@@ -34,39 +34,39 @@ export default function RegisterPage() {
     userCredentials.email = userCredentials.email.toLowerCase();
 
     try {
-      const result = await signupUser(userCredentials);
+      const result = await signupUser(userCredentials).unwrap();
       // console.log(" RegisterPage >> result:::", result);
+      dispatch(setUserCredentials(result));
+      dispatch(setIsLoggedIn(true));
+      form.reset();
+      setErrorMessage(null); // Очистити помилку при успіху
+      Notify.success(t("registration_success"));
 
-      if (result.error) {
-        // Notify.failure(result.error.data.message);
-        const message = result.error.data.message;
-        if (message.includes("registered via Google")) {
-          setErrorMessage(message);
-        } else if (message.includes("Забагато запитів")) {
-          Notify.failure(t("too_many_requests"));
-        } else {
-          Notify.failure(message);
-        }
-      } else {
-        const user = { ...result?.data };
-        dispatch(setUserCredentials(user));
-        dispatch(setIsLoggedIn(true));
-        form.reset();
-        setErrorMessage(null); // Очистити помилку при успіху
-        // dispatch(setUserToken(user.token));
+      // dispatch(setUserToken(user.token));
 
-        // Here you can immediately come to private route:
-        // and/or navigate to needed page:
-        // navigate("/somePrivatPage",  { replace: true });
-        // Якщо вказати значення true, то новий лист підмінить собою найвищий. Це використовується досить рідко, наприклад при логіні, щоб користувач не зміг повернутися кнопкою «назад» на сторінку логіна після входу, адже він уже в системі і робити йому там нічого.
+      // Here you can immediately come to private route:
+      // and/or navigate to needed page:
+      // navigate("/somePrivatPage",  { replace: true });
+      // Якщо вказати значення true, то новий лист підмінить собою найвищий. Це використовується досить рідко, наприклад при логіні, щоб користувач не зміг повернутися кнопкою «назад» на сторінку логіна після входу, адже він уже в системі і робити йому там нічого.
 
-        // Or you can switch to login page after registration:
-        // navigate("/login");
-      }
+      // Or you can switch to login page after registration:
+      // navigate("/login");
     } catch (err) {
-      dispatch(setIsLoggedIn(false));
-      Notify.failure(t("err_no_access"));
-      console.log("Error: no access", err);
+      // Notify.failure(result.error.data.message);
+      const message = err.data?.message || t("err_no_access");
+      if (message.includes("registered via Google")) {
+        setErrorMessage(message);
+      } else if (
+        message.includes("Email already registered but not verified")
+      ) {
+        navigate("/verify-email");
+      } else if (message.includes("Too many requests")) {
+        Notify.failure(t("too_many_requests"));
+      } else {
+        Notify.failure(message);
+        dispatch(setIsLoggedIn(false));
+        console.log("Error: no access", err);
+      }
     }
   };
 

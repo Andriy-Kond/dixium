@@ -47,6 +47,23 @@ export default function LoginPage() {
     return () => dispatch(setIsSetPassword(false)); // Очистити прапор при демонтажі
   }, [dispatch, t]);
 
+  useEffect(() => {
+    dispatch(setPageHeaderText(t("login")));
+
+    // Повідомлення після успішної верифікації і перенаправлення з бекенду:
+    // if (searchParams.get("verified") === "true") {
+    //   Notify.success(t("email_verified_success"));
+    // }
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("verified") === "true") {
+      Notify.success(t("email_verified_success"));
+      // Очистити query-параметри ("verified")
+      navigate("/login", { replace: true });
+    }
+
+    return () => dispatch(setIsSetPassword(false)); // Очистити прапор при демонтажі
+  }, [dispatch, navigate, t]);
+
   const submitCredentials = async e => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -55,60 +72,63 @@ export default function LoginPage() {
     userCredentials.email = userCredentials.email.toLowerCase();
 
     try {
-      const result = await loginUser(userCredentials);
-      // console.log("LoginPage >> simple login result:::", result);
+      const result = await loginUser(userCredentials).unwrap();
+      console.log("LoginPage >> simple login result:::", result);
 
-      if (result.error) {
-        // Notify.failure(result.error.data.message);
-        const message = result.error.data.message;
-        if (message.includes("registered via Google")) {
-          setErrorMessage(message); // Показати помилку для Google
-        } else if (message.includes("Too many requests")) {
-          Notify.failure(t("too_many_requests"));
-        } else {
-          Notify.failure(message);
-        }
-      } else {
-        const user = { ...result?.data };
-        dispatch(setUserCredentials(user));
-        dispatch(setIsLoggedIn(true));
-        setErrorMessage(null); // Очистити помилку при успіху
-        // dispatch(setUserToken(user.token));
+      // const user = { ...result?.data };
+      // dispatch(setUserCredentials(user));
+      dispatch(setUserCredentials(result));
+      dispatch(setIsLoggedIn(true));
+      setErrorMessage(null); // Очистити помилку при успіху
 
-        // const redirectTo = location.state?.from?.pathname || "/game";
-        // navigate(redirectTo);
+      // dispatch(setUserToken(user.token));
 
-        // Here you can navigate to needed page, if you have it:
-        // navigate("/somePrivatPage",  { replace: true });
+      // const redirectTo = location.state?.from?.pathname || "/game";
+      // navigate(redirectTo);
 
-        // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна
-      }
+      // Here you can navigate to needed page, if you have it:
+      // navigate("/somePrivatPage",  { replace: true });
+
+      // refetch(); // Змушує RTK Query, а саме - getUserByToken зі стану RTK Query робити повторний запит до серверу після логіна
     } catch (err) {
-      dispatch(setIsLoggedIn(false));
-      Notify.failure(t("err_no_access"));
-      console.log("Error: no access", err);
+      const message = err?.data.message || t("err_no_access");
+      if (message.includes("registered via Google")) {
+        setErrorMessage(message); // Показати помилку для Google
+      } else if (message.includes("Email not verified")) {
+        navigate("/verify-email");
+      } else if (message.includes("Too many requests")) {
+        Notify.failure(t("too_many_requests"));
+      } else {
+        Notify.failure(message);
+        dispatch(setIsLoggedIn(false));
+        console.log("Error: no access", err);
+      }
     }
   };
 
   const handleGoogleLogin = async credentialResponse => {
     try {
       // Відправляємо токен на сервер через RTK Query
-      const result = await googleLogin(credentialResponse.credential).unwrap(); // .unwrap() для отримання результату мутації
-      // console.log(" LoginPage >> google result:::", result);
-      const user = { ...result };
-      // console.log(" LoginPage >> google user:::", user);
-      dispatch(setUserCredentials(user));
-      // dispatch(setUserToken(user.token));
+      const result = await googleLogin(credentialResponse.credential).unwrap(); // .unwrap() для отримання результату мутації - data чи error
+      console.log("LoginPage >> google result:::", result);
+
+      dispatch(setUserCredentials(result));
       dispatch(setIsLoggedIn(true));
+      // dispatch(setUserToken(user.token));
 
       if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено
     } catch (err) {
-      Notify.failure(t("err_google_login"));
-      console.log("Google Login Error:", err.message);
+      const message = err.data?.message || t("err_google_login");
+      if (message.includes("Email not verified")) {
+        navigate("/verify-email");
+      } else {
+        Notify.failure(t("err_google_login"));
+        console.log("Google Login Error:", err.message);
+      }
     }
   };
 
-  const setRedirectToSetPass = () => {
+  const redirectToSetPass = () => {
     dispatch(setIsSetPassword(true)); // Встановити прапор перед входом
   };
 
@@ -122,10 +142,12 @@ export default function LoginPage() {
 
           <div className={css.pageMain}>
             <div
+              ref={googleLoginRef}
               className={css.googleLoginContainer}
               style={{
-                pointerEvents: isGoogleLoading ? "none" : "auto",
+                // pointerEvents: isGoogleLoading ? "none" : "auto",
                 opacity: isGoogleLoading ? 0.5 : 1,
+                display: "none",
               }}>
               <GoogleLogin
                 onSuccess={handleGoogleLogin} // Отримуємо токен Google
@@ -140,13 +162,15 @@ export default function LoginPage() {
                 // "continue_with": "Продовжити з Google".
               />
             </div>
+
             <button
               onClick={() =>
-                googleLoginRef.current.querySelector("button")?.click()
+                googleLoginRef.current
+                  ?.querySelector("div[role=button]")
+                  ?.click()
               }
               className={css.customButton}>
-              {t("custom_google_login_text")}{" "}
-              {/* Наприклад, "Увійти через Google" */}
+              {t("custom_google_login_text")}
             </button>
 
             {errorMessage?.includes("registered via Google") && (
@@ -170,7 +194,7 @@ export default function LoginPage() {
                   />
                 </div>
 
-                <div onClick={setRedirectToSetPass}>
+                <div onClick={redirectToSetPass}>
                   <p>{t("login_and_set_password")}</p>
 
                   <div

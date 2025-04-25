@@ -21,9 +21,11 @@ Notify.init({
 const RegisterPage = lazy(() => import("common/pages/auth/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/auth/LoginPage"));
 const SetPasswordPage = lazy(() => import("common/pages/auth/SetPasswordPage"));
+const VerifyEmailPage = lazy(() => import("common/pages/auth/VerifyEmailPage"));
 
 const GameInitialPage = lazy(() => import("common/pages/game/GameInitialPage"));
 const GameStartedPage = lazy(() => import("common/pages/game/GameStartedPage"));
+
 const NotFoundPage = lazy(() => import("common/pages/shared/NotFoundPage"));
 
 export default function App() {
@@ -35,6 +37,7 @@ export default function App() {
     data: userData,
     isSuccess,
     isFetching,
+    error,
   } = useGetUserByTokenQuery(undefined, { skip: !authUserToken }); // якщо токен нема, то запиту не буде
 
   useSetupSocketListeners(); // Підписка на всі слухачі сокетів
@@ -46,11 +49,20 @@ export default function App() {
 
         if (isSetPassword) {
           navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено
+        } else if (error?.data?.message.includes("Email not verified")) {
+          navigate("/verify-email");
         }
       } else {
         dispatch(setIsLoggedIn(false));
       }
-  }, [dispatch, isFetching, isSetPassword, isSuccess, navigate, userData]);
+  }, [
+    dispatch,
+    error?.data?.message,
+    isFetching,
+    isSetPassword,
+    isSuccess,
+    navigate,
+  ]);
 
   return (
     <>
@@ -72,6 +84,7 @@ export default function App() {
               <Route element={<PublicRoute redirectTo="/game" />}>
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/verify-email" element={<VerifyEmailPage />} />
               </Route>
 
               <Route path="*" element={<NotFoundPage />} />
