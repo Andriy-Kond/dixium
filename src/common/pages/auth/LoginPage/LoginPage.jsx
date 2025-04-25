@@ -26,6 +26,7 @@ import {
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
+import Button from "common/components/ui/Button/index.js";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -163,54 +164,52 @@ export default function LoginPage() {
               />
             </div>
 
-            <button
+            <Button
               onClick={() =>
                 googleLoginRef.current
                   ?.querySelector("div[role=button]")
                   ?.click()
-              }
-              className={css.customButton}>
-              {t("custom_google_login_text")}
-            </button>
+              }>
+              {t("login_with_google")}
+            </Button>
 
             {errorMessage?.includes("registered via Google") && (
               <div className={css.errorContainer}>
                 <p>{t("google_account_error")}</p>
 
-                <p>{t("usual_google_login")}</p>
                 <div
                   className={css.googleLoginContainer}
                   style={{
                     pointerEvents: isGoogleLoading ? "none" : "auto",
                     opacity: isGoogleLoading ? 0.5 : 1,
                   }}>
-                  <GoogleLogin
-                    onSuccess={handleGoogleLogin}
-                    onError={() => {
-                      Notify.failure(t("err_google_login"));
-                      console.log("Google Login Failed");
-                    }}
-                    text="signin"
-                  />
+                  <Button
+                    btnStyle={["btnFlexGrow"]}
+                    onClick={() =>
+                      googleLoginRef.current
+                        ?.querySelector("div[role=button]")
+                        ?.click()
+                    }>
+                    {t("usual_google_login")}
+                  </Button>
                 </div>
 
                 <div onClick={redirectToSetPass}>
-                  <p>{t("login_and_set_password")}</p>
-
                   <div
                     className={css.googleLoginContainer}
                     style={{
                       pointerEvents: isGoogleLoading ? "none" : "auto",
                       opacity: isGoogleLoading ? 0.5 : 1,
                     }}>
-                    <GoogleLogin
-                      onSuccess={handleGoogleLogin}
-                      onError={() => {
-                        Notify.failure(t("err_google_login"));
-                        console.log("Google Login Failed");
-                      }}
-                      text="signin"
-                    />
+                    <Button
+                      btnStyle={["btnFlexGrow"]}
+                      onClick={() =>
+                        googleLoginRef.current
+                          ?.querySelector("div[role=button]")
+                          ?.click()
+                      }>
+                      {t("login_and_set_password")}
+                    </Button>
                   </div>
                 </div>
               </div>

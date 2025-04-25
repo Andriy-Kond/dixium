@@ -36,12 +36,22 @@
 }
 
 .errorContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  color: rgba(0, 0, 0, 0.623);
+
   margin: 1rem 0;
   padding: 1rem;
-  background-color: #ffe6e6;
-  border: 1px solid #ff4d4d;
-  border-radius: 4px;
+  background-color: #fffce6;
+  border: 1px solid #0c00fa;
+
   text-align: center;
+}
+.googleLoginContainer {
+  position: relative;
+  display: flex;
 }
 
 .actionButton {

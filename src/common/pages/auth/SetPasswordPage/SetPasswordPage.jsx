@@ -10,6 +10,7 @@
 //     Показувати чіткі інструкції (наприклад, кнопки для входу через Google або встановлення пароля).
 //     Уникати різких повідомлень про помилки, скеровуючи користувача.
 
+import { BiHide, BiSolidHide } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +22,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import { useSetPasswordMutation } from "redux/auth/authApi.js";
 import Button from "common/components/ui/Button";
-import css from "./SetPasswordPage.scss";
+import css from "./SetPasswordPage.module.scss";
 
 export default function SetPasswordPage() {
   const dispatch = useDispatch();
@@ -75,7 +76,8 @@ export default function SetPasswordPage() {
     navigate("/game"); // Повернутися до гри
   };
 
-  const toggleShowPassword = () => {
+  const toggleShowPassword = e => {
+    e.preventDefault();
     setShowPassword(prev => !prev);
   };
 
@@ -86,12 +88,12 @@ export default function SetPasswordPage() {
 
         {error && <p className={css.error}>{error}</p>}
 
-        <form onSubmit={handleSubmit} autocomplete="off">
+        <form onSubmit={handleSubmit} autoComplete="off">
           <label className={css.formLabel}>
             {t("password")}
             <div className={css.inputContainer}>
               <input
-                autocomplete="new-password"
+                autoComplete="new-password"
                 className={css.formInput}
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -99,20 +101,30 @@ export default function SetPasswordPage() {
                 value={passwordValue}
                 onChange={e => setPasswordValue(e.target.value.trim())}
               />
-
+              {/* 
               <button
                 type="button"
                 className={css.showPasswordButton}
                 onClick={toggleShowPassword}>
                 {showPassword ? t("hide_password") : t("show_password")}
-              </button>
+              </button> */}
+
+              <div
+                className={css.showPasswordButton}
+                onClick={toggleShowPassword}>
+                {showPassword ? (
+                  <BiHide className={css.hideIcon} />
+                ) : (
+                  <BiSolidHide className={css.hideIcon} />
+                )}
+              </div>
             </div>
           </label>
 
           <label className={css.formLabel}>
             {t("confirm_password")}
             <input
-              autocomplete="new-password"
+              autoComplete="new-password"
               className={css.formInput}
               type={showPassword ? "text" : "password"}
               name="confirmPassword"

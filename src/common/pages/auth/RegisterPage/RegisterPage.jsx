@@ -1,5 +1,8 @@
-import { useDispatch } from "react-redux";
-import { useSignupUserMutation } from "redux/auth/authApi";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  useGoogleLoginMutation,
+  useSignupUserMutation,
+} from "redux/auth/authApi";
 import {
   setIsLoggedIn,
   setUserCredentials,
@@ -10,9 +13,15 @@ import AuthForm from "common/components/ui/AuthForm";
 import css from "common/pages/auth/RegisterPage/RegisterPage.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
-import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
+import { useEffect, useRef, useState } from "react";
+import {
+  setIsSetPassword,
+  setPageHeaderText,
+} from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
+import Button from "common/components/ui/Button/index.js";
+import { GoogleLogin } from "@react-oauth/google";
+import { selectIsSetPassword } from "redux/selectors.js";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
@@ -21,6 +30,10 @@ export default function RegisterPage() {
 
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
   const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
+  const googleLoginRef = useRef(null); // Референс для GoogleLogin
+  const isSetPassword = useSelector(selectIsSetPassword); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
+  const [googleLogin, { isLoading: isGoogleLoading }] =
+    useGoogleLoginMutation();
 
   useEffect(() => {
     dispatch(setPageHeaderText(t("register")));
@@ -70,6 +83,32 @@ export default function RegisterPage() {
     }
   };
 
+  const handleGoogleLogin = async credentialResponse => {
+    try {
+      // Відправляємо токен на сервер через RTK Query
+      const result = await googleLogin(credentialResponse.credential).unwrap(); // .unwrap() для отримання результату мутації - data чи error
+      console.log("LoginPage >> google result:::", result);
+
+      dispatch(setUserCredentials(result));
+      dispatch(setIsLoggedIn(true));
+      // dispatch(setUserToken(user.token));
+
+      if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено
+    } catch (err) {
+      const message = err.data?.message || t("err_google_login");
+      if (message.includes("Email not verified")) {
+        navigate("/verify-email");
+      } else {
+        Notify.failure(t("err_google_login"));
+        console.log("Google Login Error:", err.message);
+      }
+    }
+  };
+
+  const redirectToSetPass = () => {
+    dispatch(setIsSetPassword(true)); // Встановити прапор перед входом
+  };
+
   return (
     <div className={css.container}>
       {/* <div className={css.pageHeader}>
@@ -77,15 +116,74 @@ export default function RegisterPage() {
       </div> */}
 
       <div className={css.pageMain}>
+        <div
+          ref={googleLoginRef}
+          className={css.googleLoginContainer}
+          style={{
+            // pointerEvents: isGoogleLoading ? "none" : "auto",
+            opacity: isGoogleLoading ? 0.5 : 1,
+            display: "none",
+          }}>
+          <GoogleLogin
+            onSuccess={handleGoogleLogin} // Отримуємо токен Google
+            onError={() => {
+              Notify.failure(t("err_google_login"));
+              console.log("Google Login Failed");
+            }}
+            text="signin"
+            // "signin": "Вхід"
+            // "signin_with": "Вхід через Google" (default)
+            // "signup_with": "Зареєструватися через Google".
+            // "continue_with": "Продовжити з Google".
+          />
+        </div>
+
+        <Button
+          onClick={() =>
+            googleLoginRef.current?.querySelector("div[role=button]")?.click()
+          }>
+          {t("login_with_google")}
+        </Button>
+
         {errorMessage?.includes("registered via Google") && (
           <div className={css.errorContainer}>
-            <p>{t("google_account_error_register")}</p>
+            <p>{t("google_account_error")}</p>
 
-            <button
-              onClick={() => navigate("/login")}
-              className={css.actionButton}>
-              {t("go_to_login")}
-            </button>
+            <div
+              className={css.googleLoginContainer}
+              style={{
+                pointerEvents: isGoogleLoading ? "none" : "auto",
+                opacity: isGoogleLoading ? 0.5 : 1,
+              }}>
+              <Button
+                btnStyle={["btnFlexGrow"]}
+                onClick={() =>
+                  googleLoginRef.current
+                    ?.querySelector("div[role=button]")
+                    ?.click()
+                }>
+                {t("usual_google_login")}
+              </Button>
+            </div>
+
+            <div onClick={redirectToSetPass}>
+              <div
+                className={css.googleLoginContainer}
+                style={{
+                  pointerEvents: isGoogleLoading ? "none" : "auto",
+                  opacity: isGoogleLoading ? 0.5 : 1,
+                }}>
+                <Button
+                  btnStyle={["btnFlexGrow"]}
+                  onClick={() =>
+                    googleLoginRef.current
+                      ?.querySelector("div[role=button]")
+                      ?.click()
+                  }>
+                  {t("login_and_set_password")}
+                </Button>
+              </div>
+            </div>
           </div>
         )}
 
