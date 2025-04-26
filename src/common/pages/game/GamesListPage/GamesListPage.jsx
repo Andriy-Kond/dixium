@@ -4,12 +4,11 @@ import {
   selectIsCreatingGame,
   selectUserCredentials,
 } from "redux/selectors.js";
-import css from "./GameInitialPage.module.scss";
 import { setIsCreatingGame } from "redux/game/gameSlice.js";
 import { useDispatch, useSelector } from "react-redux";
-import DecksList from "../../../components/game/DecksList/DecksList.jsx";
+import DecksList from "../../../components/game/DecksList";
 import Button from "common/components/ui/Button";
-import GamesList from "../../../components/game/GamesList/GamesList.jsx";
+import GamesList from "../../../components/game/GamesList";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -17,8 +16,9 @@ import {
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
 import socket from "services/socket.js";
+import css from "./GamesListPage.module.scss";
 
-export default function GameInitialPage() {
+export default function GamesListPage() {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();

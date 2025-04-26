@@ -29,8 +29,8 @@ const ResetPasswordPage = lazy(() =>
   import("common/pages/auth/ResetPasswordPage"),
 );
 
-const GameInitialPage = lazy(() => import("common/pages/game/GameInitialPage"));
-const GameStartedPage = lazy(() => import("common/pages/game/GameStartedPage"));
+const GamesListPage = lazy(() => import("common/pages/game/GamesListPage"));
+const CurrentGamePage = lazy(() => import("common/pages/game/CurrentGamePage"));
 
 const NotFoundPage = lazy(() => import("common/pages/shared/NotFoundPage"));
 
@@ -82,8 +82,8 @@ export default function App() {
               <Route index element={<HomePage />} />
 
               <Route element={<PrivateRoute redirectTo="/login" />}>
-                <Route path="/game/:gameId" element={<GameStartedPage />} />
-                <Route path="/game" element={<GameInitialPage />} />
+                <Route path="/game" element={<GamesListPage />} />
+                <Route path="/game/:gameId" element={<CurrentGamePage />} />
                 <Route path="/set-password" element={<SetPasswordPage />} />
               </Route>
 
