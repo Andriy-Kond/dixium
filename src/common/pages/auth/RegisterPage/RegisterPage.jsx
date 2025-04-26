@@ -138,7 +138,7 @@ export default function RegisterPage() {
           onClick={() =>
             googleLoginRef.current?.querySelector("div[role=button]")?.click()
           }>
-          {t("login_with_google")}
+          {t("register_with_google")}
         </Button>
 
         {errorMessage?.includes("registered via Google") && (
