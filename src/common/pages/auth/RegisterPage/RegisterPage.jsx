@@ -26,7 +26,7 @@ import { selectIsSetPassword } from "redux/selectors.js";
 export default function RegisterPage() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const [signupUser] = useSignupUserMutation();
+  const [signupUser, { isLoading: isSignupLoading }] = useSignupUserMutation();
 
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
   const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
@@ -111,10 +111,6 @@ export default function RegisterPage() {
 
   return (
     <div className={css.container}>
-      {/* <div className={css.pageHeader}>
-        <p className={css.pageHeader_title}>{t("register")}</p>
-      </div> */}
-
       <div className={css.pageMain}>
         <div
           ref={googleLoginRef}
@@ -187,7 +183,11 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <AuthForm isRegister={true} onSubmit={submitCredentials} />
+        <AuthForm
+          isRegister={true}
+          onSubmit={submitCredentials}
+          isDisabled={isGoogleLoading || isSignupLoading}
+        />
         <div className={css.pageFooter}></div>
       </div>
     </div>
