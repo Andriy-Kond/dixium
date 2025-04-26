@@ -52,14 +52,10 @@ export default function LoginPage() {
     dispatch(setPageHeaderText(t("login")));
 
     // Повідомлення після успішної верифікації і перенаправлення з бекенду:
-    // if (searchParams.get("verified") === "true") {
-    //   Notify.success(t("email_verified_success"));
-    // }
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("verified") === "true") {
       Notify.success(t("email_verified_success"));
-      // Очистити query-параметри ("verified")
-      navigate("/login", { replace: true });
+      navigate("/login", { replace: true }); // Очистити query-параметри ("verified")
     }
 
     return () => dispatch(setIsSetPassword(false)); // Очистити прапор при демонтажі

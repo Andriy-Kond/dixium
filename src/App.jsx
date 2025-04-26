@@ -22,6 +22,12 @@ const RegisterPage = lazy(() => import("common/pages/auth/RegisterPage"));
 const LoginPage = lazy(() => import("common/pages/auth/LoginPage"));
 const SetPasswordPage = lazy(() => import("common/pages/auth/SetPasswordPage"));
 const VerifyEmailPage = lazy(() => import("common/pages/auth/VerifyEmailPage"));
+const ForgotPasswordPage = lazy(() =>
+  import("common/pages/auth/ForgotPasswordPage"),
+);
+const ResetPasswordPage = lazy(() =>
+  import("common/pages/auth/ResetPasswordPage"),
+);
 
 const GameInitialPage = lazy(() => import("common/pages/game/GameInitialPage"));
 const GameStartedPage = lazy(() => import("common/pages/game/GameStartedPage"));
@@ -85,6 +91,14 @@ export default function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/verify-email" element={<VerifyEmailPage />} />
+                <Route
+                  path="/forgot-password"
+                  element={<ForgotPasswordPage />}
+                />
+                <Route
+                  path="/reset-password/:resetToken"
+                  element={<ResetPasswordPage />}
+                />
               </Route>
 
               <Route path="*" element={<NotFoundPage />} />

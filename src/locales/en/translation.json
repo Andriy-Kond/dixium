@@ -108,5 +108,14 @@
   "resend_verification_email": "Resend",
   "verification_email_sent": "Email for verification sent",
   "registration_success": "Registration successful! You can use this site by this time. Please check your email and confirm it during 24h.",
-  "email_verified_success": "Email successfully verified! Sign in to continue."
+  "email_verified_success": "E1mail successfully verified! Sign in to continue.",
+  "forgot_password": "Forgot password?",
+  "reset_password": "Reset Password",
+  "send_reset_link": "Send Reset Link",
+  "reset_password_email_sent": "A password reset link has been sent to your email.",
+  "err_reset_password": "Failed to send reset password link.",
+  "set_new_password": "Set New Password",
+  "new_password": "New Password",
+  "password_reset_success": "Password has been reset successfully.",
+  "password_too_short": "Password must be at least 3 characters long."
 }

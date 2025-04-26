@@ -4,6 +4,7 @@ import { useState } from "react";
 import css from "./AuthForm.module.scss";
 import Button from "../Button/index.js";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const initialState = {
   name: "",
@@ -80,6 +81,12 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
             </div>
           </div>
         </label>
+
+        {!isRegister && (
+          <Link to="/forgot-password" className={css.forgotPasswordLink}>
+            {t("forgot_password")}
+          </Link>
+        )}
 
         <Button btnText={btnText} disabled={isDisabled} />
       </form>

@@ -89,6 +89,22 @@ export const authApi = createApi({
       invalidatesTags: ["User"], // Оновити кеш даних користувача
     }),
 
+    forgotPassword: build.mutation({
+      query: ({ email }) => ({
+        url: `/api/auth/forgot-password`,
+        method: "POST",
+        body: { email },
+      }),
+    }),
+
+    resetPassword: build.mutation({
+      query: ({ resetToken, password }) => ({
+        url: `/api/auth/reset-password/${resetToken}`,
+        method: "POST",
+        body: { password },
+      }),
+    }),
+
     logoutUser: build.mutation({
       query: () => ({
         url: `/api/auth/logout`,
@@ -139,4 +155,6 @@ export const {
   useUploadAvatarMutation,
   useSetPasswordMutation,
   useResendVerificationEmailMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;

@@ -31,10 +31,9 @@ export default function SetPasswordPage() {
 
   const [setPassword, { isLoading }] = useSetPasswordMutation();
   const [passwordValue, setPasswordValue] = useState("");
-  const [error, setError] = useState(null);
-
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     dispatch(setPageHeaderText(t("set_password")));
@@ -100,6 +99,7 @@ export default function SetPasswordPage() {
                 placeholder={t("enter_password")}
                 value={passwordValue}
                 onChange={e => setPasswordValue(e.target.value.trim())}
+                required
               />
               {/* 
               <button
@@ -131,6 +131,7 @@ export default function SetPasswordPage() {
               placeholder={t("confirm_password")}
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value.trim())}
+              required
             />
           </label>
 

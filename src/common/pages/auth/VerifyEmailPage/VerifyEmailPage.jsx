@@ -7,7 +7,7 @@ import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
 import { useResendVerificationEmailMutation } from "redux/auth/authApi.js";
 import Button from "common/components/ui/Button";
 
-import css from "./VerifyEmailPage.scss";
+import css from "./VerifyEmailPage.module.scss";
 
 export default function VerifyEmailPage() {
   const dispatch = useDispatch();
