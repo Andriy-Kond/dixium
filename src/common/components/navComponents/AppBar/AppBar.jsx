@@ -21,7 +21,7 @@ export default function AppBar() {
   }, []);
 
   const closeMenu = useCallback(() => setIsOpen(false), []);
-  const openMenu = useCallback(() => setIsOpen(true), []);
+  // const openMenu = useCallback(() => setIsOpen(true), []);
 
   const handleBackdropClick = e => {
     if (e.target === e.currentTarget) {

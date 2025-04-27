@@ -42,7 +42,6 @@ export default function SortablePlayer({ player }) {
   };
 
   const { gameId } = useParams();
-  // const currentGame = useSelector(selectGame(gameId));
   const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const isCurrentPlayerIsHost =

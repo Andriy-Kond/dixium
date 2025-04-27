@@ -8,7 +8,7 @@ import { selectLocalGame } from "redux/selectors.js";
 
 export default function CurrentGamePage() {
   const { gameId } = useParams();
-  // const { isGameRunning } = useSelector(selectGame(gameId));
+
   const { isGameRunning } = useSelector(selectLocalGame(gameId));
 
   return (

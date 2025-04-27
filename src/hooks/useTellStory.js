@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 
 export const useTellStory = gameId => {
   const { t } = useTranslation();
-  // const currentGame = useSelector(selectGame(gameId));
+
   const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;

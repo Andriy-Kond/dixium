@@ -11,7 +11,6 @@ import {
 
 import { useOptimisticDispatch } from "./useOptimisticDispatch.js";
 import { useTranslation } from "react-i18next";
-// import { updatePlayerVote } from "redux/game/gameSlice.js";
 
 export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
   const { t } = useTranslation();
@@ -19,7 +18,7 @@ export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
-  // const currentGame = useSelector(selectGame(gameId));
+
   const currentGame = useSelector(selectLocalGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));

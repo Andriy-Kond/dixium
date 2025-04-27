@@ -32,16 +32,16 @@ export default function SharedLayout() {
   // Check if it is mobile viewport for removing game header in Home page
   useEffect(() => {
     const updateViewport = () => {
-      const innerWidth = window.innerWidth; // !not works in Chrome
-      const clientWidth = document.documentElement.clientWidth; // OK: native
-      const visualViewport = window.visualViewport.width; // OK: дозволяє отримати розміри видимої області з урахуванням масштабування та динамічних змін (наприклад, при появі екранної клавіатури на мобільних пристроях).
+      // const innerWidth = window.innerWidth; // !not works in Chrome
+      // const clientWidth = document.documentElement.clientWidth; // OK: native
+      // const visualViewport = window.visualViewport.width; // OK: дозволяє отримати розміри видимої області з урахуванням масштабування та динамічних змін (наприклад, при появі екранної клавіатури на мобільних пристроях).
 
       const width = window.visualViewport
         ? window.visualViewport.width
         : document.documentElement.clientWidth;
 
       // window.devicePixelRatio показує співвідношення фізичних пікселів до CSS-пікселів
-      const widthPixelRatio = window.innerWidth / window.devicePixelRatio;
+      // const widthPixelRatio = window.innerWidth / window.devicePixelRatio;
 
       setIsMobile(width <= 768);
     };

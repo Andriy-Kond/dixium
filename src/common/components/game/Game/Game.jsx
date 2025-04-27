@@ -63,7 +63,6 @@ export default function Game() {
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
 
-  // const currentGame = useSelector(selectGame(gameId));
   const currentGame = useSelector(selectLocalGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));

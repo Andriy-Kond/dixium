@@ -86,6 +86,8 @@ export const selectPageHeaderTextColor = state =>
   state.localPersonalSlice.pageHeaderTextColor;
 
 export const selectPreloadImg = state => state.localPersonalSlice.preloadImg;
+export const selectUserActiveGameId = state =>
+  state.localPersonalSlice.userActiveGameId;
 
 //* gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;

@@ -1,4 +1,5 @@
 export * from "./updateUserCredentials.js";
+export * from "./userActiveGameIdUpdate.js";
 
 export * from "./gameRun";
 export * from "./playersOrderUpdate";

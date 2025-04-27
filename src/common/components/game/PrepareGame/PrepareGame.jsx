@@ -25,7 +25,7 @@ export default function PrepareGame() {
 
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
   const { gameId } = useParams();
-  // const currentGame = useSelector(selectGame(gameId));
+
   const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const isCurrentPlayerIsHost =
@@ -41,8 +41,17 @@ export default function PrepareGame() {
     !isCurrentPlayerIsHost || currentGame.players.length < 7;
 
   useEffect(() => {
+    // if (!isCurrentPlayerInGame) {
+    //   // Затримка на 500 мс для обробки сокет-подій (теоретично може дозволити сокету обробити подію видалення поточного гравця з гри без необхідності Map() на сервері)
+    //   const timeout = setTimeout(() => {
+    //     navigate("/game");
+    //   }, 500);
+    //   return () => clearTimeout(timeout);
+    // }
+
     if (!isCurrentPlayerInGame) {
-      navigate("/game");
+      // navigate("/game"); // переніс перенаправлення на подію видалення з гри
+      console.log("User is not in game, waiting for userDeletedFromGame event");
     }
   }, [isCurrentPlayerInGame, navigate]);
 

@@ -8,17 +8,21 @@ import Button from "common/components/ui/Button";
 
 import css from "./UserMenu.module.scss";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+import { clearLocalState } from "redux/game/localPersonalSlice.js";
 
 export default function UserMenu({ closeMenu }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [logoutUser] = useLogoutUserMutation();
   const userCredentials = useSelector(selectUserCredentials);
+  const { gameId } = useParams();
 
   const handleLogout = async () => {
     await logoutUser();
     dispatch(clearGameInitialState());
     dispatch(clearAuthInitialState());
+    dispatch(clearLocalState(gameId));
 
     closeMenu();
   };

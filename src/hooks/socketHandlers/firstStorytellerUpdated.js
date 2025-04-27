@@ -4,8 +4,8 @@ import {
   setIsCarouselModeTableScreen,
   setIsShowMask,
   setZoomCardId,
+  updateLocalGame,
 } from "redux/game/localPersonalSlice.js";
-import { updateGame } from "redux/game/gameSlice.js";
 
 export const firstStorytellerUpdated = (game, dispatch, playerId) => {
   if (!game) {
@@ -46,5 +46,5 @@ export const firstStorytellerUpdated = (game, dispatch, playerId) => {
     }),
   );
 
-  dispatch(updateGame(game));
+  dispatch(updateLocalGame(game));
 };

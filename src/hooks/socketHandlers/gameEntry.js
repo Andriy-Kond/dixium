@@ -1,7 +1,3 @@
-import { Notify } from "notiflix";
-import { gameApi } from "redux/game/gameApi.js";
-import { updateCurrentPlayer } from "redux/game/gameSlice.js";
-
 export const gameEntry = (game, player, dispatch) => {
   if (!game) {
     throw new Error(`The game is ${game}`);

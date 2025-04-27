@@ -4,9 +4,10 @@ import {
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
   setZoomCardId,
+  updateLocalGame,
 } from "redux/game/localPersonalSlice.js";
 import { gameApi } from "redux/game/gameApi.js";
-import { clearActiveAction, updateGame } from "redux/game/gameSlice.js";
+import { clearActiveAction } from "redux/game/gameSlice.js";
 
 export const gameRun = (game, message, dispatch, activeActions, playerId) => {
   // console.log("gameRun");
@@ -25,11 +26,11 @@ export const gameRun = (game, message, dispatch, activeActions, playerId) => {
 
     // If there is a message, then it is an error, rollback of the state
     if (message) {
-      dispatch(updateGame(relatedAction.meta.previousGameState));
+      dispatch(updateLocalGame(relatedAction.meta.previousGameState));
       Notify.failure(message);
     }
     // Server response or response late (more then 10 sec) -> state update
-    else dispatch(updateGame(game));
+    else dispatch(updateLocalGame(game));
 
     dispatch(
       setActiveScreen({
@@ -69,7 +70,7 @@ export const gameRun = (game, message, dispatch, activeActions, playerId) => {
     //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
     //     if (game._id in draft) {
     //       // Якщо гра вже є, оновлюємо її
-    //       dispatch(updateGame(game)); // оновлення gameSlice (для актуального локального стейту)
+    //       dispatch(updateLocalGame(game)); // оновлення gameSlice (для актуального локального стейту)
     //       draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
 
     //       dispatch(

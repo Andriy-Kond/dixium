@@ -40,7 +40,9 @@ export const gameApi = createApi({
     getCurrentGame: builder.query({
       query: gameId => `dixium/games/${gameId}`, // Get current game
       // providesTags: ["Game"],
-      providesTags: (result, error, gameId) => [{ type: "Game", id: gameId }],
+      // providesTags: (result, error, gameId) => [{ type: "Game", id: gameId }],
+      providesTags: (result, error, gameId) =>
+        result ? [{ type: "Game", id: gameId }] : ["Game"],
     }),
 
     findGame: builder.query({

@@ -34,6 +34,8 @@ const localInitialState = {
   },
 
   isSetPassword: false,
+
+  userActiveGameId: null,
 };
 
 export const localPersonalSlice = createSlice({
@@ -51,6 +53,17 @@ export const localPersonalSlice = createSlice({
     },
     clearLocalGames: (state, action) => {
       state.games = {};
+    },
+
+    setLocalGameStatus: (state, action) => {
+      const { gameId, status } = action.payload;
+      const game = state.games[gameId];
+      if (game) state.games[gameId].gameStatus = status;
+    },
+
+    updateLocalGame: (state, action) => {
+      const updatedGame = action.payload;
+      state.games[updatedGame._id] = updatedGame;
     },
 
     setFoundGameId: (state, action) => {
@@ -78,19 +91,6 @@ export const localPersonalSlice = createSlice({
       const { gameId, playerId, isShow } = action.payload;
       const key = `${gameId}_${playerId}`;
       state.isShowMask[key] = isShow;
-    },
-
-    setVotesLocal(state, action) {
-      // const { gameId, playerId, votes } = action.payload;
-      // const key = `${gameId}_${playerId}`;
-      // // state.screens = { ...state.screens, key: screen };
-      // state.votes[key] = votes;
-    },
-
-    resetVotesLocal(state, action) {
-      // const { gameId, playerId } = action.payload;
-      // const key = `${gameId}_${playerId}`;
-      // delete state.votes[key];
     },
 
     updateVotesLocal: (state, action) => {
@@ -124,7 +124,11 @@ export const localPersonalSlice = createSlice({
       // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
       // .entries перетворює об'єкт state.games у масив пар [key, value]
       const updateGameList = Object.fromEntries(
-        Object.entries(state.games).filter(([key]) => key !== gameId),
+        Object.entries(state.games).filter(([key]) => {
+          console.log("clearLocalState >> key:::", key);
+          console.log("clearLocalState >> gameId:::", gameId);
+          return key !== gameId;
+        }),
       );
 
       // console.log(" updateGameList:::", updateGameList);
@@ -194,34 +198,6 @@ export const localPersonalSlice = createSlice({
       state.pageHeaderTextColor = action.payload;
     },
 
-    // & previewIds as array:
-    // addPreviewId: (state, action) => {
-    //   const publicId = action.payload;
-    //   if (!state.preloadImg.previewIds.includes(publicId)) {
-    //     state.preloadImg.previewIds.push(publicId);
-    //     state.preloadImg.totalPreviews = state.preloadImg.previewIds.length;
-    //   }
-    // },
-    // addPreloadUrl: (state, action) => {
-    //   const { url, publicId } = action.payload;
-    //   if (!state.preloadImg.preloadUrls.includes(url)) {
-    //     state.preloadImg.preloadUrls.push(url);
-    //     if (state.preloadImg.previewIds.includes(publicId)) {
-    //       state.preloadImg.loadedPreviews += 1;
-    //     }
-    //   }
-    // },
-    // setHasPreloaded: state => {
-    //   state.preloadImg.hasPreloaded = true;
-    // },
-    // resetPreload: state => {
-    //   state.preloadImg.previewIds = [];
-    //   state.preloadImg.totalPreviews = 0;
-    //   state.preloadImg.loadedPreviews = 0;
-    //   state.preloadImg.preloadUrls = [];
-    //   state.preloadImg.hasPreloaded = false;
-    // },
-
     // & previewIds as obj:
     addPreviewId: (state, action) => {
       const publicId = action.payload;
@@ -258,6 +234,10 @@ export const localPersonalSlice = createSlice({
     setIsSetPassword: (state, action) => {
       state.isSetPassword = action.payload;
     },
+
+    setUserActiveGameId: (state, action) => {
+      state.userActiveGameId = action.payload;
+    },
   },
 });
 
@@ -273,17 +253,16 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
-  // addLocalGamesList,
   setLocalGame,
   clearLocalGames,
-  setFoundGameId,
+  setLocalGameStatus,
+  updateLocalGame,
 
+  setFoundGameId,
   setActiveScreen,
   removeActiveScreen,
   setIsShowMask,
   removeIsShowMask,
-  setVotesLocal,
-  resetVotesLocal,
   updateVotesLocal,
   setSelectedCardId,
   removeSelectedCardId,
@@ -294,22 +273,17 @@ export const {
   setToastId,
   removeToastIdRef,
   setCardsSet,
-
   setLang,
-
   toggleTheme,
   setTheme,
-
   setPageHeaderText,
   setPageHeaderBgColor,
   setPageHeaderTextColor,
-
   addPreviewId,
   addPreloadUrl,
   setHasPreloaded,
   resetPreload,
-
   setTotalPreviews,
-
   setIsSetPassword,
+  setUserActiveGameId,
 } = localPersonalSlice.actions;

@@ -61,7 +61,7 @@ export default function Hand({
   const { _id: playerId } = userCredentials;
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const playerHand = useSelector(selectPlayerHand(gameId, playerId));
-  // const currentGame = useSelector(selectGame(gameId));
+
   const currentGame = useSelector(selectLocalGame(gameId));
   const gamePlayers = useSelector(selectGamePlayers(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));

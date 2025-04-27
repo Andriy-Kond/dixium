@@ -1,10 +1,10 @@
-import { updateGame } from "redux/game/gameSlice.js";
 import {
   clearLocalState,
   setActiveScreen,
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
   setZoomCardId,
+  updateLocalGame,
 } from "redux/game/localPersonalSlice.js";
 
 export const startNewRoundSuccess = (
@@ -20,7 +20,7 @@ export const startNewRoundSuccess = (
     throw new Error(`The game is ${game}`);
   }
 
-  dispatch(updateGame(game));
+  dispatch(updateLocalGame(game));
 
   dispatch(clearLocalState());
 

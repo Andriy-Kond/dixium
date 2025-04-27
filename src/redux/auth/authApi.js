@@ -13,6 +13,12 @@ const baseQuery = fetchBaseQuery({
 
     return headers;
   },
+
+  // логування для дебагінгу
+  fetchFn: async (...args) => {
+    console.log("RTK Query request:", args);
+    return fetch(...args);
+  },
 });
 
 // Handling when the token is invalid or expired.
@@ -37,7 +43,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
-  keepUnusedDataFor: 0, // видаляє очікування 60 сек перед очищенням кешу
+  // keepUnusedDataFor: 0, // видаляє очікування 60 сек перед очищенням кешу
   endpoints: build => ({
     signupUser: build.mutation({
       query: userCredentials => ({
@@ -76,7 +82,11 @@ export const authApi = createApi({
         url: `/api/auth/current`,
       }),
 
-      providesTags: ["User"],
+      // providesTags: ["User"],
+      providesTags: () => {
+        console.log("Providing User tag");
+        return ["User"];
+      },
     }),
 
     setPassword: build.mutation({

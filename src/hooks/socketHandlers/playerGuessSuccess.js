@@ -1,9 +1,9 @@
-import { updateGame } from "redux/game/gameSlice.js";
+import { updateLocalGame } from "redux/game/localPersonalSlice.js";
 
 export const playerGuessSuccess = (game, dispatch) => {
   if (!game) {
     throw new Error(`The game is ${game}`);
   }
 
-  dispatch(updateGame(game));
+  dispatch(updateLocalGame(game));
 };

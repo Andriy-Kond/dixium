@@ -1,31 +1,19 @@
 import { useDispatch, useSelector } from "react-redux";
-// import { useEffect } from "react";
-// import {
-//   useGetAllGamesQuery,
-//   useGetCurrentGameQuery,
-// } from "redux/game/gameApi.js";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import socket from "services/socket.js";
+import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
+import { setLocalGame } from "redux/game/localPersonalSlice.js";
 import {
   selectFoundGameId,
   selectLocalGame,
-  // selectAllGames,
   selectLocalGames,
+  selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
-// import { addGamesList } from "redux/game/gameSlice.js";
-import socket from "services/socket.js";
-import css from "./GamesList.module.scss";
-import { useTranslation } from "react-i18next";
-
 import ImgGen from "common/components/ui/ImgGen";
-// import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
-import { useEffect } from "react";
-import {
-  clearLocalGames,
-  // addLocalGamesList,
-  setLocalGame,
-} from "redux/game/localPersonalSlice.js";
-import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
+import css from "./GamesList.module.scss";
 
 export default function GamesList() {
   const dispatch = useDispatch();
@@ -38,22 +26,13 @@ export default function GamesList() {
     isGuessed,
     isVoted,
     _id: playerId,
-    playerGameId,
-    userActiveGameId,
   } = userCredentials;
 
-  // const { data: allGames, isFetching } = useGetAllGamesQuery();
-  // useEffect(() => {
-  //   if (allGames) {
-  //     dispatch(addGamesList(allGames)); // Записуємо список доступних ігор у стейт
-  //   }
-  // }, [allGames, dispatch]);
-
-  const { data: activeGame, isFetchingCurrentGame } = useGetCurrentGameQuery(
-    userActiveGameId,
-    { skip: !userActiveGameId },
-  );
-  console.log(" GamesList >> activeGame:::", activeGame);
+  const userActiveGameId = useSelector(selectUserActiveGameId);
+  const { data: activeGame, isFetching: isFetchingCurrentGame } =
+    useGetCurrentGameQuery(userActiveGameId, {
+      skip: !userActiveGameId || userActiveGameId === "",
+    });
 
   useEffect(() => {
     if (activeGame) {
@@ -63,10 +42,8 @@ export default function GamesList() {
   }, [activeGame, dispatch]);
 
   const games = useSelector(selectLocalGames); // більш актуальні дані, ніж з сирих allGames
-
   const foundGameId = useSelector(selectFoundGameId);
   const foundGame = useSelector(selectLocalGame(foundGameId));
-
   // const currentGame = foundGame || activeGame;
 
   const startOrJoinToGame = game => {
@@ -106,7 +83,7 @@ export default function GamesList() {
   };
 
   const removeCurrentGame = async gameId => {
-    socket.emit("deleteGame", { gameId, userId: userCredentials._id });
+    socket.emit("Game:Delete", { gameId, userId: userCredentials._id });
   };
 
   return (
