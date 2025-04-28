@@ -8,7 +8,7 @@ import {
 export const userDeletedFromGame = ({
   game,
   deletedUser,
-  userCredentials,
+  userId,
   dispatch,
   navigate,
 }) => {
@@ -17,7 +17,7 @@ export const userDeletedFromGame = ({
   if (!game) throw new Error(`The game is ${game}`);
 
   // deletedUser can be undefined if not found on server
-  if (deletedUser?._id === userCredentials._id) {
+  if (deletedUser?._id === userId) {
     // Delete current user from game if it still in room
     dispatch(setLocalGame({}));
     dispatch(setUserActiveGameId(null));

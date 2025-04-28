@@ -7,7 +7,7 @@ export const playerJoined = ({
   game,
   player,
   message,
-  userCredentials,
+  userId,
   currentGameId,
   navigate,
   dispatch,
@@ -27,6 +27,6 @@ export const playerJoined = ({
     );
 
   // якщо цей гравець - це тільки-но доданий гравець і він НЕ на сторінці з цією поточною грою
-  if (player._id === userCredentials._id && currentGameId !== gameId)
+  if (player._id === userId && currentGameId !== gameId)
     navigate(`/game/${gameId}`);
 };

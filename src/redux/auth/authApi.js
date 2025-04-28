@@ -15,10 +15,10 @@ const baseQuery = fetchBaseQuery({
   },
 
   // логування для дебагінгу
-  fetchFn: async (...args) => {
-    console.log("RTK Query request:", args);
-    return fetch(...args);
-  },
+  // fetchFn: async (...args) => {
+  //   console.log("RTK Query request:", args);
+  //   return fetch(...args);
+  // },
 });
 
 // Handling when the token is invalid or expired.
@@ -84,7 +84,7 @@ export const authApi = createApi({
 
       // providesTags: ["User"],
       providesTags: () => {
-        console.log("Providing User tag");
+        // console.log("Providing User tag"); // для дебагингу
         return ["User"];
       },
     }),

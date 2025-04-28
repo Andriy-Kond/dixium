@@ -1,8 +1,8 @@
-export const joinToGameRoom = (socket, currentGameId, userCredentials) => {
-  if (socket.connected && currentGameId && userCredentials._id) {
+export const joinToGameRoom = (socket, currentGameId, userId) => {
+  if (socket.connected && currentGameId && userId) {
     socket.emit("joinToGameRoom", {
       gameId: currentGameId,
-      player: userCredentials,
+      userId,
     });
   }
 };

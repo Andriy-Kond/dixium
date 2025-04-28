@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { selectUserIsLoggedIn, selectUserToken } from "redux/selectors";
+import { selectUserIsLoggedIn } from "redux/selectors";
 
 import NavigationMenu from "common/components/navComponents/NavigationMenu";
 import AuthNav from "common/components/navComponents/AuthNav";
@@ -12,7 +12,6 @@ import ThemeToggle from "common/components/ui/ThemeToggle";
 
 export default function AppBar() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
-  const isUserToken = useSelector(selectUserToken);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -31,7 +30,7 @@ export default function AppBar() {
 
   useEffect(() => {
     closeMenu(); // Close menu after login or logout
-  }, [closeMenu, isLoggedIn, isUserToken]);
+  }, [closeMenu, isLoggedIn]);
 
   // Exit by press Esc key
   useEffect(() => {
@@ -69,7 +68,7 @@ export default function AppBar() {
 
         <div className={css.serviceMenuContainer}>
           {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
-          {isUserToken && isLoggedIn ? (
+          {isLoggedIn ? (
             <UserMenu closeMenu={closeMenu} />
           ) : (
             <AuthNav closeMenu={closeMenu} />

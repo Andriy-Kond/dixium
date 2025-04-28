@@ -9,7 +9,7 @@ const authInitialState = {
     // _id,
     // name,
     // email,
-    // token,
+    // token, // буде видалений у майбутньому
     // avatarURL,
     // playerGameId: null,
   },
@@ -31,27 +31,26 @@ export const authSlice = createSlice({
     },
 
     setUserCredentials: (state, action) => {
+      console.log("setUserCredentials:", action.payload);
       const { userActiveGameId, ...userData } = action.payload; // Ізоляція userActiveGameId
-
       state.user = userData; // setUserActiveGameId використовується у локальному стані, щоб запобігати оновленню усіх компонентів
-      // state.user = action.payload;
-      // console.log(" action.payload:::", action.payload);
+      // state.isLoggedIn = true; //!!! Оновлюємо isLoggedIn тут
     },
 
     clearAuthInitialState: () => authInitialState,
   },
 
   // Для автоматичного оновлення поточного стану після кожного запиту getUserByToken: (чи потрібно?)
-  extraReducers: builder => {
-    builder.addMatcher(
-      authApi.endpoints.getUserByToken.matchFulfilled,
-      (state, { payload }) => {
-        const { userActiveGameId, ...userData } = payload; // Ізоляція userActiveGameId
-        state.user = userData;
-        state.isLoggedIn = true;
-      },
-    );
-  },
+  //!!! extraReducers: builder => {
+  //   builder.addMatcher(
+  //     authApi.endpoints.getUserByToken.matchFulfilled,
+  //     (state, { payload }) => {
+  //       const { userActiveGameId, ...userData } = payload; // Ізоляція userActiveGameId
+  //       state.user = userData;
+  //       state.isLoggedIn = true;
+  //     },
+  //   );
+  // },
 });
 
 const persistConfig = {

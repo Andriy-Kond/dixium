@@ -35,6 +35,7 @@ const CurrentGamePage = lazy(() => import("common/pages/game/CurrentGamePage"));
 const NotFoundPage = lazy(() => import("common/pages/shared/NotFoundPage"));
 
 export default function App() {
+  console.log("App.jsx mounted");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSetPassword = useSelector(selectIsSetPassword);
@@ -44,7 +45,7 @@ export default function App() {
     isSuccess,
     isFetching,
     error,
-  } = useGetUserByTokenQuery(undefined, { skip: !authUserToken }); // якщо токен нема, то запиту не буде
+  } = useGetUserByTokenQuery(undefined, { skip: !authUserToken }); // якщо токен нема, то запиту не буде (при переході на cookie замінити на skip: !isLoggedIn)
 
   useSetupSocketListeners(); // Підписка на всі слухачі сокетів
 

@@ -1,18 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Notify } from "notiflix";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import {
   selectActiveActions,
-  // selectLocalGame,
   selectLocalGames,
   selectToastId,
   selectUserCredentials,
 } from "redux/selectors.js";
 
-// import { useGetAllGamesQuery } from "redux/game/gameApi.js";
 import {
   firstStorytellerUpdated,
   gameDeleted,
@@ -35,7 +33,6 @@ import {
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
-import { setUserActiveGameId } from "redux/game/localPersonalSlice.js";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
@@ -51,124 +48,308 @@ export const useSetupSocketListeners = () => {
   const activeActions = useSelector(selectActiveActions);
   const games = useSelector(selectLocalGames);
 
-  // const { refetch: refetchAllGames } = useGetAllGamesQuery();
+  const handleConnect = useCallback(() => {
+    console.log(`Socket connect event, socket.id: ${socket.id}`);
+    if (userId) {
+      console.log(
+        `Socket connected, registering user ${userId} and joining room`,
+      );
+      socket.emit("registerUserId", { userId });
+      joinToGameRoom(socket, gameId, userId);
+    } else {
+      console.log("Socket connected, but user is not logged in");
+    }
+  }, [gameId, userId]);
 
-  useEffect(() => {
-    // Обробка події "connect": перше або повторне підключення після оновлення сторінки
-    const handleConnect = () => {
-      console.log("Socket connected, registering user and joining room");
-      socket.emit("registerUserId", { userId: userCredentials._id });
-      joinToGameRoom(socket, gameId, userCredentials);
-    };
+  const handleReconnect = useCallback(() => {
+    console.log(`Socket reconnect event, socket.id: ${socket.id}`);
+    if (userId) {
+      console.log(
+        `Socket reconnected, re-registering user ${userId} and joining room`,
+      );
+      socket.emit("registerUserId", { userId });
+      joinToGameRoom(socket, gameId, userId);
+    } else {
+      console.log("Socket reconnected, but user is not logged in");
+    }
+  }, [gameId, userId]);
 
-    // Обробка події "reconnect": перепідключення після втрати з'єднання (через мережеві проблеми)
-    const handleReconnect = () => {
-      console.log("Socket reconnected, re-registering user and joining room");
-      socket.emit("registerUserId", { userId: userCredentials._id });
-      joinToGameRoom(socket, gameId, userCredentials);
-    };
+  const handleDisconnect = useCallback(() => {
+    console.log(`Socket disconnected, socket.id: ${socket.id || "undefined"}`);
+  }, []);
 
-    const handleError = err => {
+  const handleError = useCallback(
+    err => {
+      console.log(`Socket connect_error: ${err}`);
       let errMessage = "";
-      // console.log("err.errorMessage:::", err.errorMessage);
-      console.log(" useEffect >> err:::", err);
-
       switch (err.errorMessage) {
         case "Error creating game: You already have an active game. Finish or delete it first.":
           errMessage = t("player_has_active_game");
           break;
-
         default:
           errMessage = err.errorMessage;
           break;
       }
-
       Notify.failure(errMessage);
-    };
+    },
+    [t],
+  );
 
-    const handleUpdateUserCredentials = ({ user }) =>
-      updateUserCredentials(user, dispatch);
+  const handleUpdateUserCredentials = useCallback(
+    ({ user }) => updateUserCredentials(user, dispatch),
+    [dispatch],
+  );
 
-    const handleUserActiveGameIdUpdate = ({ userActiveGameId }) =>
-      userActiveGameIdUpdate(userActiveGameId, dispatch);
+  const handleUserActiveGameIdUpdate = useCallback(
+    ({ userActiveGameId }) =>
+      userActiveGameIdUpdate(userActiveGameId, dispatch),
+    [dispatch],
+  );
 
-    const handleGameFirstTurnUpdate = ({ game }) =>
-      gameFirstTurnUpdate(game, dispatch, userId);
+  const handleGameFirstTurnUpdate = useCallback(
+    ({ game }) => gameFirstTurnUpdate(game, dispatch, userId),
+    [dispatch, userId],
+  );
 
-    // const handlePlayerStartOrJoinToGame = ({ game, player }) =>
-    //   playerStartOrJoinToGame(game, player, dispatch);
-
-    const handleGameCreated = ({ game }) => {
+  const handleGameCreated = useCallback(
+    ({ game }) => {
       if (game.hostPlayerId === userId) gameCreated(game, dispatch);
-    };
+    },
+    [dispatch, userId],
+  );
 
-    // const handleGameEntry = ({ game, player }) =>
-    //   gameEntry(game, player, dispatch);
-
-    const handlePlayerJoined = ({ game, player, message }) =>
+  const handlePlayerJoined = useCallback(
+    ({ game, player, message }) =>
       playerJoined({
         game,
         player,
         message,
-        userCredentials,
+        userId,
         currentGameId: gameId,
         navigate,
         dispatch,
-      });
+      }),
+    [dispatch, gameId, navigate, userId],
+  );
 
-    const handleUserDeletedFromGame = ({ game, deletedUser }) =>
+  const handleUserDeletedFromGame = useCallback(
+    ({ game, deletedUser }) =>
       userDeletedFromGame({
         game,
         deletedUser,
-        userCredentials,
+        userId,
         dispatch,
         navigate,
-      });
+      }),
+    [dispatch, navigate, userId],
+  );
 
-    const handleGameDeleted = ({ game }) => {
+  const handleGameDeleted = useCallback(
+    ({ game }) => {
       const isGameInList = games[game._id];
-
       if (isGameInList)
         gameDeleted(game, dispatch, gameId, userId, navigate, toastId);
-    };
+    },
+    [dispatch, gameId, games, navigate, toastId, userId],
+  );
 
-    const handlePlayersOrderUpdate = ({ game, message }) =>
-      playersOrderUpdate(game, message, dispatch, activeActions);
+  const handlePlayersOrderUpdate = useCallback(
+    ({ game, message }) =>
+      playersOrderUpdate(game, message, dispatch, activeActions),
+    [activeActions, dispatch],
+  );
 
-    const handleGameRun = ({ game, message }) => {
-      gameRun(game, message, dispatch, activeActions, userId);
-    };
+  const handleGameRun = useCallback(
+    ({ game, message }) =>
+      gameRun(game, message, dispatch, activeActions, userId),
+    [activeActions, dispatch, userId],
+  );
 
-    const handleFirstStorytellerUpdated = ({ game }) => {
-      firstStorytellerUpdated(game, dispatch, userId);
-    };
+  const handleFirstStorytellerUpdated = useCallback(
+    ({ game }) => firstStorytellerUpdated(game, dispatch, userId),
+    [dispatch, userId],
+  );
 
-    const handleNextStorytellerUpdated = ({ game }) => {
-      nextStorytellerUpdated(game, dispatch, userId);
-    };
+  const handleNextStorytellerUpdated = useCallback(
+    ({ game }) => nextStorytellerUpdated(game, dispatch, userId),
+    [dispatch, userId],
+  );
 
-    const handlePlayerGuessSuccess = ({ game }) =>
-      playerGuessSuccess(game, dispatch);
+  const handlePlayerGuessSuccess = useCallback(
+    ({ game }) => playerGuessSuccess(game, dispatch),
+    [dispatch],
+  );
 
-    const handleVotingStarted = ({ game }) => {
-      votingStarted(game, dispatch, userId);
-    };
+  const handleVotingStarted = useCallback(
+    ({ game }) => votingStarted(game, dispatch, userId),
+    [dispatch, userId],
+  );
 
-    const handlePlayerVoteSuccess = ({ game, message }) =>
-      playerVoteSuccess(game, message, dispatch, activeActions);
+  const handlePlayerVoteSuccess = useCallback(
+    ({ game, message }) =>
+      playerVoteSuccess(game, message, dispatch, activeActions),
+    [activeActions, dispatch],
+  );
 
-    const handleRoundFinishSuccess = ({ game, message }) =>
-      roundFinishSuccess(game, message, dispatch, activeActions, userId);
+  const handleRoundFinishSuccess = useCallback(
+    ({ game, message }) =>
+      roundFinishSuccess(game, message, dispatch, activeActions, userId),
+    [activeActions, dispatch, userId],
+  );
 
-    const handleStartNewRoundSuccess = ({ game, message }) =>
-      startNewRoundSuccess(game, message, dispatch, activeActions, userId);
+  const handleStartNewRoundSuccess = useCallback(
+    ({ game, message }) =>
+      startNewRoundSuccess(game, message, dispatch, activeActions, userId),
+    [activeActions, dispatch, userId],
+  );
 
-    // startNewRoundSuccess;
+  const handleGameEnd = useCallback(
+    ({ game, message }) => gameEnd(game, message, dispatch),
+    [dispatch],
+  );
 
-    const handleGameEnd = ({ game, message }) =>
-      gameEnd(game, message, dispatch);
+  const handleGameFound = useCallback(
+    ({ game }) => gameFound(game, dispatch),
+    [dispatch],
+  );
 
-    const handleGameFound = ({ game }) => gameFound(game, dispatch);
+  useEffect(() => {
+    console.log(`Setting up socket listeners for component ${Math.random()}`); // дебаг унікальності
+    // // Обробка події "connect": перше або повторне підключення після оновлення сторінки
+    // const handleConnect = () => {
+    //   console.log(`Socket connect event, socket.id: ${socket.id}`);
+
+    //   if (userId) {
+    //     console.log(
+    //       `Socket connected, registering user ${userId} and joining room`,
+    //     );
+    //     socket.emit("registerUserId", { userId });
+    //     joinToGameRoom(socket, gameId, userId);
+    //   } else {
+    //     console.log("Socket connected, but user is not logged in");
+    //   }
+    // };
+    // // Обробка події "reconnect": перепідключення після втрати з'єднання (через мережеві проблеми)
+    // const handleReconnect = () => {
+    //   console.log(`Socket reconnect event, socket.id: ${socket.id}`);
+    //   if (userId) {
+    //     console.log(
+    //       `Socket reconnected, re-registering user ${userId} and joining room`,
+    //     );
+    //     socket.emit("registerUserId", { userId });
+    //     joinToGameRoom(socket, gameId, userId);
+    //   } else {
+    //     console.log("Socket connected, but user is not logged in");
+    //   }
+    // };
+    // const handleDisconnect = () => {
+    //   console.log(
+    //     `Socket disconnected, socket.id: ${socket.id || "undefined"}`,
+    //   );
+    // };
+
+    // const handleError = err => {
+    //   console.log(`Socket connect_error: ${err}`);
+    //   let errMessage = "";
+
+    //   switch (err.errorMessage) {
+    //     case "Error creating game: You already have an active game. Finish or delete it first.":
+    //       errMessage = t("player_has_active_game");
+    //       break;
+
+    //     default:
+    //       errMessage = err.errorMessage;
+    //       break;
+    //   }
+
+    //   Notify.failure(errMessage);
+    // };
+
+    // const handleUpdateUserCredentials = ({ user }) =>
+    //   updateUserCredentials(user, dispatch);
+
+    // const handleUserActiveGameIdUpdate = ({ userActiveGameId }) =>
+    //   userActiveGameIdUpdate(userActiveGameId, dispatch);
+
+    // const handleGameFirstTurnUpdate = ({ game }) =>
+    //   gameFirstTurnUpdate(game, dispatch, userId);
+
+    // // const handlePlayerStartOrJoinToGame = ({ game, player }) =>
+    // //   playerStartOrJoinToGame(game, player, dispatch);
+
+    // const handleGameCreated = ({ game }) => {
+    //   if (game.hostPlayerId === userId) gameCreated(game, dispatch);
+    // };
+
+    // // const handleGameEntry = ({ game, player }) =>
+    // //   gameEntry(game, player, dispatch);
+
+    // const handlePlayerJoined = ({ game, player, message }) =>
+    //   playerJoined({
+    //     game,
+    //     player,
+    //     message,
+    //     userId,
+    //     currentGameId: gameId,
+    //     navigate,
+    //     dispatch,
+    //   });
+
+    // const handleUserDeletedFromGame = ({ game, deletedUser }) =>
+    //   userDeletedFromGame({
+    //     game,
+    //     deletedUser,
+    //     userId,
+    //     dispatch,
+    //     navigate,
+    //   });
+
+    // const handleGameDeleted = ({ game }) => {
+    //   const isGameInList = games[game._id];
+
+    //   if (isGameInList)
+    //     gameDeleted(game, dispatch, gameId, userId, navigate, toastId);
+    // };
+
+    // const handlePlayersOrderUpdate = ({ game, message }) =>
+    //   playersOrderUpdate(game, message, dispatch, activeActions);
+
+    // const handleGameRun = ({ game, message }) => {
+    //   gameRun(game, message, dispatch, activeActions, userId);
+    // };
+
+    // const handleFirstStorytellerUpdated = ({ game }) => {
+    //   firstStorytellerUpdated(game, dispatch, userId);
+    // };
+
+    // const handleNextStorytellerUpdated = ({ game }) => {
+    //   nextStorytellerUpdated(game, dispatch, userId);
+    // };
+
+    // const handlePlayerGuessSuccess = ({ game }) =>
+    //   playerGuessSuccess(game, dispatch);
+
+    // const handleVotingStarted = ({ game }) => {
+    //   votingStarted(game, dispatch, userId);
+    // };
+
+    // const handlePlayerVoteSuccess = ({ game, message }) =>
+    //   playerVoteSuccess(game, message, dispatch, activeActions);
+
+    // const handleRoundFinishSuccess = ({ game, message }) =>
+    //   roundFinishSuccess(game, message, dispatch, activeActions, userId);
+
+    // const handleStartNewRoundSuccess = ({ game, message }) =>
+    //   startNewRoundSuccess(game, message, dispatch, activeActions, userId);
+
+    // // startNewRoundSuccess;
+
+    // const handleGameEnd = ({ game, message }) =>
+    //   gameEnd(game, message, dispatch);
+
+    // const handleGameFound = ({ game }) => gameFound(game, dispatch);
+
+    socket.on("disconnect", handleDisconnect);
 
     socket.on("connect", handleConnect);
     socket.on("reconnect", handleReconnect);
@@ -203,6 +384,7 @@ export const useSetupSocketListeners = () => {
 
     return () => {
       // console.log("Cleaning up socket listeners");
+      socket.off("disconnect", handleDisconnect);
       socket.off("connect", handleConnect);
       socket.off("reconnect", handleReconnect);
       socket.off("error", handleError);
@@ -233,26 +415,51 @@ export const useSetupSocketListeners = () => {
       socket.off("gameEnd", handleGameEnd);
       socket.off("gameFound", handleGameFound);
 
-      // if client runout from page (unmount component) before server responding
-      // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
-      // Очищення всіх таймерів при розмонтуванні
+      // // if client runout from page (unmount component) before server responding
+      // // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
+      // // Очищення всіх таймерів при розмонтуванні
+      // Object.values(activeActions).forEach(action => {
+      //   if (action?.meta?.timer) {
+      //     clearTimeout(action.meta.timer); // Очищаємо таймер
+      //     const key = `${action.payload.eventName}-${action.payload.updatedGame._id}`;
+      //     dispatch(clearActiveAction(key)); // Видаляємо дію зі стану Redux
+      //   }
+      // });
+    };
+  }, [
+    dispatch,
+    handleConnect,
+    handleDisconnect,
+    handleError,
+    handleFirstStorytellerUpdated,
+    handleGameCreated,
+    handleGameDeleted,
+    handleGameFirstTurnUpdate,
+    handleGameRun,
+    handleNextStorytellerUpdated,
+    handlePlayerGuessSuccess,
+    handlePlayerJoined,
+    handlePlayerVoteSuccess,
+    handlePlayersOrderUpdate,
+    handleReconnect,
+    handleRoundFinishSuccess,
+    handleStartNewRoundSuccess,
+    handleUpdateUserCredentials,
+    handleUserActiveGameIdUpdate,
+    handleUserDeletedFromGame,
+    handleVotingStarted,
+  ]);
+
+  // Окремий useEffect для очищення таймерів
+  useEffect(() => {
+    return () => {
       Object.values(activeActions).forEach(action => {
         if (action?.meta?.timer) {
-          clearTimeout(action.meta.timer); // Очищаємо таймер
+          clearTimeout(action.meta.timer);
           const key = `${action.payload.eventName}-${action.payload.updatedGame._id}`;
-          dispatch(clearActiveAction(key)); // Видаляємо дію зі стану Redux
+          dispatch(clearActiveAction(key));
         }
       });
     };
-  }, [
-    activeActions,
-    dispatch,
-    gameId,
-    games,
-    navigate,
-    t,
-    toastId,
-    userCredentials,
-    userId,
-  ]);
+  }, [activeActions, dispatch]);
 };
