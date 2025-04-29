@@ -39,7 +39,6 @@
   "enter_email": "Enter email",
   "password": "Password",
   "enter_password": "Enter password",
-
   "enter": "Enter",
   "user": "User: {{user}}",
   "creating_game": "Creating game",
@@ -117,5 +116,6 @@
   "set_new_password": "Set New Password",
   "new_password": "New Password",
   "password_reset_success": "Password has been reset successfully.",
-  "password_too_short": "Password must be at least 3 characters long."
+  "password_too_short": "Password must be at least 3 characters long.",
+  "other_way_dixit_play": "Another way to Dixit play"
 }

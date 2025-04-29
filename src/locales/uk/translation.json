@@ -115,5 +115,6 @@
   "set_new_password": "Встановити новий пароль",
   "new_password": "Новий пароль",
   "password_reset_success": "Пароль успішно скинуто.",
-  "password_too_short": "Пароль має містити щонайменше 3 символи."
+  "password_too_short": "Пароль має містити щонайменше 3 символи.",
+  "other_way_dixit_play": "інший спосіб грати у Діксіт"
 }

@@ -28,6 +28,7 @@ export default function SharedLayout() {
   const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
 
   const [isMobile, setIsMobile] = useState(false);
+  const isHomePage = location.pathname === "/"; // Перевірка, чи це HomePage
 
   // Check if it is mobile viewport for removing game header in Home page
   useEffect(() => {
@@ -42,7 +43,6 @@ export default function SharedLayout() {
 
       // window.devicePixelRatio показує співвідношення фізичних пікселів до CSS-пікселів
       // const widthPixelRatio = window.innerWidth / window.devicePixelRatio;
-
       setIsMobile(width <= 768);
     };
 
@@ -70,17 +70,13 @@ export default function SharedLayout() {
   return (
     <>
       <main className={css.mainContainer} data-theme={theme}>
-        <header className={css.navHeader}>
-          <AppBar />
-        </header>
-
         <Suspense
           fallback={
             <div className={css.suspenseLoaderContainer}>
               <span className={css.loader} />
             </div>
           }>
-          {(isMobile || location.pathname.includes("game")) && (
+          {!isHomePage && (isMobile || location.pathname.includes("game")) && (
             <div className={css.suspenseMainContainer}>
               <div
                 className={css.pageHeader}
@@ -92,7 +88,23 @@ export default function SharedLayout() {
               </div>
             </div>
           )}
+          {!isHomePage && (
+            <header className={css.navHeader}>
+              <AppBar />
+            </header>
+          )}
 
+          {/* Умовне відображення AppBar */}
+          {/* {!isHomePage ? (
+            <header className={css.navHeader}>
+              <AppBar />
+            </header>
+          ) : (
+            // Для HomePage AppBar може бути доданий з абсолютним позиціонуванням
+            <header className={`${css.navHeader} ${css.homePageNav}`}>
+              <AppBar />
+            </header>
+          )} */}
           <Outlet />
         </Suspense>
       </main>
