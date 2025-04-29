@@ -8,6 +8,7 @@ import {
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
 import {
+  selectAllGames,
   selectIsCreatingGame,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -36,6 +37,20 @@ export default function GamesListPage() {
   const [searchGame, setSearchGame] = useState(null); // Чисте значення для пошуку (type: Number)
   const [error, setError] = useState(null);
   const inputRef = useRef(null);
+  const games = useSelector(selectAllGames);
+  // const [searchingGame, setSearchingGame] = useState(null);
+
+  useEffect(() => {
+    // Скидати поле пошуку лише коли така гра знайдена
+    const searchingGame = Object.values(games).find(
+      game => game.playerGameId === searchGame,
+    );
+
+    if (searchingGame) {
+      inputRef.current.value = "";
+      setSearchGame(null);
+    }
+  }, [games, searchGame]);
 
   const handleChange = e => {
     const input = e.target;
@@ -69,8 +84,6 @@ export default function GamesListPage() {
         initUserId: userCredentials._id,
       });
       setError(null);
-      // inputRef.current.value = ""; // todo скидати значення лише коли прийшла успішна відповідь від сервера. Інакше - залишати як є.
-      // setSearchGame(null);
     } else {
       setError(t("error_invalid_game_number")); // todo додати t(тексти), якщо буде потрібно (можливо просто замінити повідомлення про помилку на глобальну від сервера)
     }

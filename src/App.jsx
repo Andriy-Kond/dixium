@@ -35,7 +35,7 @@ const CurrentGamePage = lazy(() => import("common/pages/game/CurrentGamePage"));
 const NotFoundPage = lazy(() => import("common/pages/shared/NotFoundPage"));
 
 export default function App() {
-  console.log("App.jsx mounted");
+  // console.log("App.jsx mounted");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSetPassword = useSelector(selectIsSetPassword);

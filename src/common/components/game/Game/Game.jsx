@@ -247,8 +247,8 @@ export default function Game() {
     const winners = currentGame.players.filter(p =>
       maxEntries.some(([key, value]) => key === p._id),
     );
-    console.log("maxEntries:", maxEntries);
-    console.log("winners:", winners);
+    // console.log("maxEntries:", maxEntries);
+    // console.log("winners:", winners);
 
     // currentGame.players.filter(p => {
     //   const winnersP = maxEntries.filter(([key, value]) => key === p._id);
@@ -265,7 +265,7 @@ export default function Game() {
       dispatch(setPageHeaderText(text));
       dispatch(setPageHeaderBgColor("#5D7E9E"));
     }
-  }, [dispatch, textAndColorOfHeader, t]);
+  }, [currentGame.players, currentGame.scores, dispatch, textAndColorOfHeader]);
 
   // Add all publicId card's from Hand and Table to addPreviewId in Redux state
   useEffect(() => {

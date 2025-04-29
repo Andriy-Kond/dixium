@@ -28,6 +28,11 @@ export default function PrepareGame() {
 
   const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
+  if (!currentGame) {
+    navigate("/game", { replace: true });
+    // return null;
+  }
+
   const isCurrentPlayerIsHost =
     currentGame.hostPlayerId === userCredentials._id;
   const isCurrentPlayerInGame = currentGame.players.find(
@@ -37,23 +42,29 @@ export default function PrepareGame() {
   const [isSingleCardModeCheckbox, setIsSingleCardModeCheckbox] =
     useState(false);
 
+  useEffect(() => {
+    dispatch(
+      setPageHeaderText(t("game_name", { gameName: currentGame.gameName })),
+    );
+  }, [currentGame.gameName, dispatch, t]);
+
   const isDisabledCheckbox =
     !isCurrentPlayerIsHost || currentGame.players.length < 7;
 
-  useEffect(() => {
-    // if (!isCurrentPlayerInGame) {
-    //   // Затримка на 500 мс для обробки сокет-подій (теоретично може дозволити сокету обробити подію видалення поточного гравця з гри без необхідності Map() на сервері)
-    //   const timeout = setTimeout(() => {
-    //     navigate("/game");
-    //   }, 500);
-    //   return () => clearTimeout(timeout);
-    // }
+  // useEffect(() => {
+  //   // if (!isCurrentPlayerInGame) {
+  //   //   // Затримка на 500 мс для обробки сокет-подій (теоретично може дозволити сокету обробити подію видалення поточного гравця з гри без необхідності Map() на сервері)
+  //   //   const timeout = setTimeout(() => {
+  //   //     navigate("/game");
+  //   //   }, 500);
+  //   //   return () => clearTimeout(timeout);
+  //   // }
 
-    if (!isCurrentPlayerInGame) {
-      // navigate("/game"); // переніс перенаправлення на подію видалення з гри
-      console.log("User is not in game, waiting for userDeletedFromGame event");
-    }
-  }, [isCurrentPlayerInGame, navigate]);
+  //   if (!isCurrentPlayerInGame) {
+  //     // navigate("/game"); // переніс перенаправлення на подію видалення з гри
+  //     console.log("User is not in game, waiting for userDeletedFromGame event");
+  //   }
+  // }, [isCurrentPlayerInGame, navigate]);
 
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
@@ -95,12 +106,6 @@ export default function PrepareGame() {
   const toGamePage = () => {
     navigate(`/game`);
   };
-
-  useEffect(() => {
-    dispatch(
-      setPageHeaderText(t("game_name", { gameName: currentGame.gameName })),
-    );
-  }, [currentGame.gameName, dispatch, t]);
 
   return (
     <>

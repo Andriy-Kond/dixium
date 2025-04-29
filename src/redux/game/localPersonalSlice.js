@@ -5,7 +5,6 @@ import { DARK, LIGHT } from "utils/generals/constants.js";
 
 const localInitialState = {
   games: {},
-  foundGameId: "",
   screens: {}, // Об’єкт виду { "gameId_playerId": screen }
   isShowMask: {}, // Об’єкт виду { "gameId_playerId": Boolean }
   votes: {}, // {"gameId_playerId": {firstVotedCardId: null, secondVotedCardId: null}}
@@ -51,6 +50,7 @@ export const localPersonalSlice = createSlice({
       // state.games = { ...state.games, [game._id]: game };
       state.games[game._id] = game; // add new or update exist
     },
+
     clearLocalGames: (state, action) => {
       state.games = {};
     },
@@ -66,9 +66,9 @@ export const localPersonalSlice = createSlice({
       state.games[updatedGame._id] = updatedGame;
     },
 
-    setFoundGameId: (state, action) => {
-      state.foundGameId = action.payload;
-    },
+    // setFoundGameId: (state, action) => {
+    //   state.foundGameId = action.payload;
+    // },
 
     // When user set screen by himself
     setActiveScreen(state, action) {
@@ -130,6 +130,7 @@ export const localPersonalSlice = createSlice({
           return key !== gameId;
         }),
       );
+      console.log(" updateGameList:::", updateGameList);
 
       // console.log(" updateGameList:::", updateGameList);
       return {
@@ -257,8 +258,6 @@ export const {
   clearLocalGames,
   setLocalGameStatus,
   updateLocalGame,
-
-  setFoundGameId,
   setActiveScreen,
   removeActiveScreen,
   setIsShowMask,

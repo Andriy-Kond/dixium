@@ -5,8 +5,6 @@ import socket from "services/socket.js";
 import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 import { setLocalGame } from "redux/game/localPersonalSlice.js";
 import {
-  selectFoundGameId,
-  selectLocalGame,
   selectLocalGames,
   selectUserActiveGameId,
   selectUserCredentials,
@@ -42,9 +40,6 @@ export default function GamesList() {
   }, [activeGame, dispatch]);
 
   const games = useSelector(selectLocalGames); // більш актуальні дані, ніж з сирих allGames
-  const foundGameId = useSelector(selectFoundGameId);
-  const foundGame = useSelector(selectLocalGame(foundGameId));
-  // const currentGame = foundGame || activeGame;
 
   const startOrJoinToGame = game => {
     const currentGame = games[game._id];
@@ -90,49 +85,53 @@ export default function GamesList() {
     <>
       {Object.keys(games).length > 0 && (
         <ul>
-          {Object.values(games)?.map(game => {
-            return (
-              <li key={game._id} className={css.item}>
-                <ImgGen className={css.img} publicId={game.gamePoster} />
+          {Object.values(games)
+            ?.filter(game => game._id) // Фільтруємо, щоб виключити невалідні ігри
+            .map(game => {
+              // console.log({ game, playerId });
+              return (
+                <li key={game._id} className={css.item}>
+                  <ImgGen className={css.img} publicId={game.gamePoster} />
 
-                <div className={css.wrapper}>
-                  <p>{game.gameName.toUpperCase()}</p>
-                  <p>
-                    {t("host", {
-                      hostPlayerName: game.hostPlayerName.toUpperCase(),
-                    })}
-                  </p>
-                  <div className={css.btnsContainer}>
-                    <Button
-                      btnText={
-                        playerId === game.hostPlayerId
-                          ? t("start_game")
-                          : game.isGameRunning
-                          ? t("game_running")
-                          : t("join_to_game", {
-                              hostPlayerName: game.hostPlayerName,
-                            })
-                      }
-                      onClick={() => {
-                        startOrJoinToGame(game);
-                      }}
-                      disabled={
-                        (game.isGameRunning &&
-                          !game.players.find(p => p._id === playerId)) ||
-                        (!game.isGameStarted && playerId !== game.hostPlayerId) // disabled when it is not creator button (i.e. Join to) and game not started
-                      }
-                    />
-                    {playerId === game.hostPlayerId && (
+                  <div className={css.wrapper}>
+                    <p>{game.gameName.toUpperCase()}</p>
+                    <p>
+                      {t("host", {
+                        hostPlayerName: game.hostPlayerName.toUpperCase(),
+                      })}
+                    </p>
+                    <div className={css.btnsContainer}>
                       <Button
-                        btnText={t("delete_game")}
-                        onClick={() => removeCurrentGame(game._id)}
+                        btnText={
+                          playerId === game.hostPlayerId
+                            ? t("start_game")
+                            : game.isGameRunning
+                            ? t("game_running")
+                            : t("join_to_game", {
+                                hostPlayerName: game.hostPlayerName,
+                              })
+                        }
+                        onClick={() => {
+                          startOrJoinToGame(game);
+                        }}
+                        disabled={
+                          (!game.isGameStarted &&
+                            playerId !== game.hostPlayerId) || // disabled when it is not creator button (i.e. Join to) and game not started
+                          (game.isGameRunning &&
+                            !game.players.find(p => p._id === playerId))
+                        }
                       />
-                    )}
+                      {playerId === game.hostPlayerId && (
+                        <Button
+                          btnText={t("delete_game")}
+                          onClick={() => removeCurrentGame(game._id)}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              </li>
-            );
-          })}
+                </li>
+              );
+            })}
         </ul>
       )}
     </>

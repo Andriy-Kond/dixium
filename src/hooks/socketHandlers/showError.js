@@ -1,7 +1,10 @@
 import { Notify } from "notiflix";
 
 export const showError = (err, t) => {
-  console.log(`Socket connect_error: ${err}`);
+  console.log("Socket connect_error:", err);
+  // console.dir(err);
+  // console.log(`Socket connect_error: ${JSON.stringify(err, null, 2)}`);
+
   let errMessage = "";
   const errorMessage = err?.errorMessage || "Unknown error"; // Запасний варіант
 

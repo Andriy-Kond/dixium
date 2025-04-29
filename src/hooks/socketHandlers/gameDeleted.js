@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-
+import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import {
   clearLocalState,
@@ -14,19 +14,25 @@ export const gameDeleted = (
   navigate,
   toastId,
 ) => {
-  const { _id: gameId } = game;
-  console.log("gameDeleted >> game:::", game);
-  if (!gameId) throw new Error(`The gameId is ${gameId}`);
+  const { _id: deletingGameId } = game;
 
-  toast.dismiss(toastId); // Закриє відповідне повідомлення
-  dispatch(removeToastIdRef({ gameId, playerId }));
-  dispatch(clearActiveAction({}));
-  dispatch(clearLocalState(game._id));
+  if (!deletingGameId)
+    throw new Error(`The deletingGameId is ${deletingGameId}`);
 
-  // запуск getUserByToken:
-  // dispatch(authApi.util.invalidateTags(["User"]));
-
-  if (currentGameId === gameId) {
+  if (currentGameId === deletingGameId) {
+    console.log("navigate");
     navigate(`/game`, { replace: true });
   }
+
+  // Інвалідувати кеш для видаленої гри
+  // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: deletingGameId }]));
+  dispatch(gameApi.util.resetApiState());
+
+  toast.dismiss(toastId); // Закриє відповідне повідомлення
+  dispatch(removeToastIdRef({ gameId: deletingGameId, playerId }));
+  dispatch(clearActiveAction({}));
+  dispatch(clearLocalState(game._id));
 };
+
+// запуск getUserByToken:
+// dispatch(authApi.util.invalidateTags(["User"]));

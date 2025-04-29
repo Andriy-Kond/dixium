@@ -32,11 +32,6 @@ export const gameApi = createApi({
       // providesTags: ["Deck"],
     }),
 
-    // getAllGames: builder.query({
-    //   query: () => `dixium/games`, // Get available games
-    //   providesTags: ["AllGames"],
-    // }),
-
     getCurrentGame: builder.query({
       query: gameId => `dixium/games/${gameId}`, // Get current game
       // providesTags: ["Game"],
@@ -52,41 +47,6 @@ export const gameApi = createApi({
         { type: "Game", id: playerGameId },
       ],
     }),
-
-    // updateCurrentGame: builder.mutation({
-    //   query: ({ gameId, data }) => ({
-    //     url: `dixium/games/${gameId}`,
-    //     method: "PATCH",
-    //     body: data,
-    //   }),
-
-    //   // Після оновлення, всі ігри будуть оновлені
-    //   // invalidatesTags: ["AllGames"],
-
-    //   // Оновити конкретну гру, а не всі ігри:
-    //   invalidatesTags: (result, error, { gameId }) => [
-    //     { type: "Game", id: gameId }, // Оновлюється конкретна гра
-    //     // { type: "AllGames" }, // Оновлюється всі ігри
-    //   ],
-    // }),
-
-    // removeGameFromServer: builder.mutation({
-    //   query: gameId => ({
-    //     url: `dixium/games/${gameId}`,
-    //     method: "DELETE", // add new game
-    //     body: gameId,
-    //   }),
-    //   invalidatesTags: ["AllGames"],
-    // }),
-
-    // createGame: builder.mutation({
-    //   query: game => ({
-    //     url: `dixium/games`,
-    //     method: "POST", // add new game
-    //     body: game,
-    //   }),
-    //   invalidatesTags: ["AllGames"],
-    // }),
   }),
 });
 

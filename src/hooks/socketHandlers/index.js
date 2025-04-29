@@ -3,7 +3,6 @@ export * from "./userActiveGameIdUpdate.js";
 export * from "./socketConnection.js";
 export * from "./showError.js";
 
-export * from "./gameRun";
 export * from "./playersOrderUpdate";
 export * from "./gameDeleted";
 export * from "./gameCreated.js";
@@ -20,3 +19,5 @@ export * from "./roundFinishSuccess.js";
 export * from "./startNewRoundSuccess.js";
 export * from "./gameEnd.js";
 export * from "./gameFound.js";
+export * from "./gameStarted.js";
+export * from "./gameRunning.js";

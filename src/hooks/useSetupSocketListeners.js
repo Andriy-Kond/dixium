@@ -1,22 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useEffect } from "react";
-import { Notify } from "notiflix";
+import { useEffect } from "react";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import {
   selectActiveActions,
+  selectIsGameRunning,
   selectLocalGames,
   selectToastId,
+  selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
 
 import {
   firstStorytellerUpdated,
   gameDeleted,
-  gameRun,
+  gameRunning,
   gameFirstTurnUpdate,
-  joinToGameRoom,
   playerJoined,
   playersOrderUpdate,
   userDeletedFromGame,
@@ -32,6 +32,8 @@ import {
   userActiveGameIdUpdate,
   showError,
   socketConnection,
+  joinToGameRoom,
+  gameStarted,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
@@ -49,46 +51,34 @@ export const useSetupSocketListeners = () => {
   const toastId = useSelector(selectToastId(gameId));
   const activeActions = useSelector(selectActiveActions);
   const games = useSelector(selectLocalGames);
+  const userActiveGameId = useSelector(selectUserActiveGameId);
+  const isGameRunning = useSelector(selectIsGameRunning(gameId));
 
-  const handleSocketConnection = useCallback(
-    event => socketConnection(event, socket, userId, gameId),
-    [gameId, userId],
-  );
+  useEffect(() => {
+    const handleSocketConnection = event => {
+      socketConnection(event, userId, gameId);
 
-  // для дебагу
-  const handleDisconnect = useCallback(
-    () => console.log(`Socket disconnected, socket.id: ${socket.id}`),
-    [],
-  );
+      if (isGameRunning && gameId && userActiveGameId === gameId)
+        joinToGameRoom(gameId, userId);
+    };
 
-  const handleError = useCallback(err => showError(err, t), [t]);
+    const handleError = err => showError(err, t);
 
-  // Перше або повторне підключення після оновлення сторінки чи втрати з'єднання
-  const handleUpdateUserCredentials = useCallback(
-    ({ user }) => updateUserCredentials(user, dispatch),
-    [dispatch],
-  );
+    // Перше або повторне підключення після оновлення сторінки чи втрати з'єднання
+    const handleUpdateUserCredentials = ({ user }) =>
+      updateUserCredentials(user, dispatch);
 
-  const handleUserActiveGameIdUpdate = useCallback(
-    ({ userActiveGameId }) =>
-      userActiveGameIdUpdate(userActiveGameId, dispatch),
-    [dispatch],
-  );
+    const handleUserActiveGameIdUpdate = ({ userActiveGameId }) =>
+      userActiveGameIdUpdate(userActiveGameId, dispatch);
 
-  const handleGameFirstTurnUpdate = useCallback(
-    ({ game }) => gameFirstTurnUpdate(game, dispatch, userId),
-    [dispatch, userId],
-  );
+    const handleGameFirstTurnUpdate = ({ game }) =>
+      gameFirstTurnUpdate(game, dispatch, userId);
 
-  const handleGameCreated = useCallback(
-    ({ game }) => {
+    const handleGameCreated = ({ game }) => {
       if (game.hostPlayerId === userId) gameCreated(game, dispatch);
-    },
-    [dispatch, userId],
-  );
+    };
 
-  const handlePlayerJoined = useCallback(
-    ({ game, player, message }) =>
+    const handlePlayerJoined = ({ game, player, message }) =>
       playerJoined({
         game,
         player,
@@ -97,95 +87,57 @@ export const useSetupSocketListeners = () => {
         currentGameId: gameId,
         navigate,
         dispatch,
-      }),
-    [dispatch, gameId, navigate, userId],
-  );
+      });
 
-  const handleUserDeletedFromGame = useCallback(
-    ({ game, deletedUser }) =>
+    const handleUserDeletedFromGame = ({ game, deletedUser }) =>
       userDeletedFromGame({
         game,
         deletedUser,
         userId,
         dispatch,
         navigate,
-      }),
-    [dispatch, navigate, userId],
-  );
+      });
 
-  const handleGameDeleted = useCallback(
-    ({ game }) => {
+    const handleGameDeleted = ({ game }) => {
       if (games[game._id])
         gameDeleted(game, dispatch, gameId, userId, navigate, toastId);
-    },
-    [dispatch, gameId, games, navigate, toastId, userId],
-  );
+    };
 
-  const handlePlayersOrderUpdate = useCallback(
-    ({ game, message }) =>
-      playersOrderUpdate(game, message, dispatch, activeActions),
-    [activeActions, dispatch],
-  );
+    const handlePlayersOrderUpdate = ({ game, message }) =>
+      playersOrderUpdate(game, message, dispatch, activeActions);
 
-  const handleGameRun = useCallback(
-    ({ game, message }) =>
-      gameRun(game, message, dispatch, activeActions, userId),
-    [activeActions, dispatch, userId],
-  );
+    const handleGameRunning = ({ game, message }) =>
+      gameRunning(games, game, message, dispatch, activeActions, userId);
 
-  const handleFirstStorytellerUpdated = useCallback(
-    ({ game }) => firstStorytellerUpdated(game, dispatch, userId),
-    [dispatch, userId],
-  );
+    const handleFirstStorytellerUpdated = ({ game }) =>
+      firstStorytellerUpdated(game, dispatch, userId);
 
-  const handleNextStorytellerUpdated = useCallback(
-    ({ game }) => nextStorytellerUpdated(game, dispatch, userId),
-    [dispatch, userId],
-  );
+    const handleNextStorytellerUpdated = ({ game }) =>
+      nextStorytellerUpdated(game, dispatch, userId);
 
-  const handlePlayerGuessSuccess = useCallback(
-    ({ game }) => playerGuessSuccess(game, dispatch),
-    [dispatch],
-  );
+    const handlePlayerGuessSuccess = ({ game }) =>
+      playerGuessSuccess(game, dispatch);
 
-  const handleVotingStarted = useCallback(
-    ({ game }) => votingStarted(game, dispatch, userId),
-    [dispatch, userId],
-  );
+    const handleVotingStarted = ({ game }) =>
+      votingStarted(game, dispatch, userId);
 
-  const handlePlayerVoteSuccess = useCallback(
-    ({ game, message }) =>
-      playerVoteSuccess(game, message, dispatch, activeActions),
-    [activeActions, dispatch],
-  );
+    const handlePlayerVoteSuccess = ({ game, message }) =>
+      playerVoteSuccess(game, message, dispatch, activeActions);
 
-  const handleRoundFinishSuccess = useCallback(
-    ({ game, message }) =>
-      roundFinishSuccess(game, message, dispatch, activeActions, userId),
-    [activeActions, dispatch, userId],
-  );
+    const handleRoundFinishSuccess = ({ game, message }) =>
+      roundFinishSuccess(game, message, dispatch, activeActions, userId);
 
-  const handleStartNewRoundSuccess = useCallback(
-    ({ game, message }) =>
-      startNewRoundSuccess(game, message, dispatch, activeActions, userId),
-    [activeActions, dispatch, userId],
-  );
+    const handleStartNewRoundSuccess = ({ game, message }) =>
+      startNewRoundSuccess(game, message, dispatch, activeActions, userId);
 
-  const handleGameEnd = useCallback(
-    ({ game, message }) => gameEnd(game, message, dispatch),
-    [dispatch],
-  );
+    const handleGameEnd = ({ game, message }) =>
+      gameEnd(game, message, dispatch);
 
-  const handleGameFound = useCallback(
-    ({ game }) => gameFound(game, dispatch),
-    [dispatch],
-  );
+    const handleGameFound = ({ game }) => gameFound(game, dispatch);
 
-  useEffect(() => {
-    console.log(`Setting up socket listeners for component ${Math.random()}`); // дебаг унікальності
+    const handleGameStarted = ({ game }) => gameStarted(game, games, dispatch);
 
-    socket.on("disconnect", handleDisconnect);
-
+    // console.log(`Setting up socket listeners for component ${Math.random()}`); // дебаг унікальності
     socket.on("connect", () => handleSocketConnection("connect"));
     socket.on("reconnect", () => handleSocketConnection("reconnect"));
     if (socket.connected) handleSocketConnection(); // якщо сокет уже підключений, то одразу викликати
@@ -193,19 +145,13 @@ export const useSetupSocketListeners = () => {
 
     socket.on("updateUserCredentials", handleUpdateUserCredentials);
     socket.on("UserActiveGameId:Update", handleUserActiveGameIdUpdate);
-
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
-
     socket.on("gameCreated", handleGameCreated);
-
-    // socket.on("gameEntry", handleGameEntry);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
     socket.on("Game:Deleted", handleGameDeleted);
-
     socket.on("playersOrderUpdated", handlePlayersOrderUpdate);
-    socket.on("gameRunning", handleGameRun);
-
+    socket.on("Game_Running", handleGameRunning);
     socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
     socket.on("nextStorytellerUpdated", handleNextStorytellerUpdated);
     socket.on("playerGuessSuccess", handlePlayerGuessSuccess);
@@ -213,31 +159,25 @@ export const useSetupSocketListeners = () => {
     socket.on("playerVoteSuccess", handlePlayerVoteSuccess);
     socket.on("roundFinishSuccess", handleRoundFinishSuccess);
     socket.on("startNewRoundSuccess", handleStartNewRoundSuccess);
-
     socket.on("gameEnd", handleGameEnd);
     socket.on("gameFound", handleGameFound);
+    socket.on("Game_Started", handleGameStarted);
 
     return () => {
       // console.log("Cleaning up socket listeners");
-      socket.off("disconnect", handleDisconnect);
       socket.off("connect", () => handleSocketConnection("connect"));
       socket.off("reconnect", () => handleSocketConnection("reconnect"));
       socket.off("error", handleError);
 
       socket.off("updateUserCredentials", handleUpdateUserCredentials);
       socket.off("UserActiveGameId:Update", handleUserActiveGameIdUpdate);
-
       socket.off("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
-
       socket.off("gameCreated", handleGameCreated);
-
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("userDeletedFromGame", handleUserDeletedFromGame);
       socket.off("Game:Deleted", handleGameDeleted);
-
       socket.off("playersOrderUpdated", handlePlayersOrderUpdate);
-      socket.off("gameRunning", handleGameRun);
-
+      socket.off("Game_Running", handleGameRunning);
       socket.off("firstStorytellerUpdated", handleFirstStorytellerUpdated);
       socket.off("nextStorytellerUpdated", handleNextStorytellerUpdated);
       socket.off("playerGuessSuccess", handlePlayerGuessSuccess);
@@ -245,33 +185,21 @@ export const useSetupSocketListeners = () => {
       socket.off("playerVoteSuccess", handlePlayerVoteSuccess);
       socket.off("roundFinishSuccess", handleRoundFinishSuccess);
       socket.off("startNewRoundSuccess", handleStartNewRoundSuccess);
-
       socket.off("gameEnd", handleGameEnd);
       socket.off("gameFound", handleGameFound);
+      socket.on("Game_Started", handleGameStarted);
     };
   }, [
+    activeActions,
     dispatch,
-    handleDisconnect,
-    handleError,
-    handleFirstStorytellerUpdated,
-    handleGameCreated,
-    handleGameDeleted,
-    handleGameEnd,
-    handleGameFirstTurnUpdate,
-    handleGameFound,
-    handleGameRun,
-    handleNextStorytellerUpdated,
-    handlePlayerGuessSuccess,
-    handlePlayerJoined,
-    handlePlayerVoteSuccess,
-    handlePlayersOrderUpdate,
-    handleRoundFinishSuccess,
-    handleSocketConnection,
-    handleStartNewRoundSuccess,
-    handleUpdateUserCredentials,
-    handleUserActiveGameIdUpdate,
-    handleUserDeletedFromGame,
-    handleVotingStarted,
+    gameId,
+    games,
+    isGameRunning,
+    navigate,
+    t,
+    toastId,
+    userActiveGameId,
+    userId,
   ]);
 
   // Очищення таймерів

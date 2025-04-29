@@ -13,7 +13,8 @@ const optimisticUpdateMiddleware =
       const key = `${eventName}-${updatedGame._id}`;
 
       // Зберігаємо попередній стан гри:
-      const previousGameState = getState().gameSlice.games[updatedGame._id];
+      const previousGameState =
+        getState().localPersonalSlice.games[updatedGame._id];
 
       // Оптимістичне оновлення
       dispatch(updateLocalGame(updatedGame));
