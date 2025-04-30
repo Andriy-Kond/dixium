@@ -91,7 +91,7 @@ export const authApi = createApi({
 
     setPassword: build.mutation({
       query: ({ password }) => ({
-        url: "/api/auth/set-password",
+        url: "/api/auth/set-nickname",
         method: "POST",
         body: { password },
       }),
@@ -153,6 +153,16 @@ export const authApi = createApi({
 
       invalidatesTags: ["User"],
     }),
+
+    setNickname: build.mutation({
+      query: ({ nickname }) => ({
+        url: "/api/auth/set-password",
+        method: "POST",
+        body: { nickname },
+      }),
+
+      invalidatesTags: ["User"], // Оновити кеш даних користувача
+    }),
   }),
 });
 
@@ -167,4 +177,5 @@ export const {
   useResendVerificationEmailMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
+  useSetNicknameMutation,
 } = authApi;

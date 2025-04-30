@@ -161,3 +161,6 @@ export const selectScores = gameId => state =>
 
 export const selectRoundResults = gameId => state =>
   state.localPersonalSlice.games[gameId].roundResults;
+
+export const selectNotification = state =>
+  state.localPersonalSlice.notification;

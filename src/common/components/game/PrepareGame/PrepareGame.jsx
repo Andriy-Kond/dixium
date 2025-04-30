@@ -16,7 +16,11 @@ import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import css from "./PrepareGame.module.scss";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import { useTranslation } from "react-i18next";
-import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
+import {
+  setPageHeaderText,
+  showNotification,
+} from "redux/game/localPersonalSlice.js";
+import InformMessage from "../../ui/InformMessage/InformMessage.jsx";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
@@ -26,8 +30,6 @@ export default function PrepareGame() {
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
   const { gameId } = useParams();
   const [finishPoints, setFinishPoints] = useState("30");
-  const [isIdInBuffer, setIsIdInBuffer] = useState(false);
-  const timeoutRef = useRef(null);
 
   const currentGame = useSelector(selectLocalGame(gameId));
   if (!currentGame) {
@@ -112,36 +114,34 @@ export default function PrepareGame() {
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(playerGameId.toString());
-      // alert("ID скопійовано в буфер");
-      setIsIdInBuffer(true);
+      await navigator.clipboard.writeText(playerGameId.toString()); // копіювання в буфер
 
-      // Для запобігання створення кількох таймерів, якщо користувач натискає на кнопку кілька разів
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-      timeoutRef.current = setTimeout(() => {
-        setIsIdInBuffer(false);
-        timeoutRef.current = null; // очистити після виконання
-      }, 3000);
+      dispatch(
+        showNotification({
+          message: "ID скопійовано в буфер",
+          type: "success",
+        }),
+      );
     } catch (err) {
       console.error("Помилка копіювання:", err);
-      // alert("Не вдалося скопіювати ID");
-      setIsIdInBuffer(false);
+      dispatch(
+        showNotification({
+          message: "Не вдалось скопіювати в буфер",
+          type: "error",
+        }),
+      );
     }
   };
 
-  // Очищення таймера при розмонтуванні компонента
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
-
   return (
     <>
-      {isIdInBuffer && (
-        <p className={css.informMessage}>ID скопійовано в буфер</p>
-      )}
+      <InformMessage />
+      {/* {isIdInBuffer && (
+        <InformMessage
+          message={informMessage}
+          onClose={() => setIsIdInBuffer(false)} // Сховати компонент
+        />
+      )} */}
 
       <label>
         <input

@@ -1,0 +1,20 @@
+.informMessage {
+  display: flex;
+  width: 320px;
+  padding: 8px 16px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: var(--Highlight, #f6902a);
+}
+
+.success {
+  // background-color: #d4edda;
+  // color: #155724;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}

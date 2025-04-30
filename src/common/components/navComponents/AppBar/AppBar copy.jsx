@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectUserIsLoggedIn } from "redux/selectors";
 
@@ -6,9 +5,10 @@ import NavigationMenu from "common/components/navComponents/NavigationMenu";
 import AuthNav from "common/components/navComponents/AuthNav";
 import UserMenu from "common/components/navComponents/UserMenu";
 
-import LangSwitcher from "common/components/navComponents/LangSwitcher";
-import ThemeToggle from "common/components/ui/ThemeToggle";
 import css from "./AppBar.module.scss";
+import LangSwitcher from "common/components/navComponents/LangSwitcher";
+import { useCallback, useEffect, useState } from "react";
+import ThemeToggle from "common/components/ui/ThemeToggle";
 
 export default function AppBar() {
   const isLoggedIn = useSelector(selectUserIsLoggedIn);
@@ -68,13 +68,14 @@ export default function AppBar() {
 
         <div className={css.serviceMenuContainer}>
           {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
-          {/* {isLoggedIn ? (
+          {isLoggedIn ? (
             <UserMenu closeMenu={closeMenu} />
           ) : (
             <AuthNav closeMenu={closeMenu} />
-          )} */}
-          {isLoggedIn && <UserMenu closeMenu={closeMenu} />}
+          )}
+
           <LangSwitcher />
+
           <ThemeToggle />
         </div>
       </div>

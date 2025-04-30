@@ -32,6 +32,12 @@ const localInitialState = {
     hasPreloaded: false, // Глобальний прапор щоб не завантажувати дублікати link (Чи виконано предзавантаження)
   },
 
+  notification: {
+    message: null,
+    duration: 3000,
+    type: "info", // Для майбутньої стилізації (success, error тощо)
+  },
+
   isSetPassword: false,
 
   userActiveGameId: null,
@@ -239,6 +245,18 @@ export const localPersonalSlice = createSlice({
     setUserActiveGameId: (state, action) => {
       state.userActiveGameId = action.payload;
     },
+
+    showNotification(state, action) {
+      state.notification.message = action.payload.message;
+      state.notification.duration = action.payload.duration || 3000;
+      state.notification.type = action.payload.type || "info";
+    },
+
+    hideNotification(state) {
+      state.notification.message = null;
+      state.notification.duration = 3000;
+      state.notification.type = "info";
+    },
   },
 });
 
@@ -285,4 +303,6 @@ export const {
   setTotalPreviews,
   setIsSetPassword,
   setUserActiveGameId,
+  showNotification,
+  hideNotification,
 } = localPersonalSlice.actions;
