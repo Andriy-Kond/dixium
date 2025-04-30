@@ -103,13 +103,24 @@ export default function HomePage() {
         className={css.homePageGoogleLoginBtn}
         style={
           theme === LIGHT
-            ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
-            : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
+            ? { "--btnBgColor": "#2b3847", "--btnTextColor": "#e3e7e9" }
+            : { "--btnBgColor": "#e3e7e9", "--btnTextColor": "#2b3847" }
         }
         onClick={() =>
           googleLoginRef.current?.querySelector("div[role=button]")?.click()
         }>
         {t("login_with_google")}
+      </button>
+
+      <button
+        className={`${css.homePageGoogleLoginBtn} ${css.homePageLoginBtn}`}
+        style={
+          theme === LIGHT
+            ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
+            : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
+        }
+        onClick={() => navigate("/login")}>
+        LoginPage
       </button>
     </div>
   );

@@ -91,3 +91,33 @@
   background-color: var(--white_color);
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
 }
+
+.copyBtn {
+  margin: 0;
+  padding: 14px 16px;
+
+  background-color: var(--btnBgColor);
+  color: var(--btnTextColor);
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: normal;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.informMessage {
+  display: flex;
+  width: 320px;
+  padding: 8px 16px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: var(--Highlight, #f6902a);
+}

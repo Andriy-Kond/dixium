@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -25,19 +25,21 @@ export default function PrepareGame() {
 
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
   const { gameId } = useParams();
+  const [finishPoints, setFinishPoints] = useState("30");
+  const [isIdInBuffer, setIsIdInBuffer] = useState(false);
+  const timeoutRef = useRef(null);
 
   const currentGame = useSelector(selectLocalGame(gameId));
-  const userCredentials = useSelector(selectUserCredentials);
   if (!currentGame) {
     navigate("/game", { replace: true });
     // return null;
   }
 
-  const isCurrentPlayerIsHost =
-    currentGame.hostPlayerId === userCredentials._id;
-  const isCurrentPlayerInGame = currentGame.players.find(
-    p => p._id === userCredentials._id,
-  );
+  const userCredentials = useSelector(selectUserCredentials);
+  const { _id: userId, playerGameId } = userCredentials;
+
+  const isCurrentPlayerIsHost = currentGame.hostPlayerId === userId;
+  const isCurrentPlayerInGame = currentGame.players.find(p => p._id === userId);
 
   const [isSingleCardModeCheckbox, setIsSingleCardModeCheckbox] =
     useState(false);
@@ -94,6 +96,7 @@ export default function PrepareGame() {
       ...game,
       isGameRunning: true,
       isSingleCardMode: isSingleCardModeCheckbox,
+      finishPoints: Number(finishPoints),
     };
 
     // optimistic update:
@@ -107,8 +110,47 @@ export default function PrepareGame() {
     navigate(`/game`);
   };
 
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(playerGameId.toString());
+      // alert("ID скопійовано в буфер");
+      setIsIdInBuffer(true);
+
+      // Для запобігання створення кількох таймерів, якщо користувач натискає на кнопку кілька разів
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+      timeoutRef.current = setTimeout(() => {
+        setIsIdInBuffer(false);
+        timeoutRef.current = null; // очистити після виконання
+      }, 3000);
+    } catch (err) {
+      console.error("Помилка копіювання:", err);
+      // alert("Не вдалося скопіювати ID");
+      setIsIdInBuffer(false);
+    }
+  };
+
+  // Очищення таймера при розмонтуванні компонента
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
   return (
     <>
+      {isIdInBuffer && (
+        <p className={css.informMessage}>ID скопійовано в буфер</p>
+      )}
+
+      <label>
+        <input
+          type="number"
+          value={finishPoints}
+          onChange={e => setFinishPoints(e.target.value.trim())}
+        />
+        {t("finish_points")}
+      </label>
       <div className={css.checkboxWrapper}>
         <label
           //# для нових браузерів:
@@ -128,12 +170,11 @@ export default function PrepareGame() {
           {t("single_card_mode").toUpperCase()}
         </label>
       </div>
-
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={currentGame?.players.map(p => p._id)}
           strategy={verticalListSortingStrategy}
-          disabled={currentGame.hostPlayerId !== userCredentials._id}>
+          disabled={currentGame.hostPlayerId !== userId}>
           <ul className={css.playersList}>
             {currentGame?.players.map(player => (
               <SortablePlayer key={player._id} player={player} />
@@ -141,14 +182,17 @@ export default function PrepareGame() {
           </ul>
         </SortableContext>
       </DndContext>
-
+      <p>ID: {playerGameId}</p>
+      <button className={css.copyBtn} onClick={copyToClipboard}>
+        Копіювати в буфер
+      </button>
       <div className={css.bottomBar}>
         <Button
           onClick={toGamePage}
           btnText={t("back")}
           btnStyle={[["twoBtnsInRow"], ["btnFlexGrow"]]}
         />
-        {userCredentials._id === currentGame?.hostPlayerId && (
+        {userId === currentGame?.hostPlayerId && (
           <Button
             onClick={runGame}
             btnText={t("run_game")}

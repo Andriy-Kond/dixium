@@ -117,5 +117,7 @@
   "new_password": "New Password",
   "password_reset_success": "Password has been reset successfully.",
   "password_too_short": "Password must be at least 3 characters long.",
-  "other_way_dixit_play": "Another way to Dixit play"
+
+  "other_way_dixit_play": "Another way to Dixit play",
+  "tixid": "tixid"
 }

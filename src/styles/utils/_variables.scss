@@ -1,4 +1,19 @@
+// @import "./constants";
+$c20: "#2B3847";
+$c02: "#C9CFD4";
+
 :root {
+  --main_screen_height: calc(100vh - 44px);
+  --btnBgColor: #{$c20};
+  --btnTextColor: #{$c02};
+
+  --Highlight: #f6902a;
+
+  [data-theme="dark"] {
+    --btnBgColor: #{$c02};
+    --btnTextColor: #{$c20};
+  }
+
   // --primary_color: #5d7e9e;
   // --secondary_color: #ebf0f5;
   // --status_bar_color: #476078;
@@ -15,7 +30,6 @@
   // --font_weight: 400;
 
   // --btn-hover-bg-color: #0f7dff1f;
-  --main_screen_height: calc(100vh - 44px);
 
   @media screen and (min-width: $tablet) {
     --main_screen_height: calc(100vh - 44px - 62px);
