@@ -39,7 +39,6 @@
   "enter_email": "Введіть email",
   "password": "Пароль",
   "enter_password": "Введіть пароль",
-
   "enter": "Увійти",
   "user": "Користувач: {{user}}",
   "creating_game": "Створення гри",
@@ -85,12 +84,12 @@
   "enter_exactly_4_digits": "Введіть 4 цифри",
   "found_game_success": "Гра з номером {{gameNumber}} знайдена",
   "too_many_requests": "Забагато запитів. Спробуйте ще раз пізніше.",
-  "google_account_error": "Цей обліковий запис зареєстровано через Google. Будь ласка, увійдіть через Google або встановіть пароль.",
+  "google_account_err": "Цей обліковий запис зареєстровано через Google. Будь ласка, увійдіть через Google або встановіть пароль.",
   "register_with_google": "Зареєструватися через Google",
   "login_with_google": "Увійти через Google",
   "continue_with_google": "Продовжити з Google",
   "set_password": "Встановити пароль",
-  "google_account_error_register": "Цей email зареєстровано через Google. Увійдіть через Google і встановіть пароль, щоб активувати вхід через email/пароль.",
+  "google_account_err_register": "Цей email зареєстровано через Google. Увійдіть через Google і встановіть пароль, щоб активувати вхід через email/пароль.",
   "go_to_login": "Увійти через логін",
   "password_set_success": "Пароль успішно встановлено!",
   "submit": "Надіслати",
@@ -117,5 +116,11 @@
   "password_reset_success": "Пароль успішно скинуто.",
   "password_too_short": "Пароль має містити щонайменше 3 символи.",
   "other_way_dixit_play": "інший спосіб грати у Діксіт",
-  "tixid": "tixid"
+  "tixid": "tixid",
+  "nick_cant_be_empty": "Нікнейм не може бути пустим",
+  "nick_should_have_3_symbols": "Нікнейм має мати не менше 3 символів",
+  "id_copied_to_buffer": "ID скопійовано в буфер",
+  "cant_copy_id_to_buffer": "Не вдалось скопіювати в буфер",
+  "nick_changed": "Нік змінений",
+  "err": "Помилка"
 }

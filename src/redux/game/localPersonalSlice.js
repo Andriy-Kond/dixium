@@ -35,7 +35,7 @@ const localInitialState = {
   notification: {
     message: null,
     duration: 3000,
-    type: "info", // Для майбутньої стилізації (success, error тощо)
+    type: "info", // Для стилізації (success, error, info)
   },
 
   isSetPassword: false,

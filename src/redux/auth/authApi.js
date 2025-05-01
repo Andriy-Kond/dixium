@@ -156,7 +156,7 @@ export const authApi = createApi({
 
     setNickname: build.mutation({
       query: ({ nickname }) => ({
-        url: "/api/auth/set-password",
+        url: "/api/auth/set-nickname",
         method: "POST",
         body: { nickname },
       }),

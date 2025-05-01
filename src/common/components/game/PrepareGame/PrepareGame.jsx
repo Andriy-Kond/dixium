@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -55,21 +55,6 @@ export default function PrepareGame() {
   const isDisabledCheckbox =
     !isCurrentPlayerIsHost || currentGame.players.length < 7;
 
-  // useEffect(() => {
-  //   // if (!isCurrentPlayerInGame) {
-  //   //   // Затримка на 500 мс для обробки сокет-подій (теоретично може дозволити сокету обробити подію видалення поточного гравця з гри без необхідності Map() на сервері)
-  //   //   const timeout = setTimeout(() => {
-  //   //     navigate("/game");
-  //   //   }, 500);
-  //   //   return () => clearTimeout(timeout);
-  //   // }
-
-  //   if (!isCurrentPlayerInGame) {
-  //     // navigate("/game"); // переніс перенаправлення на подію видалення з гри
-  //     console.log("User is not in game, waiting for userDeletedFromGame event");
-  //   }
-  // }, [isCurrentPlayerInGame, navigate]);
-
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
     if (!isCurrentPlayerIsHost) return; // dnd can do the host player only
@@ -118,7 +103,7 @@ export default function PrepareGame() {
 
       dispatch(
         showNotification({
-          message: "ID скопійовано в буфер",
+          message: t("id_copied_to_buffer"),
           type: "success",
         }),
       );
@@ -126,7 +111,7 @@ export default function PrepareGame() {
       console.error("Помилка копіювання:", err);
       dispatch(
         showNotification({
-          message: "Не вдалось скопіювати в буфер",
+          message: t("cant_copy_id_to_buffer"),
           type: "error",
         }),
       );
@@ -136,12 +121,6 @@ export default function PrepareGame() {
   return (
     <>
       <InformMessage />
-      {/* {isIdInBuffer && (
-        <InformMessage
-          message={informMessage}
-          onClose={() => setIsIdInBuffer(false)} // Сховати компонент
-        />
-      )} */}
 
       <label>
         <input

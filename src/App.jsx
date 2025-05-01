@@ -77,34 +77,29 @@ export default function App() {
       <GoogleOAuthProvider
         clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
         locale="en">
-        {!isFetching && (
-          <Routes>
-            <Route path="/" element={<SharedLayout />}>
-              <Route element={<PrivateRoute redirectTo="/" />}>
-                <Route path="/game" element={<GamesListPage />} />
-                <Route path="/game/:gameId" element={<CurrentGamePage />} />
-                <Route path="/set-password" element={<SetPasswordPage />} />
-              </Route>
-
-              <Route element={<PublicRoute redirectTo="/game" />}>
-                <Route index element={<HomePage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/verify-email" element={<VerifyEmailPage />} />
-                <Route
-                  path="/forgot-password"
-                  element={<ForgotPasswordPage />}
-                />
-                <Route
-                  path="/reset-password/:resetToken"
-                  element={<ResetPasswordPage />}
-                />
-              </Route>
-
-              <Route path="*" element={<NotFoundPage />} />
+        <Routes>
+          <Route path="/" element={<SharedLayout />}>
+            <Route element={<PrivateRoute redirectTo="/" />}>
+              <Route path="/game" element={<GamesListPage />} />
+              <Route path="/game/:gameId" element={<CurrentGamePage />} />
+              <Route path="/set-password" element={<SetPasswordPage />} />
             </Route>
-          </Routes>
-        )}
+
+            <Route element={<PublicRoute redirectTo="/game" />}>
+              <Route index element={<HomePage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/verify-email" element={<VerifyEmailPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route
+                path="/reset-password/:resetToken"
+                element={<ResetPasswordPage />}
+              />
+            </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
 
         <ToastContainer
           position="top-center"
