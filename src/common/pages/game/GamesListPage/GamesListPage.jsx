@@ -18,15 +18,23 @@ import GamesList from "common/components/game/GamesList";
 import Button from "common/components/ui/Button";
 import css from "./GamesListPage.module.scss";
 import { LOBBY } from "utils/generals/constants.js";
+import { useNavigate } from "react-router-dom";
+import UserMenu from "common/components/navComponents/UserMenu/index.js";
+import LangSwitcher from "common/components/navComponents/LangSwitcher/index.js";
+import ThemeToggle from "common/components/ui/ThemeToggle/index.js";
+import InformMessage from "common/components/ui/InformMessage/InformMessage.jsx";
 
 export default function GamesListPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
-  const isCreatingGame = useSelector(selectIsCreatingGame);
   const userCredentials = useSelector(selectUserCredentials);
-  const headerTitleText = isCreatingGame
-    ? t("creating_game")
-    : t("available_games");
+  // const isCreatingGame = useSelector(selectIsCreatingGame);
+  // const headerTitleText = isCreatingGame
+  //   ? t("creating_game")
+  //   : t("available_games");
+
+  const headerTitleText = t("tixid");
 
   //# Page header color and text
   useEffect(() => {
@@ -123,62 +131,73 @@ export default function GamesListPage() {
 
   return (
     <>
+      <p>GameListPage</p>
+      <InformMessage />
       <div className={css.container}>
         <div className={css.pageMain}>
-          {isCreatingGame && <CreatingGame />}
+          {/* {isCreatingGame && <CreatingGame />} */}
           {/* {isCreatingGame && <PrepareGame />} */}
 
-          {!isCreatingGame && (
-            <>
-              <div className={css.searchGameWrapper}>
-                <form onSubmit={handleSubmit}>
-                  <label className={css.searchGameLabel}>
-                    <input
-                      autoFocus
-                      ref={inputRef}
-                      className={css.searchGameInput}
-                      type="text"
-                      onChange={handleChange}
-                      placeholder="Search by number..."
-                      inputMode="numeric"
-                      maxLength={5} // 4 цифри + дефіс
-                      aria-label={t("search_game_by_number")}
-                    />
+          {/* {!isCreatingGame && ( */}
+          <>
+            <p>{t("req_for_join_game")}</p>
+            <div className={css.searchGameWrapper}>
+              <form onSubmit={handleSubmit}>
+                <label className={css.searchGameLabel}>
+                  <input
+                    autoFocus
+                    ref={inputRef}
+                    className={css.searchGameInput}
+                    type="text"
+                    onChange={handleChange}
+                    placeholder={t("enter_id_here")}
+                    inputMode="numeric"
+                    maxLength={5} // 4 цифри + дефіс
+                    aria-label={t("search_game_by_number")}
+                  />
 
-                    <p className={css.hint}>{t("enter_4_digits")}</p>
-                  </label>
+                  <p className={css.hint}>{t("enter_4_digits")}</p>
+                </label>
 
-                  {searchGame && (
-                    <button
-                      type="button"
-                      onClick={resetSearchGame}
-                      className={css.clearButton}>
-                      {t("clear")}
-                    </button>
-                  )}
-
+                {searchGame && (
                   <button
-                    className={css.searchButton}
-                    type="submit"
-                    disabled={getDigitCount() !== 4 || searchGame > 9999}>
-                    {t("search")}
+                    type="button"
+                    onClick={resetSearchGame}
+                    className={css.clearButton}>
+                    {t("clear")}
                   </button>
-                </form>
-                {error && <p className={css.error}>{error}</p>}
-              </div>
+                )}
 
-              <GamesList />
-              <div className={css.bottomBar}>
-                <Button
-                  onClick={handleCreateGame}
-                  btnText={`${t("create_new_game")} ID:${
-                    userCredentials.playerGameId
-                  }`}
-                  btnStyle={["btnFlexGrow"]}
-                />
-              </div>
-            </>
-          )}
+                <button
+                  className={css.searchButton}
+                  type="submit"
+                  disabled={getDigitCount() !== 4 || searchGame > 9999}>
+                  {t("join")}
+                </button>
+              </form>
+              {error && <p className={css.error}>{error}</p>}
+            </div>
+
+            <p>{t("create_own_game")}</p>
+            <Button
+              onClick={handleCreateGame}
+              btnText={`${t("create_new_game")} ID:${
+                userCredentials.playerGameId
+              }`}
+            />
+
+            <p>{t("select_decks")}</p>
+            <button
+              className={css.copyBtn}
+              onClick={() => navigate("/game/select-decks")}>
+              {t("game_cards")}
+            </button>
+
+            <UserMenu />
+
+            {/* <GamesList /> */}
+          </>
+          {/* )} */}
         </div>
       </div>
     </>

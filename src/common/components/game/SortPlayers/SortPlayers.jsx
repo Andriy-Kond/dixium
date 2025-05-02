@@ -46,6 +46,7 @@ export default function SortPlayers() {
 
   return (
     <>
+      <p>sort players</p>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={currentGame?.players.map(p => p._id)}

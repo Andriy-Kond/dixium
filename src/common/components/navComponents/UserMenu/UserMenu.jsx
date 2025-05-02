@@ -24,6 +24,8 @@ import {
 import { useState } from "react";
 import { Notify } from "notiflix";
 import InformMessage from "common/components/ui/InformMessage/InformMessage.jsx";
+import LangSwitcher from "../LangSwitcher/index.js";
+import ThemeToggle from "common/components/ui/ThemeToggle/index.js";
 
 export default function UserMenu({ closeMenu }) {
   const [setNickname, { isLoading }] = useSetNicknameMutation();
@@ -94,34 +96,39 @@ export default function UserMenu({ closeMenu }) {
       {/* Умова userCredentials.name необхідно, щоб span не блимав при завантаженні користувача */}
       {userCredentials.name && (
         <>
-          <InformMessage />
-          <div className={css.userCredentialsBox}>
-            {/* <img
+          {/* <InformMessage /> */}
+          {/* <div className={css.userCredentialsBox}> */}
+          {/* <img
               className={css.avatar}
               src={userCredentials.avatarURL}
               alt="avatar"
             /> */}
 
-            {/* <span className={css.text}>
+          {/* <span className={css.text}>
               {t("welcome_user", { user: userCredentials.name.toUpperCase() })}
             </span> */}
-            <label>
-              {t("Нік")}
-              <input
-                type="text"
-                value={nicknameValue}
-                onChange={e => setNicknameValue(e.target.value.trim())}
-              />
-              <MdCheck onClick={handleSetNickname} />
-              <MdClear onClick={handleClearNickName} />
-            </label>
-
-            <Button
-              onClick={handleLogout}
-              btnText={t("logout")}
-              btnStyle={btnStyle}
+          <label>
+            {t("Нік")}
+            <input
+              type="text"
+              value={nicknameValue}
+              onChange={e => setNicknameValue(e.target.value.trim())}
             />
-          </div>
+            <MdCheck onClick={handleSetNickname} />
+            <MdClear onClick={handleClearNickName} />
+          </label>
+
+          {t("display_mode")}
+          <LangSwitcher />
+          {t("language")}
+          <ThemeToggle />
+
+          <Button
+            onClick={handleLogout}
+            btnText={t("logout")}
+            btnStyle={btnStyle}
+          />
+          {/* </div> */}
         </>
       )}
     </>

@@ -74,8 +74,6 @@ export default function AppBar() {
             <AuthNav closeMenu={closeMenu} />
           )} */}
           {isLoggedIn && <UserMenu closeMenu={closeMenu} />}
-          <LangSwitcher />
-          <ThemeToggle />
         </div>
       </div>
     </nav>

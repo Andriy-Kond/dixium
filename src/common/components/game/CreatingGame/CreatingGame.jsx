@@ -6,8 +6,6 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 import { showNotification } from "redux/game/localPersonalSlice.js";
-import SortPlayers from "common/components/game/SortPlayers";
-import SelectDecks from "common/components/game/SelectDecks";
 import { useTranslation } from "react-i18next";
 import css from "./CreatingGame.module.scss";
 import { useNavigate } from "react-router-dom";
@@ -17,8 +15,6 @@ export default function CreatingGame() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // const [sortPlayers, setSortPlayers] = useState(false);
-  // const [selectDecks, setSelectDecks] = useState(false);
   const userActiveGameId = useSelector(selectUserActiveGameId);
 
   const userCredentials = useSelector(selectUserCredentials);
@@ -52,11 +48,9 @@ export default function CreatingGame() {
     }
   };
 
-  // if (sortPlayers) return <SortPlayers backButtonClick={setSortPlayers} />;
-  // if (selectDecks) return <SelectDecks backButtonClick={setSelectDecks} />;
-
   return (
     <>
+      <p>creating game</p>
       <p>{t("req_for_start_game")}</p>
       <label>
         <input
@@ -66,7 +60,6 @@ export default function CreatingGame() {
         />
         {t("finish_points")}
       </label>
-
       <div className={css.checkboxWrapper}>
         <label
           //# для нових браузерів:
@@ -86,7 +79,6 @@ export default function CreatingGame() {
           {t("single_card_mode").toUpperCase()}
         </label>
       </div>
-
       <div className={css.container}>
         <p>{t("setup_players_turn")}</p>
         <button
@@ -102,7 +94,6 @@ export default function CreatingGame() {
           {t("game_cards")}
         </button>
       </div>
-
       <p>ID: {playerGameId}</p>
       <button className={css.copyBtn} onClick={copyToClipboard}>
         Копіювати в буфер

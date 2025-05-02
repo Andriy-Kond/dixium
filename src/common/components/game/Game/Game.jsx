@@ -454,7 +454,7 @@ export default function Game() {
 
   return (
     <div className={css.gameContainer}>
-      {/* <p>Game</p> */}
+      <p>Game</p>
       <PageBadge />
 
       <div
