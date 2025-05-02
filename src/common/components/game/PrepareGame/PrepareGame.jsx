@@ -130,6 +130,7 @@ export default function PrepareGame() {
         />
         {t("finish_points")}
       </label>
+
       <div className={css.checkboxWrapper}>
         <label
           //# для нових браузерів:
@@ -161,10 +162,12 @@ export default function PrepareGame() {
           </ul>
         </SortableContext>
       </DndContext>
+
       <p>ID: {playerGameId}</p>
       <button className={css.copyBtn} onClick={copyToClipboard}>
         Копіювати в буфер
       </button>
+
       <div className={css.bottomBar}>
         <Button
           onClick={toGamePage}

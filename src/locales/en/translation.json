@@ -1,5 +1,6 @@
 {
   "deck": "Deck: {{name}}",
+  "game_cards": "Game cards",
   "back": "Back",
   "select_deck": "Select deck",
   "host": "Host: {{hostPlayerName}}",
@@ -101,7 +102,6 @@
   "hide_password": "Hide password",
   "show_password": "Show password",
   "confirm_password": "Confirm password",
-
   "verify_email": "Verify email",
   "verify_email_message": "Please check your email and confirm email. Email with link for verification sent to you address.",
   "resend_verification_email": "Resend",
@@ -117,7 +117,16 @@
   "new_password": "New Password",
   "password_reset_success": "Password has been reset successfully.",
   "password_too_short": "Password must be at least 3 characters long.",
-
   "other_way_dixit_play": "Another way to Dixit play",
-  "tixid": "tixid"
+  "tixid": "tixid",
+  "nick_cant_be_empty": "Nickname cannot be empty",
+  "nick_should_have_3_symbols": "Nickname must be at least 3 characters",
+  "id_copied_to_buffer": "ID copied to clipboard",
+  "cant_copy_id_to_buffer": "Copy to clipboard failed",
+  "nick_changed": "Nickname changed",
+  "err": "Error",
+  "finish_points": "Number of points to win",
+  "req_for_start_game": "You need 3 to 12 players to start a game. Give them your ID so they can join the game.",
+  "setup_players_turn": "Customize the player turn order.",
+  "select_decks": "Select game decks"
 }

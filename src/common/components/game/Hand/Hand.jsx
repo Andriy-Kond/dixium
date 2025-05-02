@@ -44,6 +44,7 @@ import {
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
+import { useBackButton } from "context/BackButtonContext.jsx";
 
 export default function Hand({
   isActiveScreen,
@@ -54,6 +55,7 @@ export default function Hand({
 }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { showBackButton, hideBackButton } = useBackButton();
   const { gameId } = useParams();
   const gameStatus = useSelector(selectGameStatus(gameId));
 
@@ -168,7 +170,7 @@ export default function Hand({
     // setIsMountedCarousel(true);
   };
 
-  const exitCarouselMode = useCallback(() => {
+  const handleCloseCarousel = useCallback(() => {
     dispatch(
       setIsCarouselModeHandScreen({
         gameId,
@@ -176,9 +178,13 @@ export default function Hand({
         isCarouselModeHandScreen: false,
       }),
     );
-    // setIsMountedCarousel(false);
-    // setMiddleButton(null);
   }, [dispatch, gameId, playerId]);
+
+  // const exitCarouselMode = useCallback(() => {
+  //   handleCloseCarousel();
+  //   // setIsMountedCarousel(false);
+  //   // setMiddleButton(null);
+  // }, [handleCloseCarousel]);
 
   const toggleCardSelection = useCallback(
     btnKey => {
@@ -270,16 +276,8 @@ export default function Hand({
 
   //~ is show mask
   useEffect(() => {
-    if (isShowMask) {
-      dispatch(
-        setIsCarouselModeHandScreen({
-          gameId,
-          playerId,
-          isCarouselModeHandScreen: false,
-        }),
-      );
-    }
-  }, [dispatch, gameId, isShowMask, playerId]);
+    if (isShowMask) handleCloseCarousel();
+  }, [handleCloseCarousel, isShowMask]);
 
   //~ reInit for emblaApiCardsGuess
   useEffect(() => {
@@ -316,6 +314,22 @@ export default function Hand({
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCardsGuess]);
+
+  //~ set BackButton
+  useEffect(() => {
+    if (isCarouselModeHandScreen) {
+      showBackButton(handleCloseCarousel, "back", 1); // Показуємо кнопку "Назад"
+    } else {
+      hideBackButton(1); // Приховуємо кнопку, коли карусель закрита
+    }
+
+    return () => hideBackButton(1); // Очищення при демонтажі
+  }, [
+    isCarouselModeHandScreen,
+    showBackButton,
+    hideBackButton,
+    handleCloseCarousel,
+  ]);
 
   //* setMiddleButton
   useEffect(() => {
@@ -360,7 +374,8 @@ export default function Hand({
 
       setMiddleButton(
         <>
-          <Button btnText="<<" onClick={exitCarouselMode} />
+          {/* <Button btnText="<<" onClick={exitCarouselMode} /> */}
+          <Button btnText="<<" onClick={handleCloseCarousel} />
 
           {!storytellerId ||
           (!isCurrentPlayerStoryteller && storyteller?.isGuessed) ? (
@@ -513,7 +528,8 @@ export default function Hand({
     activeCardIdx,
     currentCard._id,
     currentPlayer.isGuessed,
-    exitCarouselMode,
+    // exitCarouselMode,
+    handleCloseCarousel,
     finishRound,
     firstGuessCardSet,
     gameStatus,

@@ -13,9 +13,11 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 import DecksList from "common/components/game/DecksList";
+import CreatingGame from "common/components/game/CreatingGame/CreatingGame.jsx";
 import GamesList from "common/components/game/GamesList";
 import Button from "common/components/ui/Button";
 import css from "./GamesListPage.module.scss";
+import { LOBBY } from "utils/generals/constants.js";
 
 export default function GamesListPage() {
   const dispatch = useDispatch();
@@ -32,7 +34,29 @@ export default function GamesListPage() {
     dispatch(setPageHeaderBgColor("#5D7E9E"));
   }, [dispatch, headerTitleText]);
 
-  const createGame = () => dispatch(setIsCreatingGame(true));
+  const handleCreateGame = () => {
+    const gameData = {
+      gameStatus: LOBBY,
+      isGameRunning: false,
+      isGameStarted: false,
+      isFirstTurn: false,
+      isSingleCardMode: false,
+      hostPlayerId: userCredentials._id,
+      hostPlayerName: userCredentials.name,
+      storytellerId: null,
+      currentRound: 0,
+      cardsOnTable: [],
+      votes: {},
+      scores: {},
+      players: [],
+      deck: [],
+      discardPile: [],
+      roundResults: [],
+      playerGameId: null,
+    };
+
+    socket.emit("createGame", { gameData });
+  };
 
   const [searchGame, setSearchGame] = useState(null); // Чисте значення для пошуку (type: Number)
   const [error, setError] = useState(null);
@@ -101,7 +125,8 @@ export default function GamesListPage() {
     <>
       <div className={css.container}>
         <div className={css.pageMain}>
-          {isCreatingGame && <DecksList />}
+          {isCreatingGame && <CreatingGame />}
+          {/* {isCreatingGame && <PrepareGame />} */}
 
           {!isCreatingGame && (
             <>
@@ -145,8 +170,10 @@ export default function GamesListPage() {
               <GamesList />
               <div className={css.bottomBar}>
                 <Button
-                  onClick={createGame}
-                  btnText={t("create_new_game")}
+                  onClick={handleCreateGame}
+                  btnText={`${t("create_new_game")} ID:${
+                    userCredentials.playerGameId
+                  }`}
                   btnStyle={["btnFlexGrow"]}
                 />
               </div>

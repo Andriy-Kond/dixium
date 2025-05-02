@@ -1,5 +1,5 @@
-import { Suspense, useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "common/components/navComponents/AppBar";
 import css from "./SharedLayout.module.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,19 +16,38 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import { DARK, LIGHT } from "utils/generals/constants.js";
 import { useTranslation } from "react-i18next";
+import { useBackButton } from "context/BackButtonContext.jsx";
 
 export default function SharedLayout() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const theme = useSelector(selectTheme);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
 
   const pageHeaderText = useSelector(selectPageHeaderText);
   const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
   const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
 
+  const isHomePage = location.pathname === "/";
+  const isGameCreationPage = location.pathname === "/game/create";
+
   const [isMobile, setIsMobile] = useState(false);
-  const isHomePage = location.pathname === "/"; // Перевірка, чи це HomePage
+
+  useEffect(() => {
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    dispatch(setTheme(prefersDark ? DARK : LIGHT));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!location.pathname.includes("game")) {
+      dispatch(setPageHeaderText("")); // clear text for Home page
+      dispatch(setPageHeaderBgColor("#5D7E9E")); // set default color on Home page
+    }
+  }, [dispatch, location.pathname, t]);
 
   // Check if it is mobile viewport for removing game header in Home page
   useEffect(() => {
@@ -45,27 +64,31 @@ export default function SharedLayout() {
       // const widthPixelRatio = window.innerWidth / window.devicePixelRatio;
       setIsMobile(width <= 768);
     };
-
     updateViewport();
-
     window.addEventListener("resize", updateViewport);
 
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
+  const handleBackClick = useCallback(() => {
+    navigate(-1); // Повертається на попередній маршрут у стеку історії
+  }, [navigate]);
+
+  const isGameRoute = /^\/game\/[^/]+$/.test(location.pathname); // Перевіряє /game/:gameId
+  const shouldShowBackButton =
+    !isHomePage && !isGameCreationPage && !isGameRoute;
+  // Показ кнопки "Назад" для маршрутів.
   useEffect(() => {
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    dispatch(setTheme(prefersDark ? DARK : LIGHT));
-  }, [dispatch]);
+    if (shouldShowBackButton) {
+      showBackButton(handleBackClick, "back", 0);
+    } else {
+      hideBackButton(0);
+    }
+  }, [handleBackClick, hideBackButton, shouldShowBackButton, showBackButton]);
 
   useEffect(() => {
-    if (!location.pathname.includes("game")) {
-      dispatch(setPageHeaderText("")); // clear text for Home page
-      dispatch(setPageHeaderBgColor("#5D7E9E")); // set default color on Home page
-    }
-  }, [dispatch, location.pathname, t]);
+    if (!shouldShowBackButton) return () => hideBackButton(0);
+  }, [hideBackButton, shouldShowBackButton]);
 
   return (
     <>
@@ -88,11 +111,20 @@ export default function SharedLayout() {
               </div>
             </div>
           )}
-          {!isHomePage && (
+
+          {backButtonConfig.isVisible && (
             <header className={css.navHeader}>
-              <AppBar />
+              <button
+                className={css.backButton}
+                onClick={backButtonConfig.onClick}>
+                {`<< ${t("back")}`}
+              </button>
             </header>
           )}
+
+          <div className={css.navHeader}>
+            <AppBar />
+          </div>
 
           {/* Умовне відображення AppBar */}
           {/* {!isHomePage ? (

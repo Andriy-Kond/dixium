@@ -3,6 +3,7 @@ import { lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notify } from "notiflix";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { BackButtonProvider } from "context/BackButtonContext.jsx";
 
 import PrivateRoute from "common/components/navigation/PvivateRoute";
 import PublicRoute from "common/components/navigation/PublicRoute";
@@ -13,6 +14,10 @@ import { setIsLoggedIn } from "redux/auth/authSlice";
 import { selectIsSetPassword, selectUserToken } from "./redux/selectors";
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
 import { ToastContainer } from "react-toastify";
+import CreatingGame from "common/components/game/CreatingGame/CreatingGame.jsx";
+import SortPlayers from "common/components/game/SortPlayers/index.js";
+import SelectDecks from "common/components/game/SelectDecks/index.js";
+import DeckCards from "common/components/game/DeckCards/index.js";
 
 Notify.init({
   clickToClose: true,
@@ -77,41 +82,52 @@ export default function App() {
       <GoogleOAuthProvider
         clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
         locale="en">
-        <Routes>
-          <Route path="/" element={<SharedLayout />}>
-            <Route element={<PrivateRoute redirectTo="/" />}>
-              <Route path="/game" element={<GamesListPage />} />
-              <Route path="/game/:gameId" element={<CurrentGamePage />} />
-              <Route path="/set-password" element={<SetPasswordPage />} />
+        <BackButtonProvider>
+          <Routes>
+            <Route path="/" element={<SharedLayout />}>
+              <Route element={<PrivateRoute redirectTo="/" />}>
+                <Route path="/game" element={<GamesListPage />}>
+                  <Route path="create" element={<CreatingGame />} />
+                  <Route path="sort-players" element={<SortPlayers />} />
+                  <Route path="select-decks" element={<SelectDecks />} />
+                  <Route path="desk-cards" element={<DeckCards />} />
+                </Route>
+                <Route path="/game/:gameId" element={<CurrentGamePage />} />
+
+                <Route path="/set-password" element={<SetPasswordPage />} />
+              </Route>
+
+              <Route element={<PublicRoute redirectTo="/game" />}>
+                <Route index element={<HomePage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/verify-email" element={<VerifyEmailPage />} />
+                <Route
+                  path="/forgot-password"
+                  element={<ForgotPasswordPage />}
+                />
+                <Route
+                  path="/reset-password/:resetToken"
+                  element={<ResetPasswordPage />}
+                />
+              </Route>
+
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
+          </Routes>
 
-            <Route element={<PublicRoute redirectTo="/game" />}>
-              <Route index element={<HomePage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/verify-email" element={<VerifyEmailPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route
-                path="/reset-password/:resetToken"
-                element={<ResetPasswordPage />}
-              />
-            </Route>
-
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
-
-        <ToastContainer
-          position="top-center"
-          autoClose={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          theme="light"
-          // transition="Bounce"
-        />
+          <ToastContainer
+            position="top-center"
+            autoClose={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            theme="light"
+            // transition="Bounce"
+          />
+        </BackButtonProvider>
       </GoogleOAuthProvider>
     </>
   );

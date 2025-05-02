@@ -1,4 +1,8 @@
-import { setLocalGame } from "redux/game/localPersonalSlice.js";
+import { setIsCreatingGame } from "redux/game/gameSlice.js";
+import {
+  setLocalGame,
+  setUserActiveGameId,
+} from "redux/game/localPersonalSlice.js";
 
 export const gameCreated = (game, dispatch) => {
   console.log("gameCreated");
@@ -8,4 +12,6 @@ export const gameCreated = (game, dispatch) => {
   }
 
   dispatch(setLocalGame(game));
+  dispatch(setIsCreatingGame(true)); // todo скинути після початку гри.
+  dispatch(setUserActiveGameId(game._id));
 };

@@ -5,9 +5,12 @@ import { BsArrowsExpand } from "react-icons/bs";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import css from "./SortablePlayer.module.scss";
-import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
+import {
+  selectLocalGame,
+  selectUserActiveGameId,
+  selectUserCredentials,
+} from "redux/selectors.js";
 import Button from "common/components/ui/Button/index.js";
 import socket from "services/socket.js";
 import { useTranslation } from "react-i18next";
@@ -41,8 +44,8 @@ export default function SortablePlayer({ player }) {
     // willChange: "transform", // може зменшити "мерехтіння"
   };
 
-  const { gameId } = useParams();
-  const currentGame = useSelector(selectLocalGame(gameId));
+  const userActiveGameId = useSelector(selectUserActiveGameId);
+  const currentGame = useSelector(selectLocalGame(userActiveGameId));
   const userCredentials = useSelector(selectUserCredentials);
   const isCurrentPlayerIsHost =
     currentGame.hostPlayerId === userCredentials._id;
