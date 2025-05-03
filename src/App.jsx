@@ -87,12 +87,13 @@ export default function App() {
             <Route path="/" element={<SharedLayout />}>
               <Route element={<PrivateRoute redirectTo="/" />}>
                 <Route path="/game" element={<GamesListPage />}>
-                  <Route path="create" element={<CreatingGame />} />
+                  {/* <Route path="create" element={<CreatingGame />} /> */}
+                </Route>
+                <Route path="/game/:gameId" element={<CurrentGamePage />}>
                   <Route path="sort-players" element={<SortPlayers />} />
                   <Route path="select-decks" element={<SelectDecks />} />
                   <Route path="desk-cards" element={<DeckCards />} />
                 </Route>
-                <Route path="/game/:gameId" element={<CurrentGamePage />} />
 
                 <Route path="/set-password" element={<SetPasswordPage />} />
               </Route>

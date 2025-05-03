@@ -5,11 +5,23 @@ import css from "./CurrentGamePage.module.scss";
 
 import { useSelector } from "react-redux";
 import { selectLocalGame } from "redux/selectors.js";
+import { useBackButton } from "context/BackButtonContext.jsx";
+import { useEffect } from "react";
 
 export default function CurrentGamePage() {
   const { gameId } = useParams();
 
+  const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
+
   const currentGame = useSelector(selectLocalGame(gameId));
+
+  // useEffect(() => {
+  //   // Ховаємо кнопку з пріоритетом 1, щоб перевизначити SharedLayout
+  //   console.log("CurrentGamePage >> Ховаю кнопку");
+  //   hideBackButton(1);
+  //   // Повертаємо кнопку до стану за замовчуванням при розмонтуванні
+  //   return () => hideBackButton(0);
+  // }, [hideBackButton]);
 
   if (!currentGame) {
     // return null; // Або можна додати <Navigate to="/game" replace />

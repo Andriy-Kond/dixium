@@ -4,7 +4,7 @@ export default function DeckCards(deck) {
   return (
     <>
       {deck.map(card => {
-        <img src="to-card" alt="card" />;
+        return <img src="to-card" alt="card" />;
       })}
     </>
   );

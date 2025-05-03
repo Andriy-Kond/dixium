@@ -25,13 +25,14 @@ export default function SharedLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
+  console.log(" SharedLayout >> backButtonConfig:::", backButtonConfig);
 
   const pageHeaderText = useSelector(selectPageHeaderText);
   const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
   const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
 
   const isHomePage = location.pathname === "/";
-  const isGameCreationPage = location.pathname === "/game/create";
+  const isGamesListPage = location.pathname === "/game";
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -74,21 +75,29 @@ export default function SharedLayout() {
     navigate(-1); // Повертається на попередній маршрут у стеку історії
   }, [navigate]);
 
-  const isGameRoute = /^\/game\/[^/]+$/.test(location.pathname); // Перевіряє /game/:gameId
-  const shouldShowBackButton =
-    !isHomePage && !isGameCreationPage && !isGameRoute;
+  // const isGameRoute = /^\/game\/[^/]+$/.test(location.pathname); // Перевіряє /game/:gameId
+
+  // Логіка за замовчуванням: показувати кнопку для всіх маршрутів, окрім "/" і "/game"
+  const shouldShowBackButton = !isHomePage && !isGamesListPage;
+
   // Показ кнопки "Назад" для маршрутів.
   useEffect(() => {
     if (shouldShowBackButton) {
+      // Пріоритет 0 — найнижчий, щоб дочірні компоненти могли перевизначити
+      console.log("SharedLayout >> Показую кнопку :>> ");
       showBackButton(handleBackClick, "back", 0);
     } else {
+      console.log("SharedLayout >> Ховаю кнопку :>> ");
       hideBackButton(0);
     }
   }, [handleBackClick, hideBackButton, shouldShowBackButton, showBackButton]);
 
-  useEffect(() => {
-    if (!shouldShowBackButton) return () => hideBackButton(0);
-  }, [hideBackButton, shouldShowBackButton]);
+  // useEffect(() => {
+  //   console.log(
+  //     "SharedLayout >> Ховаю кнопку, бо розмонтувався компонент :>> ",
+  //   );
+  //   // return () => hideBackButton(0);
+  // }, [hideBackButton]);
 
   return (
     <>
@@ -112,19 +121,18 @@ export default function SharedLayout() {
             </div>
           )}
 
-          {backButtonConfig.isVisible && (
-            <header className={css.navHeader}>
-              <button
-                className={css.backButton}
-                onClick={backButtonConfig.onClick}>
-                {`<< ${t("back")}`}
-              </button>
-            </header>
-          )}
-
           <div className={css.navHeader}>
             <AppBar />
           </div>
+          <header className={css.navHeader}></header>
+
+          {backButtonConfig.isVisible && (
+            <button
+              className={css.backButton}
+              onClick={backButtonConfig.onClick}>
+              {`<< ${t("back")}`}
+            </button>
+          )}
 
           {/* Умовне відображення AppBar */}
           {/* {!isHomePage ? (

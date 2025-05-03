@@ -20,34 +20,20 @@ export function BackButtonProvider({ children }) {
 
   const showBackButton = useCallback(
     (onClick, label = "back", priority = 0) => {
+      console.log(
+        `showBackButton called with priority ${priority}, label ${label}`,
+      );
       // setBackButtonConfig({ isVisible: true, onClick, label, priority });
       // currentPriority.current = priority;
-      if (
-        priority >= currentPriority.current &&
-        (backButtonConfig.isVisible !== true ||
-          backButtonConfig.label !== label ||
-          backButtonConfig.priority !== priority)
-      ) {
+      if (priority >= currentPriority.current) {
         setBackButtonConfig({ isVisible: true, onClick, label, priority });
         currentPriority.current = priority;
       }
     },
-
-    [
-      backButtonConfig.isVisible,
-      backButtonConfig.label,
-      backButtonConfig.priority,
-    ],
+    [],
   );
 
   const hideBackButton = useCallback((priority = 0) => {
-    setBackButtonConfig({
-      isVisible: false,
-      onClick: null,
-      label: "back",
-      priority: 0,
-    });
-
     // currentPriority.current = 0;
     if (priority >= currentPriority.current) {
       setBackButtonConfig({
@@ -56,6 +42,7 @@ export function BackButtonProvider({ children }) {
         label: "back",
         priority: 0,
       });
+
       currentPriority.current = 0;
     }
   }, []);
