@@ -1,6 +1,5 @@
-// import { authApi } from "redux/auth/authApi.js";
-// import { setUserCredentials } from "redux/auth/authSlice.js";
 import {
+  clearLocalGame,
   setLocalGame,
   setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
@@ -17,11 +16,11 @@ export const userDeletedFromGame = ({
   if (!game) throw new Error(`The game is ${game}`);
 
   // deletedUser can be undefined if not found on server
-  if (deletedUser?._id === userId) {
+  if (deletedUser && deletedUser._id === userId) {
     // Delete current user from game if it still in room
-    dispatch(setLocalGame({}));
+    navigate("/game");
     dispatch(setUserActiveGameId(null));
-    navigate("/game"); // можна перенаправити тут, а не у компоненті
+    dispatch(clearLocalGame(game));
   } else {
     dispatch(setLocalGame(game));
   }

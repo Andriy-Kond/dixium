@@ -20,9 +20,10 @@ export function BackButtonProvider({ children }) {
 
   const showBackButton = useCallback(
     (onClick, label = "back", priority = 0) => {
-      console.log(
-        `showBackButton called with priority ${priority}, label ${label}`,
-      );
+      // console.log(
+      //   `showBackButton called with priority ${priority}, label ${label}`,
+      // );
+
       // setBackButtonConfig({ isVisible: true, onClick, label, priority });
       // currentPriority.current = priority;
       if (priority >= currentPriority.current) {

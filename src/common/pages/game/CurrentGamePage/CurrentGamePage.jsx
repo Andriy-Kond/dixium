@@ -1,15 +1,17 @@
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import PrepareGame from "common/components/game/PrepareGame";
 import Game from "common/components/game/Game";
 import css from "./CurrentGamePage.module.scss";
 
 import { useSelector } from "react-redux";
-import { selectLocalGame } from "redux/selectors.js";
+import { selectLocalGame, selectUserActiveGameId } from "redux/selectors.js";
 import { useBackButton } from "context/BackButtonContext.jsx";
 import { useEffect } from "react";
 
 export default function CurrentGamePage() {
   const { gameId } = useParams();
+  const navigate = useNavigate();
+  const userActiveGameId = useSelector(selectUserActiveGameId);
 
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
 
@@ -23,8 +25,8 @@ export default function CurrentGamePage() {
   //   return () => hideBackButton(0);
   // }, [hideBackButton]);
 
-  if (!currentGame) {
-    // return null; // Або можна додати <Navigate to="/game" replace />
+  if (!userActiveGameId || !currentGame) {
+    navigate("/game");
     return <Navigate to="/game" replace />;
   }
 

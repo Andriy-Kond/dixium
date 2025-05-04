@@ -68,11 +68,11 @@ export default function AppBar() {
 
         <div className={css.serviceMenuContainer}>
           {/* перевірка щоб при перезавантаженні сторінки при наявному токені не блимало спочатку AuthNav, а потім UserMenu: */}
-          {/* {isLoggedIn ? (
+          {isLoggedIn ? (
             <UserMenu closeMenu={closeMenu} />
           ) : (
             <AuthNav closeMenu={closeMenu} />
-          )} */}
+          )}
           {isLoggedIn && <UserMenu closeMenu={closeMenu} />}
         </div>
       </div>

@@ -29,11 +29,12 @@ import {
   gameFound,
   gameCreated,
   updateUserCredentials,
-  userActiveGameIdUpdate,
   showError,
   socketConnection,
   joinToGameRoom,
   gameStarted,
+  userActiveGameIdUpdated,
+  findAndJoinToGameSuccess,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
@@ -68,14 +69,14 @@ export const useSetupSocketListeners = () => {
     const handleUpdateUserCredentials = ({ user }) =>
       updateUserCredentials(user, dispatch);
 
-    const handleUserActiveGameIdUpdate = ({ userActiveGameId }) =>
-      userActiveGameIdUpdate(userActiveGameId, dispatch);
+    const handleUserActiveGameIdUpdated = ({ userActiveGameId }) =>
+      userActiveGameIdUpdated(userActiveGameId, dispatch);
 
     const handleGameFirstTurnUpdate = ({ game }) =>
       gameFirstTurnUpdate(game, dispatch, userId);
 
     const handleGameCreated = ({ game }) => {
-      if (game.hostPlayerId === userId) gameCreated(game, dispatch);
+      if (game.hostPlayerId === userId) gameCreated(game, dispatch, navigate);
     };
 
     const handlePlayerJoined = ({ game, player, message }) =>
@@ -89,25 +90,19 @@ export const useSetupSocketListeners = () => {
         dispatch,
       });
 
-    const handleUserDeletedFromGame = ({ game, deletedUser }) =>
-      userDeletedFromGame({
-        game,
-        deletedUser,
-        userId,
-        dispatch,
-        navigate,
-      });
+    const handleUserDeletedFromGame = params =>
+      userDeletedFromGame({ ...params, userId, dispatch, navigate });
 
     const handleGameDeleted = ({ game }) => {
       if (games[game._id])
         gameDeleted(game, dispatch, gameId, userId, navigate, toastId);
     };
 
-    const handlePlayersOrderUpdate = ({ game, message }) =>
-      playersOrderUpdate(game, message, dispatch, activeActions);
+    const handlePlayersOrderUpdate = params =>
+      playersOrderUpdate(...params, dispatch, activeActions);
 
-    const handleGameRunning = ({ game, message }) =>
-      gameRunning(games, game, message, dispatch, activeActions, userId);
+    const handleGameRunning = params =>
+      gameRunning(games, ...params, dispatch, activeActions, userId);
 
     const handleFirstStorytellerUpdated = ({ game }) =>
       firstStorytellerUpdated(game, dispatch, userId);
@@ -121,21 +116,22 @@ export const useSetupSocketListeners = () => {
     const handleVotingStarted = ({ game }) =>
       votingStarted(game, dispatch, userId);
 
-    const handlePlayerVoteSuccess = ({ game, message }) =>
-      playerVoteSuccess(game, message, dispatch, activeActions);
+    const handlePlayerVoteSuccess = params =>
+      playerVoteSuccess(...params, dispatch, activeActions);
 
-    const handleRoundFinishSuccess = ({ game, message }) =>
-      roundFinishSuccess(game, message, dispatch, activeActions, userId);
+    const handleRoundFinishSuccess = params =>
+      roundFinishSuccess(...params, dispatch, activeActions, userId);
 
-    const handleStartNewRoundSuccess = ({ game, message }) =>
-      startNewRoundSuccess(game, message, dispatch, activeActions, userId);
+    const handleStartNewRoundSuccess = params =>
+      startNewRoundSuccess(...params, dispatch, activeActions, userId);
 
-    const handleGameEnd = ({ game, message }) =>
-      gameEnd(game, message, dispatch);
+    const handleGameEnd = params => gameEnd(...params, dispatch);
 
     const handleGameFound = ({ game }) => gameFound(game, dispatch);
 
     const handleGameStarted = ({ game }) => gameStarted(game, games, dispatch);
+    const handleFindAndJoinToGameSuccess = ({ game }) =>
+      findAndJoinToGameSuccess(game, dispatch, navigate);
 
     // console.log(`Setting up socket listeners for component ${Math.random()}`); // дебаг унікальності
     socket.on("connect", () => handleSocketConnection("connect"));
@@ -144,12 +140,12 @@ export const useSetupSocketListeners = () => {
     socket.on("error", handleError);
 
     socket.on("updateUserCredentials", handleUpdateUserCredentials);
-    socket.on("UserActiveGameId:Update", handleUserActiveGameIdUpdate);
+    socket.on("UserActiveGameId_Updated", handleUserActiveGameIdUpdated);
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
     socket.on("gameCreated", handleGameCreated);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
-    socket.on("Game:Deleted", handleGameDeleted);
+    socket.on("Game_Deleted", handleGameDeleted);
     socket.on("playersOrderUpdated", handlePlayersOrderUpdate);
     socket.on("Game_Running", handleGameRunning);
     socket.on("firstStorytellerUpdated", handleFirstStorytellerUpdated);
@@ -162,6 +158,7 @@ export const useSetupSocketListeners = () => {
     socket.on("gameEnd", handleGameEnd);
     socket.on("gameFound", handleGameFound);
     socket.on("Game_Started", handleGameStarted);
+    socket.on("findAndJoinToGame_Success", handleFindAndJoinToGameSuccess);
 
     return () => {
       // console.log("Cleaning up socket listeners");
@@ -170,12 +167,12 @@ export const useSetupSocketListeners = () => {
       socket.off("error", handleError);
 
       socket.off("updateUserCredentials", handleUpdateUserCredentials);
-      socket.off("UserActiveGameId:Update", handleUserActiveGameIdUpdate);
+      socket.off("UserActiveGameId_Updated", handleUserActiveGameIdUpdated);
       socket.off("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
       socket.off("gameCreated", handleGameCreated);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("userDeletedFromGame", handleUserDeletedFromGame);
-      socket.off("Game:Deleted", handleGameDeleted);
+      socket.off("Game_Deleted", handleGameDeleted);
       socket.off("playersOrderUpdated", handlePlayersOrderUpdate);
       socket.off("Game_Running", handleGameRunning);
       socket.off("firstStorytellerUpdated", handleFirstStorytellerUpdated);
@@ -187,7 +184,8 @@ export const useSetupSocketListeners = () => {
       socket.off("startNewRoundSuccess", handleStartNewRoundSuccess);
       socket.off("gameEnd", handleGameEnd);
       socket.off("gameFound", handleGameFound);
-      socket.on("Game_Started", handleGameStarted);
+      socket.off("Game_Started", handleGameStarted);
+      socket.off("findAndJoinToGame_Success", handleFindAndJoinToGameSuccess);
     };
   }, [
     activeActions,

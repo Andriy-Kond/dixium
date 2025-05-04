@@ -12,7 +12,11 @@ import { Notify } from "notiflix";
 import SortablePlayer from "common/components/game/SortablePlayer";
 import { distributeCards } from "utils/game/distributeCards.js";
 import Button from "common/components/ui/Button/index.js";
-import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
+import {
+  selectLocalGame,
+  selectUserActiveGameId,
+  selectUserCredentials,
+} from "redux/selectors.js";
 import css from "./PrepareGame.module.scss";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import { useTranslation } from "react-i18next";
@@ -31,11 +35,9 @@ export default function PrepareGame() {
   const { gameId } = useParams();
   const [finishPoints, setFinishPoints] = useState("30");
 
+  const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(gameId));
-  if (!currentGame) {
-    navigate("/game", { replace: true });
-    // return null;
-  }
+  if (!userActiveGameId || !currentGame) navigate("/game", { replace: true });
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: userId, playerGameId } = userCredentials;

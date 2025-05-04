@@ -49,7 +49,7 @@ export default function DecksList() {
       playerGameId: null,
     };
 
-    socket.emit("createGame", { gameData });
+    socket.emit("Game_Create", { gameData });
     dispatch(setIsCreatingGame(false));
     dispatch(setCurrentDeckId(null));
   };

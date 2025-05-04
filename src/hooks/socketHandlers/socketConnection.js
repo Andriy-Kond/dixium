@@ -8,3 +8,15 @@ export const socketConnection = (event, userId, gameId) => {
     console.log(`Socket ${event}ed, but user is not logged in`);
   }
 };
+
+// export const socketConnection = (event, userId, gameId) => {
+//   console.log(`Socket event: ${event}, socket.id: ${socket.id}`);
+//   if (userId) {
+//     socket.emit("registerUserId", { userId });
+//     if (gameId) {
+//       socket.emit("joinToGameRoom", { gameId, userId });
+//     }
+//   } else {
+//     console.log(`Socket ${event}ed, but user is not logged in`);
+//   }
+// };

@@ -1,10 +1,6 @@
 import { setUserActiveGameId } from "redux/game/localPersonalSlice.js";
 
-export const userActiveGameIdUpdate = (userActiveGameId, dispatch) => {
+export const userActiveGameIdUpdated = (userActiveGameId, dispatch) => {
   console.log("userActiveGameIdUpdate");
-
-  // if (!userActiveGameId)
-  //   throw new Error(`The userActiveGameId is ${userActiveGameId}`);
-
   dispatch(setUserActiveGameId(userActiveGameId ?? null)); // Оператор ?? для обробки undefined
 };

@@ -57,6 +57,11 @@ export const localPersonalSlice = createSlice({
       state.games[game._id] = game; // add new or update exist
     },
 
+    clearLocalGame: (state, action) => {
+      const game = action.payload;
+      delete state.games[game._id];
+    },
+
     clearLocalGames: (state, action) => {
       state.games = {};
     },
@@ -131,12 +136,11 @@ export const localPersonalSlice = createSlice({
       // .entries перетворює об'єкт state.games у масив пар [key, value]
       const updateGameList = Object.fromEntries(
         Object.entries(state.games).filter(([key]) => {
-          console.log("clearLocalState >> key:::", key);
-          console.log("clearLocalState >> gameId:::", gameId);
+          // console.log("clearLocalState >> key:::", key);
+          // console.log("clearLocalState >> gameId:::", gameId);
           return key !== gameId;
         }),
       );
-      console.log(" updateGameList:::", updateGameList);
 
       // console.log(" updateGameList:::", updateGameList);
       return {
@@ -273,6 +277,7 @@ export const persistedActiveScreenReducer = persistReducer(
 
 export const {
   setLocalGame,
+  clearLocalGame,
   clearLocalGames,
   setLocalGameStatus,
   updateLocalGame,

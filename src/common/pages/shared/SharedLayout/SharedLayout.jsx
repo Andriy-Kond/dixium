@@ -17,6 +17,7 @@ import {
 import { DARK, LIGHT } from "utils/generals/constants.js";
 import { useTranslation } from "react-i18next";
 import { useBackButton } from "context/BackButtonContext.jsx";
+import Button from "common/components/ui/Button/index.js";
 
 export default function SharedLayout() {
   const dispatch = useDispatch();
@@ -25,7 +26,6 @@ export default function SharedLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
-  console.log(" SharedLayout >> backButtonConfig:::", backButtonConfig);
 
   const pageHeaderText = useSelector(selectPageHeaderText);
   const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
@@ -84,10 +84,10 @@ export default function SharedLayout() {
   useEffect(() => {
     if (shouldShowBackButton) {
       // Пріоритет 0 — найнижчий, щоб дочірні компоненти могли перевизначити
-      console.log("SharedLayout >> Показую кнопку :>> ");
+      // console.log("SharedLayout >> Показую кнопку :>> ");
       showBackButton(handleBackClick, "back", 0);
     } else {
-      console.log("SharedLayout >> Ховаю кнопку :>> ");
+      // console.log("SharedLayout >> Ховаю кнопку :>> ");
       hideBackButton(0);
     }
   }, [handleBackClick, hideBackButton, shouldShowBackButton, showBackButton]);
@@ -127,11 +127,14 @@ export default function SharedLayout() {
           <header className={css.navHeader}></header>
 
           {backButtonConfig.isVisible && (
-            <button
+            <Button
               className={css.backButton}
-              onClick={backButtonConfig.onClick}>
+              onClick={() => {
+                console.log("click");
+                backButtonConfig.onClick(); // ? чому спрацьовує лише після другого натискання?
+              }}>
               {`<< ${t("back")}`}
-            </button>
+            </Button>
           )}
 
           {/* Умовне відображення AppBar */}

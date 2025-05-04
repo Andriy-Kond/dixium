@@ -14,9 +14,18 @@ import {
 import Button from "common/components/ui/Button/index.js";
 import socket from "services/socket.js";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 // Component for each dnd player
 export default function SortablePlayer({ player }) {
+  const navigate = useNavigate();
+  const userActiveGameId = useSelector(selectUserActiveGameId);
+  const currentGame = useSelector(selectLocalGame(userActiveGameId));
+  if (!userActiveGameId || !currentGame) navigate("/game", { replace: true });
+
+  const userCredentials = useSelector(selectUserCredentials);
+  const isCurrentPlayerIsHost =
+    currentGame.hostPlayerId === userCredentials._id;
   const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -43,12 +52,6 @@ export default function SortablePlayer({ player }) {
     // will-change — це CSS-властивість, яка підказує браузеру, що певний елемент найближчим часом зміниться (наприклад, його transform, opacity або top). Це дозволяє браузеру заздалегідь оптимізувати рендеринг і зробити анімацію або зміни плавнішими.
     // willChange: "transform", // може зменшити "мерехтіння"
   };
-
-  const userActiveGameId = useSelector(selectUserActiveGameId);
-  const currentGame = useSelector(selectLocalGame(userActiveGameId));
-  const userCredentials = useSelector(selectUserCredentials);
-  const isCurrentPlayerIsHost =
-    currentGame.hostPlayerId === userCredentials._id;
 
   const removePlayer = userId => {
     // console.log(" SortablePlayer >> userId:::", userId);

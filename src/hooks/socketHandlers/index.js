@@ -1,5 +1,5 @@
 export * from "./updateUserCredentials.js";
-export * from "./userActiveGameIdUpdate.js";
+export * from "./userActiveGameIdUpdated.js";
 export * from "./socketConnection.js";
 export * from "./showError.js";
 
@@ -21,3 +21,4 @@ export * from "./gameEnd.js";
 export * from "./gameFound.js";
 export * from "./gameStarted.js";
 export * from "./gameRunning.js";
+export * from "./findAndJoinToGameSuccess.js";
