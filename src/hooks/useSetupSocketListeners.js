@@ -6,6 +6,7 @@ import socket from "services/socket.js";
 import {
   selectActiveActions,
   selectIsGameRunning,
+  selectIsGameStarted,
   selectLocalGames,
   selectToastId,
   selectUserActiveGameId,
@@ -30,7 +31,6 @@ import {
   gameCreated,
   updateUserCredentials,
   showError,
-  socketConnection,
   joinToGameRoom,
   gameStarted,
   userActiveGameIdUpdated,
@@ -54,13 +54,17 @@ export const useSetupSocketListeners = () => {
   const games = useSelector(selectLocalGames);
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const isGameRunning = useSelector(selectIsGameRunning(gameId));
+  const isGameStarted = useSelector(selectIsGameStarted(gameId));
 
   useEffect(() => {
-    const handleSocketConnection = event => {
-      socketConnection(event, userId, gameId);
+    if (gameId && userActiveGameId === gameId)
+      joinToGameRoom(gameId, userId, dispatch);
 
-      if (isGameRunning && gameId && userActiveGameId === gameId)
-        joinToGameRoom(gameId, userId);
+    const handleSocketConnection = event => {
+      // socketConnection(event, userId, gameId);
+
+      if (gameId && gameId === userActiveGameId)
+        joinToGameRoom(gameId, userId, dispatch);
     };
 
     const handleError = err => showError(err, t);
@@ -89,6 +93,10 @@ export const useSetupSocketListeners = () => {
         navigate,
         dispatch,
       });
+
+    const handlePlayerJoined_test = ({ game, player, message }) => {
+      console.log("handlePlayerJoined_test");
+    };
 
     const handleUserDeletedFromGame = params =>
       userDeletedFromGame({ ...params, userId, dispatch, navigate });
@@ -144,6 +152,7 @@ export const useSetupSocketListeners = () => {
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
     socket.on("gameCreated", handleGameCreated);
     socket.on("playerJoined", handlePlayerJoined);
+    socket.on("playerJoined_test", handlePlayerJoined_test);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
     socket.on("Game_Deleted", handleGameDeleted);
     socket.on("playersOrderUpdated", handlePlayersOrderUpdate);

@@ -3,37 +3,37 @@ import PrepareGame from "common/components/game/PrepareGame";
 import Game from "common/components/game/Game";
 import css from "./CurrentGamePage.module.scss";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectLocalGame, selectUserActiveGameId } from "redux/selectors.js";
-import { useBackButton } from "context/BackButtonContext.jsx";
 import { useEffect } from "react";
+import { updateIsRedirecting } from "redux/game/localPersonalSlice.js";
 
 export default function CurrentGamePage() {
+  const dispatch = useDispatch();
   const { gameId } = useParams();
   const navigate = useNavigate();
   const userActiveGameId = useSelector(selectUserActiveGameId);
-
-  const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
-
   const currentGame = useSelector(selectLocalGame(gameId));
 
-  // useEffect(() => {
-  //   // Ховаємо кнопку з пріоритетом 1, щоб перевизначити SharedLayout
-  //   console.log("CurrentGamePage >> Ховаю кнопку");
-  //   hideBackButton(1);
-  //   // Повертаємо кнопку до стану за замовчуванням при розмонтуванні
-  //   return () => hideBackButton(0);
-  // }, [hideBackButton]);
+  useEffect(() => {
+    dispatch(updateIsRedirecting(false));
+  }, [dispatch]);
 
   if (!userActiveGameId || !currentGame) {
     navigate("/game");
-    return <Navigate to="/game" replace />;
+    // return <Navigate to="/game" replace />;
+    return;
   }
 
   return (
     <>
       <div className={css.container}>
         {currentGame.isGameRunning ? <Game /> : <PrepareGame />}
+        {/* {currentGame.isGameRunning ? (
+          <Navigate to={"current-game"} />
+        ) : (
+          <Navigate to={"prepare-game"} />
+        )} */}
       </div>
     </>
   );

@@ -122,6 +122,7 @@ export default function PrepareGame() {
 
   return (
     <>
+      <h1>Prepare Game</h1>
       <InformMessage />
 
       <label>

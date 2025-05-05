@@ -19,19 +19,22 @@ import { useNavigate } from "react-router-dom";
 // Component for each dnd player
 export default function SortablePlayer({ player }) {
   const navigate = useNavigate();
-  const userActiveGameId = useSelector(selectUserActiveGameId);
-  const currentGame = useSelector(selectLocalGame(userActiveGameId));
-  if (!userActiveGameId || !currentGame) navigate("/game", { replace: true });
-
-  const userCredentials = useSelector(selectUserCredentials);
-  const isCurrentPlayerIsHost =
-    currentGame.hostPlayerId === userCredentials._id;
   const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: player._id,
       animateLayoutChanges: () => false, // Вимикає перехід після зміни DOM (прибере різкі стрибки після оновлення стану)
     });
+  const userCredentials = useSelector(selectUserCredentials);
+  const userActiveGameId = useSelector(selectUserActiveGameId);
+  const currentGame = useSelector(selectLocalGame(userActiveGameId));
+  if (!userActiveGameId || !currentGame) {
+    navigate("/game", { replace: true });
+    return;
+  }
+
+  const isCurrentPlayerIsHost =
+    currentGame.hostPlayerId === userCredentials._id;
 
   // attributes – атрибути для коректної роботи 'aria-*' (доступність).
   // listeners – обробники подій для початку перетягування.

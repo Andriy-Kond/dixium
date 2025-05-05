@@ -41,6 +41,7 @@ const localInitialState = {
   isSetPassword: false,
 
   userActiveGameId: null,
+  isRedirecting: false,
 };
 
 export const localPersonalSlice = createSlice({
@@ -50,6 +51,10 @@ export const localPersonalSlice = createSlice({
     // addLocalGamesList: (state, action) => {
     //   state.games = action.payload;
     // },
+
+    updateIsRedirecting: (state, action) => {
+      state.isRedirecting = action.payload;
+    },
 
     setLocalGame: (state, action) => {
       const game = action.payload;
@@ -276,6 +281,7 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
+  updateIsRedirecting,
   setLocalGame,
   clearLocalGame,
   clearLocalGames,

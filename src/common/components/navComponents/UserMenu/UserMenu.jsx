@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { MdCheck, MdClear } from "react-icons/md";
-
 import {
   authApi,
   useLogoutUserMutation,
@@ -14,7 +13,6 @@ import { clearGameInitialState } from "redux/game/gameSlice.js";
 import { selectUserCredentials } from "redux/selectors";
 import Button from "common/components/ui/Button";
 
-import css from "./UserMenu.module.scss";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import {
@@ -23,11 +21,11 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import { useState } from "react";
 import { Notify } from "notiflix";
-import InformMessage from "common/components/ui/InformMessage/InformMessage.jsx";
 import LangSwitcher from "../LangSwitcher/index.js";
 import ThemeToggle from "common/components/ui/ThemeToggle/index.js";
+import css from "./UserMenu.module.scss";
 
-export default function UserMenu({ closeMenu }) {
+export default function UserMenu({ closeMenu = () => {} }) {
   const [setNickname, { isLoading }] = useSetNicknameMutation();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -108,7 +106,7 @@ export default function UserMenu({ closeMenu }) {
               {t("welcome_user", { user: userCredentials.name.toUpperCase() })}
             </span> */}
           <label>
-            {t("Нік")}
+            {t("nick")}
             <input
               type="text"
               value={nicknameValue}

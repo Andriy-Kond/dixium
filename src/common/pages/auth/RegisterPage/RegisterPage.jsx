@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   setIsSetPassword,
   setPageHeaderText,
+  setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
 import Button from "common/components/ui/Button/index.js";
@@ -50,6 +51,7 @@ export default function RegisterPage() {
       const result = await signupUser(userCredentials).unwrap();
       // console.log(" RegisterPage >> result:::", result);
       dispatch(setUserCredentials(result));
+      dispatch(setUserActiveGameId(result?.userActiveGameId));
       dispatch(setIsLoggedIn(true));
       form.reset();
       setErrorMessage(null); // Очистити помилку при успіху
@@ -90,6 +92,7 @@ export default function RegisterPage() {
       console.log("LoginPage >> google result:::", result);
 
       dispatch(setUserCredentials(result));
+      dispatch(setUserActiveGameId(result?.userActiveGameId));
       dispatch(setIsLoggedIn(true));
       // dispatch(setUserToken(user.token));
 

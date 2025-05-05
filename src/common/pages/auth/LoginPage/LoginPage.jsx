@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   setIsSetPassword,
   setPageHeaderText,
+  setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
 import Button from "common/components/ui/Button";
@@ -58,9 +59,11 @@ export default function LoginPage() {
 
     try {
       const result = await loginUser(userCredentials).unwrap();
+      console.log(" LoginPage >> result:::", result);
       console.log("loginUser");
 
       dispatch(setUserCredentials(result));
+      dispatch(setUserActiveGameId(result?.userActiveGameId));
       dispatch(setIsLoggedIn(true));
       setErrorMessage(null); // Очистити помилку при успіху
     } catch (err) {
@@ -86,6 +89,7 @@ export default function LoginPage() {
       console.log("LoginPage >> google result:::", result);
 
       dispatch(setUserCredentials(result));
+      dispatch(setUserActiveGameId(result?.userActiveGameId));
       dispatch(setIsLoggedIn(true));
 
       if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено

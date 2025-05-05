@@ -3,7 +3,9 @@ import { Notify } from "notiflix";
 import {
   clearLocalGames,
   setLocalGame,
+  setUserActiveGameId,
   showNotification,
+  updateIsRedirecting,
 } from "redux/game/localPersonalSlice.js";
 
 export const findAndJoinToGameSuccess = (game, dispatch, navigate) => {
@@ -20,6 +22,9 @@ export const findAndJoinToGameSuccess = (game, dispatch, navigate) => {
   } else {
     navigate(`game/${game._id}`);
     dispatch(setLocalGame(game));
+    dispatch(setUserActiveGameId(game._id));
+    dispatch(updateIsRedirecting(true));
+
     // setTimeout(() => {
     //   console.log("dispatch to 5 sec");
     // }, 5000);

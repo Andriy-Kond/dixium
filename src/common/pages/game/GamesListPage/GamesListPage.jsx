@@ -7,6 +7,7 @@ import {
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
 import {
+  selectIsRedirecting,
   selectLocalGame,
   selectLocalGames,
   selectUserActiveGameId,
@@ -49,6 +50,8 @@ export default function GamesListPage() {
     player => player._id === playerId,
   );
   const isCurrentPlayerIsHost = currentGame?.hostPlayerId === playerId;
+
+  const isRedirecting = useSelector(selectIsRedirecting);
 
   //# Page header color and text
   useEffect(() => {
@@ -148,6 +151,7 @@ export default function GamesListPage() {
 
   const returnToGame = () => {
     navigate(`${userActiveGameId}`);
+    // navigate(-1);
   };
 
   const removePlayer = userId => {
@@ -167,6 +171,10 @@ export default function GamesListPage() {
       removePlayer(playerId);
     }
   };
+
+  if (isRedirecting) {
+    return null; // Або повертайте лоадер, якщо потрібно
+  }
 
   return (
     <>

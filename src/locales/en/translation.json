@@ -125,6 +125,7 @@
   "id_copied_to_buffer": "ID copied to clipboard",
   "cant_copy_id_to_buffer": "Copy to clipboard failed",
   "nick_changed": "Nickname changed",
+  "nick": "Nick",
   "err": "Error",
   "finish_points": "Number of points to win",
   "req_for_start_game": "You need 3 to 12 players to start a game. Give them your ID so they can join the game.",

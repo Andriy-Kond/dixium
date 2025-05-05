@@ -17,10 +17,10 @@ export const playerJoined = ({
 
   if (!gameId) throw new Error(`The gameId is ${gameId}`);
 
-  console.log(" userId !== player._id:::", userId !== player._id);
+  // console.log("userId !== player._id:::", userId !== player._id);
   if (userId !== player._id) {
     dispatch(setLocalGame(game));
-    dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+    // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]))  ;
   }
 
   // Notify about new player
@@ -30,6 +30,6 @@ export const playerJoined = ({
     );
 
   // якщо цей гравець - це тільки-но доданий гравець і він НЕ на сторінці з цією поточною грою
-  if (player._id === userId && currentGameId !== gameId)
-    navigate(`/game/${gameId}`);
+  // if (player._id === userId && currentGameId !== gameId)
+  //   navigate(`/game/${gameId}`);
 };

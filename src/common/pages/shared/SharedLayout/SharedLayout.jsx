@@ -22,11 +22,12 @@ import Button from "common/components/ui/Button/index.js";
 export default function SharedLayout() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const theme = useSelector(selectTheme);
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
+  // console.log("Current location:", location.pathname, location.key);
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
 
+  const theme = useSelector(selectTheme);
   const pageHeaderText = useSelector(selectPageHeaderText);
   const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
   const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
@@ -72,6 +73,8 @@ export default function SharedLayout() {
   }, []);
 
   const handleBackClick = useCallback(() => {
+    console.log("handleBackClick");
+
     navigate(-1); // Повертається на попередній маршрут у стеку історії
   }, [navigate]);
 

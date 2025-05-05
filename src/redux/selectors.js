@@ -11,6 +11,8 @@ export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
 export const selectActiveActions = state => state.gameSlice.activeActions;
 
 //* localPersonalSlice selectors:
+export const selectIsRedirecting = state =>
+  state.localPersonalSlice.isRedirecting;
 export const selectIsSetPassword = state =>
   state.localPersonalSlice.isSetPassword;
 export const selectLocalGames = state => state.localPersonalSlice.games;
@@ -134,6 +136,9 @@ export const selectGameDiscardPile = gameId => state =>
 
 export const selectIsGameRunning = gameId => state =>
   state.localPersonalSlice.games[gameId]?.isGameRunning;
+
+export const selectIsGameStarted = gameId => state =>
+  state.localPersonalSlice.games[gameId]?.isGameStarted;
 
 export const selectIsSingleCardMode = gameId => state =>
   state.localPersonalSlice.games[gameId].isSingleCardMode;

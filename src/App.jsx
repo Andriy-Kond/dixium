@@ -14,10 +14,6 @@ import { setIsLoggedIn } from "redux/auth/authSlice";
 import { selectIsSetPassword, selectUserToken } from "./redux/selectors";
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
 import { ToastContainer } from "react-toastify";
-import CreatingGame from "common/components/game/CreatingGame/CreatingGame.jsx";
-import SortPlayers from "common/components/game/SortPlayers/index.js";
-import SelectDecks from "common/components/game/SelectDecks/index.js";
-import DeckCards from "common/components/game/DeckCards/index.js";
 
 Notify.init({
   clickToClose: true,
@@ -36,6 +32,13 @@ const ResetPasswordPage = lazy(() =>
 
 const GamesListPage = lazy(() => import("common/pages/game/GamesListPage"));
 const CurrentGamePage = lazy(() => import("common/pages/game/CurrentGamePage"));
+
+const PrepareGame = lazy(() => import("common/components/game/PrepareGame"));
+const SortPlayers = lazy(() => import("common/components/game/SortPlayers"));
+const SelectDecks = lazy(() => import("common/components/game/SelectDecks"));
+const DeckCards = lazy(() => import("common/components/game/DeckCards"));
+
+const Game = lazy(() => import("common/components/game/Game"));
 
 const NotFoundPage = lazy(() => import("common/pages/shared/NotFoundPage"));
 
@@ -90,9 +93,12 @@ export default function App() {
                   {/* <Route path="create" element={<CreatingGame />} /> */}
                 </Route>
                 <Route path="/game/:gameId" element={<CurrentGamePage />}>
-                  <Route path="sort-players" element={<SortPlayers />} />
-                  <Route path="select-decks" element={<SelectDecks />} />
-                  <Route path="desk-cards" element={<DeckCards />} />
+                  <Route path="prepare-game" element={<PrepareGame />}>
+                    <Route path="sort-players" element={<SortPlayers />} />
+                    <Route path="select-decks" element={<SelectDecks />} />
+                    <Route path="desk-cards" element={<DeckCards />} />
+                  </Route>
+                  <Route path="current-game" element={<Game />}></Route>
                 </Route>
 
                 <Route path="/set-password" element={<SetPasswordPage />} />

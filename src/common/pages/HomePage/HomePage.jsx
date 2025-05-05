@@ -1,6 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { GoogleLogin } from "@react-oauth/google";
-import { toggleTheme } from "redux/game/localPersonalSlice.js";
+import {
+  setUserActiveGameId,
+  toggleTheme,
+} from "redux/game/localPersonalSlice.js";
 import { selectIsSetPassword, selectTheme } from "redux/selectors.js";
 import { LIGHT } from "utils/generals/constants.js";
 import css from "./HomePage.module.scss";
@@ -43,6 +46,7 @@ export default function HomePage() {
       console.log("LoginPage >> google result:::", result);
 
       dispatch(setUserCredentials(result));
+      dispatch(setUserActiveGameId(result?.userActiveGameId));
       dispatch(setIsLoggedIn(true));
 
       if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено

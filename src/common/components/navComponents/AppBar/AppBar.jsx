@@ -6,8 +6,8 @@ import NavigationMenu from "common/components/navComponents/NavigationMenu";
 import AuthNav from "common/components/navComponents/AuthNav";
 import UserMenu from "common/components/navComponents/UserMenu";
 
-import LangSwitcher from "common/components/navComponents/LangSwitcher";
-import ThemeToggle from "common/components/ui/ThemeToggle";
+// import LangSwitcher from "common/components/navComponents/LangSwitcher";
+// import ThemeToggle from "common/components/ui/ThemeToggle";
 import css from "./AppBar.module.scss";
 
 export default function AppBar() {
@@ -73,7 +73,8 @@ export default function AppBar() {
           ) : (
             <AuthNav closeMenu={closeMenu} />
           )}
-          {isLoggedIn && <UserMenu closeMenu={closeMenu} />}
+
+          {/* {isLoggedIn && <UserMenu closeMenu={closeMenu} />} */}
         </div>
       </div>
     </nav>
