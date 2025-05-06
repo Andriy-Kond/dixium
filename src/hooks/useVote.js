@@ -2,7 +2,6 @@ import { Notify } from "notiflix";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
-  selectGamePlayers,
   selectIsSingleCardMode,
   selectLocalGame,
   selectUserCredentials,
@@ -15,12 +14,12 @@ import { useTranslation } from "react-i18next";
 export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
   const { t } = useTranslation();
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
+  const currentGame = useSelector(selectLocalGame(gameId));
+  const { players: gamePlayers } = currentGame;
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
 
-  const currentGame = useSelector(selectLocalGame(gameId));
-  const gamePlayers = useSelector(selectGamePlayers(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const votes = useSelector(selectVotes(gameId)); // { playerId: {firstVotedCardId, secondVotedCardIdn } }
   const playersMoreThanSix = gamePlayers.length > 6;

@@ -52,14 +52,6 @@ export default function Game() {
 
   const { gameId } = useParams();
 
-  const currentGame = useSelector(selectLocalGame(gameId));
-  // if (!currentGame) navigate("/game"); // ! не можна викликати навігацію в тілі функції! Треба лише у useEffect
-  useEffect(() => {
-    if (!currentGame) {
-      navigate("/game", { replace: true });
-    }
-  }, [currentGame, navigate]);
-
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
 
@@ -87,24 +79,45 @@ export default function Game() {
     ), // дозвіл на слайдінг при цій умові
   });
 
+  const currentGame = useSelector(selectLocalGame(gameId));
+  // if (!currentGame) navigate("/game"); // ! не можна викликати навігацію в тілі функції! Треба лише у useEffect
+
+  const {
+    players: gamePlayers = [],
+    isSingleCardMode = false,
+    gameStatus = LOBBY,
+    hostPlayerId = "",
+    storytellerId = "",
+    scores = {},
+    votes = {},
+    cardsOnTable = [],
+  } = currentGame;
+
+  const currentPlayer = gamePlayers.find(p => p._id === playerId) || [];
+  const {
+    hand: playerHand = [],
+    isVoted: isPlayerVoted = false,
+    isGuessed: isPlayerGuessed = false,
+  } = currentPlayer;
+
+  const storyteller = gamePlayers.find(p => p._id === storytellerId);
+  const isCurrentPlayerHost = hostPlayerId === playerId;
+  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
+  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
+  const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
+  const screens = isBlockScreens
+    ? [<Hand />]
+    : [<Hand />, <Players />, <Table />];
+
   const textAndColorOfHeader = useCallback(() => {
-    const { players, storytellerId, hostPlayerId, gameStatus } = currentGame;
-
-    const currentPlayer = players.find(p => p._id === playerId);
-    const storyteller = players.find(p => p._id === storytellerId);
-    const isCurrentPlayerHost = hostPlayerId === playerId;
-    const isReadyToVote = !players.some(player => !player.isGuessed);
-    const isReadyToCalculatePoints = players.every(player => player.isVoted);
-
-    const isCurrentPlayerStoryteller = storytellerId === playerId;
-
     if (!storytellerId || isShowMask)
       return { isMustMakeMove: true, text: t("first_turn") };
 
-    if (gameStatus === GUESSING && !currentPlayer.isGuessed)
+    if (gameStatus === GUESSING && !isPlayerGuessed)
       return { isMustMakeMove: true, text: t("please_choose_card") };
 
-    if (gameStatus === VOTING && !currentPlayer.isVoted)
+    if (gameStatus === VOTING && !isPlayerVoted)
       return { isMustMakeMove: true, text: t("please_vote") };
 
     if (gameStatus === GUESSING && isCurrentPlayerHost && isReadyToVote)
@@ -134,32 +147,47 @@ export default function Game() {
       };
 
     return { isMustMakeMove: false, text: t("players_taking_turn") };
-  }, [currentGame, isShowMask, playerId, t]);
+  }, [
+    gameStatus,
+    isCurrentPlayerHost,
+    isCurrentPlayerStoryteller,
+    isPlayerGuessed,
+    isPlayerVoted,
+    isReadyToCalculatePoints,
+    isReadyToVote,
+    isShowMask,
+    storyteller?.name,
+    storytellerId,
+    t,
+  ]);
 
   //# Page header - color and text
   useEffect(() => {
-    if (!currentGame) return;
-    const { scores, players } = currentGame;
+    // console.log("condition for", {
+    //   storytellerId: !storytellerId,
+    //   isShowMask,
+    //   isPlayerGuessed: !isPlayerGuessed,
+    //   isPlayerVoted: !isPlayerVoted,
+    // });
+    const gameScores = Object.values(currentGame.scores);
 
-    const gameScores = Object.values(scores);
-
-    const [maxId, maxVal] = Object.entries(scores).reduce(
+    const [maxId, maxVal] = Object.entries(currentGame.scores).reduce(
       ([maxKey, maxValue], [key, value]) =>
         value > maxValue ? [key, value] : [maxKey, maxValue],
       [null, -Infinity],
     );
 
-    const maxEntries = Object.entries(scores).filter(
+    const maxEntries = Object.entries(currentGame.scores).filter(
       ([key, value]) => value === maxVal,
     );
 
-    const winners = players.filter(p =>
+    const winners = currentGame.players.filter(p =>
       maxEntries.some(([key, value]) => key === p._id),
     );
     // console.log("maxEntries:", maxEntries);
     // console.log("winners:", winners);
 
-    // players.filter(p => {
+    // currentGame.players.filter(p => {
     //   const winnersP = maxEntries.filter(([key, value]) => key === p._id);
     //   console.log(" useEffect >> maxEntries:::", maxEntries);
     //       console.log(" gameEnd >> winnersP:::", winnersP);
@@ -174,21 +202,17 @@ export default function Game() {
       dispatch(setPageHeaderText(text));
       dispatch(setPageHeaderBgColor("#5D7E9E"));
     }
-  }, [currentGame, dispatch, textAndColorOfHeader]);
+  }, [currentGame.players, currentGame.scores, dispatch, textAndColorOfHeader]);
 
   // Add all publicId card's from Hand and Table to addPreviewId in Redux state
   useEffect(() => {
-    if (!currentGame) return;
-    const { players, cardsOnTable } = currentGame;
-
-    const currentPlayer = players.find(p => p._id === playerId);
-    const allCards = [...currentPlayer.hand, ...cardsOnTable];
+    const allCards = [...playerHand, ...cardsOnTable];
     // console.log("Adding previewIds for", allCards.length, "cards");
     allCards.forEach(card => {
       dispatch(addPreviewId(card.public_id));
       // console.log("Adding previewId in Game", card.public_id);
     });
-  }, [currentGame, dispatch, playerId]);
+  }, [playerHand, cardsOnTable, dispatch]);
 
   // Preload large imgs (by add <link> to document.head)
   useEffect(() => {
@@ -320,12 +344,6 @@ export default function Game() {
 
   // Повідомлення. що хтось став першим оповідачем
   useEffect(() => {
-    if (!currentGame) return;
-
-    const { players, storytellerId } = currentGame;
-    const storyteller = players.find(p => p._id === storytellerId);
-    const isCurrentPlayerStoryteller = storytellerId === playerId;
-
     if (isShowMask) {
       if (!localToastRef.current && !isCurrentPlayerStoryteller) {
         localToastRef.current = true;
@@ -361,12 +379,19 @@ export default function Game() {
         dispatch(setToastId({ gameId, playerId, toastId: newToastId }));
       }
     }
-  }, [currentGame, dispatch, gameId, isShowMask, playerId]);
+  }, [
+    dispatch,
+    gameId,
+    isCurrentPlayerStoryteller,
+    isShowMask,
+    playerId,
+    storyteller?.name,
+    t,
+    toastId,
+  ]);
 
   const startVoting = useCallback(() => {
     // todo: протестувати без useCallBack
-    if (!currentGame) return;
-
     const updatedGame = {
       ...currentGame,
       cardsOnTable: shuffleDeck(currentGame.cardsOnTable),
@@ -378,19 +403,8 @@ export default function Game() {
 
   const finishRound = useCallback(() => {
     // todo: протестувати без useCallBack
-    if (!currentGame) return;
-
-    const {
-      players,
-      storytellerId,
-      cardsOnTable,
-      votes,
-      scores,
-      isSingleCardMode,
-    } = currentGame;
-
     const updatedScores = calculatePoints({
-      players,
+      gamePlayers,
       storytellerId,
       cardsOnTable,
       votes,
@@ -401,7 +415,7 @@ export default function Game() {
     const roundResults = prepareRoundResults({
       cardsOnTable,
       votes,
-      players,
+      gamePlayers,
       storytellerId,
     });
 
@@ -413,7 +427,15 @@ export default function Game() {
     };
 
     socket.emit("roundFinish", { updatedGame });
-  }, [currentGame]);
+  }, [
+    cardsOnTable,
+    currentGame,
+    isSingleCardMode,
+    gamePlayers,
+    scores,
+    storytellerId,
+    votes,
+  ]);
 
   const stabilizedSetMiddleButton = useCallback(value => {
     // todo: протестувати без useCallBack
@@ -428,13 +450,13 @@ export default function Game() {
     emblaApi?.scrollNext();
   };
 
-  if (!currentGame) return null;
+  useEffect(() => {
+    if (!currentGame) {
+      navigate("/game", { replace: true });
+    }
+  }, [currentGame, navigate]);
 
-  const isCurrentPlayerStoryteller = currentGame.storytellerId === playerId;
-  const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
-  const screens = isBlockScreens
-    ? [<Hand />]
-    : [<Hand />, <Players />, <Table />];
+  if (!currentGame) return null;
 
   if (!currentGame.isGameRunning) return <SortPlayers />;
 

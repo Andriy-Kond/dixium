@@ -15,9 +15,9 @@ export default function CurrentGamePage() {
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(gameId));
 
-  useEffect(() => {
-    dispatch(updateIsRedirecting(false));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(updateIsRedirecting(false));
+  // }, [dispatch]);
 
   if (!userActiveGameId || !currentGame) {
     navigate("/game");

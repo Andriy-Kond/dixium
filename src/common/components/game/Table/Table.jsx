@@ -8,11 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   selectCardsOnTable,
-  selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
   selectIsCarouselModeTableScreen,
   selectIsSingleCardMode,
+  selectLocalGame,
   // selectZoomCardId,
   selectRoundResults,
   selectStorytellerId,
@@ -46,11 +46,13 @@ export default function Table({
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
   const { gameId } = useParams();
+  const currentGame = useSelector(selectLocalGame(gameId));
+  const { players: gamePlayers } = currentGame;
   const gameStatus = useSelector(selectGameStatus(gameId));
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
-  const gamePlayers = useSelector(selectGamePlayers(gameId));
+
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const roundResults = useSelector(selectRoundResults(gameId));
   const playerVotes = useSelector(selectVotesLocal(gameId, playerId));

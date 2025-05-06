@@ -3,6 +3,7 @@ import css from "./DeckCards.module.scss";
 export default function DeckCards(deck) {
   return (
     <>
+      <h1>Deck Cards</h1>
       {deck.map(card => {
         return <img src="to-card" alt="card" />;
       })}

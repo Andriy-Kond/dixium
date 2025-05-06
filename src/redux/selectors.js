@@ -116,12 +116,10 @@ export const selectStorytellerId = gameId => state =>
 export const selectGameStatus = gameId => state =>
   state.localPersonalSlice.games[gameId].gameStatus;
 
-export const selectGamePlayers = gameId => state =>
-  state.localPersonalSlice.games[gameId].players;
-
 export const selectCardsOnTable = gameId => state =>
   state.localPersonalSlice.games[gameId].cardsOnTable;
 
+//! kill
 export const selectPlayerHand = (gameId, playerId) => state => {
   const game = state.localPersonalSlice.games[gameId];
   const player = game.players.find(p => p._id === playerId);
@@ -143,12 +141,14 @@ export const selectIsGameStarted = gameId => state =>
 export const selectIsSingleCardMode = gameId => state =>
   state.localPersonalSlice.games[gameId].isSingleCardMode;
 
+//! kill
 export const selectIsPlayerGuessed = (gameId, playerId) => state => {
   const game = state.localPersonalSlice.games[gameId];
   const player = game.players.find(p => p._id === playerId);
   return player.isGuessed;
 };
 
+//! kill
 export const selectIsPlayerVoted = (gameId, playerId) => state => {
   const game = state.localPersonalSlice.games[gameId];
   const player = game.players.find(p => p._id === playerId);

@@ -18,3 +18,6 @@ export const TABLE_COLOR = "#ff2f2f";
 // themes
 export const LIGHT = "light";
 export const DARK = "dark";
+
+// empty
+export const EMPTY_OBJ = {};

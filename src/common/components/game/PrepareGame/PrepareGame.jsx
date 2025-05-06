@@ -21,10 +21,13 @@ import css from "./PrepareGame.module.scss";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import { useTranslation } from "react-i18next";
 import {
+  setFinishPoints,
   setPageHeaderText,
   showNotification,
+  toggleIsSingleCardMode,
 } from "redux/game/localPersonalSlice.js";
 import InformMessage from "../../ui/InformMessage/InformMessage.jsx";
+import clsx from "clsx";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
@@ -33,10 +36,11 @@ export default function PrepareGame() {
 
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
   const { gameId } = useParams();
-  const [finishPoints, setFinishPoints] = useState("30");
+  // const [finishPoints, setFinishPoints] = useState("30");
 
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(gameId));
+  const { isSingleCardMode, finishPoints, hostPlayerId, players } = currentGame;
   if (!userActiveGameId || !currentGame) navigate("/game", { replace: true });
 
   const userCredentials = useSelector(selectUserCredentials);
@@ -44,9 +48,6 @@ export default function PrepareGame() {
 
   const isCurrentPlayerIsHost = currentGame.hostPlayerId === userId;
   const isCurrentPlayerInGame = currentGame.players.find(p => p._id === userId);
-
-  const [isSingleCardModeCheckbox, setIsSingleCardModeCheckbox] =
-    useState(false);
 
   useEffect(() => {
     dispatch(
@@ -84,7 +85,7 @@ export default function PrepareGame() {
     const updatedGame = {
       ...game,
       isGameRunning: true,
-      isSingleCardMode: isSingleCardModeCheckbox,
+      isSingleCardMode,
       finishPoints: Number(finishPoints),
     };
 
@@ -139,21 +140,26 @@ export default function PrepareGame() {
           //# для нових браузерів:
           // className={css.checkboxLabel}
           //# для старих браузерів:
-          className={`${css.checkboxLabel} ${
-            isSingleCardModeCheckbox ? css.checked : ""
-          } ${isDisabledCheckbox ? css.disabled : ""}`}>
+          // className={`${css.checkboxLabel} ${
+          //   isSingleCardMode ? css.checked : ""
+          // } ${isDisabledCheckbox ? css.disabled : ""}`}
+          // з використанням clsx
+          className={clsx(css.checkboxLabel, {
+            [css.checked]: isSingleCardMode,
+            [css.disabled]: isDisabledCheckbox,
+          })}>
           <input
             disabled={isDisabledCheckbox}
             className={css.checkboxInput}
             type="checkbox"
             name="isSingleCardMode"
-            onChange={() => setIsSingleCardModeCheckbox(prev => !prev)}
-            checked={isSingleCardModeCheckbox}
+            onChange={() => toggleIsSingleCardMode(gameId)}
+            checked={isSingleCardMode}
           />
           {t("single_card_mode").toUpperCase()}
         </label>
       </div>
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      {/* <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={currentGame?.players.map(p => p._id)}
           strategy={verticalListSortingStrategy}
@@ -164,7 +170,23 @@ export default function PrepareGame() {
             ))}
           </ul>
         </SortableContext>
-      </DndContext>
+      </DndContext> */}
+
+      <div className={css.container}>
+        <p>{t("setup_players_turn")}</p>
+        <button
+          className={css.copyBtn}
+          onClick={() => navigate(`/game/${gameId}/setup/sort-players`)}>
+          {t("players")}
+        </button>
+
+        <p>{t("select_decks")}</p>
+        <button
+          className={css.copyBtn}
+          onClick={() => navigate(`/game/${gameId}/setup/select-decks`)}>
+          {t("game_cards")}
+        </button>
+      </div>
 
       <p>ID: {playerGameId}</p>
       <button className={css.copyBtn} onClick={copyToClipboard}>

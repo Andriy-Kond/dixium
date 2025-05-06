@@ -33,6 +33,7 @@ const ResetPasswordPage = lazy(() =>
 const GamesListPage = lazy(() => import("common/pages/game/GamesListPage"));
 const CurrentGamePage = lazy(() => import("common/pages/game/CurrentGamePage"));
 
+const GameSetup = lazy(() => import("common/components/game/GameSetup"));
 const PrepareGame = lazy(() => import("common/components/game/PrepareGame"));
 const SortPlayers = lazy(() => import("common/components/game/SortPlayers"));
 const SelectDecks = lazy(() => import("common/components/game/SelectDecks"));
@@ -89,18 +90,33 @@ export default function App() {
           <Routes>
             <Route path="/" element={<SharedLayout />}>
               <Route element={<PrivateRoute redirectTo="/" />}>
-                <Route path="/game" element={<GamesListPage />}>
-                  {/* <Route path="create" element={<CreatingGame />} /> */}
-                </Route>
-                <Route path="/game/:gameId" element={<CurrentGamePage />}>
-                  <Route path="prepare-game" element={<PrepareGame />}>
-                    <Route path="sort-players" element={<SortPlayers />} />
-                    <Route path="select-decks" element={<SelectDecks />} />
-                    <Route path="desk-cards" element={<DeckCards />} />
-                  </Route>
-                  <Route path="current-game" element={<Game />}></Route>
+                <Route path="/game" element={<GamesListPage />} />
+                <Route path="/game/:gameId" element={<CurrentGamePage />} />
+
+                <Route path="/game/:gameId/setup" element={<GameSetup />}>
+                  <Route path="prepare-game" element={<PrepareGame />} />
+                  <Route path="sort-players" element={<SortPlayers />} />
+                  <Route path="select-decks" element={<SelectDecks />} />
+                  <Route path="desk-cards" element={<DeckCards />} />
                 </Route>
 
+                {/* <Route
+                  path="/game/:gameId/prepare-game"
+                  element={<PrepareGame />}
+                />
+                <Route
+                  path="/game/:gameId/sort-players"
+                  element={<SortPlayers />}
+                />
+                <Route
+                  path="/game/:gameId/select-decks"
+                  element={<SelectDecks />}
+                />
+                <Route
+                  path="/game/:gameId/desk-cards"
+                  element={<DeckCards />}
+                /> */}
+                <Route path="/game/:gameId/current-game" element={<Game />} />
                 <Route path="/set-password" element={<SetPasswordPage />} />
               </Route>
 

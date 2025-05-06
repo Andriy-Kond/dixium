@@ -7,7 +7,6 @@ import useEmblaCarousel from "embla-carousel-react";
 import socket from "services/socket.js";
 import {
   selectCardsSet,
-  selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
   selectIsCarouselModeHandScreen,
@@ -65,7 +64,7 @@ export default function Hand({
   const playerHand = useSelector(selectPlayerHand(gameId, playerId));
 
   const currentGame = useSelector(selectLocalGame(gameId));
-  const gamePlayers = useSelector(selectGamePlayers(gameId));
+  const { players: gamePlayers } = currentGame;
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
@@ -73,7 +72,7 @@ export default function Hand({
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
   );
-  const toastId = useSelector(selectToastId(gameId));
+  const toastId = useSelector(selectToastId(gameId, playerId));
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card

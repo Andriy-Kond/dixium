@@ -49,7 +49,7 @@ export const useSetupSocketListeners = () => {
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: userId } = userCredentials;
-  const toastId = useSelector(selectToastId(gameId));
+  const toastId = useSelector(selectToastId(gameId, userId));
   const activeActions = useSelector(selectActiveActions);
   const games = useSelector(selectLocalGames);
   const userActiveGameId = useSelector(selectUserActiveGameId);
@@ -150,7 +150,7 @@ export const useSetupSocketListeners = () => {
     socket.on("updateUserCredentials", handleUpdateUserCredentials);
     socket.on("UserActiveGameId_Updated", handleUserActiveGameIdUpdated);
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
-    socket.on("gameCreated", handleGameCreated);
+    socket.on("game_Created", handleGameCreated);
     socket.on("playerJoined", handlePlayerJoined);
     socket.on("playerJoined_test", handlePlayerJoined_test);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
@@ -178,7 +178,7 @@ export const useSetupSocketListeners = () => {
       socket.off("updateUserCredentials", handleUpdateUserCredentials);
       socket.off("UserActiveGameId_Updated", handleUserActiveGameIdUpdated);
       socket.off("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
-      socket.off("gameCreated", handleGameCreated);
+      socket.off("game_Created", handleGameCreated);
       socket.off("playerJoined", handlePlayerJoined);
       socket.off("userDeletedFromGame", handleUserDeletedFromGame);
       socket.off("Game_Deleted", handleGameDeleted);

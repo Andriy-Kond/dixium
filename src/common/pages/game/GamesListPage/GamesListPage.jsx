@@ -5,18 +5,18 @@ import socket from "services/socket.js";
 import {
   setPageHeaderBgColor,
   setPageHeaderText,
+  updateIsRedirecting,
 } from "redux/game/localPersonalSlice.js";
 import {
   selectIsRedirecting,
   selectLocalGame,
-  selectLocalGames,
   selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
 import Button from "common/components/ui/Button";
 import css from "./GamesListPage.module.scss";
 import { LOBBY } from "utils/generals/constants.js";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import UserMenu from "common/components/navComponents/UserMenu/index.js";
 import InformMessage from "common/components/ui/InformMessage/InformMessage.jsx";
 
@@ -25,6 +25,7 @@ export default function GamesListPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const userCredentials = useSelector(selectUserCredentials);
+
   const {
     name,
     avatarURL,
@@ -33,31 +34,25 @@ export default function GamesListPage() {
     playerGameId,
     _id: playerId,
   } = userCredentials;
-  // const isCreatingGame = useSelector(selectIsCreatingGame);
-  // const headerTitleText = isCreatingGame
-  //   ? t("creating_game")
-  //   : t("available_games");
-
   const headerTitleText = t("tixid");
-  const games = useSelector(selectLocalGames);
+
   const [searchGameNumber, setSearchGameNumber] = useState(null); // для пошуку (type: Number)
 
   const inputRef = useRef(null);
   const userActiveGameId = useSelector(selectUserActiveGameId);
+  // const isRedirecting = useSelector(selectIsRedirecting);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
   // const [searchingGame, setSearchingGame] = useState(null);
-  const isPlayerInGame = currentGame?.players.some(
-    player => player._id === playerId,
-  );
-  const isCurrentPlayerIsHost = currentGame?.hostPlayerId === playerId;
-
-  const isRedirecting = useSelector(selectIsRedirecting);
-
   //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(headerTitleText));
     dispatch(setPageHeaderBgColor("#5D7E9E"));
   }, [dispatch, headerTitleText]);
+
+  const isPlayerInGame = currentGame?.players.some(
+    player => player._id === playerId,
+  );
+  const isCurrentPlayerIsHost = currentGame?.hostPlayerId === playerId;
 
   const handleCreateGame = () => {
     const gameData = {
@@ -124,7 +119,7 @@ export default function GamesListPage() {
     // Відправлення запиту, якщо є всі 4 цифри
     if (searchGameNumber && digitCount === 4 && searchGameNumber <= 9999) {
       console.log("send findAndJoinToGame");
-      socket.emit("findAndJoinToGame", {
+      socket.emit("findAndJoinToGame_req", {
         searchGameNumber,
         player: {
           _id: playerId,
@@ -150,7 +145,9 @@ export default function GamesListPage() {
   };
 
   const returnToGame = () => {
-    navigate(`${userActiveGameId}`);
+    if (isCurrentPlayerIsHost)
+      navigate(`${userActiveGameId}/setup/prepare-game`);
+    else navigate(`${userActiveGameId}/current-game`);
     // navigate(-1);
   };
 
@@ -172,9 +169,16 @@ export default function GamesListPage() {
     }
   };
 
-  if (isRedirecting) {
-    return null; // Або повертайте лоадер, якщо потрібно
-  }
+  // useEffect(() => {
+  //   if (isRedirecting) {
+  //     dispatch(updateIsRedirecting(false));
+  //     return null; // Або повертайте лоадер, якщо потрібно
+  //   }
+  // }, [dispatch, isRedirecting]);
+
+  // if (isRedirecting) {
+  //   return null; // Або повертайте лоадер, якщо потрібно
+  // }
 
   return (
     <>

@@ -1,5 +1,5 @@
 export function calculatePoints({
-  gamePlayers,
+  players,
   storytellerId,
   cardsOnTable,
   votes, // { playerId: {firstVotedCardId, secondVotedCardId }, }, - Голоси гравців
@@ -8,10 +8,10 @@ export function calculatePoints({
 }) {
   // Ініціалізація нових балів на основі поточних
   const updatedScores = { ...scores };
-  const playerCount = gamePlayers.length;
+  const playerCount = players.length;
 
   // Ініціалізація балів, якщо гравець ще не має їх
-  gamePlayers.forEach(player => {
+  players.forEach(player => {
     if (!updatedScores[player._id]) updatedScores[player._id] = 0;
     //// console.log(" бали гравців на початку updatedScores:::", updatedScores);
   });
@@ -53,7 +53,7 @@ export function calculatePoints({
     // );
     updatedScores[storytellerId] += 0; // Оповідач отримує 0
 
-    gamePlayers.forEach(player => {
+    players.forEach(player => {
       if (player._id !== storytellerId) {
         //// console.log(" storytellerId:::", storytellerId);
         //// console.log("гравець отримає 2 бали:>> ", player._id);

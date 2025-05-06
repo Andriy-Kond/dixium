@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import {
-  selectGamePlayers,
   selectIsSingleCardMode,
+  selectLocalGame,
   selectScores,
   selectStorytellerId,
   selectVotes,
@@ -9,7 +9,8 @@ import {
 
 // Ця функція враховує всі правила, включаючи бонуси за введення інших в оману:
 export const useCalculateRoundPoints = (gameId, selectedCardId) => {
-  const players = useSelector(selectGamePlayers(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
+  const { players: gamePlayers } = currentGame;
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const scores = useSelector(selectScores(gameId));
@@ -22,13 +23,13 @@ export const useCalculateRoundPoints = (gameId, selectedCardId) => {
   let correctVotes = 0;
 
   // кількість гравців
-  const playersQty = players.length;
+  const playersQty = gamePlayers.length;
 
   // Чи грають гравці двома картами (isSingleCardMode === false or playersQty === 3)
   const twoCardsMode = !isSingleCardMode || playersQty === 3;
 
   // Ініціалізуємо всіх гравців з нульовими очками за раунд
-  players.forEach(player => (points[player._id] = 0));
+  gamePlayers.forEach(player => (points[player._id] = 0));
 
   // Збираємо дані про голосування
   Object.entries(scores).forEach(([playerId, votedCardId]) => {
@@ -39,7 +40,7 @@ export const useCalculateRoundPoints = (gameId, selectedCardId) => {
     }
   });
 
-  const totalPlayers = players.length;
+  const totalPlayers = gamePlayers.length;
 
   // Розрахунок очок ведучому (Storyteller)
   if (correctVotes === 0 || correctVotes === totalPlayers - 1) {
@@ -49,7 +50,7 @@ export const useCalculateRoundPoints = (gameId, selectedCardId) => {
   }
 
   // Розрахунок очок гравцям
-  players.forEach(player => {
+  gamePlayers.forEach(player => {
     if (player.id !== storytellerId) {
       const votedCardId = votes[player.id];
 

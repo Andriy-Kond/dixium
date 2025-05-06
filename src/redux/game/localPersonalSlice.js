@@ -52,6 +52,20 @@ export const localPersonalSlice = createSlice({
     //   state.games = action.payload;
     // },
 
+    toggleIsSingleCardMode: (state, action) => {
+      const { gameId } = action.payload;
+      const game = state.games[gameId];
+      if (game)
+        state.games[gameId].isSingleCardMode =
+          !state.games[gameId].isSingleCardMode;
+    },
+
+    setFinishPoints: (state, action) => {
+      const { gameId, finishPoints } = action.payload;
+      const game = state.games[gameId];
+      if (game) state.games[gameId].finishPoints = finishPoints;
+    },
+
     updateIsRedirecting: (state, action) => {
       state.isRedirecting = action.payload;
     },
@@ -281,6 +295,8 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
+  toggleIsSingleCardMode,
+  setFinishPoints,
   updateIsRedirecting,
   setLocalGame,
   clearLocalGame,

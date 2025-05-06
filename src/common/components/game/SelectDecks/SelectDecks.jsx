@@ -10,6 +10,7 @@ export default function SelectDecks() {
 
   return (
     <>
+      <h1>Select Decks</h1>
       <p>{t("select_decks")}</p>
       {allDecks.map(deck => {
         return (

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
@@ -15,13 +15,20 @@ import {
 } from "redux/selectors.js";
 import SortablePlayer from "common/components/game/SortablePlayer";
 import css from "./SortPlayers.module.scss";
+import { useTranslation } from "react-i18next";
 
 export default function SortPlayers() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: userId, playerGameId } = userCredentials;
+  if (!currentGame) {
+    navigate("/game");
+    return;
+  }
 
   const isCurrentPlayerIsHost = currentGame.hostPlayerId === userId;
   // Оновлює порядок гравців і надсилає зміни через сокети.
@@ -46,7 +53,11 @@ export default function SortPlayers() {
 
   return (
     <>
-      <p>sort players</p>
+      <h1>Sort Players</h1>
+
+      <p>{t("req_for_start_game")}</p>
+      <p>{t("players_turn")}</p>
+
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={currentGame?.players.map(p => p._id)}

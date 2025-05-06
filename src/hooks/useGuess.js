@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import {
   selectCardsOnTable,
-  selectGamePlayers,
   selectLocalGame,
   selectPlayerHand,
   selectUserCredentials,
@@ -17,7 +16,7 @@ export const useGuess = (gameId, cardsSet) => {
   const userCredentials = useSelector(selectUserCredentials);
   // const currentGame = useSelector(selectGame(gameId));
   const currentGame = useSelector(selectLocalGame(gameId));
-  const gamePlayers = useSelector(selectGamePlayers(gameId));
+  const { players: gamePlayers } = currentGame;
   const cardsOnTable = useSelector(selectCardsOnTable(gameId));
   const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
   const playersMoreThanThree = gamePlayers.length > 3;

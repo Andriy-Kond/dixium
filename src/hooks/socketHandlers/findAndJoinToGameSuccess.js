@@ -20,10 +20,10 @@ export const findAndJoinToGameSuccess = (game, dispatch, navigate) => {
       }),
     );
   } else {
-    navigate(`game/${game._id}`);
+    navigate(`game/${game._id}/current-game`);
     dispatch(setLocalGame(game));
     dispatch(setUserActiveGameId(game._id));
-    dispatch(updateIsRedirecting(true));
+    // dispatch(updateIsRedirecting(true));
 
     // setTimeout(() => {
     //   console.log("dispatch to 5 sec");

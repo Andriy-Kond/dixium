@@ -9,9 +9,9 @@ import { FaCheck } from "react-icons/fa6";
 import { FaCircle } from "react-icons/fa6";
 
 import {
-  selectGamePlayers,
   selectGameStatus,
   selectHostPlayerId,
+  selectLocalGame,
   selectScores,
   selectStorytellerId,
   selectUserCredentials,
@@ -38,10 +38,11 @@ export default function Players({
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
-  const players = useSelector(selectGamePlayers(gameId));
+  const currentGame = useSelector(selectLocalGame(gameId));
+  const { players: gamePlayers } = currentGame;
+
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const hostPlayerId = useSelector(selectHostPlayerId(gameId));
-  const gamePlayers = useSelector(selectGamePlayers(gameId));
 
   const scores = useSelector(selectScores(gameId));
   const gameStatus = useSelector(selectGameStatus(gameId));
@@ -160,7 +161,7 @@ export default function Players({
       {/* <p>Players</p> */}
 
       <ul className={css.playersList}>
-        {players.map(player => {
+        {gamePlayers.map(player => {
           const maxScore = Math.max(...Object.values(scores)); // Максимальний бал для цього раунду
           const playerScore = scores[player._id] || 0; // Бал поточного гравця
           const fillPercentage =
