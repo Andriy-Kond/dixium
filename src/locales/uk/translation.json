@@ -122,6 +122,7 @@
   "nick_cant_be_empty": "Псевдонім не може бути порожнім",
   "nick_should_have_3_symbols": "Псевдонім має містити щонайменше 3 символи",
   "id_copied_to_buffer": "ID скопійовано в буфер обміну",
+  "copy_to_clipboard": "Копіювати в буфер",
   "cant_copy_id_to_buffer": "Не вдалось скопіювати в буфер",
   "nick_changed": "Псевдонім змінений",
   "nick": "Нік",

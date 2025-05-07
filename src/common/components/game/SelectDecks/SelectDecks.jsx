@@ -5,6 +5,7 @@ import css from "./SelectDecks.module.scss";
 
 export default function SelectDecks() {
   const { data: allDecks } = useGetAllDecksQuery();
+  console.log(" SelectDecks >> allDecks:::", allDecks);
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -12,7 +13,7 @@ export default function SelectDecks() {
     <>
       <h1>Select Decks</h1>
       <p>{t("select_decks")}</p>
-      {allDecks.map(deck => {
+      {allDecks?.map(deck => {
         return (
           <>
             <button

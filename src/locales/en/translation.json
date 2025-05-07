@@ -123,6 +123,7 @@
   "nick_cant_be_empty": "Nickname cannot be empty",
   "nick_should_have_3_symbols": "Nickname must be at least 3 characters",
   "id_copied_to_buffer": "ID copied to clipboard",
+  "copy_to_clipboard": "Copy to clipboard",
   "cant_copy_id_to_buffer": "Copy to clipboard failed",
   "nick_changed": "Nickname changed",
   "nick": "Nick",

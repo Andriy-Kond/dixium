@@ -20,16 +20,16 @@ export const gameApi = createApi({
   reducerPath: "gameApi",
   baseQuery,
   // keepUnusedDataFor: 5, // видаляє очікування 60 сек перед очищенням кешу
-  tagTypes: ["AllGames", "CurrentGame", "Game"],
+  tagTypes: ["AllGames", "CurrentGame", "Game", "AllDecks", "Deck"],
   endpoints: builder => ({
     getAllDecks: builder.query({
       query: () => `dixium/decks`, // Get available decks
-      // providesTags: ["AllDecks"],
+      providesTags: ["AllDecks"],
     }),
 
     getCurrentDeck: builder.query({
       query: deckId => `dixium/decks/${deckId}`, // Get cards in current deck
-      // providesTags: ["Deck"],
+      providesTags: ["Deck"],
     }),
 
     getCurrentGame: builder.query({

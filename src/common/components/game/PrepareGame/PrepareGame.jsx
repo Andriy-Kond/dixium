@@ -175,22 +175,24 @@ export default function PrepareGame() {
       <div className={css.container}>
         <p>{t("setup_players_turn")}</p>
         <button
-          className={css.copyBtn}
+          className={css.redirectContainer}
           onClick={() => navigate(`/game/${gameId}/setup/sort-players`)}>
-          {t("players")}
+          <span>{t("players")}</span>
+          <span>{`${currentGame.players.length} >`}</span>
         </button>
 
         <p>{t("select_decks")}</p>
         <button
-          className={css.copyBtn}
+          className={css.redirectContainer}
           onClick={() => navigate(`/game/${gameId}/setup/select-decks`)}>
-          {t("game_cards")}
+          <span>{t("game_cards")}</span>
+          <span>{`${currentGame.deck.length} >`}</span>
         </button>
       </div>
 
       <p>ID: {playerGameId}</p>
-      <button className={css.copyBtn} onClick={copyToClipboard}>
-        Копіювати в буфер
+      <button className={css.redirectContainer} onClick={copyToClipboard}>
+        {t("copy_to_clipboard")}
       </button>
 
       <div className={css.bottomBar}>
@@ -199,6 +201,7 @@ export default function PrepareGame() {
           btnText={t("back")}
           btnStyle={[["twoBtnsInRow"], ["btnFlexGrow"]]}
         />
+
         {userId === currentGame?.hostPlayerId && (
           <Button
             onClick={runGame}

@@ -6,10 +6,8 @@ import {
   setLocalGame,
   setPageHeaderBgColor,
   setPageHeaderText,
-  updateIsRedirecting,
 } from "redux/game/localPersonalSlice.js";
 import {
-  selectIsRedirecting,
   selectLocalGame,
   selectUserActiveGameId,
   selectUserCredentials,
@@ -17,13 +15,10 @@ import {
 import Button from "common/components/ui/Button";
 import css from "./GamesListPage.module.scss";
 import { LOBBY } from "utils/generals/constants.js";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import UserMenu from "common/components/navComponents/UserMenu/index.js";
 import InformMessage from "common/components/ui/InformMessage/InformMessage.jsx";
-import {
-  useGetCurrentDeckQuery,
-  useGetCurrentGameQuery,
-} from "redux/game/gameApi.js";
+import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 
 export default function GamesListPage() {
   const dispatch = useDispatch();

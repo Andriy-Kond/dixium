@@ -91,12 +91,15 @@
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
 }
 
-.copyBtn {
-  margin: 0;
-  padding: 14px 16px;
+.redirectContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  background-color: var(--btnBgColor);
-  color: var(--btnTextColor);
+  width: 100%;
+  height: 44px;
+  padding: 0 14px 0 16px;
+
   font-family: Roboto;
   font-style: normal;
   font-weight: 500;
@@ -108,4 +111,25 @@
   white-space: nowrap;
 
   cursor: pointer;
+  background-color: var(--btnBgColor);
+  color: var(--btnTextColor);
+}
+
+.copyBtn {
+  margin: 0;
+  padding: 14px 16px;
+
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: normal;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  cursor: pointer;
+  background-color: var(--btnBgColor);
+  color: var(--btnTextColor);
 }
