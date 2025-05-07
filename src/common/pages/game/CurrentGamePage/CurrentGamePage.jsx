@@ -1,6 +1,6 @@
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import PrepareGame from "common/components/game/PrepareGame";
-import Game from "common/components/game/Game";
+import CurrentGame from "common/components/game/CurrentGame";
 import css from "./CurrentGamePage.module.scss";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +28,7 @@ export default function CurrentGamePage() {
   return (
     <>
       <div className={css.container}>
-        {currentGame.isGameRunning ? <Game /> : <PrepareGame />}
+        {currentGame.isGameRunning ? <CurrentGame /> : <PrepareGame />}
         {/* {currentGame.isGameRunning ? (
           <Navigate to={"current-game"} />
         ) : (

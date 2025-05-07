@@ -71,9 +71,11 @@ export const localPersonalSlice = createSlice({
     },
 
     setLocalGame: (state, action) => {
+      console.trace("localPersonalSlice>> setLocalGame");
       const game = action.payload;
+
       // state.games = { ...state.games, [game._id]: game };
-      state.games[game._id] = game; // add new or update exist
+      if (game) state.games[game._id] = game; // add new or update exist
     },
 
     clearLocalGame: (state, action) => {

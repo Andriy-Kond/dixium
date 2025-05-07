@@ -39,7 +39,7 @@ const SortPlayers = lazy(() => import("common/components/game/SortPlayers"));
 const SelectDecks = lazy(() => import("common/components/game/SelectDecks"));
 const DeckCards = lazy(() => import("common/components/game/DeckCards"));
 
-const Game = lazy(() => import("common/components/game/Game"));
+const CurrentGame = lazy(() => import("common/components/game/CurrentGame"));
 
 const NotFoundPage = lazy(() => import("common/pages/shared/NotFoundPage"));
 
@@ -116,7 +116,10 @@ export default function App() {
                   path="/game/:gameId/desk-cards"
                   element={<DeckCards />}
                 /> */}
-                <Route path="/game/:gameId/current-game" element={<Game />} />
+                <Route
+                  path="/game/:gameId/current-game"
+                  element={<CurrentGame />}
+                />
                 <Route path="/set-password" element={<SetPasswordPage />} />
               </Route>
 

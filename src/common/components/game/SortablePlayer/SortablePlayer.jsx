@@ -80,7 +80,10 @@ export default function SortablePlayer({ player }) {
         }`}
       </div>
       <Button
-        disabled={!isCurrentPlayerIsHost}
+        disabled={
+          !isCurrentPlayerIsHost ||
+          (isCurrentPlayerIsHost && userCredentials._id === player._id)
+        }
         onClick={e => {
           // console.log("onclick");
           // console.log("Button clicked, userId:", userCredentials._id);

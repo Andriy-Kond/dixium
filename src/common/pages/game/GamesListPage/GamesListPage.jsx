@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import socket from "services/socket.js";
 import {
+  setLocalGame,
   setPageHeaderBgColor,
   setPageHeaderText,
   updateIsRedirecting,
@@ -19,6 +20,10 @@ import { LOBBY } from "utils/generals/constants.js";
 import { Navigate, useNavigate } from "react-router-dom";
 import UserMenu from "common/components/navComponents/UserMenu/index.js";
 import InformMessage from "common/components/ui/InformMessage/InformMessage.jsx";
+import {
+  useGetCurrentDeckQuery,
+  useGetCurrentGameQuery,
+} from "redux/game/gameApi.js";
 
 export default function GamesListPage() {
   const dispatch = useDispatch();
@@ -37,9 +42,18 @@ export default function GamesListPage() {
   const headerTitleText = t("tixid");
 
   const [searchGameNumber, setSearchGameNumber] = useState(null); // для пошуку (type: Number)
-
   const inputRef = useRef(null);
+
+  // set active game if it is to redux cash and local storage:
   const userActiveGameId = useSelector(selectUserActiveGameId);
+  const { data: activeGame, isFetching: isFetchingCurrentGame } =
+    useGetCurrentGameQuery(userActiveGameId, {
+      skip: !userActiveGameId || userActiveGameId === "",
+    });
+  useEffect(() => {
+    if (userActiveGameId) dispatch(setLocalGame(activeGame));
+  }, [activeGame, dispatch, userActiveGameId]);
+
   // const isRedirecting = useSelector(selectIsRedirecting);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
   // const [searchingGame, setSearchingGame] = useState(null);
