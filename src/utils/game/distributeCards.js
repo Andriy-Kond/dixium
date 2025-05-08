@@ -2,7 +2,6 @@ import { shuffleDeck } from "./shuffleDeck.js";
 
 export const distributeCards = currentGame => {
   const { deck, discardPile, players, cardsOnTable } = currentGame;
-
   const updatedDeck = [...deck];
   const updatedDiscardPile = [...discardPile, ...cardsOnTable]; // домішую карти зі стола у відбій
 
@@ -24,12 +23,12 @@ export const distributeCards = currentGame => {
 
       const updatedHand = [
         ...player.hand,
-        ...updatedDeck.splice(0, moveCardsQty),
+        ...updatedDeck.splice(0, moveCardsQty), // видаляє певну кількість елементів із масиву updatedDeck, починаючи з першого елементу масиву (індекс 0) і повертає їх як новий масив.
       ];
 
       return {
         ...player,
-        hand: updatedHand, // видаляє певну кількість елементів із масиву updatedDeck, починаючи з першого елементу масиву (індекс 0) і повертає їх як новий масив.
+        hand: updatedHand,
       };
     });
 

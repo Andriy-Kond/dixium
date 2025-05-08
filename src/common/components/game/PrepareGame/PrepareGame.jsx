@@ -78,24 +78,6 @@ export default function PrepareGame() {
     });
   };
 
-  const runGame = () => {
-    const game = distributeCards(currentGame);
-    if (game.message) return Notify.failure(game.message); // "Not enough cards in the deck"
-
-    const updatedGame = {
-      ...game,
-      isGameRunning: true,
-      isSingleCardMode,
-      finishPoints: Number(finishPoints),
-    };
-
-    // optimistic update:
-    optimisticUpdateDispatch({
-      eventName: "gameRun",
-      updatedGame,
-    });
-  };
-
   const toGamePage = () => {
     navigate(`/game`);
   };
@@ -121,10 +103,9 @@ export default function PrepareGame() {
     }
   };
 
-  // const isCanRunGame =
-  //   currentGame.players.length < 3 ||
-  //   currentGame.players.length > 12 ||
-  //   gameDeck.length > 0;
+  const handleFinishPoints = e => {
+    dispatch(setFinishPoints({ gameId, finishPoints: e.target.value.trim() }));
+  };
 
   return (
     <>
@@ -135,7 +116,7 @@ export default function PrepareGame() {
         <input
           type="number"
           value={finishPoints}
-          onChange={e => setFinishPoints(e.target.value.trim())}
+          onChange={handleFinishPoints}
         />
         {t("finish_points")}
       </label>
@@ -164,18 +145,6 @@ export default function PrepareGame() {
           {t("single_card_mode").toUpperCase()}
         </label>
       </div>
-      {/* <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={currentGame?.players.map(p => p._id)}
-          strategy={verticalListSortingStrategy}
-          disabled={currentGame.hostPlayerId !== userId}>
-          <ul className={css.playersList}>
-            {currentGame?.players.map(player => (
-              <SortablePlayer key={player._id} player={player} />
-            ))}
-          </ul>
-        </SortableContext>
-      </DndContext> */}
 
       <div className={css.container}>
         <p>{t("setup_players_turn")}</p>

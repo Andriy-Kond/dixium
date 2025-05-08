@@ -83,7 +83,7 @@ export const localPersonalSlice = createSlice({
     setFinishPoints: (state, action) => {
       const { gameId, finishPoints } = action.payload;
       const game = state.games[gameId];
-      if (game) state.games[gameId].finishPoints = finishPoints;
+      if (game) state.games[gameId].finishPoints = Number(finishPoints);
     },
 
     updateIsRedirecting: (state, action) => {
