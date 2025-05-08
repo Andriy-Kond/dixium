@@ -5,7 +5,6 @@ import storage from "redux-persist/lib/storage";
 const gameInitialState = {
   isCreatingGame: false,
   currentDeckId: null,
-  gameDeck: [],
   activeActions: {},
 
   selectedDeckIds: [], // для відстеження обраних колод
@@ -24,17 +23,6 @@ export const gameSlice = createSlice({
 
     setCurrentDeckId: (state, action) => {
       state.currentDeckId = action.payload;
-    },
-
-    setGameDeck: (state, action) => {
-      state.gameDeck = action.payload;
-    },
-
-    deleteCardsFromDeck: (state, action) => {
-      const removingCards = action.payload;
-      state.gameDeck = state.gameDeck.filter(
-        card => !removingCards.some(rc => rc._id === card._id),
-      );
     },
 
     setSelectedDeckIds: (state, action) => {
@@ -75,8 +63,6 @@ export const persistedGameReducer = persistReducer(
 export const {
   setIsCreatingGame,
   setCurrentDeckId,
-  setGameDeck,
-  deleteCardsFromDeck,
   setSelectedDeckIds,
   setUserSelectedDeckIds,
   setCycleState,

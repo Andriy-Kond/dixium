@@ -8,7 +8,6 @@ export const selectUserCredentials = state => state.authSlice.user;
 //* gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
-export const selectGameDeck = state => state.gameSlice.gameDeck;
 export const selectActiveActions = state => state.gameSlice.activeActions;
 
 export const selectSelectedDeckIds = state => state.gameSlice.selectedDeckIds;

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -10,28 +10,27 @@ import css from "./SelectDecks.module.scss";
 // import { setCurrentDeckId } from "redux/game/gameSlice.js";
 // import Button from "common/components/ui/Button/index.js";
 // import ImgGen from "common/components/ui/ImgGen/index.js";
-import { selectGameDeck } from "redux/selectors.js";
+
 import { useState } from "react";
 import {
   CHECKED_NONE,
   CHECKED_ALL,
   CHECKED_USER,
 } from "utils/generals/constants.js";
-import { deleteCardsFromDeck, setGameDeck } from "redux/game/gameSlice.js";
+import {
+  deleteCardsFromDeck,
+  setGameDeck,
+} from "redux/game/localPersonalSlice.js";
+import { selectLocalGame } from "redux/selectors.js";
 
 export default function SelectDecks() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
-
-  // const currentDeckId = useSelector(selectCurrentDeckId);
+  const { gameId } = useParams();
+  const currentGame = useSelector(selectLocalGame(gameId));
 
   const { data: allDecks } = useGetAllDecksQuery();
-  // const { data: currentDeck } = useGetCurrentDeckQuery(currentDeckId, {
-  //   skip: !currentDeckId,
-  // });
-  const gameDeck = useSelector(selectGameDeck);
 
   // Стан для відстеження обраних колод
   const [selectedDeckIds, setSelectedDeckIds] = useState([]);
@@ -48,39 +47,17 @@ export default function SelectDecks() {
   const selectAllState = getSelectAllState();
 
   // Обробка кліку на загальний чекбокс
-  // const handleSelectAllDecks = () => {
-  //   if (selectAllState === CHECKED_NONE) {
-  //     // Обрати всі колоди
-  //     const allDeckIds = allDecks.map(deck => deck._id);
-  //     setSelectedDeckIds(allDeckIds);
-  //     const allCards = allDecks.flatMap(deck => deck.cards);
-  //     dispatch(setGameDeck(allCards));
-  //   } else if (selectAllState === CHECKED_ALL) {
-  //     // Зняти вибір з усіх колод
-  //     setSelectedDeckIds([]);
-  //     dispatch(setGameDeck([]));
-  //   } else {
-  //     // Повернути тільки обрані користувачем колоди
-  //     const userSelectedDecks = allDecks.filter(deck =>
-  //       selectedDeckIds.includes(deck._id),
-  //     );
-  //     const userSelectedCards = userSelectedDecks.flatMap(deck => deck.cards);
-  //     dispatch(setGameDeck(userSelectedCards));
-  //   }
-  // };
-
-  // Обробка кліку на загальний чекбокс
   const handleSelectAllDecks = () => {
     if (selectAllState === CHECKED_NONE) {
       // Обрати всі колоди
       const allDeckIds = allDecks.map(deck => deck._id);
       setSelectedDeckIds(allDeckIds);
       const allCards = allDecks.flatMap(deck => deck.cards);
-      dispatch(setGameDeck(allCards));
+      dispatch(setGameDeck({ gameId, cards: allCards }));
     } else if (selectAllState === CHECKED_ALL) {
       // Зняти вибір з усіх колод
       setSelectedDeckIds([]);
-      dispatch(setGameDeck([]));
+      dispatch(setGameDeck({ gameId, cards: [] }));
     } else {
       // Повернути до вибору користувача
       setSelectedDeckIds(userSelectedDeckIds);
@@ -88,23 +65,9 @@ export default function SelectDecks() {
         userSelectedDeckIds.includes(deck._id),
       );
       const userSelectedCards = userSelectedDecks.flatMap(deck => deck.cards);
-      dispatch(setGameDeck(userSelectedCards));
+      dispatch(setGameDeck({ gameId, cards: userSelectedCards }));
     }
   };
-
-  // const handleSelectAllDecks = () => {
-  //   if (selectAllState === CHECKED_NONE) {
-  //     // Обрати всі колоди
-  //     const allDeckIds = allDecks.map(deck => deck._id);
-  //     setSelectedDeckIds(allDeckIds);
-  //     const allCards = allDecks.flatMap(deck => deck.cards);
-  //     dispatch(setGameDeck(allCards));
-  //   } else {
-  //     // Зняти вибір з усіх колод
-  //     setSelectedDeckIds([]);
-  //     dispatch(setGameDeck([]));
-  //   }
-  // };
 
   // Обробка кліку на окремий чекбокс
   const handleSelectDeck = deck => {
@@ -115,16 +78,22 @@ export default function SelectDecks() {
       // Видалити колоду
       newSelectedDeckIds = selectedDeckIds.filter(id => id !== deck._id);
       setSelectedDeckIds(newSelectedDeckIds);
-      dispatch(deleteCardsFromDeck(deck.cards));
+      dispatch(deleteCardsFromDeck({ gameId, removingCards: deck.cards }));
     } else {
       // Додати колоду
       newSelectedDeckIds = [...selectedDeckIds, deck._id];
       setSelectedDeckIds(newSelectedDeckIds);
       // Додаємо тільки нові карти, уникаючи дублювання
       const newCards = deck.cards.filter(
-        card => !gameDeck.some(existingCard => existingCard._id === card._id),
+        card =>
+          !currentGame.deck.some(existingCard => existingCard._id === card._id),
       );
-      dispatch(setGameDeck([...gameDeck, ...newCards]));
+      dispatch(
+        setGameDeck({
+          gameId,
+          cards: [...currentGame.deck, ...newCards],
+        }),
+      );
     }
   };
 
@@ -146,7 +115,7 @@ export default function SelectDecks() {
             onClick={handleSelectAllDecks}></div>
         </div>
 
-        <p>{`${t("total_cards")}: ${gameDeck.length}`}</p>
+        <p>{`${t("total_cards")}: ${currentGame.deck.length}`}</p>
       </div>
 
       <ul className={css.deckList}>

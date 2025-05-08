@@ -2,7 +2,7 @@ import { matchPath, Outlet, useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Notify } from "notiflix";
 
-import { selectLocalGame } from "redux/selectors.js";
+import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import Button from "common/components/ui/Button";
 import css from "./GameSetup.module.scss";
 import { useTranslation } from "react-i18next";
@@ -15,15 +15,16 @@ export default function GameSetup() {
   const { gameId } = useParams();
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
 
+  const userCredentials = useSelector(selectUserCredentials);
+  const { _id: userId, playerGameId } = userCredentials;
+
   const currentGame = useSelector(selectLocalGame(gameId));
   const { players, deck, isSingleCardMode, finishPoints } = currentGame;
 
-  const isCanRunGame =
-    players.length > 3 && players.length < 12 && deck.length > 0;
-
-  const showStartButton =
-    matchPath(`/game/:gameId/setup/prepare-game`, location.pathname) ||
-    matchPath(`/game/:gameId/setup/sort-players`, location.pathname);
+  const isShowStartButton =
+    (matchPath(`/game/:gameId/setup/prepare-game`, location.pathname) ||
+      matchPath(`/game/:gameId/setup/sort-players`, location.pathname)) &&
+    userId === currentGame?.hostPlayerId;
 
   const handleRunGame = () => {
     const game = distributeCards(currentGame);
@@ -43,15 +44,30 @@ export default function GameSetup() {
     });
   };
 
+  const isCanRunGame =
+    players?.length >= 3 &&
+    players?.length <= 12 &&
+    currentGame?.deck?.length > 0;
+  console.log(" GameSetup >> isCanRunGame:::", isCanRunGame);
+
   return (
     <>
       <p>game setup</p>
       <Outlet />
 
-      {showStartButton && (
+      {/* {showStartButton && (
         <Button
           btnText={t("run_game")}
           onClick={handleRunGame}
+          disabled={!isCanRunGame}
+        />
+      )} */}
+
+      {isShowStartButton && (
+        <Button
+          onClick={handleRunGame}
+          btnText={t("run_game")}
+          btnStyle={["twoBtnsInRow"]}
           disabled={!isCanRunGame}
         />
       )}

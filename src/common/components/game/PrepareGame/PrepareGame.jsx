@@ -121,6 +121,11 @@ export default function PrepareGame() {
     }
   };
 
+  // const isCanRunGame =
+  //   currentGame.players.length < 3 ||
+  //   currentGame.players.length > 12 ||
+  //   gameDeck.length > 0;
+
   return (
     <>
       <h1>Prepare Game</h1>
@@ -186,7 +191,7 @@ export default function PrepareGame() {
           className={css.redirectContainer}
           onClick={() => navigate(`/game/${gameId}/setup/select-decks`)}>
           <span>{t("game_cards")}</span>
-          <span>{`${currentGame.deck.length} >`}</span>
+          <span>{`${currentGame?.deck?.length} >`}</span>
         </button>
       </div>
 
@@ -202,16 +207,14 @@ export default function PrepareGame() {
           btnStyle={[["twoBtnsInRow"], ["btnFlexGrow"]]}
         />
 
-        {userId === currentGame?.hostPlayerId && (
+        {/* {userId === currentGame?.hostPlayerId && (
           <Button
             onClick={runGame}
             btnText={t("run_game")}
             btnStyle={["twoBtnsInRow"]}
-            disabled={
-              currentGame.players.length < 3 || currentGame.players.length > 12
-            }
+            disabled={!isCanRunGame}
           />
-        )}
+        )} */}
       </div>
     </>
   );
