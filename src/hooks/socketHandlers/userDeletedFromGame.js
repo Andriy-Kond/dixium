@@ -2,6 +2,7 @@ import {
   clearLocalGame,
   setLocalGame,
   setUserActiveGameId,
+  updatePlayers,
 } from "redux/game/localPersonalSlice.js";
 
 export const userDeletedFromGame = ({
@@ -22,6 +23,7 @@ export const userDeletedFromGame = ({
     dispatch(setUserActiveGameId(null));
     dispatch(clearLocalGame(game));
   } else {
-    dispatch(setLocalGame(game));
+    // dispatch(setLocalGame(game));
+    dispatch(updatePlayers(game));
   }
 };

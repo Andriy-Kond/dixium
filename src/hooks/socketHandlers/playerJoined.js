@@ -1,7 +1,7 @@
 import { t } from "i18next";
 import { Notify } from "notiflix";
 import { gameApi } from "redux/game/gameApi.js";
-import { setLocalGame } from "redux/game/localPersonalSlice.js";
+import { updatePlayers } from "redux/game/localPersonalSlice.js";
 
 export const playerJoined = ({
   game,
@@ -19,7 +19,7 @@ export const playerJoined = ({
 
   // console.log("userId !== player._id:::", userId !== player._id);
   if (userId !== player._id) {
-    dispatch(setLocalGame(game));
+    dispatch(updatePlayers(game));
     // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]))  ;
   }
 

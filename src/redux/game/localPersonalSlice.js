@@ -111,6 +111,11 @@ export const localPersonalSlice = createSlice({
       state.games = {};
     },
 
+    updatePlayers: (state, action) => {
+      const game = action.payload;
+      state.games[game._id].players = game.players;
+    },
+
     setLocalGameStatus: (state, action) => {
       const { gameId, status } = action.payload;
       const game = state.games[gameId];
@@ -326,6 +331,7 @@ export const {
   setLocalGame,
   clearLocalGame,
   clearLocalGames,
+  updatePlayers,
   setLocalGameStatus,
   updateLocalGame,
   setActiveScreen,

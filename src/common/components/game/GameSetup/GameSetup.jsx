@@ -38,11 +38,11 @@ export default function GameSetup() {
     };
     console.log(" handleRunGame >> updatedGame:::", updatedGame);
 
-    // // optimistic update:
-    // optimisticUpdateDispatch({
-    //   eventName: "gameRun",
-    //   updatedGame,
-    // });
+    // optimistic update:
+    optimisticUpdateDispatch({
+      eventName: "gameRun",
+      updatedGame,
+    });
   };
 
   const isCanRunGame =

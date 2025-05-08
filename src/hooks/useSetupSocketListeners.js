@@ -98,19 +98,19 @@ export const useSetupSocketListeners = () => {
       console.log("handlePlayerJoined_test");
     };
 
-    const handleUserDeletedFromGame = params =>
-      userDeletedFromGame({ ...params, userId, dispatch, navigate });
+    const handleUserDeletedFromGame = ({ game, deletedUser }) =>
+      userDeletedFromGame({ game, deletedUser, userId, dispatch, navigate });
 
     const handleGameDeleted = ({ game }) => {
       if (games[game._id])
         gameDeleted(game, dispatch, gameId, userId, navigate, toastId);
     };
 
-    const handlePlayersOrderUpdate = params =>
-      playersOrderUpdate(...params, dispatch, activeActions);
+    const handlePlayersOrderUpdate = ({ game, message }) =>
+      playersOrderUpdate(game, message, dispatch, activeActions);
 
-    const handleGameRunning = params =>
-      gameRunning(games, ...params, dispatch, activeActions, userId);
+    const handleGameRunning = ({ game, message }) =>
+      gameRunning(games, game, message, dispatch, activeActions, userId);
 
     const handleFirstStorytellerUpdated = ({ game }) =>
       firstStorytellerUpdated(game, dispatch, userId);
@@ -124,16 +124,17 @@ export const useSetupSocketListeners = () => {
     const handleVotingStarted = ({ game }) =>
       votingStarted(game, dispatch, userId);
 
-    const handlePlayerVoteSuccess = params =>
-      playerVoteSuccess(...params, dispatch, activeActions);
+    const handlePlayerVoteSuccess = ({ game, message }) =>
+      playerVoteSuccess(game, message, dispatch, activeActions);
 
-    const handleRoundFinishSuccess = params =>
-      roundFinishSuccess(...params, dispatch, activeActions, userId);
+    const handleRoundFinishSuccess = ({ game, message }) =>
+      roundFinishSuccess(game, message, dispatch, activeActions, userId);
 
-    const handleStartNewRoundSuccess = params =>
-      startNewRoundSuccess(...params, dispatch, activeActions, userId);
+    const handleStartNewRoundSuccess = ({ game, message }) =>
+      startNewRoundSuccess(game, message, dispatch, activeActions, userId);
 
-    const handleGameEnd = params => gameEnd(...params, dispatch);
+    const handleGameEnd = ({ game, message }) =>
+      gameEnd(game, message, dispatch);
 
     const handleGameFound = ({ game }) => gameFound(game, dispatch);
 
