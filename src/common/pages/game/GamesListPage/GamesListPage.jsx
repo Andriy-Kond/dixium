@@ -41,13 +41,27 @@ export default function GamesListPage() {
 
   // set active game if it is to redux cash and local storage:
   const userActiveGameId = useSelector(selectUserActiveGameId);
+
   const { data: activeGame, isFetching: isFetchingCurrentGame } =
     useGetCurrentGameQuery(userActiveGameId, {
       skip: !userActiveGameId || userActiveGameId === "",
     });
+
   useEffect(() => {
-    if (userActiveGameId) dispatch(setLocalGame(activeGame));
-  }, [activeGame, dispatch, userActiveGameId]);
+    // console.log(" useEffect >> userActiveGameId:::", userActiveGameId);
+    // console.log(" useEffect >> activeGame:::", activeGame);
+    if (!userActiveGameId || !activeGame || isFetchingCurrentGame) return;
+
+    console.log(" useEffect >> activeGame:::", activeGame);
+    console.log(
+      " useEffect >> userActiveGameId !== activeGame?._id:::",
+      userActiveGameId !== activeGame?._id,
+    );
+    console.log("встановлюю активну гру ", activeGame?.gameName);
+    if (userActiveGameId === activeGame._id) {
+      dispatch(setLocalGame(activeGame));
+    }
+  }, [activeGame, dispatch, isFetchingCurrentGame, userActiveGameId]);
 
   // const isRedirecting = useSelector(selectIsRedirecting);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));

@@ -1,6 +1,10 @@
 import { toast } from "react-toastify";
 import { gameApi } from "redux/game/gameApi.js";
-import { clearActiveAction } from "redux/game/gameSlice.js";
+import {
+  clearActiveAction,
+  clearGameInitialState,
+  setIsCreatingGame,
+} from "redux/game/gameSlice.js";
 import {
   clearLocalState,
   removeToastIdRef,
@@ -30,7 +34,9 @@ export const gameDeleted = (
 
   toast.dismiss(toastId); // Закриє відповідне повідомлення
   dispatch(removeToastIdRef({ gameId: deletingGameId, playerId }));
-  dispatch(clearActiveAction({}));
+  // dispatch(clearActiveAction({}));
+  // dispatch(setIsCreatingGame(false));
+  dispatch(clearGameInitialState());
   dispatch(clearLocalState(game._id));
 };
 

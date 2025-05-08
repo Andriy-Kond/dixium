@@ -140,5 +140,6 @@
   "check_id": "Перевірте ID",
   "waiting": "Очікує",
   "finish_game": "Закінчити гру",
-  "players_turn": "Черга гравців"
+  "players_turn": "Черга гравців",
+  "total_cards": "Загалом карт"
 }

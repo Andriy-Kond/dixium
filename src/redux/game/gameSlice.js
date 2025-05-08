@@ -5,7 +5,12 @@ import storage from "redux-persist/lib/storage";
 const gameInitialState = {
   isCreatingGame: false,
   currentDeckId: null,
+  gameDeck: [],
   activeActions: {},
+
+  selectedDeckIds: [], // для відстеження обраних колод
+  userSelectedDeckIds: [], // для збереження вибору користувача
+  cycleState: 0, // для відстеження циклу CHECKED_ALL -> CHECKED_NONE -> CHECKED_USER
 };
 
 export const gameSlice = createSlice({
@@ -13,11 +18,35 @@ export const gameSlice = createSlice({
   initialState: gameInitialState,
   reducers: {
     setIsCreatingGame: (state, action) => {
+      console.log("setIsCreatingGame action.payload:::", action.payload);
       state.isCreatingGame = action.payload;
     },
 
     setCurrentDeckId: (state, action) => {
       state.currentDeckId = action.payload;
+    },
+
+    setGameDeck: (state, action) => {
+      state.gameDeck = action.payload;
+    },
+
+    deleteCardsFromDeck: (state, action) => {
+      const removingCards = action.payload;
+      state.gameDeck = state.gameDeck.filter(
+        card => !removingCards.some(rc => rc._id === card._id),
+      );
+    },
+
+    setSelectedDeckIds: (state, action) => {
+      state.selectedDeckIds = action.payload;
+    },
+
+    setUserSelectedDeckIds: (state, action) => {
+      state.userSelectedDeckIds = action.payload;
+    },
+
+    setCycleState: (state, action) => {
+      state.cycleState = action.payload;
     },
 
     clearGameInitialState: () => gameInitialState,
@@ -44,12 +73,14 @@ export const persistedGameReducer = persistReducer(
 );
 
 export const {
-  setActiveAction,
-  clearActiveAction,
   setIsCreatingGame,
   setCurrentDeckId,
+  setGameDeck,
+  deleteCardsFromDeck,
+  setSelectedDeckIds,
+  setUserSelectedDeckIds,
+  setCycleState,
   clearGameInitialState,
-  setActiveGame,
-  deleteActiveGame,
-  updateActiveGame,
+  setActiveAction,
+  clearActiveAction,
 } = gameSlice.actions;

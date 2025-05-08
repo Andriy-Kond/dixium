@@ -21,3 +21,8 @@ export const DARK = "dark";
 
 // empty
 export const EMPTY_OBJ = {};
+
+// decks
+export const CHECKED_ALL = "checked_all";
+export const CHECKED_NONE = "checked_none";
+export const CHECKED_USER = "checked_user";

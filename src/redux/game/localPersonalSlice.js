@@ -71,7 +71,11 @@ export const localPersonalSlice = createSlice({
     },
 
     setLocalGame: (state, action) => {
-      console.trace("localPersonalSlice>> setLocalGame");
+      // console.trace("localPersonalSlice>> setLocalGame");
+      console.log(
+        " localPersonalSlice>> setLocalGame action.payload:::",
+        action.payload?.gameName,
+      );
       const game = action.payload;
 
       // state.games = { ...state.games, [game._id]: game };
@@ -152,23 +156,20 @@ export const localPersonalSlice = createSlice({
       const gameId = action.payload;
       const currentLang = state.lang;
       const currentPreloadImg = state.preloadImg;
+      const games = state.games;
 
       // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
       // .entries перетворює об'єкт state.games у масив пар [key, value]
       const updateGameList = Object.fromEntries(
-        Object.entries(state.games).filter(([key]) => {
-          // console.log("clearLocalState >> key:::", key);
-          // console.log("clearLocalState >> gameId:::", gameId);
-          return key !== gameId;
-        }),
+        Object.entries(games).filter(([key]) => key !== gameId),
       );
 
-      // console.log(" updateGameList:::", updateGameList);
       return {
         ...localInitialState,
         lang: currentLang,
         preloadImg: currentPreloadImg,
-        games: updateGameList,
+        games: { ...updateGameList },
+        // games: updateGameList,
       };
     },
 

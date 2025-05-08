@@ -8,7 +8,13 @@ export const selectUserCredentials = state => state.authSlice.user;
 //* gameSlice:
 export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
+export const selectGameDeck = state => state.gameSlice.gameDeck;
 export const selectActiveActions = state => state.gameSlice.activeActions;
+
+export const selectSelectedDeckIds = state => state.gameSlice.selectedDeckIds;
+export const selectUserSelectedDeckIds = state =>
+  state.gameSlice.userSelectedDeckIds;
+export const selectCycleState = state => state.gameSlice.cycleState;
 
 //* localPersonalSlice selectors:
 export const selectIsRedirecting = state =>
@@ -125,9 +131,6 @@ export const selectPlayerHand = (gameId, playerId) => state => {
   const player = game.players.find(p => p._id === playerId);
   return player.hand;
 };
-
-export const selectGameDeck = gameId => state =>
-  state.localPersonalSlice.games[gameId].deck;
 
 export const selectGameDiscardPile = gameId => state =>
   state.localPersonalSlice.games[gameId].discardPile;

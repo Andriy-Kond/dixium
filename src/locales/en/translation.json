@@ -141,5 +141,6 @@
   "check_id": "Chek the ID",
   "waiting": "Waiting",
   "finish_game": "Finish game",
-  "players_turn": "Players' turn"
+  "players_turn": "Players' turn",
+  "total_cards": "Total cards"
 }

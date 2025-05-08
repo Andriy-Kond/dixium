@@ -97,25 +97,8 @@ export default function App() {
                   <Route path="prepare-game" element={<PrepareGame />} />
                   <Route path="sort-players" element={<SortPlayers />} />
                   <Route path="select-decks" element={<SelectDecks />} />
-                  <Route path="desk-cards" element={<DeckCards />} />
+                  <Route path="select-decks/:deckId" element={<DeckCards />} />
                 </Route>
-
-                {/* <Route
-                  path="/game/:gameId/prepare-game"
-                  element={<PrepareGame />}
-                />
-                <Route
-                  path="/game/:gameId/sort-players"
-                  element={<SortPlayers />}
-                />
-                <Route
-                  path="/game/:gameId/select-decks"
-                  element={<SelectDecks />}
-                />
-                <Route
-                  path="/game/:gameId/desk-cards"
-                  element={<DeckCards />}
-                /> */}
                 <Route
                   path="/game/:gameId/current-game"
                   element={<CurrentGame />}
