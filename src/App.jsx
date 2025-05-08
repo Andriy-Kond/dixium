@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notify } from "notiflix";
@@ -47,6 +47,9 @@ export default function App() {
   // console.log("App.jsx mounted");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  console.log(" App >> location.pathname:::", location.pathname);
+
   const isSetPassword = useSelector(selectIsSetPassword);
   const authUserToken = useSelector(selectUserToken);
   const {
@@ -91,7 +94,7 @@ export default function App() {
             <Route path="/" element={<SharedLayout />}>
               <Route element={<PrivateRoute redirectTo="/" />}>
                 <Route path="/game" element={<GamesListPage />} />
-                <Route path="/game/:gameId" element={<CurrentGamePage />} />
+                {/* <Route path="/game/:gameId" element={<CurrentGamePage />} /> */}
 
                 <Route path="/game/:gameId/setup" element={<GameSetup />}>
                   <Route path="prepare-game" element={<PrepareGame />} />
@@ -99,10 +102,12 @@ export default function App() {
                   <Route path="select-decks" element={<SelectDecks />} />
                   <Route path="select-decks/:deckId" element={<DeckCards />} />
                 </Route>
+
                 <Route
                   path="/game/:gameId/current-game"
                   element={<CurrentGame />}
                 />
+
                 <Route path="/set-password" element={<SetPasswordPage />} />
               </Route>
 

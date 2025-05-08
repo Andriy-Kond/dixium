@@ -36,7 +36,6 @@ export default function GameSetup() {
       isSingleCardMode,
       finishPoints: Number(finishPoints),
     };
-    console.log(" handleRunGame >> updatedGame:::", updatedGame);
 
     // optimistic update:
     optimisticUpdateDispatch({
@@ -55,14 +54,6 @@ export default function GameSetup() {
     <>
       <p>game setup</p>
       <Outlet />
-
-      {/* {showStartButton && (
-        <Button
-          btnText={t("run_game")}
-          onClick={handleRunGame}
-          disabled={!isCanRunGame}
-        />
-      )} */}
 
       {isShowStartButton && (
         <Button

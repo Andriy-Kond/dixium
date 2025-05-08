@@ -110,7 +110,15 @@ export const useSetupSocketListeners = () => {
       playersOrderUpdate(game, message, dispatch, activeActions);
 
     const handleGameRunning = ({ game, message }) =>
-      gameRunning(games, game, message, dispatch, activeActions, userId);
+      gameRunning(
+        games,
+        game,
+        message,
+        dispatch,
+        activeActions,
+        userId,
+        navigate,
+      );
 
     const handleFirstStorytellerUpdated = ({ game }) =>
       firstStorytellerUpdated(game, dispatch, userId);

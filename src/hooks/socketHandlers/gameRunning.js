@@ -15,6 +15,7 @@ export const gameRunning = (
   dispatch,
   activeActions,
   playerId,
+  navigate,
 ) => {
   console.log("gameRunning");
   if (!game) throw new Error(`The game is ${game}`);
@@ -66,6 +67,8 @@ export const gameRunning = (
       clearTimeout(relatedAction.meta.timer);
       dispatch(clearActiveAction(key));
     }
+
+    navigate(`/game/${game._id}/current-game`);
   } else {
     //* Логіка для інших гравців
     if (message) Notify.failure(message);

@@ -27,6 +27,7 @@ export default function CurrentGamePage() {
 
   return (
     <>
+      <p>Current game page</p>
       <div className={css.container}>
         {currentGame.isGameRunning ? <CurrentGame /> : <PrepareGame />}
         {/* {currentGame.isGameRunning ? (
