@@ -48,16 +48,14 @@ export default function GamesListPage() {
     });
 
   useEffect(() => {
-    // console.log(" useEffect >> userActiveGameId:::", userActiveGameId);
-    // console.log(" useEffect >> activeGame:::", activeGame);
     if (!userActiveGameId || !activeGame || isFetchingCurrentGame) return;
 
-    console.log(" useEffect >> activeGame:::", activeGame);
-    console.log(
-      " useEffect >> userActiveGameId !== activeGame?._id:::",
-      userActiveGameId !== activeGame?._id,
-    );
-    console.log("встановлюю активну гру ", activeGame?.gameName);
+    console.log("GamesListPage set activeGame:::", activeGame);
+    // console.log(
+    //   " useEffect >> userActiveGameId !== activeGame?._id:::",
+    //   userActiveGameId !== activeGame?._id,
+    // );
+    // console.log("встановлюю активну гру ", activeGame?.gameName);
     if (userActiveGameId === activeGame._id) {
       dispatch(setLocalGame(activeGame));
     }
@@ -66,6 +64,7 @@ export default function GamesListPage() {
   // const isRedirecting = useSelector(selectIsRedirecting);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
   // const [searchingGame, setSearchingGame] = useState(null);
+
   //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(headerTitleText));
@@ -168,10 +167,12 @@ export default function GamesListPage() {
   };
 
   const returnToGame = () => {
-    if (isCurrentPlayerIsHost)
+    if (isCurrentPlayerIsHost && !currentGame.isGameRunning) {
       navigate(`${userActiveGameId}/setup/prepare-game`);
-    else navigate(`${userActiveGameId}/current-game`);
-    // navigate(-1);
+    } else {
+      navigate(`${userActiveGameId}/current-game`);
+      // navigate(-1);
+    }
   };
 
   const removePlayer = userId => {

@@ -73,7 +73,7 @@ export default function SharedLayout() {
   }, []);
 
   const handleBackClick = useCallback(() => {
-    console.log("handleBackClick");
+    console.log("handleBackClick SharedLayout");
 
     navigate(-1); // Повертається на попередній маршрут у стеку історії
   }, [navigate]);
@@ -132,10 +132,7 @@ export default function SharedLayout() {
           {backButtonConfig.isVisible && (
             <Button
               className={css.backButton}
-              onClick={() => {
-                console.log("click");
-                backButtonConfig.onClick(); // ? чому спрацьовує лише після другого натискання?
-              }}>
+              onClick={() => backButtonConfig.onClick()}>
               {`<< ${t("back")}`}
             </Button>
           )}

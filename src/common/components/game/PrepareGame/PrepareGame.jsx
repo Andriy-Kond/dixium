@@ -1,24 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { DndContext, closestCenter } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
-import { Notify } from "notiflix";
+import { useCallback, useEffect } from "react";
 
-import SortablePlayer from "common/components/game/SortablePlayer";
-import { distributeCards } from "utils/game/distributeCards.js";
-import Button from "common/components/ui/Button/index.js";
 import {
   selectLocalGame,
   selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
 import css from "./PrepareGame.module.scss";
-import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
+
 import { useTranslation } from "react-i18next";
 import {
   setFinishPoints,
@@ -28,26 +18,38 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import InformMessage from "../../ui/InformMessage/InformMessage.jsx";
 import clsx from "clsx";
+import { useBackButton } from "context/BackButtonContext.jsx";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
-
-  const { optimisticUpdateDispatch } = useOptimisticDispatch();
+  const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
   const { gameId } = useParams();
-  // const [finishPoints, setFinishPoints] = useState("30");
 
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(gameId));
   const { isSingleCardMode, finishPoints, hostPlayerId, players } = currentGame;
   if (!userActiveGameId || !currentGame) navigate("/game", { replace: true });
 
+  const handleBackClick = useCallback(() => {
+    console.log("handleBackClick PrepareGame");
+
+    navigate(-1);
+  }, [navigate]);
+
+  useEffect(() => {
+    showBackButton(handleBackClick, "back", 0);
+
+    return () => {
+      hideBackButton(0);
+    };
+  }, [handleBackClick, hideBackButton, showBackButton]);
+
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: userId, playerGameId } = userCredentials;
 
   const isCurrentPlayerIsHost = currentGame.hostPlayerId === userId;
-  const isCurrentPlayerInGame = currentGame.players.find(p => p._id === userId);
 
   useEffect(() => {
     dispatch(
@@ -57,30 +59,6 @@ export default function PrepareGame() {
 
   const isDisabledCheckbox =
     !isCurrentPlayerIsHost || currentGame.players.length < 7;
-
-  // Оновлює порядок гравців і надсилає зміни через сокети.
-  const handleDragEnd = event => {
-    if (!isCurrentPlayerIsHost) return; // dnd can do the host player only
-
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = currentGame.players.findIndex(p => p._id === active.id);
-    const newIndex = currentGame.players.findIndex(p => p._id === over.id);
-    const newPlayersOrder = arrayMove(currentGame.players, oldIndex, newIndex);
-    const updatedGame = { ...currentGame, players: newPlayersOrder };
-
-    // optimistic update:
-    optimisticUpdateDispatch({
-      eventName: "newPlayersOrder",
-      updatedGame,
-    });
-  };
-
-  const toGamePage = () => {
-    navigate(`/game`);
-  };
 
   const copyToClipboard = async () => {
     try {
@@ -168,23 +146,6 @@ export default function PrepareGame() {
       <button className={css.redirectContainer} onClick={copyToClipboard}>
         {t("copy_to_clipboard")}
       </button>
-
-      <div className={css.bottomBar}>
-        <Button
-          onClick={toGamePage}
-          btnText={t("back")}
-          btnStyle={[["twoBtnsInRow"], ["btnFlexGrow"]]}
-        />
-
-        {/* {userId === currentGame?.hostPlayerId && (
-          <Button
-            onClick={runGame}
-            btnText={t("run_game")}
-            btnStyle={["twoBtnsInRow"]}
-            disabled={!isCanRunGame}
-          />
-        )} */}
-      </div>
     </>
   );
 }

@@ -6,6 +6,7 @@ const gameInitialState = {
   isCreatingGame: false,
   currentDeckId: null,
   activeActions: {},
+  activeActionsTest: {},
 
   selectedDeckIds: [], // для відстеження обраних колод
   userSelectedDeckIds: [], // для збереження вибору користувача
@@ -17,7 +18,6 @@ export const gameSlice = createSlice({
   initialState: gameInitialState,
   reducers: {
     setIsCreatingGame: (state, action) => {
-      console.log("setIsCreatingGame action.payload:::", action.payload);
       state.isCreatingGame = action.payload;
     },
 
@@ -47,6 +47,15 @@ export const gameSlice = createSlice({
     clearActiveAction(state, action) {
       delete state.activeActions[action.payload];
     },
+
+    setActiveActionTest(state, action) {
+      const { key, value } = action.payload;
+      state.activeActionsTest[key] = value;
+    },
+
+    clearActiveActionTest(state, action) {
+      delete state.activeActionsTest[action.payload];
+    },
   },
 });
 
@@ -69,4 +78,6 @@ export const {
   clearGameInitialState,
   setActiveAction,
   clearActiveAction,
+  setActiveActionTest,
+  clearActiveActionTest,
 } = gameSlice.actions;

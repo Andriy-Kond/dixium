@@ -1,10 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { clearActiveAction } from "redux/game/gameSlice.js";
+import {
+  clearActiveAction,
+  clearActiveActionTest,
+} from "redux/game/gameSlice.js";
 import socket from "services/socket.js";
 import {
   selectActiveActions,
+  selectActiveActionsTest,
   selectIsGameRunning,
   selectIsGameStarted,
   selectLocalGames,
@@ -35,6 +39,7 @@ import {
   gameStarted,
   userActiveGameIdUpdated,
   findAndJoinToGameSuccess,
+  cardsListUpdateSuccess,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
@@ -51,6 +56,7 @@ export const useSetupSocketListeners = () => {
   const { _id: userId } = userCredentials;
   const toastId = useSelector(selectToastId(gameId, userId));
   const activeActions = useSelector(selectActiveActions);
+  const activeActionsTest = useSelector(selectActiveActionsTest);
   const games = useSelector(selectLocalGames);
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const isGameRunning = useSelector(selectIsGameRunning(gameId));
@@ -106,8 +112,8 @@ export const useSetupSocketListeners = () => {
         gameDeleted(game, dispatch, gameId, userId, navigate, toastId);
     };
 
-    const handlePlayersOrderUpdate = ({ game, message }) =>
-      playersOrderUpdate(game, message, dispatch, activeActions);
+    const handlePlayersOrderUpdate = ({ game, errorMessage }) =>
+      playersOrderUpdate(game, errorMessage, dispatch, activeActions);
 
     const handleGameRunning = ({ game, message }) =>
       gameRunning(
@@ -147,8 +153,12 @@ export const useSetupSocketListeners = () => {
     const handleGameFound = ({ game }) => gameFound(game, dispatch);
 
     const handleGameStarted = ({ game }) => gameStarted(game, games, dispatch);
+
     const handleFindAndJoinToGameSuccess = ({ game }) =>
       findAndJoinToGameSuccess(game, dispatch, navigate);
+
+    const handleCardsListUpdateSuccess = ({ game, errorMessage }) =>
+      cardsListUpdateSuccess(game, errorMessage, dispatch, activeActionsTest);
 
     // console.log(`Setting up socket listeners for component ${Math.random()}`); // дебаг унікальності
     socket.on("connect", () => handleSocketConnection("connect"));
@@ -177,6 +187,7 @@ export const useSetupSocketListeners = () => {
     socket.on("gameFound", handleGameFound);
     socket.on("Game_Started", handleGameStarted);
     socket.on("findAndJoinToGame_Success", handleFindAndJoinToGameSuccess);
+    socket.on("CardsList_Update_Success", handleCardsListUpdateSuccess);
 
     return () => {
       // console.log("Cleaning up socket listeners");
@@ -204,13 +215,14 @@ export const useSetupSocketListeners = () => {
       socket.off("gameFound", handleGameFound);
       socket.off("Game_Started", handleGameStarted);
       socket.off("findAndJoinToGame_Success", handleFindAndJoinToGameSuccess);
+      socket.off("CardsList_Update_Success", handleCardsListUpdateSuccess);
     };
   }, [
     activeActions,
+    activeActionsTest,
     dispatch,
     gameId,
     games,
-    isGameRunning,
     navigate,
     t,
     toastId,
@@ -222,7 +234,7 @@ export const useSetupSocketListeners = () => {
   useEffect(() => {
     return () => {
       // if client runout from page (unmount component) before server responding
-      // Очищаємо лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
+      // Можна очищати лише таймери, залишаючи activeActions (на випадок якщо useSetupSocketListeners буде перевикористовуватись у різних компонентах, або при переході між сторінками в рамках одного SPA - тобто монтуватись знову)
       // Очищення всіх таймерів при розмонтуванні
       Object.values(activeActions).forEach(action => {
         if (action?.meta?.timer) {
@@ -231,6 +243,16 @@ export const useSetupSocketListeners = () => {
           dispatch(clearActiveAction(key)); // Видаляємо дію зі стану Redux
         }
       });
+
+      // Видалення таймерів для optimisticCardsListUpdate
+      Object.values(activeActionsTest).forEach(value => {
+        if (value?.timer) {
+          clearTimeout(value.timer); // Очищаємо таймер
+
+          const key = `${value.eventName}-${value.previousGameState._id}`;
+          dispatch(clearActiveActionTest(key)); // Видаляємо дію зі стану Redux
+        }
+      });
     };
-  }, [activeActions, dispatch]);
+  }, [activeActions, activeActionsTest, dispatch]);
 };

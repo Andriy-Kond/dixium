@@ -37,7 +37,7 @@ const GameSetup = lazy(() => import("common/components/game/GameSetup"));
 const PrepareGame = lazy(() => import("common/components/game/PrepareGame"));
 const SortPlayers = lazy(() => import("common/components/game/SortPlayers"));
 const SelectDecks = lazy(() => import("common/components/game/SelectDecks"));
-const DeckCards = lazy(() => import("common/components/game/DeckCards"));
+const DeckCards = lazy(() => import("common/components/game/decks/DeckCards"));
 
 const CurrentGame = lazy(() => import("common/components/game/CurrentGame"));
 
@@ -48,7 +48,7 @@ export default function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(" App >> location.pathname:::", location.pathname);
+  // console.log(" App >> location.pathname:::", location.pathname);
 
   const isSetPassword = useSelector(selectIsSetPassword);
   const authUserToken = useSelector(selectUserToken);

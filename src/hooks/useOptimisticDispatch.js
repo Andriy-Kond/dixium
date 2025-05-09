@@ -21,3 +21,9 @@ export const useOptimisticDispatch = () => {
 
   return { optimisticUpdateDispatch };
 };
+
+// payload:
+// {
+//   eventName: "CardsList_Update",
+//   updatedGame: currentGame,
+// }

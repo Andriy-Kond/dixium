@@ -4,6 +4,12 @@ import socket from "services/socket.js";
 import { t } from "i18next";
 import { updateLocalGame } from "redux/game/localPersonalSlice.js";
 
+// payload:
+// {
+//   eventName: "CardsList_Update",
+//   updatedGame: currentGame,
+// }
+
 const optimisticUpdateMiddleware =
   ({ dispatch, getState }) =>
   next =>

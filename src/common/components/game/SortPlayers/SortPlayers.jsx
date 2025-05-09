@@ -1,4 +1,4 @@
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
@@ -24,6 +24,7 @@ export default function SortPlayers() {
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
   const userCredentials = useSelector(selectUserCredentials);
+
   const { _id: userId, playerGameId } = userCredentials;
   if (!currentGame) {
     navigate("/game");

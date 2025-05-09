@@ -2,7 +2,12 @@ import { Notify } from "notiflix";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import { updateLocalGame } from "redux/game/localPersonalSlice.js";
 
-export const playersOrderUpdate = (game, message, dispatch, activeActions) => {
+export const playersOrderUpdate = (
+  game,
+  errorMessage,
+  dispatch,
+  activeActions,
+) => {
   if (!game) {
     throw new Error(`The game is ${game}`);
   }
@@ -16,9 +21,9 @@ export const playersOrderUpdate = (game, message, dispatch, activeActions) => {
     const { eventName } = relatedAction.payload;
     const key = `${eventName}-${game._id}`;
 
-    if (message) {
+    if (errorMessage) {
       dispatch(updateLocalGame(relatedAction.meta.previousGameState));
-      Notify.failure(message);
+      Notify.failure(errorMessage);
     } else dispatch(updateLocalGame(game));
 
     if (relatedAction?.meta?.timer) {
@@ -27,7 +32,7 @@ export const playersOrderUpdate = (game, message, dispatch, activeActions) => {
     }
   } else {
     // Логіка для інших гравців
-    if (message) Notify.failure(message);
+    if (errorMessage) Notify.failure(errorMessage);
     else dispatch(updateLocalGame(game));
   }
 };
