@@ -101,7 +101,7 @@ export default function SharedLayout() {
       showBackButton(handleBackClick, "back", 1);
     } else {
       // console.log("SharedLayout >> Ховаю кнопку :>> ");
-      hideBackButton(1);
+      hideBackButton(3);
     }
   }, [
     handleBackClick,

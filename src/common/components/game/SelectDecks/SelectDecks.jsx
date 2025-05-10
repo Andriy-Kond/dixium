@@ -94,11 +94,9 @@ export default function SelectDecks() {
 
   useEffect(() => {
     // console.log("set showBackButton in SelectDecks");
-    showBackButton(handleBackClick, "back", 0);
+    showBackButton(handleBackClick, "back", 2);
 
-    // return () => {
-    //   hideBackButton(0);
-    // };
+    return () => hideBackButton(0);
   }, [handleBackClick, hideBackButton, showBackButton]);
 
   // const currentDeckId = useSelector(selectCurrentDeckId);
@@ -294,7 +292,7 @@ export default function SelectDecks() {
 
             <button
               className={css.redirectContainer}
-              onClick={() => navigate(`${deck._id}`)}>
+              onClick={() => navigate(`${deck._id}`, { state: { deck } })}>
               {deck.name}
             </button>
           </li>
