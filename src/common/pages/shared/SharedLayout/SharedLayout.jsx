@@ -1,4 +1,10 @@
-import { Suspense, useCallback, useEffect, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "common/components/navComponents/AppBar";
 import css from "./SharedLayout.module.scss";
@@ -73,7 +79,7 @@ export default function SharedLayout() {
   }, []);
 
   const handleBackClick = useCallback(() => {
-    console.log("handleBackClick SharedLayout");
+    // console.log("handleBackClick SharedLayout");
 
     navigate(-1); // Повертається на попередній маршрут у стеку історії
   }, [navigate]);
@@ -84,16 +90,26 @@ export default function SharedLayout() {
   const shouldShowBackButton = !isHomePage && !isGamesListPage;
 
   // Показ кнопки "Назад" для маршрутів.
+  // useLayoutEffect виконується синхронно після всіх маніпуляцій з DOM, що може допомогти уникнути асинхронних проблем.
   useEffect(() => {
+    // console.log(" useEffect >> shouldShowBackButton:::", shouldShowBackButton);
     if (shouldShowBackButton) {
       // Пріоритет 0 — найнижчий, щоб дочірні компоненти могли перевизначити
-      // console.log("SharedLayout >> Показую кнопку :>> ");
-      showBackButton(handleBackClick, "back", 0);
+      // console.log("set showBackButton in SharedLayout");
+      // console.log(" SharedLayout >> location.pathname:::", location.pathname);
+
+      showBackButton(handleBackClick, "back", 1);
     } else {
       // console.log("SharedLayout >> Ховаю кнопку :>> ");
-      hideBackButton(0);
+      hideBackButton(1);
     }
-  }, [handleBackClick, hideBackButton, shouldShowBackButton, showBackButton]);
+  }, [
+    handleBackClick,
+    hideBackButton,
+    location.pathname,
+    shouldShowBackButton,
+    showBackButton,
+  ]);
 
   // useEffect(() => {
   //   console.log(

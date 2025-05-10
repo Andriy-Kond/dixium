@@ -33,7 +33,6 @@ import {
   setGameDeck,
 } from "redux/game/localPersonalSlice.js";
 import socket from "services/socket.js";
-import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import { Notify } from "notiflix";
 import { useBackButton } from "context/BackButtonContext.jsx";
 
@@ -44,6 +43,63 @@ export default function SelectDecks() {
   const { gameId } = useParams();
   const currentGame = useSelector(selectLocalGame(gameId));
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
+
+  const optimisticCardsListUpdate = useCallback(
+    ({ previousGameState, gameId, cards, timeout = 2000 }) => {
+      console.log("optimisticCardsListUpdate");
+
+      const eventName = "CardsList_Update";
+      setGameDeck({ gameId, cards }); // оптимістичне оновлення стану
+      socket.emit(eventName, { updatedGame: currentGame }); // запит на сервер для оновлення і на сервері
+
+      // Встановлення таймеру для відкату, якщо щось пішло не так
+      const timer = setTimeout(() => {
+        Notify.failure(t("err_no_response_server"), {
+          eventName: eventName,
+        });
+
+        // Встановлення попереднього стану, якщо час вийшов, а відповіді від сервера не надійшло
+        dispatch(
+          setGameDeck({
+            gameId: previousGameState._id,
+            cards: previousGameState.deck,
+          }),
+        );
+      }, timeout);
+
+      const key = `${eventName}-${gameId}`;
+      // Записую в стейт таймер для скидання, якщо запит успішний і попередній стан для відкату, якщо прийшла помилка
+      dispatch(
+        setActiveActionTest({
+          key,
+          value: { timer, previousGameState, eventName },
+        }),
+      );
+    },
+    [currentGame, dispatch, t],
+  );
+
+  // унікальна кнопка повернення назад - запускає socket.emit обраних колод на сервак.
+  const handleBackClick = useCallback(() => {
+    // console.log("handleBackClick SelectDecks -> optimisticCardsListUpdate");
+
+    optimisticCardsListUpdate({
+      previousGameState: currentGame,
+      gameId: currentGame._id,
+      cards: currentGame.deck,
+    });
+
+    navigate(-1);
+  }, [currentGame, navigate, optimisticCardsListUpdate]);
+
+  useEffect(() => {
+    // console.log("set showBackButton in SelectDecks");
+    showBackButton(handleBackClick, "back", 0);
+
+    // return () => {
+    //   hideBackButton(0);
+    // };
+  }, [handleBackClick, hideBackButton, showBackButton]);
 
   // const currentDeckId = useSelector(selectCurrentDeckId);
 
@@ -58,8 +114,6 @@ export default function SelectDecks() {
   const userSelectedDeckIds = useSelector(selectUserSelectedDeckIds);
   // Стан для відстеження циклу (0: CHECKED_ALL, 1: CHECKED_NONE, 2: CHECKED_USER)
   const cycleState = useSelector(selectCycleState);
-
-  const { optimisticUpdateDispatch } = useOptimisticDispatch();
 
   // Синхронізація чекбоксів із gameDeck при завантаженні
   useEffect(() => {
@@ -201,62 +255,6 @@ export default function SelectDecks() {
     // При зміні вибору користувача (клік на окремий чекбокс) скидаємо cycleState до 0, щоб цикл починався заново з CHECKED_ALL. Це забезпечує передбачувану поведінку.
     dispatch(setCycleState(2));
   };
-
-  const optimisticCardsListUpdate = useCallback(
-    ({ previousGameState, gameId, cards, timeout = 2000 }) => {
-      console.log("optimisticCardsListUpdate");
-
-      const eventName = "CardsList_Update";
-      setGameDeck({ gameId, cards }); // оптимістичне оновлення стану
-      socket.emit(eventName, { updatedGame: currentGame }); // запит на сервер для оновлення і на сервері
-
-      // Встановлення таймеру для відкату, якщо щось пішло не так
-      const timer = setTimeout(() => {
-        Notify.failure(t("err_no_response_server"), {
-          eventName: eventName,
-        });
-
-        // Встановлення попереднього стану, якщо час вийшов, а відповіді від сервера не надійшло
-        dispatch(
-          setGameDeck({
-            gameId: previousGameState._id,
-            cards: previousGameState.deck,
-          }),
-        );
-      }, timeout);
-
-      const key = `${eventName}-${gameId}`;
-      // Записую в стейт таймер для скидання, якщо запит успішний і попередній стан для відкату, якщо прийшла помилка
-      dispatch(
-        setActiveActionTest({
-          key,
-          value: { timer, previousGameState, eventName },
-        }),
-      );
-    },
-    [currentGame, dispatch, t],
-  );
-
-  // унікальна кнопка повернення назад - запускає socket.emit обраних колод на сервак.
-  const handleBackClick = useCallback(() => {
-    console.log("handleBackClick optimisticCardsListUpdate");
-
-    optimisticCardsListUpdate({
-      previousGameState: currentGame,
-      gameId: currentGame._id,
-      cards: currentGame.deck,
-    });
-
-    navigate(-1);
-  }, [currentGame, navigate, optimisticCardsListUpdate]);
-
-  useEffect(() => {
-    showBackButton(handleBackClick, "back", 0);
-
-    return () => {
-      hideBackButton(0);
-    };
-  }, [handleBackClick, hideBackButton, showBackButton]);
 
   return (
     <>

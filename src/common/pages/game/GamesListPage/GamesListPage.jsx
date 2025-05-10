@@ -50,7 +50,8 @@ export default function GamesListPage() {
   useEffect(() => {
     if (!userActiveGameId || !activeGame || isFetchingCurrentGame) return;
 
-    console.log("GamesListPage set activeGame:::", activeGame);
+    console.log("GamesListPage set activeGame:::", activeGame.gameName);
+
     // console.log(
     //   " useEffect >> userActiveGameId !== activeGame?._id:::",
     //   userActiveGameId !== activeGame?._id,

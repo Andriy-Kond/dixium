@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 
 import {
   selectLocalGame,
@@ -18,33 +18,18 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import InformMessage from "../../ui/InformMessage/InformMessage.jsx";
 import clsx from "clsx";
-import { useBackButton } from "context/BackButtonContext.jsx";
+// import { useBackButton } from "context/BackButtonContext.jsx";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
   const { gameId } = useParams();
 
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(gameId));
   const { isSingleCardMode, finishPoints, hostPlayerId, players } = currentGame;
   if (!userActiveGameId || !currentGame) navigate("/game", { replace: true });
-
-  const handleBackClick = useCallback(() => {
-    console.log("handleBackClick PrepareGame");
-
-    navigate(-1);
-  }, [navigate]);
-
-  useEffect(() => {
-    showBackButton(handleBackClick, "back", 0);
-
-    return () => {
-      hideBackButton(0);
-    };
-  }, [handleBackClick, hideBackButton, showBackButton]);
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: userId, playerGameId } = userCredentials;
