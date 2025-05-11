@@ -141,5 +141,7 @@
   "waiting": "Очікує",
   "finish_game": "Закінчити гру",
   "players_turn": "Черга гравців",
-  "total_cards": "Загалом карт"
+  "total_cards": "Загалом карт",
+  "recaptcha_failed_try_v2": "Не вдалося підтвердити, що ви не бот. Будь ласка, пройдіть перевірку нижче.",
+  "please_complete_recaptcha": "Будь ласка, пройдіть перевірку reCAPTCHA."
 }

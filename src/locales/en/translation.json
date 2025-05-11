@@ -142,5 +142,7 @@
   "waiting": "Waiting",
   "finish_game": "Finish game",
   "players_turn": "Players' turn",
-  "total_cards": "Total cards"
+  "total_cards": "Total cards",
+  "recaptcha_failed_try_v2": "We were unable to verify that you are not a bot. Please complete the verification below.",
+  "please_complete_recaptcha": "Please complete the reCAPTCHA verification."
 }

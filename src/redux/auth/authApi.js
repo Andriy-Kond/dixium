@@ -9,6 +9,7 @@ const baseQuery = fetchBaseQuery({
   // For works by token:
   prepareHeaders: (headers, { getState }) => {
     const token = getState().authSlice.user.token;
+    console.log(" token:::", token);
     if (token) headers.set("authorization", `Bearer ${token}`);
 
     return headers;
@@ -138,9 +139,10 @@ export const authApi = createApi({
     }),
 
     resendVerificationEmail: build.mutation({
-      query: () => ({
+      query: ({ email, recaptchaToken, captchaType }) => ({
         url: "/api/auth/resend-verification",
         method: "POST",
+        body: { email, recaptchaToken, captchaType },
       }),
       invalidatesTags: ["User"],
     }),

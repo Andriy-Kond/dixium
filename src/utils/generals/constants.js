@@ -26,3 +26,7 @@ export const EMPTY_OBJ = {};
 export const CHECKED_ALL = "checked_all";
 export const CHECKED_NONE = "checked_none";
 export const CHECKED_USER = "checked_user";
+
+// templates
+export const EMAIL_TEMPLATE =
+  /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*$/;

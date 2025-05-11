@@ -113,6 +113,7 @@ export default function App() {
 
               <Route element={<PublicRoute redirectTo="/game" />}>
                 <Route index element={<HomePage />} />
+
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/verify-email" element={<VerifyEmailPage />} />
