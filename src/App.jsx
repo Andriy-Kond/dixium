@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { lazy, useEffect } from "react";
+import { lazy, useEffect, useTransition } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notify } from "notiflix";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -14,6 +14,7 @@ import { setIsLoggedIn } from "redux/auth/authSlice";
 import { selectIsSetPassword, selectUserToken } from "./redux/selectors";
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
 import { ToastContainer } from "react-toastify";
+import { setNetworkStatus } from "redux/game/gameSlice.js";
 
 Notify.init({
   clickToClose: true,
@@ -48,10 +49,12 @@ export default function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTransition();
   // console.log(" App >> location.pathname:::", location.pathname);
 
   const isSetPassword = useSelector(selectIsSetPassword);
   const authUserToken = useSelector(selectUserToken);
+
   const {
     data: userData,
     isSuccess,
@@ -82,6 +85,53 @@ export default function App() {
     isSuccess,
     navigate,
   ]);
+
+  // Дебагінг: логування будь-яких асинхронних помилок.
+  useEffect(() => {
+    // Коли Promise відхиляється (наприклад, через помилку) і немає обробника catch, браузер генерує подію unhandledrejection.
+    const handleUnhandledRejection = event => {
+      console.error("Unhandled promise rejection:", event.reason);
+      // .reason - містить причину відхилення (rejection) асинхронного Promise
+      event.preventDefault(); // запобігає тому, щоб браузер виводив стандартне повідомлення про помилку в консоль (наприклад, Uncaught (in promise) Timeout)
+    };
+
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection,
+      );
+    };
+  }, []);
+
+  // Debugging: Перевірка наявності інтернету
+  useEffect(() => {
+    const handleOnline = () => {
+      Notify.success(t("internet_restored"));
+      dispatch(setNetworkStatus(true));
+    };
+    const handleOffline = () => {
+      Notify.failure(t("no_internet"));
+      dispatch(setNetworkStatus(false));
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    // // Початкова перевірка (не обов'язково, якщо через dispatch використовувати у компонентах)
+    // if (!navigator.onLine) {
+    //   Notify.failure(t("no_internet"));
+    //   console.error("No internet connection");
+    // }
+
+    dispatch(setNetworkStatus(navigator.onLine));
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, [dispatch, t]);
 
   return (
     <>

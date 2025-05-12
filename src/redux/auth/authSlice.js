@@ -31,7 +31,7 @@ export const authSlice = createSlice({
     },
 
     setUserCredentials: (state, action) => {
-      console.log("setUserCredentials:", action.payload);
+      // console.log("setUserCredentials:", action.payload);
       const { userActiveGameId, ...userData } = action.payload; // Ізоляція userActiveGameId
       state.user = userData; // setUserActiveGameId використовується у локальному стані, щоб запобігати оновленню усіх компонентів
       // state.isLoggedIn = true; //!!! Оновлюємо isLoggedIn тут

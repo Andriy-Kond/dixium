@@ -11,6 +11,7 @@ const gameInitialState = {
   selectedDeckIds: [], // для відстеження обраних колод
   userSelectedDeckIds: [], // для збереження вибору користувача
   cycleState: 0, // для відстеження циклу CHECKED_ALL -> CHECKED_NONE -> CHECKED_USER
+  internetStatus: null,
 };
 
 export const gameSlice = createSlice({
@@ -56,6 +57,10 @@ export const gameSlice = createSlice({
     clearActiveActionTest(state, action) {
       delete state.activeActionsTest[action.payload];
     },
+
+    setNetworkStatus(state, action) {
+      state.internetStatus = action.payload;
+    },
   },
 });
 
@@ -80,4 +85,5 @@ export const {
   clearActiveAction,
   setActiveActionTest,
   clearActiveActionTest,
+  setNetworkStatus,
 } = gameSlice.actions;

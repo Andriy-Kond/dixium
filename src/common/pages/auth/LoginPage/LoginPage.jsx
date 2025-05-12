@@ -58,9 +58,8 @@ export default function LoginPage() {
     userCredentials.email = userCredentials.email.toLowerCase();
 
     try {
-      const result = await loginUser(userCredentials).unwrap();
-      console.log(" LoginPage >> result:::", result);
       console.log("loginUser");
+      const result = await loginUser(userCredentials).unwrap();
 
       dispatch(setUserCredentials(result));
       dispatch(setUserActiveGameId(result?.userActiveGameId));

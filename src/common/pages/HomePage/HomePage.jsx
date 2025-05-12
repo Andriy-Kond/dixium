@@ -13,7 +13,7 @@ import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice.js";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Notify } from "notiflix";
-import Button from "common/components/ui/Button/index.js";
+
 import { ReactComponent as GameNameSvg } from "imgs/name_tixid.svg";
 import { ReactComponent as GameSloganSvg } from "imgs/game_slogan.svg";
 
@@ -116,16 +116,29 @@ export default function HomePage() {
         {t("login_with_google")}
       </button>
 
-      <button
-        className={`${css.homePageGoogleLoginBtn} ${css.homePageLoginBtn}`}
-        style={
-          theme === LIGHT
-            ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
-            : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
-        }
-        onClick={() => navigate("/login")}>
-        LoginPage
-      </button>
+      <div className={css.homePageAuthContainer}>
+        <button
+          className={css.homePageAuthBtn}
+          style={
+            theme === LIGHT
+              ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
+              : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
+          }
+          onClick={() => navigate("/login")}>
+          Login
+        </button>
+
+        <button
+          className={css.homePageAuthBtn}
+          style={
+            theme === LIGHT
+              ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
+              : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
+          }
+          onClick={() => navigate("/register")}>
+          Register
+        </button>
+      </div>
     </div>
   );
 }

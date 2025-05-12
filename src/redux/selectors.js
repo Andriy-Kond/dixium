@@ -16,6 +16,7 @@ export const selectSelectedDeckIds = state => state.gameSlice.selectedDeckIds;
 export const selectUserSelectedDeckIds = state =>
   state.gameSlice.userSelectedDeckIds;
 export const selectCycleState = state => state.gameSlice.cycleState;
+export const selectInternetStatus = state => state.gameSlice.internetStatus;
 
 //* localPersonalSlice selectors:
 export const selectIsRedirecting = state =>
