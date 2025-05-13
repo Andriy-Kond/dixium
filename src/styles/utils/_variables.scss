@@ -1,8 +1,33 @@
 // @import "./constants";
-$c20: "#2B3847";
-$c02: "#C9CFD4";
+
+$focus: "3275B8"; //	Focus state for Inputs
+$highlight: "F6902A"; //	Warnings
+$light: "FFFFFF"; //	Invert: Dark
+$dark: "000000"; //	Invert: Light
+
+$c00: "818F99"; //	labels
+
+$c01: "B0B9C0"; //	Invert: 10
+$c02: "C9CFD4"; //	Invert: 20
+$c03: "DCE0E3"; //	Invert: 30
+$c04: "E3E7E9"; //	Invert: 40
+$c05: "ECEEF0"; //	Invert: 50
+
+$c10: "3B4957"; //	Invert: 01
+$c20: "2B3847"; //	Invert: 02
+$c30: "1C2732"; //	Invert: 03
+$c40: "161F27"; //	Invert: 04
+$c50: "0F171E"; //	Invert: 05
 
 :root {
+  // ========= Base styles =========
+  --font_base_family: "Roboto";
+  --font_base_size: 16px;
+  --font_base_line_height: auto;
+  --font_base_letter_spacing: 0%;
+  --font_base_weight: 500;
+  // ========= /Base styles =========
+
   --main_screen_height: calc(100vh - 44px);
   --btnBgColor: #{$c20};
   --btnTextColor: #{$c02};
@@ -23,11 +48,7 @@ $c02: "#C9CFD4";
   // --header_active_color: #0f7dff;
   // --white_color: #fff;
 
-  // --font_family: "Roboto";
   // --font_color: #000000de;
-  // --font_size: 14px;
-  // --font_line-height: 16px;
-  // --font_weight: 400;
 
   // --btn-hover-bg-color: #0f7dff1f;
 

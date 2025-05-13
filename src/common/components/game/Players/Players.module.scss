@@ -62,7 +62,7 @@
 }
 .waiting,
 .waiting:after {
-  box-sizing: border-box;
+  box-sizing: border-box; // ! можна коментувати
 }
 .waiting {
   display: inline-block;

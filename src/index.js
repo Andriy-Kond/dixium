@@ -13,7 +13,8 @@ import "./locales/i18n.js";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Provider store={store}>
         <PersistGate loading={"PersistGate loading..."} persistor={persistor}>
           <App />

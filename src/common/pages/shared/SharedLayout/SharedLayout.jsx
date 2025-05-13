@@ -30,7 +30,10 @@ export default function SharedLayout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  // console.log("Current location:", location.pathname, location.key);
+  // console.log("Current location:", {
+  //   locationPathname: location.pathname,
+  //   locationKey: location.key,
+  // });
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
 
   const theme = useSelector(selectTheme);
@@ -111,12 +114,12 @@ export default function SharedLayout() {
     showBackButton,
   ]);
 
-  // useEffect(() => {
-  //   console.log(
-  //     "SharedLayout >> Ховаю кнопку, бо розмонтувався компонент :>> ",
-  //   );
-  //   // return () => hideBackButton(0);
-  // }, [hideBackButton]);
+  useEffect(() => {
+    console.log(
+      "SharedLayout >> Ховаю кнопку, бо розмонтувався компонент :>> ",
+    );
+    return () => hideBackButton(0);
+  }, [hideBackButton]);
 
   return (
     <>
@@ -128,15 +131,13 @@ export default function SharedLayout() {
             </div>
           }>
           {!isHomePage && (isMobile || location.pathname.includes("game")) && (
-            <div className={css.suspenseMainContainer}>
-              <div
-                className={css.pageHeader}
-                style={{
-                  "--pageHeaderBgColor": pageHeaderBgColor,
-                  "--pageHeaderTextColor": pageHeaderTextColor,
-                }}>
-                {pageHeaderText.toUpperCase()}
-              </div>
+            <div
+              className={css.pageHeader}
+              style={{
+                "--pageHeaderBgColor": pageHeaderBgColor,
+                "--pageHeaderTextColor": pageHeaderTextColor,
+              }}>
+              {pageHeaderText.toUpperCase()}
             </div>
           )}
 

@@ -9,8 +9,6 @@ import socket from "services/socket.js";
 import {
   selectActiveActions,
   selectActiveActionsTest,
-  selectIsGameRunning,
-  selectIsGameStarted,
   selectLocalGames,
   selectToastId,
   selectUserActiveGameId,
@@ -59,8 +57,6 @@ export const useSetupSocketListeners = () => {
   const activeActionsTest = useSelector(selectActiveActionsTest);
   const games = useSelector(selectLocalGames);
   const userActiveGameId = useSelector(selectUserActiveGameId);
-  const isGameRunning = useSelector(selectIsGameRunning(gameId));
-  const isGameStarted = useSelector(selectIsGameStarted(gameId));
 
   useEffect(() => {
     if (gameId && userActiveGameId === gameId)

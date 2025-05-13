@@ -1,4 +1,3 @@
-import { t } from "i18next";
 import { Notify } from "notiflix";
 import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveActionTest } from "redux/game/gameSlice.js";

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { authApi } from "./authApi.js";
+// import { authApi } from "./authApi.js";
 
 const authInitialState = {
   isLoggedIn: false,

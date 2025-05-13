@@ -1,15 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
-import {
-  useGetAllDecksQuery,
-  // useGetCurrentDeckQuery,
-} from "redux/game/gameApi.js";
-import css from "./SelectDecks.module.scss";
 // import { setCurrentDeckId } from "redux/game/gameSlice.js";
 // import Button from "common/components/ui/Button/index.js";
 // import ImgGen from "common/components/ui/ImgGen/index.js";
+import {
+  // useGetCurrentDeckQuery,
+  useGetAllDecksQuery,
+} from "redux/game/gameApi.js";
 import {
   selectCycleState,
   selectLocalGame,
@@ -35,6 +33,7 @@ import {
 import socket from "services/socket.js";
 import { Notify } from "notiflix";
 import { useBackButton } from "context/BackButtonContext.jsx";
+import css from "./SelectDecks.module.scss";
 
 export default function SelectDecks() {
   const dispatch = useDispatch();
@@ -81,7 +80,7 @@ export default function SelectDecks() {
 
   // унікальна кнопка повернення назад - запускає socket.emit обраних колод на сервак.
   const handleBackClick = useCallback(() => {
-    // console.log("handleBackClick SelectDecks -> optimisticCardsListUpdate");
+    console.log("handleBackClick -> optimisticCardsListUpdate");
 
     optimisticCardsListUpdate({
       previousGameState: currentGame,

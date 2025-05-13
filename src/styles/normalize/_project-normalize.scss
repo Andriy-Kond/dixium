@@ -2,14 +2,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
 body {
-  font-family: var(--font_family), serif;
+  font-family: var(--font_base_family), serif;
+  font-size: var(--font_base_size);
+  line-height: var(--font_base_line_height);
+  letter-spacing: var(--font_base_letter_spacing);
+  font-weight: var(--font_base_weight);
+
   user-select: none; // prevents any selection
   caret-color: transparent; // prevents show cursor on text (for LibreWolf browser)
-
-  font-size: var(--font_size);
-  line-height: var(--font_line-height);
-  color: var(--font_color);
 }
+/* ========== /ЗАГАЛЬНІ СТИЛІ ==========  */
 
 /* ========== СКИДАННЯ СТИЛІВ ==========  */
 body.modal-open {
