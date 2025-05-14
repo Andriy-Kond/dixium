@@ -1,46 +1,91 @@
 :root {
-  --primary_color: #5d7e9e;
-  --secondary_color: #ebf0f5;
-  --status_bar_color: #476078;
+  // ========= Base styles =========
+  --font_base_family: "Roboto";
+  --font_base_size: 16px;
+  --font_base_line_height: 19px; // 'normal' не працює, бо у браузері виходить або 18.4 або 20.1
+  --font_base_letter_spacing: 0%;
+  --font_base_weight: 500;
+  // ========= /Base styles =========
 
-  --bg_color: #f7f254;
-  --disable_color: rgba(0, 0, 0, 0.239);
-  --header_active_color: #0f7dff;
-  --white_color: #fff;
-  --light_color: #9db7d1;
-  --dark_color: #041d36;
+  --Focus: #3275b8; //	Focus state for Inputs
+  --Highlight: #f6902a; //	Warnings
 
-  --font_family: "Roboto";
-  --font_color: #000000de;
-  --revers_font_color: #fff;
-  --font_size: 14px;
-  --font_line-height: 16px;
-  --font_weight: 400;
+  --00: #818f99; //	labels
 
-  --btn-hover-bg-color: #0f7dff1f;
+  // --primary_color: #5d7e9e;
+  // --secondary_color: #ebf0f5;
+  // --status_bar_color: #476078;
+
+  // --bg_color: #f7f254;
+  // --disable_color: rgba(0, 0, 0, 0.239);
+  // --header_active_color: #0f7dff;
+  // --white_color: #fff;
+  // --light_color: #9db7d1;
+  // --dark_color: #041d36;
+
+  // --font_family: "Roboto";
+  // --font_color: #000000de;
+  // --revers_font_color: #fff;
+  // --font_size: 14px;
+  // --font_line-height: 16px;
+  // --font_weight: 400;
+
+  // --btn-hover-bg-color: #0f7dff1f;
+}
+
+[data-theme="light"] {
+  --Light: #000;
+  --Dark: #fff;
+
+  --10: #b0b9c0;
+  --20: #c9cfd4;
+  --30: #dce0e3;
+  --40: #e3e7e9;
+  --50: #eceef0;
+
+  --01: #3b4957;
+  --02: #2b3847;
+  --03: #1c2732;
+  --04: #161f27;
+  --05: #0f171e;
 }
 
 [data-theme="dark"] {
-  --primary_color: #ebf0f5;
-  --secondary_color: #5d7e9e;
-  --status_bar_color: #9bbfe1;
+  --Light: #fff; //	Invert: Dark
+  --Dark: #000; //	Invert: Light
 
-  --bg_color: #096fd5;
-  --disable_color: rgba(232, 225, 225, 0.239);
-  --header_active_color: #ecc52c;
+  --01: #b0b9c0; //	Invert: 10
+  --02: #c9cfd4; //	Invert: 20
+  --03: #dce0e3; //	Invert: 30
+  --04: #e3e7e9; //	Invert: 40
+  --05: #eceef0; //	Invert: 50
 
-  --font_color: #fff;
-  --revers_font_color: #000000de;
+  --10: #3b4957; //	Invert: 01
+  --20: #2b3847; //	Invert: 02
+  --30: #1c2732; //	Invert: 03
+  --40: #161f27; //	Invert: 04
+  --50: #0f171e; //	Invert: 05
 
-  --btn-hover-bg-color: #76f21d1f;
+  // --primary_color: #ebf0f5;
+  // --secondary_color: #5d7e9e;
+  // --status_bar_color: #9bbfe1;
+
+  // --bg_color: #096fd5;
+  // --disable_color: rgba(232, 225, 225, 0.239);
+  // --header_active_color: #ecc52c;
+
+  // --font_color: #fff;
+  // --revers_font_color: #000000de;
+
+  // --btn-hover-bg-color: #76f21d1f;
 }
 
-main {
-  background-color: var(--secondary_color);
-  color: var(--font_color);
-}
+// main {
+//   background-color: var(--secondary_color);
+//   color: var(--font_color);
+// }
 
-button {
-  background-color: var(--bg_color);
-  color: var(--font_color);
-}
+// button {
+//   background-color: var(--bg_color);
+//   color: var(--font_color);
+// }

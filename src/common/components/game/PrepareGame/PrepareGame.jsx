@@ -16,7 +16,7 @@ import {
   showNotification,
   toggleIsSingleCardMode,
 } from "redux/game/localPersonalSlice.js";
-import InformMessage from "../../ui/InformMessage/InformMessage.jsx";
+import InformMessage from "../../ui/InfoMessage/InfoMessage.jsx";
 import clsx from "clsx";
 // import { useBackButton } from "context/BackButtonContext.jsx";
 

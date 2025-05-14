@@ -120,6 +120,7 @@
   "other_way_dixit_play": "Another way to Dixit play",
 
   "tixid": "tixid",
+  "nick_reset": "Nickname is set by default",
   "nick_cant_be_empty": "Nickname cannot be empty",
   "nick_should_have_3_symbols": "Nickname must be at least 3 characters",
   "id_copied_to_buffer": "ID copied to clipboard",
@@ -134,7 +135,7 @@
   "select_decks": "Select game decks",
   "join": "Join",
   "req_for_join_game": "To join the game, enter the ID provided by the host",
-  "enter_id_here": "Enter ID here",
+  "enter_id": "Enter ID",
   "create_own_game": "Or create your own game and invite players to it.",
   "display_mode": "Display mode",
   "language": "Language",
@@ -144,5 +145,11 @@
   "players_turn": "Players' turn",
   "total_cards": "Total cards",
   "recaptcha_failed_try_v2": "We were unable to verify that you are not a bot. Please complete the verification below.",
-  "please_complete_recaptcha": "Please complete the reCAPTCHA verification."
+  "please_complete_recaptcha": "Please complete the reCAPTCHA verification.",
+  "language_english": "English",
+  "language_ukrainian": "Українська",
+  "language_auto": "Auto",
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "theme_auto": "Auto"
 }

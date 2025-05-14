@@ -11,7 +11,11 @@ import HomePage from "common/pages/HomePage";
 import SharedLayout from "common/pages/shared/SharedLayout";
 import { useGetUserByTokenQuery } from "redux/auth/authApi";
 import { setIsLoggedIn } from "redux/auth/authSlice";
-import { selectIsSetPassword, selectUserToken } from "./redux/selectors";
+import {
+  selectIsSetPassword,
+  selectTheme,
+  selectUserToken,
+} from "./redux/selectors";
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
 import { ToastContainer } from "react-toastify";
 import { setNetworkStatus } from "redux/game/gameSlice.js";
@@ -54,6 +58,7 @@ export default function App() {
 
   const isSetPassword = useSelector(selectIsSetPassword);
   const authUserToken = useSelector(selectUserToken);
+  const theme = useSelector(selectTheme);
 
   const {
     data: userData,
@@ -65,7 +70,7 @@ export default function App() {
   useSetupSocketListeners(); // Підписка на всі слухачі сокетів
 
   useEffect(() => {
-    if (!isFetching)
+    if (!isFetching) {
       if (isSuccess) {
         dispatch(setIsLoggedIn(true));
 
@@ -77,6 +82,7 @@ export default function App() {
       } else {
         dispatch(setIsLoggedIn(false));
       }
+    }
   }, [
     dispatch,
     error?.data?.message,
@@ -132,6 +138,11 @@ export default function App() {
       window.removeEventListener("offline", handleOffline);
     };
   }, [dispatch, t]);
+
+  // Застосування теми до <html>
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   return (
     <>

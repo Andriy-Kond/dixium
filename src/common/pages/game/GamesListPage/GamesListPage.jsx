@@ -1,26 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import socket from "services/socket.js";
+
+import { useTranslation } from "react-i18next";
 import {
   setLocalGame,
   setPageHeaderBgColor,
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
+import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
+
 import {
   selectLocalGame,
   selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
+import UserMenu from "common/components/navComponents/UserMenu";
+import InformMessage from "common/components/ui/InfoMessage";
+
 import Button from "common/components/ui/Button";
-import css from "./GamesListPage.module.scss";
 import { LOBBY } from "utils/generals/constants.js";
-import { useNavigate } from "react-router-dom";
-import UserMenu from "common/components/navComponents/UserMenu/index.js";
-import InformMessage from "common/components/ui/InformMessage/InformMessage.jsx";
-import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
+import css from "./GamesListPage.module.scss";
 
 export default function GamesListPage() {
+  // console.log("GamesListPage");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -156,13 +160,6 @@ export default function GamesListPage() {
     }
   };
 
-  const resetSearchGame = () => {
-    setSearchGameNumber(null);
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-  };
-
   const removeCurrentGame = async gameId => {
     socket.emit("Game_Delete", { gameId, userId: playerId });
   };
@@ -194,97 +191,68 @@ export default function GamesListPage() {
     }
   };
 
-  // useEffect(() => {
-  //   if (isRedirecting) {
-  //     dispatch(updateIsRedirecting(false));
-  //     return null; // Або повертайте лоадер, якщо потрібно
-  //   }
-  // }, [dispatch, isRedirecting]);
-
-  // if (isRedirecting) {
-  //   return null; // Або повертайте лоадер, якщо потрібно
-  // }
+  const isCanFind = getDigitCount() === 4 && searchGameNumber < 9999;
 
   return (
     <>
-      <p>GameListPage</p>
-      <InformMessage />
+      {/* <p>GameListPage</p> */}
       <div className={css.container}>
-        <div className={css.pageMain}>
-          {/* {isCreatingGame && <CreatingGame />} */}
-          {/* {isCreatingGame && <PrepareGame />} */}
-
-          {/* {!isCreatingGame && ( */}
-          <>
-            <p>{t("req_for_join_game")}</p>
-            <div className={css.searchGameWrapper}>
-              {isPlayerInGame ? (
-                <>
-                  <p>my game</p>
-                  <Button onClick={returnToGame}>{`${t("waiting")} >`}</Button>
-                  <Button btnText={t("finish_game")} onClick={finishGame} />
-                </>
-              ) : (
-                <form onSubmit={handleJoinSubmit}>
-                  <label className={css.searchGameLabel}>
-                    <input
-                      autoFocus
-                      ref={inputRef}
-                      className={css.searchGameInput}
-                      type="text"
-                      onChange={handleChange}
-                      placeholder={t("enter_id_here")}
-                      inputMode="numeric"
-                      maxLength={5} // 4 цифри + дефіс
-                      aria-label={t("search_game_by_number")}
-                    />
-
-                    <p className={css.hint}>{t("enter_4_digits")}</p>
-                  </label>
-
-                  {searchGameNumber && (
-                    <button
-                      type="button"
-                      onClick={resetSearchGame}
-                      className={css.clearButton}>
-                      {t("clear")}
-                    </button>
-                  )}
-
-                  <button
-                    className={css.searchButton}
-                    type="submit"
-                    disabled={getDigitCount() !== 4 || searchGameNumber > 9999}>
-                    {t("join")}
-                  </button>
-                </form>
-              )}
-            </div>
-
-            {/* todo переробити умову для хоста і не хоста */}
-            {!userActiveGameId && (
-              <>
-                <p>{t("create_own_game")}</p>
-                <Button
-                  onClick={handleCreateGame}
-                  btnText={`${t("create_new_game")} ID:${playerGameId}`}
-                />
-              </>
-            )}
-
-            {/* <p>{t("select_decks")}</p>
-            <button
-              className={css.copyBtn}
-              onClick={() => navigate("/game/select-decks")}>
-              {t("game_cards")}
-            </button> */}
-
-            <UserMenu />
-
-            {/* <GamesList /> */}
-          </>
-          {/* )} */}
+        <div className={css.infoMessageContainer}>
+          <InformMessage />
         </div>
+        <p className={css.infoText}>{t("req_for_join_game")}</p>
+
+        {isPlayerInGame && (
+          <>
+            <p>my game</p>
+            <Button onClick={returnToGame}>{`${t("waiting")} >`}</Button>
+            <Button btnText={t("finish_game")} onClick={finishGame} />
+          </>
+        )}
+
+        {!isPlayerInGame && (
+          <form className={css.searchForm} onSubmit={handleJoinSubmit}>
+            <input
+              className={`${css.searchInput} ${
+                isCanFind && css.searchInputReady
+              }`}
+              autoFocus
+              ref={inputRef}
+              type="text"
+              onChange={handleChange}
+              placeholder={t("enter_id")}
+              inputMode="numeric"
+              maxLength={5} // 4 цифри + дефіс
+              aria-label={t("search_game_by_number")}
+            />
+
+            {/* {searchGameNumber && (
+              <button
+                className={css.clearButton}
+                type="button"
+                onClick={resetSearchGame}>
+                {t("clear")}
+              </button>
+            )} */}
+
+            <button className={css.btn} type="submit" disabled={!isCanFind}>
+              {t("join")}
+            </button>
+          </form>
+        )}
+
+        {/* todo переробити умову для хоста і не хоста */}
+        {!userActiveGameId && (
+          <>
+            <p className={css.infoText}>{t("create_own_game")}</p>
+
+            <button className={css.btn} onClick={handleCreateGame}>
+              {`${t("create_new_game")} ID:${playerGameId}`}
+            </button>
+          </>
+        )}
+
+        <UserMenu />
       </div>
     </>
   );

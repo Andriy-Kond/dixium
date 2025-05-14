@@ -58,19 +58,28 @@
   }
 }
 
-@mixin Btn {
-  // all base styles
-  // Усі букви великі. Використовується у кнопках
+@mixin btn {
+  // all base styles + Усі букви великі. Використовується у кнопках
+  width: fit-content;
+  padding: 14px 16px;
+  background: var(--20, #2b3847);
+
+  color: var(--04, #e3e7e9);
   text-transform: uppercase;
+
+  &[disabled] {
+    color: var(--10, #3b4957);
+    cursor: auto;
+  }
 }
 
-@mixin BaseIcon {
+@mixin baseIcon {
   // Усі іконки у продукті
   // font-family: "Material Icon";
   line-height: 100%;
 }
 
-@mixin FontSmall {
+@mixin fontSmall {
   // Малий розмір. Використовується у labels
   font-size: 14px;
 }

@@ -17,8 +17,9 @@ const localInitialState = {
   cardsSet: {},
   // cardsSet: { firstGuessCardSet: null, secondGuessCardSet: null },
 
-  lang: "en",
-  theme: LIGHT,
+  lang: "en", // en, uk, auto
+  theme: "LIGHT", // light, dark
+  visualTheme: "LIGHT", // light, dark, auto
 
   pageHeaderText: "text",
   pageHeaderBgColor: "#5d7e9e",
@@ -51,6 +52,10 @@ export const localPersonalSlice = createSlice({
     // addLocalGamesList: (state, action) => {
     //   state.games = action.payload;
     // },
+
+    setVisualTheme: (state, action) => {
+      state.visualTheme = action.payload;
+    },
 
     setGameDeck: (state, action) => {
       const { gameId, cards } = action.payload;
@@ -181,6 +186,7 @@ export const localPersonalSlice = createSlice({
       const gameId = action.payload;
       const currentLang = state.lang;
       const currentPreloadImg = state.preloadImg;
+      const currentTheme = state.theme;
       const games = state.games;
 
       // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
@@ -192,9 +198,9 @@ export const localPersonalSlice = createSlice({
       return {
         ...localInitialState,
         lang: currentLang,
+        theme: currentTheme,
         preloadImg: currentPreloadImg,
         games: { ...updateGameList },
-        // games: updateGameList,
       };
     },
 
@@ -323,6 +329,7 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
+  setVisualTheme,
   setGameDeck,
   deleteCardsFromDeck,
   toggleIsSingleCardMode,

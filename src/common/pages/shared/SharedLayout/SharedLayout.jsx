@@ -1,10 +1,4 @@
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "common/components/navComponents/AppBar";
 import css from "./SharedLayout.module.scss";
@@ -13,19 +7,18 @@ import {
   selectPageHeaderBgColor,
   selectPageHeaderText,
   selectPageHeaderTextColor,
-  selectTheme,
 } from "redux/selectors.js";
 import {
   setPageHeaderBgColor,
   setPageHeaderText,
-  setTheme,
 } from "redux/game/localPersonalSlice.js";
-import { DARK, LIGHT } from "utils/generals/constants.js";
+
 import { useTranslation } from "react-i18next";
 import { useBackButton } from "context/BackButtonContext.jsx";
 import Button from "common/components/ui/Button/index.js";
 
 export default function SharedLayout() {
+  // console.log("SharedLayout");
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -34,9 +27,9 @@ export default function SharedLayout() {
   //   locationPathname: location.pathname,
   //   locationKey: location.key,
   // });
+
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
 
-  const theme = useSelector(selectTheme);
   const pageHeaderText = useSelector(selectPageHeaderText);
   const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
   const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
@@ -46,12 +39,12 @@ export default function SharedLayout() {
 
   const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    dispatch(setTheme(prefersDark ? DARK : LIGHT));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   const prefersDark = window.matchMedia(
+  //     "(prefers-color-scheme: dark)",
+  //   ).matches;
+  //   dispatch(setTheme(prefersDark ? DARK : LIGHT));
+  // }, [dispatch]);
 
   useEffect(() => {
     if (!location.pathname.includes("game")) {
@@ -106,24 +99,20 @@ export default function SharedLayout() {
       // console.log("SharedLayout >> Ховаю кнопку :>> ");
       hideBackButton(3);
     }
-  }, [
-    handleBackClick,
-    hideBackButton,
-    location.pathname,
-    shouldShowBackButton,
-    showBackButton,
-  ]);
+  }, [handleBackClick, hideBackButton, shouldShowBackButton, showBackButton]);
 
-  useEffect(() => {
-    console.log(
-      "SharedLayout >> Ховаю кнопку, бо розмонтувався компонент :>> ",
-    );
-    return () => hideBackButton(0);
-  }, [hideBackButton]);
+  // useEffect(() => {
+  //   console.log(
+  //     "SharedLayout >> Ховаю кнопку, бо розмонтувався компонент :>> ",
+  //   );
+  //   return () => hideBackButton(0);
+  // }, [hideBackButton]);
+
+  const isShowMenu = location.pathname !== "/game";
 
   return (
     <>
-      <main className={css.mainContainer} data-theme={theme}>
+      <main className={css.mainContainer}>
         <Suspense
           fallback={
             <div className={css.suspenseLoaderContainer}>
@@ -131,20 +120,21 @@ export default function SharedLayout() {
             </div>
           }>
           {!isHomePage && (isMobile || location.pathname.includes("game")) && (
-            <div
+            <header
               className={css.pageHeader}
               style={{
                 "--pageHeaderBgColor": pageHeaderBgColor,
                 "--pageHeaderTextColor": pageHeaderTextColor,
               }}>
-              {pageHeaderText.toUpperCase()}
-            </div>
+              <span className={css.pageHeaderText}>{pageHeaderText}</span>
+            </header>
           )}
 
-          <div className={css.navHeader}>
-            <AppBar />
-          </div>
-          <header className={css.navHeader}></header>
+          {!isShowMenu && (
+            <div className={css.navHeader}>
+              <AppBar />
+            </div>
+          )}
 
           {backButtonConfig.isVisible && (
             <Button

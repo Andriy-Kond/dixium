@@ -6,7 +6,7 @@ import AuthNav from "common/components/navComponents/AuthNav";
 import UserMenu from "common/components/navComponents/UserMenu";
 
 import css from "./AppBar.module.scss";
-import LangSwitcher from "common/components/navComponents/LangSwitcher";
+import LangSwitcher from "common/components/ui/LangSwitcher";
 import { useCallback, useEffect, useState } from "react";
 import ThemeToggle from "common/components/ui/ThemeToggle";
 

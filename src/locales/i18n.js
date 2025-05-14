@@ -1,22 +1,25 @@
+// import Backend from "i18next-http-backend"; // Для завантаження перекладів із файлів
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-// import Backend from "i18next-http-backend"; // Для завантаження перекладів із файлів
 
 import enTranslation from "locales/en/translation.json";
 import ukTranslation from "locales/uk/translation.json";
 
 i18n.use(initReactI18next).init({
-  lng: "en", // Мова за замовчуванням (не обов'язково, бо встановлюється у useI18n)
+  resources: {
+    en: { translation: enTranslation },
+    uk: { translation: ukTranslation },
+  },
+
+  lng: navigator.language.split("-")[0] || "en", // Мова за замовчуванням (не обов'язково, бо встановлюється у useI18n)
   fallbackLng: "en", // Мова на випадок, якщо переклад відсутній
   supportedLngs: ["en", "uk"],
   interpolation: {
     escapeValue: false,
   },
-  resources: {
-    en: { translation: enTranslation },
-    uk: { translation: ukTranslation },
-  },
 });
+
+export default i18n;
 
 // // Об'єкти з перекладами
 // const resources = {
@@ -65,5 +68,3 @@ i18n.use(initReactI18next).init({
 //       loadPath: "/locales/{{lng}}/translation.json",
 //     },
 //   });
-
-export default i18n;

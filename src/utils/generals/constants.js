@@ -18,6 +18,12 @@ export const TABLE_COLOR = "#ff2f2f";
 // themes
 export const LIGHT = "light";
 export const DARK = "dark";
+export const AUTO_THEME = "auto_theme";
+
+// languages
+export const EN = "en";
+export const UA = "uk";
+export const AUTO_LANG = "auto_lang";
 
 // empty
 export const EMPTY_OBJ = {};

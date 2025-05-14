@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { MdCheck, MdClear } from "react-icons/md";
+
 import {
   authApi,
   useLogoutUserMutation,
@@ -11,7 +11,6 @@ import {
 } from "redux/auth/authSlice";
 import { clearGameInitialState } from "redux/game/gameSlice.js";
 import { selectUserCredentials } from "redux/selectors";
-import Button from "common/components/ui/Button";
 
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -21,8 +20,11 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import { useState } from "react";
 import { Notify } from "notiflix";
-import LangSwitcher from "../LangSwitcher/index.js";
-import ThemeToggle from "common/components/ui/ThemeToggle/index.js";
+
+import ThemeToggleRadioBtns from "common/components/ui/ThemeToggle";
+import LangSwitcherRadioBtns from "common/components/ui/LangSwitcher";
+
+import { MdCheck, MdClear } from "react-icons/md";
 import css from "./UserMenu.module.scss";
 
 export default function UserMenu({ closeMenu = () => {} }) {
@@ -33,6 +35,7 @@ export default function UserMenu({ closeMenu = () => {} }) {
   const userCredentials = useSelector(selectUserCredentials);
   const { gameId } = useParams();
   const [nicknameValue, setNicknameValue] = useState(userCredentials.name);
+  // console.log(" UserMenu >>");
 
   const handleLogout = async () => {
     await logoutUser();
@@ -84,49 +87,72 @@ export default function UserMenu({ closeMenu = () => {} }) {
   };
 
   const handleClearNickName = () => {
+    dispatch(
+      showNotification({
+        message: t("nick_reset"),
+        type: "success",
+      }),
+    );
+
     setNicknameValue(userCredentials.name);
   };
 
   const btnStyle = ["btnBarMenu"];
+  const isDisableSetNicknameBtn =
+    !nicknameValue ||
+    nicknameValue.length < 3 ||
+    nicknameValue === userCredentials.name;
 
   return (
     <>
       {/* Умова userCredentials.name необхідно, щоб span не блимав при завантаженні користувача */}
       {userCredentials.name && (
         <>
-          {/* <InformMessage /> */}
-          {/* <div className={css.userCredentialsBox}> */}
-          {/* <img
-              className={css.avatar}
-              src={userCredentials.avatarURL}
-              alt="avatar"
-            /> */}
+          <form className={css.nickForm}>
+            <label className={css.nickLabel} htmlFor="nick">
+              {t("nick")}
+            </label>
+            <div className={css.nickInputContainer}>
+              <input
+                className={css.nickInput}
+                id="nick"
+                type="text"
+                value={nicknameValue}
+                onChange={e => setNicknameValue(e.target.value.trim())}
+              />
 
-          {/* <span className={css.text}>
-              {t("welcome_user", { user: userCredentials.name.toUpperCase() })}
-            </span> */}
-          <label>
-            {t("nick")}
-            <input
-              type="text"
-              value={nicknameValue}
-              onChange={e => setNicknameValue(e.target.value.trim())}
-            />
-            <MdCheck onClick={handleSetNickname} />
-            <MdClear onClick={handleClearNickName} />
-          </label>
+              <div className={css.nickButtonsContainer}>
+                <button
+                  type="button"
+                  className={css.inputBtn}
+                  onClick={handleSetNickname}
+                  disabled={isDisableSetNicknameBtn}>
+                  <MdCheck className={css.inputBtnIcon} />
+                </button>
+                <button
+                  type="button"
+                  className={css.inputBtn}
+                  onClick={handleClearNickName}
+                  disabled={isDisableSetNicknameBtn}>
+                  <MdClear className={css.inputBtnIcon} />
+                </button>
+              </div>
+            </div>
+          </form>
 
-          {t("display_mode")}
-          <LangSwitcher />
-          {t("language")}
-          <ThemeToggle />
+          <div>
+            <p className={css.infoText}>{t("display_mode")}</p>
+            <ThemeToggleRadioBtns />
+          </div>
 
-          <Button
-            onClick={handleLogout}
-            btnText={t("logout")}
-            btnStyle={btnStyle}
-          />
-          {/* </div> */}
+          <div>
+            <p className={css.infoText}>{t("language")}</p>
+            <LangSwitcherRadioBtns />
+          </div>
+
+          <button className={css.btn} onClick={handleLogout}>
+            {t("logout")}
+          </button>
         </>
       )}
     </>

@@ -119,6 +119,7 @@
   "other_way_dixit_play": "інший спосіб грати у Діксіт",
 
   "tixid": "tixid",
+  "nick_reset": "Псевдонім встановлений за замовчуванням",
   "nick_cant_be_empty": "Псевдонім не може бути порожнім",
   "nick_should_have_3_symbols": "Псевдонім має містити щонайменше 3 символи",
   "id_copied_to_buffer": "ID скопійовано в буфер обміну",
@@ -133,7 +134,7 @@
   "select_decks": "Оберіть колоди для гри",
   "join": "Приєднатися",
   "req_for_join_game": "Щоб приєднатися до гри, введіть ID, який надав ведучий.",
-  "enter_id_here": "Введіть ID тут",
+  "enter_id": "Введіть ID",
   "create_own_game": "Або створіть власну гру і запросить до неї гравців.",
   "display_mode": "Режим відображення",
   "language": "Мова",
@@ -143,5 +144,11 @@
   "players_turn": "Черга гравців",
   "total_cards": "Загалом карт",
   "recaptcha_failed_try_v2": "Не вдалося підтвердити, що ви не бот. Будь ласка, пройдіть перевірку нижче.",
-  "please_complete_recaptcha": "Будь ласка, пройдіть перевірку reCAPTCHA."
+  "please_complete_recaptcha": "Будь ласка, пройдіть перевірку reCAPTCHA.",
+  "language_english": "English",
+  "language_ukrainian": "Українська",
+  "language_auto": "Авто",
+  "theme_light": "Світлий",
+  "theme_dark": "Темний",
+  "theme_auto": "Авто"
 }

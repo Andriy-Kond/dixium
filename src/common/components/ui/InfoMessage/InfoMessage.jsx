@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
-import css from "./InformMessage.module.scss";
+import css from "./InfoMessage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { selectNotification } from "redux/selectors.js";
 import { hideNotification } from "redux/game/localPersonalSlice.js";
 
-export default function InformMessage() {
+export default function InfoMessage() {
   const dispatch = useDispatch();
   const { message, duration, type } = useSelector(selectNotification);
   const timerRef = useRef(null);
@@ -28,9 +28,9 @@ export default function InformMessage() {
     };
   }, [dispatch, duration, message]);
 
-  // Не рендеримо нічого, якщо повідомлення немає
+  // якщо повідомлення немає
   if (!message) return null;
 
-  // return <p className={css.informMessage}>{message}</p>;
-  return <p className={`${css.informMessage} ${css[type] || ""}`}>{message}</p>;
+  // return <p className={css.infoMessage}>{message}</p>;
+  return <p className={`${css.infoMessage} ${css[type] || ""}`}>{message}</p>;
 }

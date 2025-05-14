@@ -1,0 +1,44 @@
+.langList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.langItem {
+  position: relative;
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  align-self: stretch;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -16px;
+    right: -16px;
+
+    border-top: 1px solid var(--20, #2b3847);
+    border-bottom: 1px solid var(--20, #2b3847);
+  }
+}
+
+.radioLabel {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  color: var(--04, #e3e7e9);
+}
+
+.radioInput {
+  opacity: 0;
+  display: none;
+}
+
+.radioIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--04, #e3e7e9);
+}
+
+// ===========

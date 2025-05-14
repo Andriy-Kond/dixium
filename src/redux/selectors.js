@@ -90,7 +90,9 @@ export const selectCardsSet = (gameId, playerId) => state => {
 };
 
 export const selectLang = state => state.localPersonalSlice.lang || "en";
-export const selectTheme = state => state.localPersonalSlice.theme || LIGHT;
+export const selectTheme = state => state.localPersonalSlice.theme || "LIGHT";
+export const selectVisualTheme = state =>
+  state.localPersonalSlice.visualTheme || "LIGHT";
 
 export const selectPageHeaderText = state =>
   state.localPersonalSlice.pageHeaderText;
