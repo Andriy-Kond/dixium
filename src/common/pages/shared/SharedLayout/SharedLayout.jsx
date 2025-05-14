@@ -130,7 +130,7 @@ export default function SharedLayout() {
             </header>
           )}
 
-          {!isShowMenu && (
+          {isShowMenu && (
             <div className={css.navHeader}>
               <AppBar />
             </div>

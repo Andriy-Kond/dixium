@@ -3,10 +3,15 @@ import css from "./InfoMessage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { selectNotification } from "redux/selectors.js";
 import { hideNotification } from "redux/game/localPersonalSlice.js";
+import { FaICursor } from "react-icons/fa6";
 
 export default function InfoMessage() {
   const dispatch = useDispatch();
-  const { message, duration, type } = useSelector(selectNotification);
+  const {
+    message = "",
+    duration = 1000,
+    type = "info",
+  } = useSelector(selectNotification);
   const timerRef = useRef(null);
 
   useEffect(() => {
@@ -28,9 +33,24 @@ export default function InfoMessage() {
     };
   }, [dispatch, duration, message]);
 
+  const handleClose = () => {
+    console.log("handleClose");
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      dispatch(hideNotification());
+      timerRef.current = null;
+    }
+  };
+
   // якщо повідомлення немає
   if (!message) return null;
 
   // return <p className={css.infoMessage}>{message}</p>;
-  return <p className={`${css.infoMessage} ${css[type] || ""}`}>{message}</p>;
+  return (
+    <button
+      className={`${css.infoMessage} ${css[type] || ""}`}
+      onClick={handleClose}>
+      {message}
+    </button>
+  );
 }

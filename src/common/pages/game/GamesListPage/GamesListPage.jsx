@@ -19,8 +19,9 @@ import {
 import UserMenu from "common/components/navComponents/UserMenu";
 import InformMessage from "common/components/ui/InfoMessage";
 
-import Button from "common/components/ui/Button";
 import { LOBBY } from "utils/generals/constants.js";
+
+import { MdArrowForwardIos } from "react-icons/md";
 import css from "./GamesListPage.module.scss";
 
 export default function GamesListPage() {
@@ -53,8 +54,7 @@ export default function GamesListPage() {
 
   useEffect(() => {
     if (!userActiveGameId || !activeGame || isFetchingCurrentGame) return;
-
-    console.log("GamesListPage set activeGame:::", activeGame.gameName);
+    // console.log("GamesListPage set activeGame:::", activeGame.gameName);
 
     // console.log(
     //   " useEffect >> userActiveGameId !== activeGame?._id:::",
@@ -200,14 +200,30 @@ export default function GamesListPage() {
         <div className={css.infoMessageContainer}>
           <InformMessage />
         </div>
-        <p className={css.infoText}>{t("req_for_join_game")}</p>
+        <p className={css.infoText}>
+          {isPlayerInGame
+            ? t("req_for_join_to_other_game")
+            : t("req_for_join_game")}
+        </p>
 
         {isPlayerInGame && (
-          <>
-            <p>my game</p>
-            <Button onClick={returnToGame}>{`${t("waiting")} >`}</Button>
-            <Button btnText={t("finish_game")} onClick={finishGame} />
-          </>
+          <div className={css.waitingList}>
+            <p className={css.infoText}>
+              {`${t("active_game")} ID: ${currentGame.playerGameId}`}
+            </p>
+            <div className={css.item}>
+              <p className={css.activeText}>
+                {isCurrentPlayerIsHost ? t("my_game") : userCredentials.name}
+              </p>
+              <button className={css.activeLink} onClick={returnToGame}>
+                <p>{t("waiting")}</p>
+                <MdArrowForwardIos className={css.activeLinkIcon} />
+              </button>
+            </div>
+            <button className={css.btn} onClick={finishGame}>
+              {t("finish_game")}
+            </button>
+          </div>
         )}
 
         {!isPlayerInGame && (

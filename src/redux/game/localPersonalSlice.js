@@ -35,7 +35,7 @@ const localInitialState = {
 
   notification: {
     message: null,
-    duration: 3000,
+    duration: 1000,
     type: "info", // Для стилізації (success, error, info)
   },
 
@@ -97,10 +97,10 @@ export const localPersonalSlice = createSlice({
 
     setLocalGame: (state, action) => {
       // console.trace("localPersonalSlice>> setLocalGame");
-      console.log(
-        " localPersonalSlice>> setLocalGame action.payload:::",
-        action.payload?.gameName,
-      );
+      // console.log(
+      //   " localPersonalSlice>> setLocalGame action.payload:::",
+      //   action.payload?.gameName,
+      // );
       const game = action.payload;
 
       // state.games = { ...state.games, [game._id]: game };
@@ -304,8 +304,8 @@ export const localPersonalSlice = createSlice({
     },
 
     showNotification(state, action) {
-      state.notification.message = action.payload.message;
-      state.notification.duration = action.payload.duration || 3000;
+      state.notification.message = action.payload.message || "empty message";
+      state.notification.duration = action.payload.duration || 2000;
       state.notification.type = action.payload.type || "info";
     },
 
