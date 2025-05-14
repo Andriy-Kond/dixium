@@ -3,7 +3,6 @@ import css from "./InfoMessage.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { selectNotification } from "redux/selectors.js";
 import { hideNotification } from "redux/game/localPersonalSlice.js";
-import { FaICursor } from "react-icons/fa6";
 
 export default function InfoMessage() {
   const dispatch = useDispatch();

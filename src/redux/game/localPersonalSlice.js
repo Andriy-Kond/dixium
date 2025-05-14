@@ -1,7 +1,7 @@
 import storage from "redux-persist/lib/storage";
 import { createSlice } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import { DARK, LIGHT } from "utils/generals/constants.js";
+import { DARK, EN, LIGHT } from "utils/generals/constants.js";
 
 const localInitialState = {
   games: {},
@@ -17,9 +17,9 @@ const localInitialState = {
   cardsSet: {},
   // cardsSet: { firstGuessCardSet: null, secondGuessCardSet: null },
 
-  lang: "en", // en, uk, auto
-  theme: "LIGHT", // light, dark
-  visualTheme: "LIGHT", // light, dark, auto
+  lang: EN, // en, uk, auto
+  theme: LIGHT, // light, dark
+  visualTheme: LIGHT, // light, dark, auto
 
   pageHeaderText: "text",
   pageHeaderBgColor: "#5d7e9e",
@@ -187,6 +187,7 @@ export const localPersonalSlice = createSlice({
       const currentLang = state.lang;
       const currentPreloadImg = state.preloadImg;
       const currentTheme = state.theme;
+      const currentVisualTheme = state.visualTheme;
       const games = state.games;
 
       // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
@@ -199,6 +200,7 @@ export const localPersonalSlice = createSlice({
         ...localInitialState,
         lang: currentLang,
         theme: currentTheme,
+        visualTheme: currentVisualTheme,
         preloadImg: currentPreloadImg,
         games: { ...updateGameList },
       };
