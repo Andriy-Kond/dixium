@@ -24,8 +24,8 @@ import { Notify } from "notiflix";
 import ThemeToggleRadioBtns from "common/components/ui/ThemeToggle";
 import LangSwitcherRadioBtns from "common/components/ui/LangSwitcher";
 
-import { MdCheck, MdClear } from "react-icons/md";
 import css from "./UserMenu.module.scss";
+import EditingForm from "common/components/game/EditingForm/EditingForm.jsx";
 
 export default function UserMenu({ closeMenu = () => {} }) {
   const [setNickname, { isLoading }] = useSetNicknameMutation();
@@ -103,53 +103,32 @@ export default function UserMenu({ closeMenu = () => {} }) {
     nicknameValue.length < 3 ||
     nicknameValue === userCredentials.name;
 
+  const isDisableResetNicknameBtn = nicknameValue === userCredentials.name;
+
   return (
     <>
       {/* Умова userCredentials.name необхідно, щоб span не блимав при завантаженні користувача */}
       {userCredentials.name && (
         <>
-          <form className={css.nickForm}>
-            <label className={css.nickLabel} htmlFor="nick">
-              {t("nick")}
-            </label>
-            <div className={css.nickInputContainer}>
-              <input
-                className={css.nickInput}
-                id="nick"
-                type="text"
-                value={nicknameValue}
-                onChange={e => setNicknameValue(e.target.value.trim())}
-              />
-
-              <div className={css.nickButtonsContainer}>
-                <button
-                  type="button"
-                  className={css.inputBtn}
-                  onClick={handleSetNickname}
-                  disabled={isDisableSetNicknameBtn}>
-                  <MdCheck className={css.inputBtnIcon} />
-                </button>
-                <button
-                  type="button"
-                  className={css.inputBtn}
-                  onClick={handleClearNickName}
-                  disabled={isDisableSetNicknameBtn}>
-                  <MdClear className={css.inputBtnIcon} />
-                </button>
-              </div>
-            </div>
-          </form>
+          <EditingForm
+            isDisableSet={isDisableSetNicknameBtn}
+            isDisableReset={isDisableResetNicknameBtn}
+            handleClear={handleClearNickName}
+            handleSet={handleSetNickname}
+            val={nicknameValue}
+            setVal={setNicknameValue}
+            labelText={t("nick")}
+            type={"text"}
+          />
 
           <div>
             <p className={css.infoText}>{t("display_mode")}</p>
             <ThemeToggleRadioBtns />
           </div>
-
           <div>
             <p className={css.infoText}>{t("language")}</p>
             <LangSwitcherRadioBtns />
           </div>
-
           <button className={css.btn} onClick={handleLogout}>
             {t("logout")}
           </button>

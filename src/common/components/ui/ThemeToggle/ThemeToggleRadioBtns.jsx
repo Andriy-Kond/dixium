@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { setTheme, setVisualTheme } from "redux/game/localPersonalSlice.js";
-import { selectTheme, selectVisualTheme } from "redux/selectors.js";
+import { selectVisualTheme } from "redux/selectors.js";
 import { LIGHT, DARK, AUTO_THEME } from "utils/generals/constants.js";
 import { useCallback, useEffect } from "react";
 
@@ -13,9 +13,6 @@ export default function ThemeToggleRadioBtns() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const visualTheme = useSelector(selectVisualTheme);
-  const themeRedux = useSelector(selectTheme);
-  console.log(" ThemeToggleRadioBtns >> themeRedux:::", themeRedux);
-  console.log(" ThemeToggleRadioBtns >> visualTheme:::", visualTheme);
 
   // Обробка зміни теми
   const handleThemeChange = useCallback(

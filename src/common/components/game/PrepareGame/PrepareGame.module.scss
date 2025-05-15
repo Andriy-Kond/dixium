@@ -1,4 +1,19 @@
-// checkbox
+.prepareGameContainer {
+  position: relative;
+}
+
+.infoMessageContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.92;
+}
+
+.infoText {
+  color: var(--00, #818f99);
+}
+
+// ============ checkbox
 .checkboxWrapper {
   display: flex;
   align-items: center;

@@ -1,0 +1,11 @@
+@import "styles/utils/mixins";
+
+.btnStart {
+  @include btnInverse;
+}
+
+.startBtnContainer {
+  display: flex;
+  justify-content: center;
+  background: var(--30, #1c2732);
+}

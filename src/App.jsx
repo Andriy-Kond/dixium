@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { lazy, useEffect, useTransition } from "react";
+import { lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Notify } from "notiflix";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -13,12 +13,14 @@ import { useGetUserByTokenQuery } from "redux/auth/authApi";
 import { setIsLoggedIn } from "redux/auth/authSlice";
 import {
   selectIsSetPassword,
+  selectLang,
   selectTheme,
   selectUserToken,
 } from "./redux/selectors";
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
 import { ToastContainer } from "react-toastify";
 import { setNetworkStatus } from "redux/game/gameSlice.js";
+import { useTranslation } from "react-i18next";
 
 Notify.init({
   clickToClose: true,
@@ -53,7 +55,7 @@ export default function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTransition();
+  const { i18n, t } = useTranslation();
   // console.log(" App >> location.pathname:::", location.pathname);
 
   const isSetPassword = useSelector(selectIsSetPassword);
@@ -143,6 +145,12 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  const currentLng = useSelector(selectLang);
+  // Встановлення мови при першому завантаженні
+  useEffect(() => {
+    if (currentLng) i18n.changeLanguage(currentLng); // Зміна мови в i18next
+  }, [currentLng, i18n, dispatch]);
 
   return (
     <>

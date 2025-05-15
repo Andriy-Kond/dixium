@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import { distributeCards } from "utils/game/distributeCards.js";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
-import Button from "common/components/ui/Button";
 import css from "./GameSetup.module.scss";
 
 export default function GameSetup() {
@@ -52,16 +51,18 @@ export default function GameSetup() {
 
   return (
     <>
-      <p>game setup</p>
+      {/* <p>game setup</p> */}
       <Outlet />
 
       {isShowStartButton && (
-        <Button
-          onClick={handleRunGame}
-          btnText={t("run_game")}
-          btnStyle={["twoBtnsInRow"]}
-          disabled={!isCanRunGame}
-        />
+        <div className={css.startBtnContainer}>
+          <button
+            className={css.btnStart}
+            onClick={handleRunGame}
+            disabled={!isCanRunGame}>
+            {t("start_game")}
+          </button>
+        </div>
       )}
     </>
   );

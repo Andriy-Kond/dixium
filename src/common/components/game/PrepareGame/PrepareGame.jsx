@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import {
   selectLocalGame,
@@ -13,12 +13,14 @@ import { useTranslation } from "react-i18next";
 import {
   setFinishPoints,
   setPageHeaderText,
+  setPageHeaderTextSecond,
   showNotification,
   toggleIsSingleCardMode,
 } from "redux/game/localPersonalSlice.js";
-import InformMessage from "../../ui/InfoMessage/InfoMessage.jsx";
+
 import clsx from "clsx";
-// import { useBackButton } from "context/BackButtonContext.jsx";
+import EditingForm from "../EditingForm/EditingForm.jsx";
+import InfoMessage from "common/components/ui/InfoMessage";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ export default function PrepareGame() {
 
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(gameId));
-  const { isSingleCardMode, finishPoints, hostPlayerId, players } = currentGame;
+
   if (!userActiveGameId || !currentGame) navigate("/game", { replace: true });
 
   const userCredentials = useSelector(selectUserCredentials);
@@ -37,10 +39,12 @@ export default function PrepareGame() {
   const isCurrentPlayerIsHost = currentGame.hostPlayerId === userId;
 
   useEffect(() => {
-    dispatch(
-      setPageHeaderText(t("game_name", { gameName: currentGame.gameName })),
-    );
-  }, [currentGame.gameName, dispatch, t]);
+    // dispatch(
+    //   setPageHeaderText(t("game_name", { gameName: currentGame.gameName })),
+    // );
+    dispatch(setPageHeaderText(t("my_game")));
+    dispatch(setPageHeaderTextSecond(userCredentials.name));
+  }, [currentGame.gameName, dispatch, t, userCredentials.name]);
 
   const isDisabledCheckbox =
     !isCurrentPlayerIsHost || currentGame.players.length < 7;
@@ -66,35 +70,111 @@ export default function PrepareGame() {
     }
   };
 
-  const handleFinishPoints = e => {
-    dispatch(setFinishPoints({ gameId, finishPoints: e.target.value.trim() }));
+  // const handleFinishPoints = e => {
+  //   dispatch(setFinishPoints({ gameId, finishPoints: e.target.value.trim() }));
+  // };
+
+  const [finishPointsValue, setFinishPointsValue] = useState(
+    currentGame.finishPoints,
+  );
+
+  const handleSetFinishPoints = () => {
+    if (!finishPointsValue) {
+      dispatch(
+        showNotification({
+          message: t("points_cant_be_empty"),
+          type: "error",
+        }),
+      );
+      return;
+    }
+
+    if (finishPointsValue < 10) {
+      dispatch(
+        showNotification({
+          message: t("points_must_be_more_then_10"),
+          type: "error",
+        }),
+      );
+      return;
+    }
+
+    dispatch(
+      setFinishPoints({
+        gameId,
+        finishPoints: finishPointsValue,
+      }),
+    );
+
+    dispatch(
+      showNotification({
+        message: t("points_changed"),
+        type: "success",
+      }),
+    );
+  };
+
+  const handleClearFinishPoints = () => {
+    console.log("handleClearFinishPoints");
+    dispatch(setFinishPoints({ gameId, finishPoints: 30 }));
+    setFinishPointsValue(30);
+
+    dispatch(
+      showNotification({
+        message: t("points_reset"),
+        type: "success",
+      }),
+    );
+  };
+  const isDisableSetPointsBtn =
+    !finishPointsValue ||
+    finishPointsValue < 10 ||
+    finishPointsValue === currentGame.finishPoints;
+
+  const isDisableResetPointsBtn = finishPointsValue === 30;
+
+  const handleSetFinishPointsValue = value => {
+    const rawValue = value.replace(/[^0-9]/g, ""); // Фільтрує лише цифри
+    const numericValue = rawValue ? parseInt(rawValue, 10) : null; // Якщо inputValue порожній, numericValue буде null, що унеможливлює NaN при відправленні на сервер у emit
+
+    setFinishPointsValue(numericValue);
   };
 
   return (
     <>
-      <h1>Prepare Game</h1>
-      <InformMessage />
+      {/* <h1>Prepare Game</h1> */}
+      <div className={css.prepareGameContainer}>
+        <div className={css.infoMessageContainer}>
+          <InfoMessage />
+        </div>
+      </div>
 
-      <label>
+      <p className={css.infoText}>{t("req_for_start_game")}</p>
+
+      <EditingForm
+        isDisableSet={isDisableSetPointsBtn}
+        isDisableReset={isDisableResetPointsBtn}
+        handleClear={handleClearFinishPoints}
+        handleSet={handleSetFinishPoints}
+        val={finishPointsValue}
+        setVal={handleSetFinishPointsValue}
+        labelText={t("finish_points")}
+        inputMode="numeric"
+      />
+
+      {/* <label>
         <input
           type="number"
           value={finishPoints}
           onChange={handleFinishPoints}
         />
         {t("finish_points")}
-      </label>
+      </label> */}
 
       <div className={css.checkboxWrapper}>
         <label
-          //# для нових браузерів:
-          // className={css.checkboxLabel}
-          //# для старих браузерів:
-          // className={`${css.checkboxLabel} ${
-          //   isSingleCardMode ? css.checked : ""
-          // } ${isDisabledCheckbox ? css.disabled : ""}`}
-          // з використанням clsx
           className={clsx(css.checkboxLabel, {
-            [css.checked]: isSingleCardMode,
+            [css.checked]: currentGame.isSingleCardMode,
             [css.disabled]: isDisabledCheckbox,
           })}>
           <input
@@ -103,7 +183,7 @@ export default function PrepareGame() {
             type="checkbox"
             name="isSingleCardMode"
             onChange={() => toggleIsSingleCardMode(gameId)}
-            checked={isSingleCardMode}
+            checked={currentGame.isSingleCardMode}
           />
           {t("single_card_mode").toUpperCase()}
         </label>

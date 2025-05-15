@@ -140,7 +140,7 @@
   "create_own_game": "Or create your own game and invite players to it.",
   "display_mode": "Display mode",
   "language": "Language",
-  "check_id": "Chek the ID",
+  "check_id": "Game with this ID not exist",
   "waiting": "Waiting",
   "finish_game": "Finish game",
   "players_turn": "Players' turn",

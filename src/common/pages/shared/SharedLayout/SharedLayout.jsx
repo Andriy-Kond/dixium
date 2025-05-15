@@ -1,21 +1,24 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "common/components/navComponents/AppBar";
-import css from "./SharedLayout.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectPageHeaderBgColor,
   selectPageHeaderText,
   selectPageHeaderTextColor,
+  selectPageHeaderTextSecond,
 } from "redux/selectors.js";
 import {
   setPageHeaderBgColor,
   setPageHeaderText,
+  setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
 
 import { useTranslation } from "react-i18next";
 import { useBackButton } from "context/BackButtonContext.jsx";
-import Button from "common/components/ui/Button/index.js";
+
+import { MdArrowBack } from "react-icons/md";
+import css from "./SharedLayout.module.scss";
 
 export default function SharedLayout() {
   // console.log("SharedLayout");
@@ -31,9 +34,9 @@ export default function SharedLayout() {
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
 
   const pageHeaderText = useSelector(selectPageHeaderText);
+  const pageHeaderTextSecond = useSelector(selectPageHeaderTextSecond);
   const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
   const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
-
   const isHomePage = location.pathname === "/";
   const isGamesListPage = location.pathname === "/game";
 
@@ -108,7 +111,7 @@ export default function SharedLayout() {
   //   return () => hideBackButton(0);
   // }, [hideBackButton]);
 
-  const isShowMenu = location.pathname !== "/game";
+  const isShowMenu = location.pathname.includes("/current-game");
 
   return (
     <>
@@ -126,7 +129,19 @@ export default function SharedLayout() {
                 "--pageHeaderBgColor": pageHeaderBgColor,
                 "--pageHeaderTextColor": pageHeaderTextColor,
               }}>
-              <span className={css.pageHeaderText}>{pageHeaderText}</span>
+              {backButtonConfig.isVisible && (
+                <button
+                  className={css.backButton}
+                  onClick={() => backButtonConfig.onClick()}>
+                  <MdArrowBack className={css.backButtonIcon} />
+                </button>
+              )}
+              <div className={css.pageHeaderTextContainer}>
+                <span className={css.pageHeaderText}>{pageHeaderText}</span>
+                <span className={css.pageHeaderText}>
+                  {pageHeaderTextSecond}
+                </span>
+              </div>
             </header>
           )}
 
@@ -134,14 +149,6 @@ export default function SharedLayout() {
             <div className={css.navHeader}>
               <AppBar />
             </div>
-          )}
-
-          {backButtonConfig.isVisible && (
-            <Button
-              className={css.backButton}
-              onClick={() => backButtonConfig.onClick()}>
-              {`<< ${t("back")}`}
-            </Button>
           )}
 
           {/* Умовне відображення AppBar */}

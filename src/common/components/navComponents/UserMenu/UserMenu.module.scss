@@ -1,55 +1,55 @@
 @import "styles/utils/mixins";
 
-.nickForm {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+// .nickForm {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 4px;
 
-  padding: 12px 16px 13px 16px;
+//   padding: 12px 16px 13px 16px;
 
-  background-color: var(--40, #161f27);
-  border-bottom: 2px solid var(--20, #2b3847);
-}
+//   background-color: var(--40, #161f27);
+//   border-bottom: 2px solid var(--20, #2b3847);
+// }
 
-.nickInputContainer {
-  position: relative;
-  display: flex;
-}
+// .nickLabel {
+//   color: var(--00, #818f99);
+//   font-size: 14px;
+// }
 
-.nickLabel {
-  color: var(--00, #818f99);
-  font-size: 14px;
-}
+// .nickInputContainer {
+//   position: relative;
+//   display: flex;
+// }
 
-.nickInput {
-  color: var(--04, #e3e7e9);
-  background-color: transparent;
-}
+// .nickInput {
+//   color: var(--04, #e3e7e9);
+//   background-color: transparent;
+// }
 
-.nickButtonsContainer {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-}
+// .nickButtonsContainer {
+//   position: absolute;
+//   right: 0;
+//   top: 50%;
+//   transform: translateY(-50%);
+//   display: flex;
+// }
 
-.inputBtn {
-  color: var(--04, #e3e7e9);
+// .inputBtn {
+//   color: var(--04, #e3e7e9);
 
-  width: 16px;
-  height: 16px;
+//   width: 16px;
+//   height: 16px;
 
-  &:disabled {
-    color: var(--01, #b0b9c0);
-    cursor: auto;
-  }
-}
+//   &:disabled {
+//     color: var(--01, #b0b9c0);
+//     cursor: auto;
+//   }
+// }
 
-.inputBtnIcon {
-  width: 100%;
-  height: 100%;
-}
+// .inputBtnIcon {
+//   width: 100%;
+//   height: 100%;
+// }
 
 .infoText {
   color: var(--00, #818f99);

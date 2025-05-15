@@ -15,11 +15,6 @@ export default function LangSwitcherRadioBtns() {
   const currentLng = useSelector(selectLang);
   // console.log(" LangSwitcherRadioBtns >> currentLng:::", currentLng);
 
-  // Встановлення мови при першому завантаженні
-  useEffect(() => {
-    if (currentLng) i18n.changeLanguage(currentLng); // Зміна мови в i18next
-  }, [currentLng, i18n, dispatch]);
-
   // Обробка зміни мови
   const handleChangeLang = useCallback(
     e => {

@@ -17,7 +17,7 @@ import {
   selectUserCredentials,
 } from "redux/selectors.js";
 import UserMenu from "common/components/navComponents/UserMenu";
-import InformMessage from "common/components/ui/InfoMessage";
+import InfoMessage from "common/components/ui/InfoMessage";
 
 import { LOBBY } from "utils/generals/constants.js";
 
@@ -52,6 +52,7 @@ export default function GamesListPage() {
       skip: !userActiveGameId || userActiveGameId === "",
     });
 
+  // set active game
   useEffect(() => {
     if (!userActiveGameId || !activeGame || isFetchingCurrentGame) return;
     // console.log("GamesListPage set activeGame:::", activeGame.gameName);
@@ -198,7 +199,7 @@ export default function GamesListPage() {
       {/* <p>GameListPage</p> */}
       <div className={css.container}>
         <div className={css.infoMessageContainer}>
-          <InformMessage />
+          <InfoMessage />
         </div>
         <p className={css.infoText}>
           {isPlayerInGame

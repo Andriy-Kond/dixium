@@ -21,9 +21,11 @@ const localInitialState = {
   theme: LIGHT, // light, dark
   visualTheme: LIGHT, // light, dark, auto
 
-  pageHeaderText: "text",
-  pageHeaderBgColor: "#5d7e9e",
-  pageHeaderTextColor: "#fff",
+  pageHeaderText: "",
+  pageHeaderTextSecond: "",
+  pageHeaderBgColor: "",
+  pageHeaderTextColor: "",
+
   preloadImg: {
     // previewIds: [], // Унікальні publicId прев’ю-зображень
     previewIds: {}, // Унікальні publicId прев’ю-зображень
@@ -88,6 +90,8 @@ export const localPersonalSlice = createSlice({
     setFinishPoints: (state, action) => {
       const { gameId, finishPoints } = action.payload;
       const game = state.games[gameId];
+      console.log({ gameId: game._id, finishP: game.finishPoints });
+
       if (game) state.games[gameId].finishPoints = Number(finishPoints);
     },
 
@@ -257,6 +261,9 @@ export const localPersonalSlice = createSlice({
     setPageHeaderText: (state, action) => {
       state.pageHeaderText = action.payload;
     },
+    setPageHeaderTextSecond: (state, action) => {
+      state.pageHeaderTextSecond = action.payload;
+    },
     setPageHeaderBgColor: (state, action) => {
       state.pageHeaderBgColor = action.payload;
     },
@@ -307,7 +314,7 @@ export const localPersonalSlice = createSlice({
 
     showNotification(state, action) {
       state.notification.message = action.payload.message || "empty message";
-      state.notification.duration = action.payload.duration || 2000;
+      state.notification.duration = action.payload.duration || 3000;
       state.notification.type = action.payload.type || "info";
     },
 
@@ -361,6 +368,7 @@ export const {
   toggleTheme,
   setTheme,
   setPageHeaderText,
+  setPageHeaderTextSecond,
   setPageHeaderBgColor,
   setPageHeaderTextColor,
   addPreviewId,

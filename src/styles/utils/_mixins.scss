@@ -58,6 +58,7 @@
   }
 }
 
+// ===============================
 @mixin btn {
   // all base styles + Усі букви великі. Використовується у кнопках
   width: fit-content;
@@ -82,4 +83,15 @@
 @mixin fontSmall {
   // Малий розмір. Використовується у labels
   font-size: 14px;
+}
+
+@mixin btnInverse {
+  @include btn;
+
+  background: var(--02, #c9cfd4);
+  color: var(--40, #161f27);
+
+  &[disabled] {
+    background: var(--20, #2b3847);
+  }
 }

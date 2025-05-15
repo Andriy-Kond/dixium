@@ -96,6 +96,8 @@ export const selectVisualTheme = state =>
 
 export const selectPageHeaderText = state =>
   state.localPersonalSlice.pageHeaderText;
+export const selectPageHeaderTextSecond = state =>
+  state.localPersonalSlice.pageHeaderTextSecond;
 export const selectPageHeaderBgColor = state =>
   state.localPersonalSlice.pageHeaderBgColor;
 export const selectPageHeaderTextColor = state =>
