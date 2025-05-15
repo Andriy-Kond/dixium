@@ -3,11 +3,12 @@
 .prepareGameContainer {
   position: relative;
 
-  margin: auto;
+  // margin: 0 auto;
   padding: 8px 16px;
 
   display: flex;
   flex-direction: column;
+
   gap: 16px;
 }
 
@@ -108,7 +109,8 @@
     transform: translateY(-50%);
     width: 16px;
     height: 16px;
-    border: 2px solid #000; // Чорний за замовчуванням
+    // border: 2px solid #000; // Чорний за замовчуванням
+    border: 2px solid var(--04, #e3e7e9); // Чорний за замовчуванням
     border-radius: 4px;
     background-color: transparent;
   }
@@ -124,7 +126,8 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 12px;
-    color: #000; // Чорний за замовчуванням
+    // color: #000; // Чорний за замовчуванням
+    color: var(--04, #e3e7e9);
     opacity: 1;
   }
 
@@ -136,21 +139,22 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 12px;
-    color: #000; // Чорний за замовчуванням
+    // color: #000; // Чорний за замовчуванням
+    color: var(--04, #e3e7e9);
     opacity: 0;
     transition: opacity 0.2s;
   }
 
   &.disabled {
     cursor: auto;
-    color: #0000003d;
+    color: var(--10, #3b4957);
 
     &::before {
-      border-color: #0000003d;
+      border-color: var(--10, #3b4957);
     }
 
     &::after {
-      color: #0000003d;
+      color: var(--10, #3b4957);
     }
   }
 }
@@ -158,64 +162,64 @@
   display: none; // hide the standard checkbox
 }
 
-.playersList {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  background-color: transparent;
-}
+// .playersList {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 1px;
+//   background-color: transparent;
+// }
 
-.bottomBar {
-  margin-top: auto;
+// .bottomBar {
+//   margin-top: auto;
 
-  display: flex;
-  gap: 2px;
+//   display: flex;
+//   gap: 2px;
 
-  padding: 2px;
+//   padding: 2px;
 
-  background-color: var(--white_color);
-  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
-}
+//   background-color: var(--white_color);
+//   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
+// }
 
-.redirectContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+// .redirectContainer {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
 
-  width: 100%;
-  height: 44px;
-  padding: 0 14px 0 16px;
+//   width: 100%;
+//   height: 44px;
+//   padding: 0 14px 0 16px;
 
-  font-family: Roboto;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: normal;
-  letter-spacing: 0%;
-  vertical-align: middle;
-  text-transform: uppercase;
-  white-space: nowrap;
+//   font-family: Roboto;
+//   font-style: normal;
+//   font-weight: 500;
+//   font-size: 16px;
+//   line-height: normal;
+//   letter-spacing: 0%;
+//   vertical-align: middle;
+//   text-transform: uppercase;
+//   white-space: nowrap;
 
-  cursor: pointer;
-  background-color: var(--btnBgColor);
-  color: var(--btnTextColor);
-}
+//   cursor: pointer;
+//   background-color: var(--btnBgColor);
+//   color: var(--btnTextColor);
+// }
 
-.copyBtn {
-  margin: 0;
-  padding: 14px 16px;
+// .copyBtn {
+//   margin: 0;
+//   padding: 14px 16px;
 
-  font-family: Roboto;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: normal;
-  letter-spacing: 0%;
-  vertical-align: middle;
-  text-transform: uppercase;
-  white-space: nowrap;
+//   font-family: Roboto;
+//   font-style: normal;
+//   font-weight: 500;
+//   font-size: 16px;
+//   line-height: normal;
+//   letter-spacing: 0%;
+//   vertical-align: middle;
+//   text-transform: uppercase;
+//   white-space: nowrap;
 
-  cursor: pointer;
-  background-color: var(--btnBgColor);
-  color: var(--btnTextColor);
-}
+//   cursor: pointer;
+//   background-color: var(--btnBgColor);
+//   color: var(--btnTextColor);
+// }

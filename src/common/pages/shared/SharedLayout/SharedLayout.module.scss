@@ -4,6 +4,9 @@
 // $desktop: 1200px;
 
 .mainContainer {
+  display: flex;
+  flex-direction: column;
+
   position: relative;
   max-width: $mobile;
   margin: 0 auto;

@@ -51,19 +51,21 @@ export default function GameSetup() {
 
   return (
     <>
-      {/* <p>game setup</p> */}
-      <Outlet />
+      <div className={css.setupContainer}>
+        {/* <p>game setup</p> */}
+        <Outlet />
 
-      {isShowStartButton && (
-        <div className={css.startBtnContainer}>
-          <button
-            className={css.btnStart}
-            onClick={handleRunGame}
-            disabled={!isCanRunGame}>
-            {t("start_game")}
-          </button>
-        </div>
-      )}
+        {isShowStartButton && (
+          <div className={css.startBtnContainer}>
+            <button
+              className={css.btnStart}
+              onClick={handleRunGame}
+              disabled={!isCanRunGame}>
+              {t("start_game")}
+            </button>
+          </div>
+        )}
+      </div>
     </>
   );
 }
