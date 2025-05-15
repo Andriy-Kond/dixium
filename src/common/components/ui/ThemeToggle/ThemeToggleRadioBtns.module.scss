@@ -1,17 +1,17 @@
-.themeList {
+.list {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.themeItem {
+.listItem {
   position: relative;
   display: flex;
   min-height: 44px;
   align-items: center;
   align-self: stretch;
 
-  &:first-child:before {
+  &:first-child::before {
     content: "";
     position: absolute;
     top: 0;

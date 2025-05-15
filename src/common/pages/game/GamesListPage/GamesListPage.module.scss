@@ -23,21 +23,23 @@
   flex-direction: column;
   gap: 8px;
 
-  margin-top: 8px;
+  &.mgnTop {
+    margin-top: 8px;
+  }
 }
 
 .infoText {
   color: var(--00, #818f99);
 }
 
-.item {
+.listItem {
   position: relative;
   display: flex;
   min-height: 44px;
   align-items: center;
   align-self: stretch;
   justify-content: space-between;
-  margin-bottom: 8px;
+  color: var(--04, #e3e7e9);
 
   &::before {
     content: "";
@@ -58,19 +60,24 @@
 
     border-bottom: 1px solid var(--20, #2b3847);
   }
+
+  &.mgnBtm {
+    margin-bottom: 8px;
+  }
 }
 
 .activeText {
-  color: var(--04, #e3e7e9);
+  // color: var(--04, #e3e7e9);
 }
 
-.activeLink {
+.activeBtnLink {
   display: flex;
   align-items: center;
+  align-self: stretch;
   color: var(--Highlight, #f6902a);
 }
 
-.activeLinkIcon {
+.btnLinkIcon {
   margin-left: 16px;
   color: var(--04, #e3e7e9);
 }
@@ -94,11 +101,17 @@
   &::placeholder {
     color: var(--10, #3b4957);
   }
-}
 
-.searchInputReady {
-  border-bottom: 2px solid var(--Focus, #3275b8);
-  background: var(--Dark, #000);
+  &:focus {
+    border: none;
+    outline: none;
+  }
+
+  // &.searchInputReady,
+  &.input-focused {
+    border-bottom: 2px solid var(--Focus, #3275b8);
+    background: var(--Dark, #000);
+  }
 }
 
 // .clearButton {
@@ -107,10 +120,10 @@
 //   color: #007bff;
 //   cursor: pointer;
 // }
-
 .btn {
   @include btn;
 }
+
 //# /search form
 
 .pageHeader {

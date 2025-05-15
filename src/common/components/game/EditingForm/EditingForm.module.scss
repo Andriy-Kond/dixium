@@ -7,11 +7,23 @@
 
   background-color: var(--40, #161f27);
   border-bottom: 2px solid var(--20, #2b3847);
+
+  &.input-focused {
+    border-bottom: 2px solid var(--Focus, #3275b8);
+    background: var(--Dark, #000);
+  }
+
+  // Псевдоклас :focus-within спрацьовує, коли будь-який дочірній елемент форми (наприклад, <input>) у фокусі.
+  // &:focus-within {
+  //   border-bottom: 2px solid var(--Focus, #3275b8);
+  //   background: var(--Dark, #000);
+  // }
 }
 
 .label {
   color: var(--00, #818f99);
   font-size: 14px;
+  line-height: 16px;
 }
 
 .inputContainer {
@@ -28,6 +40,11 @@
 .input {
   color: var(--04, #e3e7e9);
   background-color: transparent;
+
+  &:focus {
+    border: none;
+    outline: none;
+  }
 }
 
 .buttonsContainer {

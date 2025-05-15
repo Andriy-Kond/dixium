@@ -39,7 +39,6 @@ export default function GamesListPage() {
     playerGameId,
     _id: playerId,
   } = userCredentials;
-  const headerTitleText = t("tixid");
 
   const [searchGameNumber, setSearchGameNumber] = useState(null); // для пошуку (type: Number)
   const inputRef = useRef(null);
@@ -73,9 +72,11 @@ export default function GamesListPage() {
 
   //# Page header color and text
   useEffect(() => {
+    const headerTitleText = t("tixid");
+    console.log(" useEffect >> headerTitleText:::", headerTitleText);
     dispatch(setPageHeaderText(headerTitleText));
     dispatch(setPageHeaderBgColor("#5D7E9E"));
-  }, [dispatch, headerTitleText]);
+  }, [dispatch, t]);
 
   const isPlayerInGame = currentGame?.players.some(
     player => player._id === playerId,
@@ -194,6 +195,16 @@ export default function GamesListPage() {
 
   const isCanFind = getDigitCount() === 4 && searchGameNumber < 9999;
 
+  const handleFocus = () => {
+    console.log("on Focus");
+    inputRef.current.classList.add(css["input-focused"]);
+  };
+  const handleBlur = () => {
+    console.log("on Blur");
+
+    inputRef.current.classList.remove(css["input-focused"]);
+  };
+
   return (
     <>
       {/* <p>GameListPage</p> */}
@@ -208,17 +219,17 @@ export default function GamesListPage() {
         </p>
 
         {isPlayerInGame && (
-          <div className={css.waitingList}>
+          <div className={`${css.waitingList} ${css.mgnTop}`}>
             <p className={css.infoText}>
               {`${t("active_game")} ID: ${currentGame.playerGameId}`}
             </p>
-            <div className={css.item}>
+            <div className={`${css.listItem} ${css.mgnBtm}`}>
               <p className={css.activeText}>
                 {isCurrentPlayerIsHost ? t("my_game") : userCredentials.name}
               </p>
-              <button className={css.activeLink} onClick={returnToGame}>
-                <p>{t("waiting")}</p>
-                <MdArrowForwardIos className={css.activeLinkIcon} />
+              <button className={css.activeBtnLink} onClick={returnToGame}>
+                <span>{t("waiting")}</span>
+                <MdArrowForwardIos className={css.btnLinkIcon} />
               </button>
             </div>
             <button className={css.btn} onClick={finishGame}>
@@ -233,14 +244,17 @@ export default function GamesListPage() {
               className={`${css.searchInput} ${
                 isCanFind && css.searchInputReady
               }`}
-              autoFocus
+              // className={css.searchInput}
               ref={inputRef}
+              // autoFocus // виникає проблема при видаленні гри - ref не встигає сформуватись (треба додавати useEffect чи setTimeout для встановлення класу input-focused)
               type="text"
               onChange={handleChange}
               placeholder={t("enter_id")}
               inputMode="numeric"
               maxLength={5} // 4 цифри + дефіс
               aria-label={t("search_game_by_number")}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
 
             {/* {searchGameNumber && (

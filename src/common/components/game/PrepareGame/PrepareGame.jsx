@@ -21,6 +21,7 @@ import {
 import clsx from "clsx";
 import EditingForm from "../EditingForm/EditingForm.jsx";
 import InfoMessage from "common/components/ui/InfoMessage";
+import { MdArrowForwardIos } from "react-icons/md";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
@@ -147,70 +148,67 @@ export default function PrepareGame() {
         <div className={css.infoMessageContainer}>
           <InfoMessage />
         </div>
-      </div>
 
-      <p className={css.infoText}>{t("req_for_start_game")}</p>
+        <p className={css.infoText}>{t("req_for_start_game")}</p>
 
-      <EditingForm
-        isDisableSet={isDisableSetPointsBtn}
-        isDisableReset={isDisableResetPointsBtn}
-        handleClear={handleClearFinishPoints}
-        handleSet={handleSetFinishPoints}
-        val={finishPointsValue}
-        setVal={handleSetFinishPointsValue}
-        labelText={t("finish_points")}
-        inputMode="numeric"
-      />
-
-      {/* <label>
-        <input
-          type="number"
-          value={finishPoints}
-          onChange={handleFinishPoints}
+        <EditingForm
+          isDisableSet={isDisableSetPointsBtn}
+          isDisableReset={isDisableResetPointsBtn}
+          handleClear={handleClearFinishPoints}
+          handleSet={handleSetFinishPoints}
+          val={finishPointsValue}
+          setVal={handleSetFinishPointsValue}
+          labelText={t("finish_points")}
+          inputMode="numeric"
         />
-        {t("finish_points")}
-      </label> */}
 
-      <div className={css.checkboxWrapper}>
-        <label
-          className={clsx(css.checkboxLabel, {
-            [css.checked]: currentGame.isSingleCardMode,
-            [css.disabled]: isDisabledCheckbox,
-          })}>
-          <input
-            disabled={isDisabledCheckbox}
-            className={css.checkboxInput}
-            type="checkbox"
-            name="isSingleCardMode"
-            onChange={() => toggleIsSingleCardMode(gameId)}
-            checked={currentGame.isSingleCardMode}
-          />
-          {t("single_card_mode").toUpperCase()}
-        </label>
+        <div className={css.checkboxWrapper}>
+          <label
+            className={clsx(css.checkboxLabel, {
+              [css.checked]: currentGame.isSingleCardMode,
+              [css.disabled]: isDisabledCheckbox,
+            })}>
+            <input
+              disabled={isDisabledCheckbox}
+              className={css.checkboxInput}
+              type="checkbox"
+              name="isSingleCardMode"
+              onChange={() => toggleIsSingleCardMode(gameId)}
+              checked={currentGame.isSingleCardMode}
+            />
+            {t("single_card_mode").toUpperCase()}
+          </label>
+        </div>
+
+        <p className={css.infoText}>{t("setup_players_turn")}</p>
+        <div className={css.listItem}>
+          <p className={css.activeText}>{t("players")}</p>
+          <button
+            className={css.btnLink}
+            onClick={() => navigate(`/game/${gameId}/setup/sort-players`)}>
+            <span>{`${currentGame.players.length}`}</span>
+            <MdArrowForwardIos className={css.btnLinkIcon} />
+          </button>
+        </div>
+
+        <p className={css.infoText}>{t("select_decks")}</p>
+        <div className={css.listItem}>
+          <p className={css.activeText}>{t("game_cards")}</p>
+          <button
+            className={css.btnLink}
+            onClick={() => navigate(`/game/${gameId}/setup/select-decks`)}>
+            <span>{`${currentGame?.deck?.length}`}</span>
+            <MdArrowForwardIos className={css.btnLinkIcon} />
+          </button>
+        </div>
+
+        <div className={css.copyContainer}>
+          <p>ID: {playerGameId}</p>
+          <button className={css.btn} onClick={copyToClipboard}>
+            {t("copy_to_clipboard")}
+          </button>
+        </div>
       </div>
-
-      <div className={css.container}>
-        <p>{t("setup_players_turn")}</p>
-        <button
-          className={css.redirectContainer}
-          onClick={() => navigate(`/game/${gameId}/setup/sort-players`)}>
-          <span>{t("players")}</span>
-          <span>{`${currentGame.players.length} >`}</span>
-        </button>
-
-        <p>{t("select_decks")}</p>
-        <button
-          className={css.redirectContainer}
-          onClick={() => navigate(`/game/${gameId}/setup/select-decks`)}>
-          <span>{t("game_cards")}</span>
-          <span>{`${currentGame?.deck?.length} >`}</span>
-        </button>
-      </div>
-
-      <p>ID: {playerGameId}</p>
-      <button className={css.redirectContainer} onClick={copyToClipboard}>
-        {t("copy_to_clipboard")}
-      </button>
     </>
   );
 }

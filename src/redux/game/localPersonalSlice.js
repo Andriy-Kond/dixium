@@ -194,6 +194,11 @@ export const localPersonalSlice = createSlice({
       const currentVisualTheme = state.visualTheme;
       const games = state.games;
 
+      const currentPageHeaderText = state.pageHeaderText;
+      const currentPageHeaderTextSecond = state.pageHeaderTextSecond;
+      const currentPageHeaderBgColor = state.pageHeaderBgColor;
+      const currentPageHeaderTextColor = state.pageHeaderTextColor;
+
       // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
       // .entries перетворює об'єкт state.games у масив пар [key, value]
       const updateGameList = Object.fromEntries(
@@ -207,6 +212,10 @@ export const localPersonalSlice = createSlice({
         visualTheme: currentVisualTheme,
         preloadImg: currentPreloadImg,
         games: { ...updateGameList },
+        pageHeaderText: currentPageHeaderText,
+        pageHeaderTextSecond: currentPageHeaderTextSecond,
+        pageHeaderBgColor: currentPageHeaderBgColor,
+        pageHeaderTextColor: currentPageHeaderTextColor,
       };
     },
 

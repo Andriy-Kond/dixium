@@ -48,9 +48,9 @@ export default function LangSwitcherRadioBtns() {
   };
 
   return (
-    <ul className={css.langList}>
+    <ul className={css.list}>
       {languages.map(({ code, label }) => (
-        <li className={css.langItem} key={code}>
+        <li className={css.listItem} key={code}>
           <label className={css.radioLabel}>
             {label}
 

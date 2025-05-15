@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next";
 import { MdCheck, MdClear } from "react-icons/md";
 import css from "./EditingForm.module.scss";
+import { useRef } from "react";
 
 export default function EditingForm({
   isDisableSet = false,
@@ -12,11 +12,15 @@ export default function EditingForm({
   labelText,
   inputMode = "text",
 }) {
-  const { t } = useTranslation();
+  // зміна стилю форми при фокусі на інпуті для старих браузерів (для нових (з 2018р ) можна використовувати &:focus-within )
+  const formRef = useRef(null);
+  const handleFocus = () => formRef.current.classList.add(css["input-focused"]);
+  const handleBlur = () =>
+    formRef.current.classList.remove(css["input-focused"]);
 
   return (
     <>
-      <form className={css.form}>
+      <form className={css.form} ref={formRef}>
         <label className={css.label} htmlFor="input">
           {labelText}
         </label>
@@ -29,6 +33,8 @@ export default function EditingForm({
             inputMode={inputMode}
             value={val}
             onChange={e => setVal(e.target.value.trim())}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
 
           <div className={css.buttonsContainer}>

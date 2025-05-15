@@ -57,9 +57,9 @@ export default function ThemeToggleRadioBtns() {
   };
 
   return (
-    <ul className={css.themeList}>
+    <ul className={css.list}>
       {themes.map(({ code, label }) => (
-        <li className={css.themeItem} key={code}>
+        <li className={css.listItem} key={code}>
           <label className={css.radioLabel}>
             {label}
 
