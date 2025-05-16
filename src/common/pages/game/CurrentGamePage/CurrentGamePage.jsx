@@ -19,11 +19,13 @@ export default function CurrentGamePage() {
   //   dispatch(updateIsRedirecting(false));
   // }, [dispatch]);
 
-  if (!userActiveGameId || !currentGame) {
-    navigate("/game");
-    // return <Navigate to="/game" replace />;
-    return;
-  }
+  useEffect(() => {
+    if (!userActiveGameId || !currentGame) {
+      navigate("/game");
+      // return <Navigate to="/game" replace />;
+      return;
+    }
+  }, [currentGame, navigate, userActiveGameId]);
 
   return (
     <>

@@ -36,6 +36,7 @@ export default function RegisterPage() {
   const [googleLogin, { isLoading: isGoogleLoading }] =
     useGoogleLoginMutation();
 
+  //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("register")));
   }, [dispatch, t]);

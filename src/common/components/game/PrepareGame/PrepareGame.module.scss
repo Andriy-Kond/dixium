@@ -1,14 +1,11 @@
 @import "styles/utils/mixins";
 
-.prepareGameContainer {
+.pageContainer {
   position: relative;
-
-  // margin: 0 auto;
   padding: 8px 16px;
 
   display: flex;
   flex-direction: column;
-
   gap: 16px;
 }
 

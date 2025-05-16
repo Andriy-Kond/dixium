@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -16,22 +16,38 @@ import {
 import SortablePlayer from "common/components/game/SortablePlayer";
 import css from "./SortPlayers.module.scss";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import {
+  setPageHeaderText,
+  setPageHeaderTextSecond,
+} from "redux/game/localPersonalSlice.js";
 
 export default function SortPlayers() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
+
   const userActiveGameId = useSelector(selectUserActiveGameId);
-  const currentGame = useSelector(selectLocalGame(userActiveGameId));
   const userCredentials = useSelector(selectUserCredentials);
+  const currentGame = useSelector(selectLocalGame(userActiveGameId));
 
-  const { _id: userId, playerGameId } = userCredentials;
-  if (!currentGame) {
-    navigate("/game");
-    return;
-  }
+  useEffect(() => {
+    if (!currentGame) {
+      navigate("/game");
+      return;
+    }
+  }, [currentGame, navigate]);
 
-  const isCurrentPlayerIsHost = currentGame.hostPlayerId === userId;
+  //# Page header color and text
+  useEffect(() => {
+    const headerTitleText = t("players");
+    dispatch(setPageHeaderText(headerTitleText));
+    dispatch(setPageHeaderTextSecond(""));
+  }, [dispatch, t]);
+
+  const isCurrentPlayerIsHost =
+    currentGame.hostPlayerId === userCredentials._id;
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
     if (!isCurrentPlayerIsHost) return; // dnd can do the host player only
@@ -54,23 +70,32 @@ export default function SortPlayers() {
 
   return (
     <>
-      <h1>Sort Players</h1>
+      <div className={css.pageContainer}>
+        {/* <h1>Sort Players</h1> */}
 
-      <p>{t("req_for_start_game")}</p>
-      <p>{t("players_turn")}</p>
+        <p className={css.infoText}>{t("req_for_start_game")}</p>
 
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={currentGame?.players.map(p => p._id)}
-          strategy={verticalListSortingStrategy}
-          disabled={currentGame.hostPlayerId !== userId}>
-          <ul className={css.playersList}>
-            {currentGame?.players.map(player => (
-              <SortablePlayer key={player._id} player={player} />
-            ))}
-          </ul>
-        </SortableContext>
-      </DndContext>
+        <div>
+          <p className={`${css.infoText} ${css.mgnTop} ${css.mgnBtm}`}>
+            {t("players_turn")}
+          </p>
+
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={currentGame?.players.map(p => p._id)}
+              strategy={verticalListSortingStrategy}
+              disabled={currentGame.hostPlayerId !== userCredentials._id}>
+              <ul>
+                {currentGame?.players.map(player => (
+                  <SortablePlayer key={player._id} player={player} />
+                ))}
+              </ul>
+            </SortableContext>
+          </DndContext>
+        </div>
+      </div>
     </>
   );
 }

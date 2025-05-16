@@ -15,15 +15,13 @@ export default function GameSetup() {
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
 
   const userCredentials = useSelector(selectUserCredentials);
-  const { _id: userId, playerGameId } = userCredentials;
-
   const currentGame = useSelector(selectLocalGame(gameId));
   const { players, deck, isSingleCardMode, finishPoints } = currentGame;
 
   const isShowStartButton =
     (matchPath(`/game/:gameId/setup/prepare-game`, location.pathname) ||
       matchPath(`/game/:gameId/setup/sort-players`, location.pathname)) &&
-    userId === currentGame?.hostPlayerId;
+    userCredentials._id === currentGame?.hostPlayerId;
 
   const handleRunGame = () => {
     const game = distributeCards(currentGame);

@@ -6,7 +6,6 @@ import socket from "services/socket.js";
 import { useTranslation } from "react-i18next";
 import {
   setLocalGame,
-  setPageHeaderBgColor,
   setPageHeaderText,
 } from "redux/game/localPersonalSlice.js";
 import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
@@ -73,9 +72,7 @@ export default function GamesListPage() {
   //# Page header color and text
   useEffect(() => {
     const headerTitleText = t("tixid");
-    console.log(" useEffect >> headerTitleText:::", headerTitleText);
     dispatch(setPageHeaderText(headerTitleText));
-    dispatch(setPageHeaderBgColor("#5D7E9E"));
   }, [dispatch, t]);
 
   const isPlayerInGame = currentGame?.players.some(
@@ -166,9 +163,22 @@ export default function GamesListPage() {
     socket.emit("Game_Delete", { gameId, userId: playerId });
   };
 
+  // const returnToGame = () => {
+  //   if (isCurrentPlayerIsHost && !currentGame.isGameRunning) {
+  //     navigate(`${userActiveGameId}/setup/prepare-game`);
+  //   } else {
+  //     navigate(`${userActiveGameId}/current-game`);
+  //     // navigate(-1);
+  //   }
+  // };
+
   const returnToGame = () => {
-    if (isCurrentPlayerIsHost && !currentGame.isGameRunning) {
-      navigate(`${userActiveGameId}/setup/prepare-game`);
+    if (!currentGame.isGameRunning) {
+      if (isCurrentPlayerIsHost) {
+        navigate(`${userActiveGameId}/setup/prepare-game`);
+      } else {
+        navigate(`${userActiveGameId}/setup/sort-players`);
+      }
     } else {
       navigate(`${userActiveGameId}/current-game`);
       // navigate(-1);
@@ -208,7 +218,7 @@ export default function GamesListPage() {
   return (
     <>
       {/* <p>GameListPage</p> */}
-      <div className={css.container}>
+      <div className={css.pageContainer}>
         <div className={css.infoMessageContainer}>
           <InfoMessage />
         </div>

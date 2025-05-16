@@ -6,8 +6,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import { selectIsSetPassword, selectTheme } from "redux/selectors.js";
 import { LIGHT } from "utils/generals/constants.js";
-import css from "./HomePage.module.scss";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useGoogleLoginMutation } from "redux/auth/authApi.js";
 import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice.js";
 import { useNavigate } from "react-router-dom";
@@ -19,12 +18,13 @@ import { ReactComponent as GameSloganSvg } from "imgs/game_slogan.svg";
 
 import bgLight from "imgs/mainPageBg_light_theme.png";
 import bgDark from "imgs/mainPageBg_dark_theme.png";
+import { MdArrowForwardIos } from "react-icons/md";
+import css from "./HomePage.module.scss";
 
 // import { ReactComponent as mainPageBg } from "/imgs/mainPageBg_light_theme.png";
 
 export default function HomePage() {
   const dispatch = useDispatch();
-
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
   const { t } = useTranslation();
 
@@ -33,6 +33,13 @@ export default function HomePage() {
     useGoogleLoginMutation();
 
   const isSetPassword = useSelector(selectIsSetPassword); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
+
+  const [isHaveGoogleAcc, setIsHaveGoogleAcc] = useState(true);
+  console.log(" HomePage >> isHaveGoogleAcc:::", isHaveGoogleAcc);
+
+  const handleIsHaveGoogleAcc = () => {
+    if (isHaveGoogleAcc) setIsHaveGoogleAcc(false);
+  };
 
   const handleToggleTheme = () => {
     dispatch(toggleTheme());
@@ -117,27 +124,35 @@ export default function HomePage() {
       </button>
 
       <div className={css.homePageAuthContainer}>
-        <button
-          className={css.homePageAuthBtn}
-          style={
-            theme === LIGHT
-              ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
-              : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
-          }
-          onClick={() => navigate("/login")}>
-          Login
-        </button>
-
-        <button
-          className={css.homePageAuthBtn}
-          style={
-            theme === LIGHT
-              ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
-              : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
-          }
-          onClick={() => navigate("/register")}>
-          Register
-        </button>
+        {isHaveGoogleAcc ? (
+          <button className={css.activeBtnLink} onClick={handleIsHaveGoogleAcc}>
+            <span>{t("not_have_google_acc?")}</span>
+            {/* <MdArrowForwardIos className={css.btnLinkIcon} /> */}
+          </button>
+        ) : (
+          <>
+            <button
+              className={css.homePageAuthBtn}
+              style={
+                theme === LIGHT
+                  ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
+                  : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
+              }
+              onClick={() => navigate("/login")}>
+              Login
+            </button>
+            <button
+              className={css.homePageAuthBtn}
+              style={
+                theme === LIGHT
+                  ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
+                  : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
+              }
+              onClick={() => navigate("/register")}>
+              Register
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

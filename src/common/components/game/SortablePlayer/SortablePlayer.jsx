@@ -1,20 +1,21 @@
-import { FaRegTrashAlt } from "react-icons/fa";
-import { PiTrashLight } from "react-icons/pi";
-import { BsArrowsExpand } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
+import socket from "services/socket.js";
+import { useTranslation } from "react-i18next";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
-import css from "./SortablePlayer.module.scss";
-import { useSelector } from "react-redux";
+
 import {
   selectLocalGame,
   selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
-import Button from "common/components/ui/Button/index.js";
-import socket from "services/socket.js";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+
+import { MdDeleteOutline } from "react-icons/md";
+import { MdDragIndicator } from "react-icons/md";
+import css from "./SortablePlayer.module.scss";
+import { useEffect } from "react";
 
 // Component for each dnd player
 export default function SortablePlayer({ player }) {
@@ -28,10 +29,13 @@ export default function SortablePlayer({ player }) {
   const userCredentials = useSelector(selectUserCredentials);
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
-  if (!userActiveGameId || !currentGame) {
-    navigate("/game", { replace: true });
-    return;
-  }
+
+  useEffect(() => {
+    if (!userActiveGameId || !currentGame) {
+      navigate("/game", { replace: true });
+      return;
+    }
+  }, [currentGame, navigate, userActiveGameId]);
 
   const isCurrentPlayerIsHost =
     currentGame.hostPlayerId === userCredentials._id;
@@ -67,35 +71,37 @@ export default function SortablePlayer({ player }) {
     socket.emit("deleteUserFromGame", { updatedGame, deletedUserId: userId });
   };
 
+  const handleRemovePlayer = e => {
+    // console.log("onclick");
+    // console.log("Button clicked, userId:", userCredentials._id);
+    // e.stopPropagation(); // зупинка поширення події -- не працює
+    removePlayer(player._id);
+  };
+
   return (
     <li
       ref={setNodeRef}
       style={style}
-      className={`${css.item}
-                ${isCurrentPlayerIsHost && css.host}`}>
+      className={`${css.listItem} ${isCurrentPlayerIsHost && css.host}`}>
       <div {...attributes} {...listeners} className={css.dragHandle}>
-        <BsArrowsExpand className={css.dndIcon} />
-        {`${player.name.toUpperCase()} ${
-          player._id === currentGame.hostPlayerId ? t("the_host") : ""
-        }`}
-      </div>
-      <Button
-        disabled={
-          !isCurrentPlayerIsHost ||
-          (isCurrentPlayerIsHost && userCredentials._id === player._id)
-        }
-        onClick={e => {
-          // console.log("onclick");
-          // console.log("Button clicked, userId:", userCredentials._id);
-          e.stopPropagation(); // зупинка поширення події не працює
+        {isCurrentPlayerIsHost && <MdDragIndicator className={css.dndIcon} />}
 
-          removePlayer(player._id);
-        }}
-        btnStyle={["btnTransparentBorder"]}
-        localClassName={css.removePlayerBtn}>
-        {/* <FaRegTrashAlt /> */}
-        <PiTrashLight />
-      </Button>
+        <p>{`${player.name} ${
+          player._id === currentGame.hostPlayerId ? t("the_host") : ""
+        }`}</p>
+      </div>
+
+      {isCurrentPlayerIsHost && (
+        <button
+          className={css.deleteBtn}
+          disabled={
+            !isCurrentPlayerIsHost ||
+            (isCurrentPlayerIsHost && userCredentials._id === player._id)
+          }
+          onClick={handleRemovePlayer}>
+          <MdDeleteOutline className={css.trashIcon} />
+        </button>
+      )}
     </li>
   );
 }

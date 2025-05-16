@@ -20,7 +20,7 @@
   "start_new_round": "Розпочати новий раунд",
   "tell_your_story": "Розкажи свою історію",
   "guess_story": "Вгадати історію",
-  "the_host": " (ВЕДУЧИЙ)",
+  "the_host": " (Ведучий)",
   "not_enough_cards_in_the_deck": "Недостатньо карт у колоді",
   "single_card_mode": "Режим однієї карти",
   "run_game": "Запустити гру",
@@ -153,5 +153,6 @@
   "theme_dark": "Темний",
   "theme_auto": "Авто",
   "my_game": "Моя гра",
-  "active_game": "Активна гра"
+  "active_game": "Активна гра",
+  "not_have_google_acc?": "Немає Google акаунту?"
 }

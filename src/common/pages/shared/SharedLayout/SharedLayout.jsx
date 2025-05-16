@@ -9,7 +9,6 @@ import {
   selectPageHeaderTextSecond,
 } from "redux/selectors.js";
 import {
-  setPageHeaderBgColor,
   setPageHeaderText,
   setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
@@ -49,12 +48,12 @@ export default function SharedLayout() {
   //   dispatch(setTheme(prefersDark ? DARK : LIGHT));
   // }, [dispatch]);
 
-  useEffect(() => {
-    if (!location.pathname.includes("game")) {
-      dispatch(setPageHeaderText("")); // clear text for Home page
-      dispatch(setPageHeaderBgColor("#5D7E9E")); // set default color on Home page
-    }
-  }, [dispatch, location.pathname, t]);
+  //# Page header color and text
+  // useEffect(() => {
+  //   if (!location.pathname.includes("game")) {
+  //     dispatch(setPageHeaderText("")); // clear text for Home page
+  //   }
+  // }, [dispatch, location.pathname, t]);
 
   // Check if it is mobile viewport for removing game header in Home page
   useEffect(() => {
@@ -145,11 +144,11 @@ export default function SharedLayout() {
             </header>
           )}
 
-          {isShowMenu && (
+          {/* {isShowMenu && (
             <div className={css.navHeader}>
               <AppBar />
             </div>
-          )}
+          )} */}
 
           {/* Умовне відображення AppBar */}
           {/* {!isHomePage ? (

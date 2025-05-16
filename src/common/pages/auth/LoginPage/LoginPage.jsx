@@ -32,6 +32,7 @@ export default function LoginPage() {
   const isSetPassword = useSelector(selectIsSetPassword); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
   const googleLoginRef = useRef(null); // Референс для GoogleLogin
 
+  //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("login")));
     return () => dispatch(setIsSetPassword(false)); // Очистити прапор при демонтажі

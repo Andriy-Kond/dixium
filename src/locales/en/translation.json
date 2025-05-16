@@ -20,7 +20,7 @@
   "start_new_round": "Start new round",
   "tell_your_story": "Tell your story",
   "guess_story": "Guess story",
-  "the_host": " (THE HOST)",
+  "the_host": " (Host)",
   "not_enough_cards_in_the_deck": "Not enough cards in the deck",
   "single_card_mode": "Single Card Mode",
   "run_game": "Run game",
@@ -154,5 +154,6 @@
   "theme_dark": "Dark",
   "theme_auto": "Auto",
   "my_game": "My game",
-  "active_game": "Active game"
+  "active_game": "Active game",
+  "not_have_google_acc?": "Don't have a Google account?"
 }

@@ -37,8 +37,16 @@ export default function PrepareGame() {
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: userId, playerGameId } = userCredentials;
 
-  const isCurrentPlayerIsHost = currentGame.hostPlayerId === userId;
+  const isCurrentPlayerIsHost =
+    currentGame.hostPlayerId === userCredentials._id;
+  useEffect(() => {
+    if (!isCurrentPlayerIsHost) {
+      navigate(`/game`);
+      return;
+    }
+  }, [isCurrentPlayerIsHost, navigate]);
 
+  //# Page header color and text
   useEffect(() => {
     // dispatch(
     //   setPageHeaderText(t("game_name", { gameName: currentGame.gameName })),
@@ -46,6 +54,10 @@ export default function PrepareGame() {
     dispatch(setPageHeaderText(t("my_game")));
     dispatch(setPageHeaderTextSecond(userCredentials.name));
   }, [currentGame.gameName, dispatch, t, userCredentials.name]);
+
+  const [finishPointsValue, setFinishPointsValue] = useState(
+    currentGame.finishPoints,
+  );
 
   const isDisabledCheckbox =
     !isCurrentPlayerIsHost || currentGame.players.length < 7;
@@ -74,10 +86,6 @@ export default function PrepareGame() {
   // const handleFinishPoints = e => {
   //   dispatch(setFinishPoints({ gameId, finishPoints: e.target.value.trim() }));
   // };
-
-  const [finishPointsValue, setFinishPointsValue] = useState(
-    currentGame.finishPoints,
-  );
 
   const handleSetFinishPoints = () => {
     if (!finishPointsValue) {
@@ -144,7 +152,7 @@ export default function PrepareGame() {
   return (
     <>
       {/* <h1>Prepare Game</h1> */}
-      <div className={css.prepareGameContainer}>
+      <div className={css.pageContainer}>
         <div className={css.infoMessageContainer}>
           <InfoMessage />
         </div>

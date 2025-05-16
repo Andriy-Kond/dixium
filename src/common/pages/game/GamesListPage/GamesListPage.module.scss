@@ -1,9 +1,7 @@
 @import "styles/utils/mixins";
 
-.container {
+.pageContainer {
   position: relative;
-  // max-width: 414px;
-  // margin: 0 auto;
   padding: 8px 16px;
 
   display: flex;

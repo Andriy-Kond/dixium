@@ -20,7 +20,8 @@ export const findAndJoinToGameSuccess = (game, dispatch, navigate) => {
       }),
     );
   } else {
-    navigate(`game/${game._id}/current-game`);
+    // navigate(`game/${game._id}/current-game`);
+    navigate(`game/${game._id}/setup/sort-players`);
     dispatch(setLocalGame(game));
     dispatch(setUserActiveGameId(game._id));
     // dispatch(updateIsRedirecting(true));

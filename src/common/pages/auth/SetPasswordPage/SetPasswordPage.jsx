@@ -35,6 +35,7 @@ export default function SetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
 
+  //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("set_password")));
     return () => {

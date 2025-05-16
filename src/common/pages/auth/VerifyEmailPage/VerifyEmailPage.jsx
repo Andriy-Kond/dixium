@@ -30,6 +30,7 @@ export default function VerifyEmailPage() {
   const resetTimeout_v2 = useRef(null); // Для збереження таймера (для запобігання незавершених promise у react-google-recaptcha при використанні капчі v2)
   const resetTimeout_v3 = useRef(null);
 
+  //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("verify_email")));
   }, [dispatch, t]);

@@ -1,83 +1,148 @@
-.item {
+.listItem {
   position: relative;
-  height: 44px;
   display: flex;
-  justify-content: end;
+  min-height: 44px;
   align-items: center;
 
-  background-color: #fff;
+  align-self: stretch;
+  justify-content: space-between;
+  color: var(--04, #e3e7e9);
 
-  user-select: none;
-  caret-color: transparent;
-  opacity: 0.5;
-}
+  &:first-child::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -16px;
+    right: -16px;
 
-.host {
-  opacity: 1;
-  cursor: grab; /* Для хоста */
+    border-top: 1px solid var(--20, #2b3847);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -16px;
+    right: -16px;
+
+    border-bottom: 1px solid var(--20, #2b3847);
+  }
+
+  &.host {
+    cursor: grab;
+  }
 }
 
 .dragHandle {
-  position: absolute;
-
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
   display: flex;
   flex-grow: 1;
-  align-items: center; /* Вирівнювання тексту по вертикалі */
-  align-self: stretch; // розтягнути на всю площину li.item:
-  padding-left: 16px;
-  padding-right: 8px;
-  padding-top: 12px;
-  padding-bottom: 12px;
+  align-items: center;
+  align-self: stretch; // розтягнути на висоту li:
+}
+
+.deleteBtn {
+  padding: 14px 0;
+  color: var(--04, #e3e7e9);
+
+  &:disabled {
+    color: var(--10, #3b4957);
+    cursor: auto;
+  }
 }
 
 .dndIcon {
-  width: 20px;
-  height: 20px;
-  margin-right: 4px;
-  padding: 2px;
-
-  color: #5d7e9e;
+  width: 16px;
+  height: 16px;
+  margin-right: 16px;
+  color: var(--04, #e3e7e9);
 }
 
-.removePlayerBtn {
-  padding: 0;
-  z-index: 1; /* Щоб кнопка була поверх .dragHandle */
-  padding: 10px;
-  // transition: transform 1s ease, color 0.3s ease;
-
-  font-size: 24px;
-
-  // &:hover:not(:disabled) {
-  //   // animation: wiggle 0.5s infinite; /* Запуск анімації при ховері */
-  //   // color: red;
-  // }
-
-  &:focus {
-    outline: 1px solid #000; /* Контур при фокусі */
-  }
-
-  &:disabled {
-    // перевизначення для більшої специфічності (disabled за замовчуванням у btnBase з обводкою)
-    border: 1px solid transparent; /* Зберігаємо прозору обводку */
-  }
+.trashIcon {
+  width: 16px;
+  height: 16px;
+  margin-left: 16px;
 }
 
-// @keyframes wiggle {
-//   0% {
-//     transform: rotate(0deg);
+// .item {
+//   position: relative;
+//   height: 44px;
+//   display: flex;
+//   justify-content: end;
+//   align-items: center;
+
+//   background-color: #fff;
+
+//   user-select: none;
+//   caret-color: transparent;
+//   opacity: 0.5;
+// }
+
+// .host {
+//   opacity: 1;
+//   cursor: grab; /* Для хоста */
+// }
+
+// .dragHandle {
+//   position: absolute;
+
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+
+//   display: flex;
+//   flex-grow: 1;
+//   align-items: center; /* Вирівнювання тексту по вертикалі */
+//   align-self: stretch; // розтягнути на всю площину li.item:
+//   padding-left: 16px;
+//   padding-right: 8px;
+//   padding-top: 12px;
+//   padding-bottom: 12px;
+// }
+
+// .dndIcon {
+//   width: 20px;
+//   height: 20px;
+//   margin-right: 4px;
+//   padding: 2px;
+
+//   color: #5d7e9e;
+// }
+
+// .removePlayerBtn {
+//   padding: 0;
+//   z-index: 1; /* Щоб кнопка була поверх .dragHandle */
+//   padding: 10px;
+//   // transition: transform 1s ease, color 0.3s ease;
+
+//   font-size: 24px;
+
+//   // &:hover:not(:disabled) {
+//   //   // animation: wiggle 0.5s infinite; /* Запуск анімації при ховері */
+//   //   // color: red;
+//   // }
+
+//   &:focus {
+//     outline: 1px solid #000; /* Контур при фокусі */
 //   }
-//   25% {
-//     transform: rotate(5deg);
-//   }
-//   75% {
-//     transform: rotate(-5deg);
-//   }
-//   100% {
-//     transform: rotate(0deg);
+
+//   &:disabled {
+//     // перевизначення для більшої специфічності (disabled за замовчуванням у btnBase з обводкою)
+//     border: 1px solid transparent; /* Зберігаємо прозору обводку */
 //   }
 // }
+
+// // @keyframes wiggle {
+// //   0% {
+// //     transform: rotate(0deg);
+// //   }
+// //   25% {
+// //     transform: rotate(5deg);
+// //   }
+// //   75% {
+// //     transform: rotate(-5deg);
+// //   }
+// //   100% {
+// //     transform: rotate(0deg);
+// //   }
+// // }

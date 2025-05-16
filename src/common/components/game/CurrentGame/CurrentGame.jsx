@@ -32,7 +32,6 @@ import {
   resetPreload,
   setActiveScreen,
   setHasPreloaded,
-  setPageHeaderBgColor,
   setPageHeaderText,
   setToastId,
 } from "redux/game/localPersonalSlice.js";
@@ -136,7 +135,7 @@ export default function Game() {
     return { isMustMakeMove: false, text: t("players_taking_turn") };
   }, [currentGame, isShowMask, playerId, t]);
 
-  //# Page header - color and text
+  //# Page header color and text
   useEffect(() => {
     if (!currentGame) return;
     const { scores, players } = currentGame;
@@ -169,10 +168,8 @@ export default function Game() {
 
     if (isMustMakeMove) {
       dispatch(setPageHeaderText(text));
-      dispatch(setPageHeaderBgColor("#0F7DFF"));
     } else {
       dispatch(setPageHeaderText(text));
-      dispatch(setPageHeaderBgColor("#5D7E9E"));
     }
   }, [currentGame, dispatch, textAndColorOfHeader]);
 
