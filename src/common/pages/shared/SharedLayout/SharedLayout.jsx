@@ -144,26 +144,7 @@ export default function SharedLayout() {
             </header>
           )}
 
-          {/* {isShowMenu && (
-            <div className={css.navHeader}>
-              <AppBar />
-            </div>
-          )} */}
-
-          {/* Умовне відображення AppBar */}
-          {/* {!isHomePage ? (
-            <header className={css.navHeader}>
-              <AppBar />
-            </header>
-          ) : (
-            // Для HomePage AppBar може бути доданий з абсолютним позиціонуванням
-            <header className={`${css.navHeader} ${css.homePageNav}`}>
-              <AppBar />
-            </header>
-          )} */}
-          {/* <div className={css.sharedLayoutPageContainer}> */}
           <Outlet />
-          {/* </div> */}
         </Suspense>
       </main>
     </>

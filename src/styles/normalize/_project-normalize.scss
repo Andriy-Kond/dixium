@@ -10,7 +10,21 @@ body {
 
   user-select: none; // prevents any selection
   caret-color: transparent; // prevents show cursor on text (for LibreWolf browser)
+
+  // margin: 0;
+  // padding: 0;
+  // min-height: 100vh;
+  // height: 100%;
+  background-color: var(--Dark, #000); /* Фон на всю сторінку */
 }
+
+// #root {
+//   // height: 100%;
+//   // min-height: 100vh;
+//   // display: flex;
+//   // flex-direction: column;
+// }
+
 /* ========== /ЗАГАЛЬНІ СТИЛІ ==========  */
 
 /* ========== СКИДАННЯ СТИЛІВ ==========  */

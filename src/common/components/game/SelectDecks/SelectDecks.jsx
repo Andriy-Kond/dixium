@@ -273,7 +273,7 @@ export default function SelectDecks() {
   return (
     <>
       <div className={css.decksContainer}>
-        <h1>Select Decks</h1>
+        {/* <h1>Select Decks</h1> */}
 
         <div>
           <div className={css.totalDecksItem}>
