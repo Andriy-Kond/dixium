@@ -10,7 +10,6 @@
   position: relative;
   max-width: $mobile;
   margin: 0 auto;
-  height: 100vh;
 
   background: var(--Dark, #000);
 
@@ -53,7 +52,7 @@
   text-transform: lowercase;
 
   &::first-letter {
-    text-transform: capitalize;
+    text-transform: uppercase;
   }
 }
 
@@ -106,6 +105,17 @@
   // @media screen and (min-width: ($desktop)) {
   // }
 }
+
+// .sharedLayoutPageContainer {
+//   position: relative;
+
+//   display: flex;
+//   flex-direction: column;
+//   gap: 16px;
+//   flex-grow: 1;
+
+//   padding: 8px 16px;
+// }
 
 @keyframes rotation {
   0% {

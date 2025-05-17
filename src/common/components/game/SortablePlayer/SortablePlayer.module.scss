@@ -30,6 +30,10 @@
 
   &.host {
     cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 }
 

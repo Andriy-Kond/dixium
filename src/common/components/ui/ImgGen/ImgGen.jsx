@@ -72,6 +72,7 @@ export default function ImgGen({ className, publicId, isBig, isNeedPreload }) {
         srcSet={srcSet}
         sizes={sizes}
         fetchpriority={isBig ? "high" : "auto"}
+        loading="lazy"
       />
     </>
   );

@@ -1,3 +1,11 @@
+.decksContainer {
+  position: relative;
+  padding: 8px 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 .redirectContainer {
   display: flex;
   align-items: center;
@@ -7,19 +15,124 @@
   height: 44px;
   padding: 0 14px 0 16px;
 
-  font-family: Roboto;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: normal;
-  letter-spacing: 0%;
-  vertical-align: middle;
-  text-transform: uppercase;
-  white-space: nowrap;
-
-  cursor: pointer;
   background-color: var(--btnBgColor);
   color: var(--btnTextColor);
+
+  cursor: pointer;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.totalDecksItem {
+  position: relative;
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  width: 100%;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -16px;
+    right: -16px;
+
+    border-top: 1px solid var(--20, #2b3847);
+  }
+
+  // &::after {
+  //   content: "";
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: -16px;
+  //   right: -16px;
+
+  //   border-bottom: 1px solid var(--20, #2b3847);
+  // }
+}
+.listItem {
+  position: relative;
+  display: flex;
+  height: 44px;
+  align-items: center;
+  width: 100%;
+
+  &:first-child::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -16px;
+    right: -16px;
+
+    border-top: 1px solid var(--20, #2b3847);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -16px;
+    right: -16px;
+
+    border-bottom: 1px solid var(--20, #2b3847);
+  }
+}
+
+.label {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  color: var(--04, #e3e7e9);
+}
+
+.input {
+  opacity: 0;
+  display: none;
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  cursor: auto;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  height: 100%;
+  margin-right: 16px;
+
+  color: var(--04, #e3e7e9);
+
+  cursor: pointer;
+}
+
+.mgnLeft {
+  margin-right: 0;
+  margin-left: 16px;
+}
+
+.itemText {
+  align-self: left;
+  text-transform: lowercase;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.itemRightGroup {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  height: 100%;
 }
 
 //* checkbox
@@ -88,32 +201,5 @@
     &::after {
       color: #0000003d;
     }
-  }
-}
-
-.checkBoxAllDecksLabel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border: 1px solid black;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease-in-out;
-
-  &.indeterminate::after {
-    content: "−";
-    opacity: 1;
-  }
-
-  &.checked::after {
-    content: "✔";
-    opacity: 1;
-  }
-
-  &::after {
-    content: "";
-    opacity: 0;
   }
 }

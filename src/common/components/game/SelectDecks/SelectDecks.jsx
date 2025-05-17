@@ -29,11 +29,21 @@ import {
 import {
   deleteCardsFromDeck,
   setGameDeck,
+  setPageHeaderText,
+  setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
 import socket from "services/socket.js";
 import { Notify } from "notiflix";
 import { useBackButton } from "context/BackButtonContext.jsx";
+
+import {
+  MdArrowForwardIos,
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
+  MdIndeterminateCheckBox,
+} from "react-icons/md";
 import css from "./SelectDecks.module.scss";
+import clsx from "clsx";
 
 export default function SelectDecks() {
   const dispatch = useDispatch();
@@ -42,6 +52,13 @@ export default function SelectDecks() {
   const { gameId } = useParams();
   const currentGame = useSelector(selectLocalGame(gameId));
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
+
+  //# Page header color and text
+  useEffect(() => {
+    const headerTitleText = t("game_cards");
+    dispatch(setPageHeaderText(headerTitleText));
+    dispatch(setPageHeaderTextSecond(""));
+  }, [dispatch, t]);
 
   const optimisticCardsListUpdate = useCallback(
     ({ previousGameState, gameId, cards, timeout = 2000 }) => {
@@ -255,7 +272,65 @@ export default function SelectDecks() {
 
   return (
     <>
-      <h1>Select Decks</h1>
+      <div className={css.decksContainer}>
+        <h1>Select Decks</h1>
+
+        <div>
+          <div className={css.totalDecksItem}>
+            <div className={css.label} onClick={handleSelectAllDecks}>
+              {selectAllState === CHECKED_ALL ? (
+                <MdCheckBox className={css.icon} />
+              ) : selectAllState === CHECKED_USER ? (
+                <MdIndeterminateCheckBox className={css.icon} />
+              ) : (
+                <MdCheckBoxOutlineBlank className={css.icon} />
+              )}
+
+              <p className={css.itemText}>{t("total_cards")}</p>
+              <div className={css.itemRightGroup}>
+                <p>{currentGame?.deck?.length}</p>
+                <div className={css.icon} />
+              </div>
+            </div>
+          </div>
+
+          <ul className={css.list}>
+            {allDecks?.map(deck => (
+              <li className={css.listItem} key={deck._id}>
+                <label className={css.label}>
+                  <input
+                    className={css.input}
+                    type="checkbox"
+                    checked={selectedDeckIds.includes(deck._id)}
+                    onChange={() => handleSelectDeck(deck)}
+                  />
+
+                  {selectedDeckIds.includes(deck._id) ? (
+                    <MdCheckBox className={css.icon} />
+                  ) : (
+                    <MdCheckBoxOutlineBlank className={css.icon} />
+                  )}
+                  <span className={css.itemText}>{deck.name}</span>
+                  <div className={css.itemRightGroup}>
+                    <p>{deck.cards.length}</p>
+                    <button
+                      className={css.iconBtn}
+                      onClick={() =>
+                        navigate(`${deck._id}`, { state: { deck } })
+                      }>
+                      <MdArrowForwardIos
+                        className={clsx(css.icon, css.mgnLeft)}
+                      />
+                    </button>
+                  </div>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* <h1>Select Decks</h1>
 
       <div className={css.totalDecks}>
         <div className={css.checkboxWrapper}>
@@ -296,7 +371,7 @@ export default function SelectDecks() {
             </button>
           </li>
         ))}
-      </ul>
+      </ul> */}
     </>
   );
 }

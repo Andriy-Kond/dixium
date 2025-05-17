@@ -161,7 +161,9 @@ export default function SharedLayout() {
               <AppBar />
             </header>
           )} */}
+          {/* <div className={css.sharedLayoutPageContainer}> */}
           <Outlet />
+          {/* </div> */}
         </Suspense>
       </main>
     </>
