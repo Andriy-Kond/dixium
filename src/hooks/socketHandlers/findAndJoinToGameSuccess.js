@@ -1,5 +1,6 @@
 import { t } from "i18next";
 import { Notify } from "notiflix";
+import { replace } from "react-router-dom";
 import {
   clearLocalGames,
   setLocalGame,
@@ -31,8 +32,9 @@ export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
     );
     return;
   }
+
   // navigate(`game/${game._id}/current-game`);
-  navigate(`game/${game._id}/setup/sort-players`);
+  navigate(`game/${game._id}/setup/sort-players`, { replace: true });
   dispatch(setLocalGame(game));
   dispatch(setUserActiveGameId(game._id));
   // dispatch(updateIsRedirecting(true));

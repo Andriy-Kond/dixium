@@ -100,10 +100,10 @@ export default function Game() {
     if (!storytellerId || isShowMask)
       return { isMustMakeMove: true, text: t("first_turn") };
 
-    if (gameStatus === GUESSING && !currentPlayer.isGuessed)
+    if (gameStatus === GUESSING && !currentPlayer?.isGuessed)
       return { isMustMakeMove: true, text: t("please_choose_card") };
 
-    if (gameStatus === VOTING && !currentPlayer.isVoted)
+    if (gameStatus === VOTING && !currentPlayer?.isVoted)
       return { isMustMakeMove: true, text: t("please_vote") };
 
     if (gameStatus === GUESSING && isCurrentPlayerHost && isReadyToVote)
@@ -179,12 +179,14 @@ export default function Game() {
     const { players, cardsOnTable } = currentGame;
 
     const currentPlayer = players.find(p => p._id === playerId);
-    const allCards = [...currentPlayer.hand, ...cardsOnTable];
+    if (currentPlayer) {
+      const allCards = [...currentPlayer.hand, ...cardsOnTable];
+      allCards.forEach(card => {
+        dispatch(addPreviewId(card.public_id));
+        // console.log("Adding previewId in Game", card.public_id);
+      });
+    }
     // console.log("Adding previewIds for", allCards.length, "cards");
-    allCards.forEach(card => {
-      dispatch(addPreviewId(card.public_id));
-      // console.log("Adding previewId in Game", card.public_id);
-    });
   }, [currentGame, dispatch, playerId]);
 
   // Preload large imgs (by add <link> to document.head)

@@ -2,20 +2,15 @@ import { toast } from "react-toastify";
 import { MdCheck } from "react-icons/md";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
 import socket from "services/socket.js";
 import {
   selectCardsSet,
-  selectGameStatus,
-  selectHostPlayerId,
   selectIsCarouselModeHandScreen,
   selectIsShowMask,
-  selectIsSingleCardMode,
   selectLocalGame,
-  selectPlayerHand,
   selectSelectedCardId,
-  selectStorytellerId,
   selectToastId,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -53,64 +48,32 @@ export default function Hand({
   isZoomed,
 }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { showBackButton, hideBackButton } = useBackButton();
   const { gameId } = useParams();
-  const gameStatus = useSelector(selectGameStatus(gameId));
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
-  const storytellerId = useSelector(selectStorytellerId(gameId));
-  const playerHand = useSelector(selectPlayerHand(gameId, playerId));
-
   const currentGame = useSelector(selectLocalGame(gameId));
-  const { players: gamePlayers } = currentGame;
-  const hostPlayerId = useSelector(selectHostPlayerId(gameId));
-  const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
+  useEffect(() => {
+    if (!currentGame) navigate("/game");
+    return;
+  }, [currentGame, navigate]);
+
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
   const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
   );
   const toastId = useSelector(selectToastId(gameId, playerId));
+  const cardsSet = useSelector(selectCardsSet(gameId, playerId));
+  const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
 
-  const cardsSet = useSelector(selectCardsSet(gameId, playerId));
-  const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
-
   // const [isMountedCarousel, setIsMountedCarousel] = useState(false); // is mounted carousel for zooming (for next version)
-
-  const currentPlayer = gamePlayers.find(p => p._id === playerId);
-
-  const storyteller = gamePlayers.find(p => p._id === storytellerId);
-  const isCurrentPlayerStoryteller = storytellerId === playerId;
-  const playersMoreThanThree = gamePlayers.length > 3;
-  // const playersMoreThanSix = gamePlayers.length > 6;
-  const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
-
-  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
-
-  const isCurrentPlayerHost = hostPlayerId === playerId;
-
-  const isCanGuess = useCallback(() => {
-    if (!playersMoreThanThree) {
-      return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
-    } else return !!firstGuessCardSet?._id;
-  }, [firstGuessCardSet?._id, playersMoreThanThree, secondGuessCardSet?._id]);
-
-  const isCurrentPlayerGuessed = gamePlayers.some(
-    player => player._id === playerId && player.isGuessed,
-  );
-
-  const paragraphText = !storytellerId
-    ? t("be_the_first")
-    : isCurrentPlayerStoryteller
-    ? t("you_have_told")
-    : t("player_has_told", { storyteller: storyteller?.name.toUpperCase() });
-  // `Player ${storyteller?.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
   const tellStory = useTellStory(gameId);
   const guessStory = useGuess(gameId, cardsSet);
@@ -123,19 +86,17 @@ export default function Hand({
     watchDrag: isCarouselModeHandScreen && !isZoomed,
   });
 
-  const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
-  const currentCard = playerHand[currentCardIndex];
-
   const handleStory = useCallback(() => {
     // console.log("handleStory");
-    gameStatus === GUESSING ? guessStory() : tellStory();
+    if (!currentGame) return;
+    currentGame.gameStatus === GUESSING ? guessStory() : tellStory();
 
     const emptyCardsSet = { firstGuessCardSet: null, secondGuessCardSet: null };
     dispatch(setCardsSet({ gameId, playerId, cardsSet: emptyCardsSet })); // не обов'язково
     // setCardsSet(emptyCardsSet); // не обов'язково
 
     dispatch(removeSelectedCardId({ gameId, playerId })); // clear
-  }, [dispatch, gameId, gameStatus, guessStory, playerId, tellStory]);
+  }, [currentGame, dispatch, gameId, guessStory, playerId, tellStory]);
 
   const returnToHand = useCallback(() => {
     // console.log("returnToHand");
@@ -187,15 +148,20 @@ export default function Hand({
 
   const toggleCardSelection = useCallback(
     btnKey => {
+      if (!currentGame) return;
+      const { isSingleCardMode, players, gameStatus } = currentGame;
+
+      const playersMoreThanThree = players.length > 3;
+
       if (isSingleCardMode && btnKey === "secondGuessCardSet") {
         console.log("error: only one card allowed");
         Notify.failure(t("err_only_one_card_allowed"));
         return;
       }
 
-      // const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
-      // const currentCard = playerHand[currentCardIndex];
-
+      const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
+      const currentPlayer = players.find(p => p._id === playerId);
+      const currentCard = currentPlayer?.hand[currentCardIndex];
       if (!currentCard) {
         console.log("error: card not found");
         Notify.failure(t("err_card_not_found"));
@@ -259,14 +225,12 @@ export default function Hand({
     },
     [
       cardsSet,
-      currentCard,
+      currentGame,
       dispatch,
+      emblaApiCardsGuess,
       firstGuessCardSet,
       gameId,
-      gameStatus,
-      isSingleCardMode,
       playerId,
-      playersMoreThanThree,
       secondGuessCardSet,
       selectedCardId,
       t,
@@ -333,10 +297,34 @@ export default function Hand({
   //* setMiddleButton
   useEffect(() => {
     if (!isActiveScreen) return;
+    if (!currentGame) return;
+    const { gameStatus, storytellerId, players, hostPlayerId } = currentGame;
+
+    const currentPlayer = players.find(p => p._id === playerId);
+
+    const isCurrentPlayerHost = hostPlayerId === playerId;
+    const isCurrentPlayerGuessed = players.some(
+      player => player._id === playerId && player.isGuessed,
+    );
+
+    const isReadyToVote = !players.some(player => !player.isGuessed);
+    const isReadyToCalculatePoints = players.every(player => player.isVoted);
+
+    const isStartVotingDisabled = players.some(player => !player.isGuessed);
+
+    const playersMoreThanThree = players.length > 3;
+    const isCurrentPlayerStoryteller = storytellerId === playerId;
+    const storyteller = players.find(p => p._id === storytellerId);
+
+    const isCanGuess = () => {
+      if (!playersMoreThanThree) {
+        return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+      } else return !!firstGuessCardSet?._id;
+    };
 
     if (isCarouselModeHandScreen) {
       // console.log("Carousel Mode");
-      const activeCard = playerHand[activeCardIdx];
+      const activeCard = currentPlayer?.hand[activeCardIdx];
       if (!activeCard) {
         console.log("error: card not found");
         Notify.failure(t("err_card_not_found"));
@@ -344,6 +332,15 @@ export default function Hand({
       }
 
       const isDisabledFirstBtn = () => {
+        const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
+        const currentCard = currentPlayer?.hand[currentCardIndex];
+
+        if (!currentCard) {
+          console.log("error: card not found");
+          Notify.failure(t("err_card_not_found"));
+          return;
+        }
+
         if (gameStatus === LOBBY)
           return selectedCardId && selectedCardId !== currentCard._id;
 
@@ -405,7 +402,7 @@ export default function Hand({
             </>
           ) : (
             isCurrentPlayerStoryteller &&
-            !currentPlayer.isGuessed && (
+            !currentPlayer?.isGuessed && (
               <>
                 <Button
                   btnText={t("select_card")}
@@ -525,43 +522,32 @@ export default function Hand({
     }
   }, [
     activeCardIdx,
-    currentCard._id,
-    currentPlayer.isGuessed,
-    // exitCarouselMode,
-    handleCloseCarousel,
+    currentGame,
+    emblaApiCardsGuess,
     finishRound,
     firstGuessCardSet,
-    gameStatus,
+    handleCloseCarousel,
     handleStory,
     isActiveScreen,
-    isCanGuess,
     isCarouselModeHandScreen,
-    isCurrentPlayerGuessed,
-    isCurrentPlayerHost,
-    isCurrentPlayerStoryteller,
-    isReadyToCalculatePoints,
-    isReadyToVote,
     isShowMask,
-    isStartVotingDisabled,
-    playerHand,
-    playersMoreThanThree,
+    playerId,
     returnToHand,
     secondGuessCardSet,
     selectedCardId,
     setMiddleButton,
     startNewRound,
     startVoting,
-    storyteller?.isGuessed,
-    storytellerId,
     t,
     toggleCardSelection,
   ]);
 
   // Set star(s) to card(s):
   const getStarsMarksByCardId = cardId => {
+    if (!currentGame) return;
     const marks = [];
 
-    if (gameStatus === LOBBY) {
+    if (currentGame.gameStatus === LOBBY) {
       if (selectedCardId === cardId) {
         marks.push(
           <MdCheck className={css.checkboxCard} style={{ color: "white" }} />,
@@ -587,33 +573,111 @@ export default function Hand({
   // );
 
   // ^Render
-  if (!isCurrentPlayerStoryteller && isShowMask) {
-    return (
-      <>
+
+  if (currentGame) {
+    const { players, storytellerId } = currentGame;
+    const storyteller = players.find(p => p._id === storytellerId);
+
+    const isCurrentPlayerStoryteller = storytellerId === playerId;
+    const paragraphText = !storytellerId
+      ? t("be_the_first")
+      : isCurrentPlayerStoryteller
+      ? t("you_have_told")
+      : t("player_has_told", { storyteller: storyteller?.name.toUpperCase() });
+    // `Player ${storyteller?.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
+
+    if (!isCurrentPlayerStoryteller && isShowMask) {
+      return (
         <div className={css.maskContainer}>
           <Mask />
         </div>
-      </>
-    );
-  }
+      );
+    }
 
-  return (
-    <>
-      {/* <p>Hand</p> */}
-      <p>{paragraphText}</p>
+    const currentPlayer = players.find(p => p._id === playerId);
 
-      {isCarouselModeHandScreen ? (
-        <div className={css.carouselWrapper} ref={emblaRefCardsGuess}>
-          <ul className={css.carouselContainer}>
-            {playerHand.map(card => {
-              const marks = getStarsMarksByCardId(card._id);
+    return (
+      <>
+        {/* <p>Hand</p> */}
+        <p>{paragraphText}</p>
 
-              return (
-                <li className={css.carouselSlide} key={card._id}>
-                  <div className={css.slideContainer}>
+        {isCarouselModeHandScreen ? (
+          <div className={css.carouselWrapper} ref={emblaRefCardsGuess}>
+            <ul className={css.carouselContainer}>
+              {currentPlayer?.hand.map(card => {
+                const marks = getStarsMarksByCardId(card._id);
+
+                return (
+                  <li className={css.carouselSlide} key={card._id}>
+                    <div className={css.slideContainer}>
+                      {marks.length > 0 && (
+                        <div className={css.checkboxContainer}>
+                          {marks.map((mark, index) => (
+                            <span key={index} className={css.checkboxCard}>
+                              {mark}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <ImgGen
+                        className={`${css.carouselImage} ${css.visible}`}
+                        publicId={card.public_id}
+                        isBig
+                      />
+
+                      {/* // todo add zoom by modal window
+                       <TransformWrapper
+                        maxScale={5}
+                        panning={{ velocityDisabled: true, disabled: !isZoomed }}
+                        onTransformed={({ state }) =>
+                          setIsZoomed(state.scale > 1)
+                        }>
+                        {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
+                          return (
+                            <div className={css.zoomCardWrapper}>
+                              {isZoomed && (
+                                <div className={css.zoomTools}>
+                                  <button onClick={() => zoomIn()}>+</button>
+                                  <button onClick={() => zoomOut()}>-</button>
+                                  <button onClick={() => resetTransform()}>
+                                    x
+                                  </button>
+                                </div>
+                              )}
+                              <TransformComponent>
+                                <img
+                                  className={`${css.carouselImage} ${
+                                    isMountedCarousel ? css.visible : ""
+                                  }`}
+                                  src={card.url}
+                                  alt="enlarged card"
+                                />
+                              </TransformComponent>
+                            </div>
+                          );
+                        }}
+                      </TransformWrapper> */}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : (
+          <div className={css.currentDeckContainer}>
+            <ul className={`${css.currentDeck}`}>
+              {currentPlayer?.hand.map((card, idx) => {
+                const marks = getStarsMarksByCardId(card._id);
+
+                return (
+                  <li
+                    className={css.card}
+                    key={card._id}
+                    onClick={() => carouselModeOn(idx)}>
                     {marks.length > 0 && (
-                      <div className={css.checkboxContainer}>
-                        {marks.map((mark, index) => (
+                      <div className={css.checkboxContainerList}>
+                        {getStarsMarksByCardId(card._id).map((mark, index) => (
                           <span key={index} className={css.checkboxCard}>
                             {mark}
                           </span>
@@ -621,83 +685,19 @@ export default function Hand({
                       </div>
                     )}
 
+                    {/* <img className={css.img} src={card.url} alt="card" /> */}
                     <ImgGen
-                      className={`${css.carouselImage} ${css.visible}`}
+                      className={css.img}
                       publicId={card.public_id}
-                      isBig
+                      isNeedPreload={true}
                     />
-
-                    {/* // todo add zoom by modal window
-                     <TransformWrapper
-                      maxScale={5}
-                      panning={{ velocityDisabled: true, disabled: !isZoomed }}
-                      onTransformed={({ state }) =>
-                        setIsZoomed(state.scale > 1)
-                      }>
-                      {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
-                        return (
-                          <div className={css.zoomCardWrapper}>
-                            {isZoomed && (
-                              <div className={css.zoomTools}>
-                                <button onClick={() => zoomIn()}>+</button>
-                                <button onClick={() => zoomOut()}>-</button>
-                                <button onClick={() => resetTransform()}>
-                                  x
-                                </button>
-                              </div>
-                            )}
-                            <TransformComponent>
-                              <img
-                                className={`${css.carouselImage} ${
-                                  isMountedCarousel ? css.visible : ""
-                                }`}
-                                src={card.url}
-                                alt="enlarged card"
-                              />
-                            </TransformComponent>
-                          </div>
-                        );
-                      }}
-                    </TransformWrapper> */}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ) : (
-        <div className={css.currentDeckContainer}>
-          <ul className={`${css.currentDeck}`}>
-            {playerHand.map((card, idx) => {
-              const marks = getStarsMarksByCardId(card._id);
-
-              return (
-                <li
-                  className={css.card}
-                  key={card._id}
-                  onClick={() => carouselModeOn(idx)}>
-                  {marks.length > 0 && (
-                    <div className={css.checkboxContainerList}>
-                      {getStarsMarksByCardId(card._id).map((mark, index) => (
-                        <span key={index} className={css.checkboxCard}>
-                          {mark}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* <img className={css.img} src={card.url} alt="card" /> */}
-                  <ImgGen
-                    className={css.img}
-                    publicId={card.public_id}
-                    isNeedPreload={true}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-    </>
-  );
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+      </>
+    );
+  }
 }

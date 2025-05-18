@@ -2,20 +2,13 @@
 
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaCircleCheck } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa6";
 // import { CgSpinnerTwoAlt } from "react-icons/cg";
 import { FaCircle } from "react-icons/fa6";
 
-import {
-  selectGameStatus,
-  selectHostPlayerId,
-  selectLocalGame,
-  selectScores,
-  selectStorytellerId,
-  selectUserCredentials,
-} from "redux/selectors.js";
+import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import css from "./Players.module.scss";
 import Button from "common/components/ui/Button/index.js";
 import {
@@ -34,31 +27,30 @@ export default function Players({
   startVoting,
   finishRound,
 }) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { gameId } = useParams();
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
   const currentGame = useSelector(selectLocalGame(gameId));
-  const { players: gamePlayers } = currentGame;
-
-  const storytellerId = useSelector(selectStorytellerId(gameId));
-  const hostPlayerId = useSelector(selectHostPlayerId(gameId));
-
-  const scores = useSelector(selectScores(gameId));
-  const gameStatus = useSelector(selectGameStatus(gameId));
-
-  const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
-  const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);
-
-  const isStartVotingDisabled = gamePlayers.some(player => !player.isGuessed);
-  const isCurrentPlayerHost = hostPlayerId === playerId;
-  const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
+  useEffect(() => {
+    if (!currentGame) navigate("/game");
+    return;
+  }, [currentGame, navigate]);
 
   const startNewRound = useStartNewRound(gameId);
 
   //* setMiddleBtton
   useEffect(() => {
     if (!isActiveScreen) return;
+    if (!currentGame) return;
+    const { gameStatus, hostPlayerId, players } = currentGame;
+
+    const isReadyToVote = !players.some(player => !player.isGuessed);
+    const isReadyToCalculatePoints = players.every(player => player.isVoted);
+    const isStartVotingDisabled = players.some(player => !player.isGuessed);
+    const isCurrentPlayerHost = hostPlayerId === playerId;
+    const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
 
     if (gameStatus === GUESSING) {
       if (isCurrentPlayerHost && isReadyToVote) {
@@ -96,19 +88,13 @@ export default function Players({
       }
     } else setMiddleButton(null);
   }, [
+    currentGame,
     finishRound,
-    gameStatus,
-    hostPlayerId,
     isActiveScreen,
-    isReadyToCalculatePoints,
-    isReadyToVote,
-    isStartVotingDisabled,
-    setMiddleButton,
-    startVoting,
     playerId,
-    isCurrentPlayerHost,
-    isReadyToStartNewRound,
+    setMiddleButton,
     startNewRound,
+    startVoting,
     t,
   ]);
 
@@ -117,6 +103,9 @@ export default function Players({
       console.log(" getIconOfPlayerState >> player нема повертаюсь:::", player);
       return;
     }
+
+    if (!currentGame) return;
+    const { gameStatus, storytellerId } = currentGame;
 
     if (gameStatus === LOBBY) {
       return <div className={css.waiting} />;
@@ -156,42 +145,46 @@ export default function Players({
     }
   };
 
-  return (
-    <>
-      {/* <p>Players</p> */}
+  //^ Render
+  if (currentGame) {
+    const { players, hostPlayerId, scores } = currentGame;
+    return (
+      <>
+        {/* <p>Players</p> */}
 
-      <ul className={css.playersList}>
-        {gamePlayers.map(player => {
-          const maxScore = Math.max(...Object.values(scores)); // Максимальний бал для цього раунду
-          const playerScore = scores[player._id] || 0; // Бал поточного гравця
-          const fillPercentage =
-            maxScore > 0 ? (playerScore / maxScore) * 100 : 0; // Відсоток замальовки для поточного гравця
+        <ul className={css.playersList}>
+          {players.map(player => {
+            const maxScore = Math.max(...Object.values(scores)); // Максимальний бал для цього раунду
+            const playerScore = scores[player._id] || 0; // Бал поточного гравця
+            const fillPercentage =
+              maxScore > 0 ? (playerScore / maxScore) * 100 : 0; // Відсоток замальовки для поточного гравця
 
-          return (
-            <li
-              className={css.player}
-              key={player._id}
-              style={
-                isActiveScreen
-                  ? {
-                      "--fill-percentage": `${fillPercentage}%`,
-                    }
-                  : {
-                      "--fill-percentage": `0%`,
-                    }
-              }>
-              <div>
-                {player.name.toUpperCase()}
-                {hostPlayerId === player._id && " (THE HOST)"}
-              </div>
+            return (
+              <li
+                className={css.player}
+                key={player._id}
+                style={
+                  isActiveScreen
+                    ? {
+                        "--fill-percentage": `${fillPercentage}%`,
+                      }
+                    : {
+                        "--fill-percentage": `0%`,
+                      }
+                }>
+                <div>
+                  {player.name.toUpperCase()}
+                  {hostPlayerId === player._id && " (THE HOST)"}
+                </div>
 
-              <div className={css.playerState}>
-                {getIconOfPlayerState(player, playerScore)}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </>
-  );
+                <div className={css.playerState}>
+                  {getIconOfPlayerState(player, playerScore)}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    );
+  }
 }

@@ -79,10 +79,10 @@ export default function SortablePlayer({ player }) {
   const isCurrentPlayerIsHost =
     currentGame.hostPlayerId === userCredentials._id;
 
-  const isDisabled =
-    !isCurrentPlayerIsHost ||
-    (isCurrentPlayerIsHost && userCredentials._id === player._id) ||
-    currentGame.isGameRunning;
+  const isDisabledDeleteBtn =
+    userCredentials._id === player._id || currentGame.isGameRunning;
+
+  const isDisabledDndIcon = currentGame.isGameRunning;
 
   return (
     <li
@@ -91,12 +91,14 @@ export default function SortablePlayer({ player }) {
       // className={`${css.listItem} ${isCurrentPlayerIsHost && css.host}`}
       className={clsx(css.listItem, {
         [css.host]: isCurrentPlayerIsHost,
-        [css.hostDisabled]: isDisabled,
+        [css.hostDisabled]: isDisabledDndIcon,
       })}>
       <div {...attributes} {...listeners} className={css.dragHandle}>
         {isCurrentPlayerIsHost && (
           <MdDragIndicator
-            className={clsx(css.dndIcon, { [css.isDisabled]: isDisabled })}
+            className={clsx(css.dndIcon, {
+              [css.isDisabled]: isDisabledDndIcon,
+            })}
           />
         )}
 
@@ -108,7 +110,7 @@ export default function SortablePlayer({ player }) {
       {isCurrentPlayerIsHost && (
         <button
           className={css.deleteBtn}
-          disabled={isDisabled}
+          disabled={isDisabledDeleteBtn}
           onClick={handleRemovePlayer}>
           <MdDeleteOutline className={css.trashIcon} />
         </button>

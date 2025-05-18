@@ -6,7 +6,7 @@ export const selectUserToken = state => state.authSlice.user.token;
 export const selectUserCredentials = state => state.authSlice.user;
 
 //* gameSlice:
-export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
+// export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
 export const selectActiveActions = state => state.gameSlice.activeActions;
 export const selectActiveActionsTest = state =>
@@ -125,44 +125,44 @@ export const selectStorytellerId = gameId => state =>
 //   return game.selectStorytellerId;
 // };
 
-export const selectGameStatus = gameId => state =>
-  state.localPersonalSlice.games[gameId].gameStatus;
+// export const selectGameStatus = gameId => state =>
+//   state.localPersonalSlice.games[gameId].gameStatus;
 
-export const selectCardsOnTable = gameId => state =>
-  state.localPersonalSlice.games[gameId].cardsOnTable;
+// export const selectCardsOnTable = gameId => state =>
+//   state.localPersonalSlice.games[gameId].cardsOnTable;
 
-//! kill
-export const selectPlayerHand = (gameId, playerId) => state => {
-  const game = state.localPersonalSlice.games[gameId];
-  const player = game.players.find(p => p._id === playerId);
-  return player.hand;
-};
+// //! kill
+// export const selectPlayerHand = (gameId, playerId) => state => {
+//   const game = state.localPersonalSlice.games[gameId];
+//   const player = game.players.find(p => p._id === playerId);
+//   return player.hand;
+// };
 
-export const selectGameDiscardPile = gameId => state =>
-  state.localPersonalSlice.games[gameId].discardPile;
+// export const selectGameDiscardPile = gameId => state =>
+//   state.localPersonalSlice.games[gameId].discardPile;
 
-export const selectIsGameRunning = gameId => state =>
-  state.localPersonalSlice.games[gameId]?.isGameRunning;
+// export const selectIsGameRunning = gameId => state =>
+//   state.localPersonalSlice.games[gameId]?.isGameRunning;
 
-export const selectIsGameStarted = gameId => state =>
-  state.localPersonalSlice.games[gameId]?.isGameStarted;
+// export const selectIsGameStarted = gameId => state =>
+//   state.localPersonalSlice.games[gameId]?.isGameStarted;
 
 export const selectIsSingleCardMode = gameId => state =>
   state.localPersonalSlice.games[gameId].isSingleCardMode;
 
-//! kill
-export const selectIsPlayerGuessed = (gameId, playerId) => state => {
-  const game = state.localPersonalSlice.games[gameId];
-  const player = game.players.find(p => p._id === playerId);
-  return player.isGuessed;
-};
+// //! kill
+// export const selectIsPlayerGuessed = (gameId, playerId) => state => {
+//   const game = state.localPersonalSlice.games[gameId];
+//   const player = game.players.find(p => p._id === playerId);
+//   return player.isGuessed;
+// };
 
-//! kill
-export const selectIsPlayerVoted = (gameId, playerId) => state => {
-  const game = state.localPersonalSlice.games[gameId];
-  const player = game.players.find(p => p._id === playerId);
-  return player.isVoted;
-};
+// //! kill
+// export const selectIsPlayerVoted = (gameId, playerId) => state => {
+//   const game = state.localPersonalSlice.games[gameId];
+//   const player = game.players.find(p => p._id === playerId);
+//   return player.isVoted;
+// };
 
 export const selectHostPlayerId = gameId => state =>
   state.localPersonalSlice.games[gameId].hostPlayerId;

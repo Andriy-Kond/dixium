@@ -2,12 +2,8 @@ import { useSelector } from "react-redux";
 import socket from "services/socket.js";
 import { GUESSING, LOBBY } from "utils/generals/constants.js";
 import {
-  selectCardsOnTable,
-  selectGameStatus,
   selectLocalGame,
-  selectPlayerHand,
   selectSelectedCardId,
-  selectStorytellerId,
   selectUserCredentials,
 } from "redux/selectors.js";
 import { useCallback } from "react";
@@ -20,23 +16,14 @@ export const useTellStory = gameId => {
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
+
   const currentGame = useSelector(selectLocalGame(gameId));
-  const { players: gamePlayers } = currentGame;
+  const { players, storytellerId, cardsOnTable, gameStatus } = currentGame;
 
-  const playerHand = useSelector(selectPlayerHand(gameId, playerId));
-  const storytellerId = useSelector(selectStorytellerId(gameId));
-  const cardsOnTable = useSelector(selectCardsOnTable(gameId));
-
-  // const isFirstTurn = useSelector(selectIsFirstTurn(gameId));
-  const gameStatus = useSelector(selectGameStatus(gameId));
   const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
-
-  // Локальний стан для відстеження обробки запиту
-  // const [isSubmitting, setIsSubmitting] = useState(false);
 
   const tellStory = useCallback(() => {
     // console.log("tellStory");
-    // console.log(" storytellerId:::", storytellerId);
 
     // Якщо оповідач уже є і це не я, нічого не робимо
     if (storytellerId && storytellerId !== playerId) {
@@ -50,7 +37,8 @@ export const useTellStory = gameId => {
       return;
     }
 
-    const movedCard = playerHand.find(c => c._id === selectedCardId);
+    const currentPlayer = players.find(player => player._id === playerId);
+    const movedCard = currentPlayer?.hand.find(c => c._id === selectedCardId);
 
     if (!movedCard) {
       console.warn("Selected card not found in hand!");
@@ -63,11 +51,11 @@ export const useTellStory = gameId => {
     // console.log("emit to soket :>> ");
     // if (!isFirstTurn) {
     const { updatedCardsOnTable, updatedPlayers } = discardHandToTable({
-      playerHand,
+      playerHand: currentPlayer?.hand || [],
       movedCards: [movedCard],
-      cardsOnTable,
+      cardsOnTable: cardsOnTable,
       userId: playerId,
-      gamePlayers,
+      gamePlayers: players,
       isStoryteller: true,
     });
 
@@ -93,14 +81,13 @@ export const useTellStory = gameId => {
     });
     // }
   }, [
-    storytellerId,
-    playerId,
-    selectedCardId,
-    playerHand,
     cardsOnTable,
-    gamePlayers,
     currentGame,
     gameStatus,
+    playerId,
+    players,
+    selectedCardId,
+    storytellerId,
     t,
   ]);
 

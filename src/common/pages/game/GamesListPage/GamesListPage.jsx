@@ -17,7 +17,6 @@ import {
 } from "redux/selectors.js";
 import UserMenu from "common/components/navComponents/UserMenu";
 import InfoMessage from "common/components/ui/InfoMessage";
-
 import { LOBBY } from "utils/generals/constants.js";
 
 import { MdArrowForwardIos } from "react-icons/md";
@@ -173,6 +172,8 @@ export default function GamesListPage() {
   // };
 
   const returnToGame = () => {
+    console.log("return to game");
+
     if (!currentGame.isGameRunning) {
       if (isCurrentPlayerIsHost) {
         navigate(`${userActiveGameId}/setup/prepare-game`);

@@ -2,27 +2,21 @@ import { Notify } from "notiflix";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import {
-  selectCardsOnTable,
-  selectLocalGame,
-  selectPlayerHand,
-  selectUserCredentials,
-} from "redux/selectors.js";
+import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import socket from "services/socket.js";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
 
 export const useGuess = (gameId, cardsSet) => {
   const { t } = useTranslation();
   const userCredentials = useSelector(selectUserCredentials);
-  // const currentGame = useSelector(selectGame(gameId));
   const currentGame = useSelector(selectLocalGame(gameId));
-  const { players: gamePlayers } = currentGame;
-  const cardsOnTable = useSelector(selectCardsOnTable(gameId));
-  const playerHand = useSelector(selectPlayerHand(gameId, userCredentials._id));
-  const playersMoreThanThree = gamePlayers.length > 3;
+  const { players, cardsOnTable } = currentGame;
 
   const guessStory = useCallback(() => {
     const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
+
+    const playersMoreThanThree = players.length > 3;
+
     if (!firstGuessCardSet || (!playersMoreThanThree && !secondGuessCardSet)) {
       console.warn("guess Story: Invalid card selection!");
       Notify.failure(t("err_invalid_card_selection"));
@@ -34,18 +28,26 @@ export const useGuess = (gameId, cardsSet) => {
         [firstGuessCardSet]
       : [firstGuessCardSet, secondGuessCardSet];
 
-    if (!movedCards.every(card => playerHand.some(c => c._id === card._id))) {
+    const currentPlayer = players.find(
+      player => player._id === userCredentials._id,
+    );
+
+    if (
+      !movedCards.every(card =>
+        currentPlayer?.hand.some(c => c._id === card._id),
+      )
+    ) {
       console.warn("Not right data in card!");
       Notify.failure(t("err_not_right_data_in_card"));
       return;
     }
 
     const { updatedCardsOnTable, updatedPlayers } = discardHandToTable({
-      playerHand,
+      playerHand: currentPlayer?.hand || [],
       movedCards,
-      cardsOnTable,
+      cardsOnTable: cardsOnTable,
       userId: userCredentials._id,
-      gamePlayers,
+      gamePlayers: players,
     });
 
     const updatedGame = {
@@ -59,15 +61,7 @@ export const useGuess = (gameId, cardsSet) => {
         console.error("Failed to update game:", response.error);
       }
     });
-  }, [
-    cardsOnTable,
-    cardsSet,
-    currentGame,
-    gamePlayers,
-    playerHand,
-    playersMoreThanThree,
-    userCredentials._id,
-  ]);
+  }, [cardsOnTable, cardsSet, currentGame, players, t, userCredentials._id]);
 
   return guessStory;
 };

@@ -68,7 +68,7 @@ export const gameRunning = (
       dispatch(clearActiveAction(key));
     }
 
-    navigate(`/game/${game._id}/current-game`);
+    navigate(`/game/${game._id}/current-game`, { replace: true });
   } else {
     //* Логіка для інших гравців
     if (message) Notify.failure(message);
@@ -76,7 +76,7 @@ export const gameRunning = (
     console.log(" game:::", game);
 
     if (gameInState) dispatch(setLocalGame(game));
-    navigate(`/game/${game._id}/current-game`);
+    navigate(`/game/${game._id}/current-game`, { replace: true });
   }
   // else {
   // dispatch(
