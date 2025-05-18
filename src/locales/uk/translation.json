@@ -155,5 +155,6 @@
   "theme_auto": "Авто",
   "my_game": "Моя гра",
   "active_game": "Активна гра",
-  "not_have_google_acc?": "Немає Google акаунту?"
+  "not_have_google_acc?": "Немає Google акаунту?",
+  "whom_game": "Гра {{gameHostNick}}"
 }

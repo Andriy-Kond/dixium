@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "common/components/navComponents/AppBar";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -36,8 +36,6 @@ export default function SharedLayout() {
   const pageHeaderTextSecond = useSelector(selectPageHeaderTextSecond);
   const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
   const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
-  const isHomePage = location.pathname === "/";
-  const isGamesListPage = location.pathname === "/game";
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -84,8 +82,17 @@ export default function SharedLayout() {
 
   // const isGameRoute = /^\/game\/[^/]+$/.test(location.pathname); // Перевіряє /game/:gameId
 
+  const isHomePage = location.pathname === "/";
+  const isGamesListPage = location.pathname === "/game";
+
+  const isCurrentGamePage = matchPath(
+    `/game/:gameId/current-game`,
+    location.pathname,
+  );
+
   // Логіка за замовчуванням: показувати кнопку для всіх маршрутів, окрім "/" і "/game"
-  const shouldShowBackButton = !isHomePage && !isGamesListPage;
+  const shouldShowBackButton =
+    !isHomePage && !isGamesListPage && !isCurrentGamePage;
 
   // Показ кнопки "Назад" для маршрутів.
   // useLayoutEffect виконується синхронно після всіх маніпуляцій з DOM, що може допомогти уникнути асинхронних проблем.

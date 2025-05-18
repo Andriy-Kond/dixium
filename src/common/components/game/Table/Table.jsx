@@ -40,8 +40,10 @@ export default function Table({
   const { gameId } = useParams();
   const currentGame = useSelector(selectLocalGame(gameId));
   useEffect(() => {
-    if (!currentGame) navigate("/game");
-    return;
+    if (!currentGame) {
+      navigate("/game");
+      return;
+    }
   }, [currentGame, navigate]);
 
   const playerVotes = useSelector(selectVotesLocal(gameId, playerId));
@@ -426,175 +428,172 @@ export default function Table({
   };
 
   //^ Render
-  if (currentGame) {
-    const { gameStatus, cardsOnTable, roundResults, storytellerId } =
-      currentGame;
+  if (!currentGame) return null;
 
-    if (gameStatus === VOTING) {
-      return (
-        <>
-          {isCarouselModeTableScreen ? (
-            <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
-              <ul className={css.carouselContainer}>
-                {cardsOnTable.map(card => {
-                  const marks = getStarsMarksByCardId(card._id);
+  const { gameStatus, cardsOnTable, roundResults, storytellerId } = currentGame;
 
-                  return (
-                    <li className={css.carouselSlide} key={card._id}>
-                      <div className={css.slideContainer}>
-                        {marks.length > 0 && (
-                          <div className={css.checkboxContainer}>
-                            {marks.map((mark, index) => (
-                              <span key={index} className={css.checkboxCard}>
-                                {mark}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <ImgGen
-                          className={`${css.carouselImage} ${
-                            isMounted ? css.visible : ""
-                          }`}
-                          publicId={card.public_id}
-                          isBig
-                        />
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : (
-            <div className={css.currentDeckContainer}>
-              <ul className={`${css.currentDeck}`}>
-                {cardsOnTable.map((card, idx) => {
-                  const marks = getStarsMarksByCardId(card._id);
-                  return (
-                    <li
-                      className={css.card}
-                      key={card._id}
-                      onClick={() => carouselModeOn(idx)}>
+  if (gameStatus === VOTING) {
+    return (
+      <>
+        {isCarouselModeTableScreen ? (
+          <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
+            <ul className={css.carouselContainer}>
+              {cardsOnTable.map(card => {
+                const marks = getStarsMarksByCardId(card._id);
+
+                return (
+                  <li className={css.carouselSlide} key={card._id}>
+                    <div className={css.slideContainer}>
                       {marks.length > 0 && (
-                        <div className={css.checkboxContainerList}>
-                          {getStarsMarksByCardId(card._id).map(
-                            (mark, index) => (
-                              <span key={index} className={css.checkboxCard}>
-                                {mark}
-                              </span>
-                            ),
-                          )}
+                        <div className={css.checkboxContainer}>
+                          {marks.map((mark, index) => (
+                            <span key={index} className={css.checkboxCard}>
+                              {mark}
+                            </span>
+                          ))}
                         </div>
                       )}
-
                       <ImgGen
-                        className={css.img}
+                        className={`${css.carouselImage} ${
+                          isMounted ? css.visible : ""
+                        }`}
                         publicId={card.public_id}
-                        isNeedPreload={true}
+                        isBig
                       />
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
-        </>
-      );
-    } else if (gameStatus === ROUND_RESULTS) {
-      return (
-        <>
-          {/* <p>Table gameStatus === ROUND_RESULTS</p> */}
-          {isCarouselModeTableScreen ? (
-            <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
-              <ul className={css.carouselContainer}>
-                {roundResults.map(card => {
-                  const marks = getStarsMarksByCardId(card._id);
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : (
+          <div className={css.currentDeckContainer}>
+            <ul className={`${css.currentDeck}`}>
+              {cardsOnTable.map((card, idx) => {
+                const marks = getStarsMarksByCardId(card._id);
+                return (
+                  <li
+                    className={css.card}
+                    key={card._id}
+                    onClick={() => carouselModeOn(idx)}>
+                    {marks.length > 0 && (
+                      <div className={css.checkboxContainerList}>
+                        {getStarsMarksByCardId(card._id).map((mark, index) => (
+                          <span key={index} className={css.checkboxCard}>
+                            {mark}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
-                  return (
-                    <li className={css.carouselSlide} key={card._id}>
-                      <div className={css.slideContainer}>
-                        {marks.length > 0 && (
-                          <div className={css.checkboxContainer}>
-                            {marks.map((mark, index) => (
-                              <span key={index} className={css.checkboxCard}>
-                                {mark}
-                              </span>
+                    <ImgGen
+                      className={css.img}
+                      publicId={card.public_id}
+                      isNeedPreload={true}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+      </>
+    );
+  } else if (gameStatus === ROUND_RESULTS) {
+    return (
+      <>
+        {/* <p>Table gameStatus === ROUND_RESULTS</p> */}
+        {isCarouselModeTableScreen ? (
+          <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
+            <ul className={css.carouselContainer}>
+              {roundResults.map(card => {
+                const marks = getStarsMarksByCardId(card._id);
+
+                return (
+                  <li className={css.carouselSlide} key={card._id}>
+                    <div className={css.slideContainer}>
+                      {marks.length > 0 && (
+                        <div className={css.checkboxContainer}>
+                          {marks.map((mark, index) => (
+                            <span key={index} className={css.checkboxCard}>
+                              {mark}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <ImgGen
+                        className={css.zoomImg}
+                        publicId={card.public_id}
+                        isBig
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : (
+          <ul className={css.resultList}>
+            {roundResults.map((result, idx) => (
+              <li
+                className={css.resultItem}
+                key={result.cardId}
+                onClick={() => carouselModeOn(idx)}>
+                <ImgGen
+                  className={css.resultImg}
+                  publicId={result.public_id}
+                  isNeedPreload={true}
+                />
+                <div className={css.resultPlayers}>
+                  <span>
+                    {result.ownerId === storytellerId
+                      ? t("storyteller_guessed_card", {
+                          storyteller: result.ownerName.toUpperCase(),
+                        })
+                      : t("storytellers_card", {
+                          storyteller: result.ownerName.toUpperCase(),
+                        })}
+                  </span>
+
+                  <ul className={css.resultVotes}>
+                    {result.votesForThisCard.map((vote, voteIdx) => {
+                      const stars = getStarsMarksByVoteCount(vote.voteCount);
+
+                      return (
+                        <li className={css.voterContainer} key={voteIdx}>
+                          {capitalizeWords(vote.playerName)}
+                          <div className={css.resultCheckboxContainer}>
+                            {stars.map((mark, index) => (
+                              <span key={index}>{mark}</span>
                             ))}
                           </div>
-                        )}
-                        <ImgGen
-                          className={css.zoomImg}
-                          publicId={card.public_id}
-                          isBig
-                        />
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : (
-            <ul className={css.resultList}>
-              {roundResults.map((result, idx) => (
-                <li
-                  className={css.resultItem}
-                  key={result.cardId}
-                  onClick={() => carouselModeOn(idx)}>
-                  <ImgGen
-                    className={css.resultImg}
-                    publicId={result.public_id}
-                    isNeedPreload={true}
-                  />
-                  <div className={css.resultPlayers}>
-                    <span>
-                      {result.ownerId === storytellerId
-                        ? t("storyteller_guessed_card", {
-                            storyteller: result.ownerName.toUpperCase(),
-                          })
-                        : t("storytellers_card", {
-                            storyteller: result.ownerName.toUpperCase(),
-                          })}
-                    </span>
-
-                    <ul className={css.resultVotes}>
-                      {result.votesForThisCard.map((vote, voteIdx) => {
-                        const stars = getStarsMarksByVoteCount(vote.voteCount);
-
-                        return (
-                          <li className={css.voterContainer} key={voteIdx}>
-                            {capitalizeWords(vote.playerName)}
-                            <div className={css.resultCheckboxContainer}>
-                              {stars.map((mark, index) => (
-                                <span key={index}>{mark}</span>
-                              ))}
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
-      );
-    } else {
-      return (
-        <>
-          {/* <p>Table default - cards face down</p> */}
-          <ul className={css.cardsListFaceDown}>
-            {cardsOnTable.map((card, idx) => (
-              <li key={card._id}>
-                <Mask
-                  rotation={30 + idx * 30}
-                  top={Math.round(Math.random() * (40 - 20 + 1)) + 20}
-                  left={Math.round(Math.random() * (40 - 20 + 1)) + 20}
-                />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </li>
             ))}
           </ul>
-        </>
-      );
-    }
+        )}
+      </>
+    );
+  } else {
+    return (
+      <>
+        {/* <p>Table default - cards face down</p> */}
+        <ul className={css.cardsListFaceDown}>
+          {cardsOnTable.map((card, idx) => (
+            <li key={card._id}>
+              <Mask
+                rotation={30 + idx * 30}
+                top={Math.round(Math.random() * (40 - 20 + 1)) + 20}
+                left={Math.round(Math.random() * (40 - 20 + 1)) + 20}
+              />
+            </li>
+          ))}
+        </ul>
+      </>
+    );
   }
 }

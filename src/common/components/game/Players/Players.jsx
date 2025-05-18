@@ -34,8 +34,10 @@ export default function Players({
   const { _id: playerId } = userCredentials;
   const currentGame = useSelector(selectLocalGame(gameId));
   useEffect(() => {
-    if (!currentGame) navigate("/game");
-    return;
+    if (!currentGame) {
+      navigate("/game");
+      return;
+    }
   }, [currentGame, navigate]);
 
   const startNewRound = useStartNewRound(gameId);
@@ -146,45 +148,45 @@ export default function Players({
   };
 
   //^ Render
-  if (currentGame) {
-    const { players, hostPlayerId, scores } = currentGame;
-    return (
-      <>
-        {/* <p>Players</p> */}
+  if (!currentGame) return null;
 
-        <ul className={css.playersList}>
-          {players.map(player => {
-            const maxScore = Math.max(...Object.values(scores)); // Максимальний бал для цього раунду
-            const playerScore = scores[player._id] || 0; // Бал поточного гравця
-            const fillPercentage =
-              maxScore > 0 ? (playerScore / maxScore) * 100 : 0; // Відсоток замальовки для поточного гравця
+  const { players, hostPlayerId, scores } = currentGame;
+  return (
+    <>
+      {/* <p>Players</p> */}
 
-            return (
-              <li
-                className={css.player}
-                key={player._id}
-                style={
-                  isActiveScreen
-                    ? {
-                        "--fill-percentage": `${fillPercentage}%`,
-                      }
-                    : {
-                        "--fill-percentage": `0%`,
-                      }
-                }>
-                <div>
-                  {player.name.toUpperCase()}
-                  {hostPlayerId === player._id && " (THE HOST)"}
-                </div>
+      <ul className={css.playersList}>
+        {players.map(player => {
+          const maxScore = Math.max(...Object.values(scores)); // Максимальний бал для цього раунду
+          const playerScore = scores[player._id] || 0; // Бал поточного гравця
+          const fillPercentage =
+            maxScore > 0 ? (playerScore / maxScore) * 100 : 0; // Відсоток замальовки для поточного гравця
 
-                <div className={css.playerState}>
-                  {getIconOfPlayerState(player, playerScore)}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </>
-    );
-  }
+          return (
+            <li
+              className={css.player}
+              key={player._id}
+              style={
+                isActiveScreen
+                  ? {
+                      "--fill-percentage": `${fillPercentage}%`,
+                    }
+                  : {
+                      "--fill-percentage": `0%`,
+                    }
+              }>
+              <div>
+                {player.name.toUpperCase()}
+                {hostPlayerId === player._id && " (THE HOST)"}
+              </div>
+
+              <div className={css.playerState}>
+                {getIconOfPlayerState(player, playerScore)}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  );
 }

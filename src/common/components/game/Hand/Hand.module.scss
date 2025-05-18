@@ -1,3 +1,38 @@
+.headerMessage {
+  padding: 8px 16px;
+
+  color: var(--00, #818f99);
+
+  &.highLight {
+    background: var(--Highlight, #f6902a);
+    color: var(--40, #161f27);
+  }
+}
+
+.currentDeckContainer {
+  position: relative;
+  padding: 8px;
+
+  display: flex;
+  justify-content: left;
+  flex-wrap: wrap;
+  row-gap: 16px;
+  column-gap: 8px;
+}
+
+.card {
+  width: 96px;
+  // height: auto;
+
+  padding: 4px;
+  background-color: transparent;
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+}
+
 .carouselWrapper {
   overflow: hidden;
 }
@@ -88,10 +123,10 @@
   height: 40px;
 }
 
-.currentDeckContainer {
-  padding-left: 2px;
-  padding-right: 2px;
-}
+// .currentDeckContainer {
+//   padding-left: 2px;
+//   padding-right: 2px;
+// }
 
 .currentDeck {
   margin-left: auto;
@@ -106,12 +141,12 @@
   max-height: 90vh;
 }
 
-.card {
-  position: relative;
-  flex-basis: calc((100% - 4px) / 3);
-  height: 134px;
-  // overflow: hidden;
-}
+// .card {
+//   position: relative;
+//   flex-basis: calc((100% - 4px) / 3);
+//   height: 134px;
+//   // overflow: hidden;
+// }
 
 .checkboxContainerList {
   position: absolute;
@@ -132,12 +167,12 @@
   // border-top-right-radius: 10px;
 }
 
-.img {
-  width: 100%;
-  height: 100%;
-  border: 4px solid #5d7e9e;
-  border-radius: 4px;
-}
+// .img {
+//   width: 100%;
+//   height: 100%;
+//   border: 4px solid #5d7e9e;
+//   border-radius: 4px;
+// }
 
 .btnActive {
   background-color: #0f7dff1f;

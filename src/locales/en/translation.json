@@ -156,5 +156,6 @@
   "theme_auto": "Auto",
   "my_game": "My game",
   "active_game": "Active game",
-  "not_have_google_acc?": "Don't have a Google account?"
+  "not_have_google_acc?": "Don't have a Google account?",
+  "whom_game": "Game {{gameHostNick}}"
 }

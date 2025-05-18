@@ -450,6 +450,7 @@ export default function Game() {
   useEffect(() => {
     if (!currentGame) {
       navigate("/game", { replace: true });
+      return;
     }
   }, [currentGame, navigate]);
 

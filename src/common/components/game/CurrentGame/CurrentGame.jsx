@@ -40,22 +40,24 @@ import { toast } from "react-toastify";
 import { Trans, useTranslation } from "react-i18next";
 import PageBadge from "common/components/ui/PageBadge/index.js";
 import SortPlayers from "../SortPlayers/index.js";
+import { useBackButton } from "context/BackButtonContext.jsx";
 
 export default function Game() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { gameId } = useParams();
+
+  const currentGame = useSelector(selectLocalGame(gameId));
   const [middleButton, setMiddleButton] = useState(null);
   const [isEmblaReady, setIsEmblaReady] = useState(false);
   const linksRef = useRef([]);
 
-  const { gameId } = useParams();
-
-  const currentGame = useSelector(selectLocalGame(gameId));
   // if (!currentGame) navigate("/game"); // ! не можна викликати навігацію в тілі функції! Треба лише у useEffect
   useEffect(() => {
     if (!currentGame) {
       navigate("/game", { replace: true });
+      return;
     }
   }, [currentGame, navigate]);
 
@@ -135,43 +137,43 @@ export default function Game() {
     return { isMustMakeMove: false, text: t("players_taking_turn") };
   }, [currentGame, isShowMask, playerId, t]);
 
-  //# Page header color and text
-  useEffect(() => {
-    if (!currentGame) return;
-    const { scores, players } = currentGame;
+  // //# Page header color and text
+  // useEffect(() => {
+  //   if (!currentGame) return;
+  //   const { scores, players } = currentGame;
 
-    const gameScores = Object.values(scores);
+  //   const gameScores = Object.values(scores);
 
-    const [maxId, maxVal] = Object.entries(scores).reduce(
-      ([maxKey, maxValue], [key, value]) =>
-        value > maxValue ? [key, value] : [maxKey, maxValue],
-      [null, -Infinity],
-    );
+  //   const [maxId, maxVal] = Object.entries(scores).reduce(
+  //     ([maxKey, maxValue], [key, value]) =>
+  //       value > maxValue ? [key, value] : [maxKey, maxValue],
+  //     [null, -Infinity],
+  //   );
 
-    const maxEntries = Object.entries(scores).filter(
-      ([key, value]) => value === maxVal,
-    );
+  //   const maxEntries = Object.entries(scores).filter(
+  //     ([key, value]) => value === maxVal,
+  //   );
 
-    const winners = players.filter(p =>
-      maxEntries.some(([key, value]) => key === p._id),
-    );
-    // console.log("maxEntries:", maxEntries);
-    // console.log("winners:", winners);
+  //   const winners = players.filter(p =>
+  //     maxEntries.some(([key, value]) => key === p._id),
+  //   );
+  //   // console.log("maxEntries:", maxEntries);
+  //   // console.log("winners:", winners);
 
-    // players.filter(p => {
-    //   const winnersP = maxEntries.filter(([key, value]) => key === p._id);
-    //   console.log(" useEffect >> maxEntries:::", maxEntries);
-    //       console.log(" gameEnd >> winnersP:::", winnersP);
-    // });
+  //   // players.filter(p => {
+  //   //   const winnersP = maxEntries.filter(([key, value]) => key === p._id);
+  //   //   console.log(" useEffect >> maxEntries:::", maxEntries);
+  //   //       console.log(" gameEnd >> winnersP:::", winnersP);
+  //   // });
 
-    const { isMustMakeMove, text } = textAndColorOfHeader();
+  //   const { isMustMakeMove, text } = textAndColorOfHeader();
 
-    if (isMustMakeMove) {
-      dispatch(setPageHeaderText(text));
-    } else {
-      dispatch(setPageHeaderText(text));
-    }
-  }, [currentGame, dispatch, textAndColorOfHeader]);
+  //   if (isMustMakeMove) {
+  //     dispatch(setPageHeaderText(text));
+  //   } else {
+  //     dispatch(setPageHeaderText(text));
+  //   }
+  // }, [currentGame, dispatch, textAndColorOfHeader]);
 
   // Add all publicId card's from Hand and Table to addPreviewId in Redux state
   useEffect(() => {
@@ -439,7 +441,7 @@ export default function Game() {
 
   return (
     <div className={css.gameContainer}>
-      <p>Game</p>
+      {/* <p>Current Game</p> */}
       <PageBadge />
 
       <div

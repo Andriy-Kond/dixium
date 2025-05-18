@@ -34,11 +34,14 @@ import {
   setIsCarouselModeHandScreen,
   removeToastIdRef,
   setCardsSet,
+  setPageHeaderText,
+  setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
 import { useBackButton } from "context/BackButtonContext.jsx";
+import clsx from "clsx";
 
 export default function Hand({
   isActiveScreen,
@@ -57,8 +60,10 @@ export default function Hand({
   const { _id: playerId } = userCredentials;
   const currentGame = useSelector(selectLocalGame(gameId));
   useEffect(() => {
-    if (!currentGame) navigate("/game");
-    return;
+    if (!currentGame) {
+      navigate("/game");
+      return;
+    }
   }, [currentGame, navigate]);
 
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
@@ -85,6 +90,19 @@ export default function Hand({
     startIndex: selectedCardIdx,
     watchDrag: isCarouselModeHandScreen && !isZoomed,
   });
+
+  //# Page header color and text
+  useEffect(() => {
+    if (!currentGame) return;
+    const { hostPlayerId, players } = currentGame;
+
+    const hostPlayer = players.find(player => player._id === hostPlayerId);
+    const gameHostNick = hostPlayer.name;
+    const headerTitleText = t("hand");
+    const headerTitleTextSecond = t("whom_game", { gameHostNick });
+    dispatch(setPageHeaderText(headerTitleText));
+    dispatch(setPageHeaderTextSecond(headerTitleTextSecond));
+  }, [currentGame, dispatch, t]);
 
   const handleStory = useCallback(() => {
     // console.log("handleStory");
@@ -574,59 +592,61 @@ export default function Hand({
 
   // ^Render
 
-  if (currentGame) {
-    const { players, storytellerId } = currentGame;
-    const storyteller = players.find(p => p._id === storytellerId);
+  if (!currentGame) return null;
 
-    const isCurrentPlayerStoryteller = storytellerId === playerId;
-    const paragraphText = !storytellerId
-      ? t("be_the_first")
-      : isCurrentPlayerStoryteller
-      ? t("you_have_told")
-      : t("player_has_told", { storyteller: storyteller?.name.toUpperCase() });
-    // `Player ${storyteller?.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
+  const { players, storytellerId } = currentGame;
+  const storyteller = players.find(p => p._id === storytellerId);
 
-    if (!isCurrentPlayerStoryteller && isShowMask) {
-      return (
-        <div className={css.maskContainer}>
-          <Mask />
-        </div>
-      );
-    }
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
+  const paragraphText = !storytellerId
+    ? t("be_the_first")
+    : isCurrentPlayerStoryteller
+    ? t("you_have_told")
+    : t("player_has_told", { storyteller: storyteller?.name.toUpperCase() });
+  // `Player ${storyteller?.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
 
-    const currentPlayer = players.find(p => p._id === playerId);
-
+  if (!isCurrentPlayerStoryteller && isShowMask) {
     return (
-      <>
-        {/* <p>Hand</p> */}
-        <p>{paragraphText}</p>
+      <div className={css.maskContainer}>
+        <Mask />
+      </div>
+    );
+  }
 
-        {isCarouselModeHandScreen ? (
-          <div className={css.carouselWrapper} ref={emblaRefCardsGuess}>
-            <ul className={css.carouselContainer}>
-              {currentPlayer?.hand.map(card => {
-                const marks = getStarsMarksByCardId(card._id);
+  const currentPlayer = players.find(p => p._id === playerId);
 
-                return (
-                  <li className={css.carouselSlide} key={card._id}>
-                    <div className={css.slideContainer}>
-                      {marks.length > 0 && (
-                        <div className={css.checkboxContainer}>
-                          {marks.map((mark, index) => (
-                            <span key={index} className={css.checkboxCard}>
-                              {mark}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+  return (
+    <>
+      {/* <p>Hand</p> */}
+      <p className={clsx(css.headerMessage, { [css.hightLight]: false })}>
+        {paragraphText}
+      </p>
+      {isCarouselModeHandScreen && (
+        <div className={css.carouselWrapper} ref={emblaRefCardsGuess}>
+          <ul className={css.carouselContainer}>
+            {currentPlayer?.hand.map(card => {
+              const marks = getStarsMarksByCardId(card._id);
 
-                      <ImgGen
-                        className={`${css.carouselImage} ${css.visible}`}
-                        publicId={card.public_id}
-                        isBig
-                      />
+              return (
+                <li className={css.carouselSlide} key={card._id}>
+                  <div className={css.slideContainer}>
+                    {marks.length > 0 && (
+                      <div className={css.checkboxContainer}>
+                        {marks.map((mark, index) => (
+                          <span key={index} className={css.checkboxCard}>
+                            {mark}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
-                      {/* // todo add zoom by modal window
+                    <ImgGen
+                      className={`${css.carouselImage} ${css.visible}`}
+                      publicId={card.public_id}
+                      isBig
+                    />
+
+                    {/* // todo add zoom by modal window
                        <TransformWrapper
                         maxScale={5}
                         panning={{ velocityDisabled: true, disabled: !isZoomed }}
@@ -658,46 +678,45 @@ export default function Hand({
                           );
                         }}
                       </TransformWrapper> */}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ) : (
-          <div className={css.currentDeckContainer}>
-            <ul className={`${css.currentDeck}`}>
-              {currentPlayer?.hand.map((card, idx) => {
-                const marks = getStarsMarksByCardId(card._id);
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
-                return (
-                  <li
-                    className={css.card}
-                    key={card._id}
-                    onClick={() => carouselModeOn(idx)}>
-                    {marks.length > 0 && (
-                      <div className={css.checkboxContainerList}>
-                        {getStarsMarksByCardId(card._id).map((mark, index) => (
-                          <span key={index} className={css.checkboxCard}>
-                            {mark}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+      {!isCarouselModeHandScreen && (
+        <ul className={css.currentDeckContainer}>
+          {currentPlayer?.hand.map((card, idx) => {
+            const marks = getStarsMarksByCardId(card._id);
 
-                    {/* <img className={css.img} src={card.url} alt="card" /> */}
-                    <ImgGen
-                      className={css.img}
-                      publicId={card.public_id}
-                      isNeedPreload={true}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
-      </>
-    );
-  }
+            return (
+              <li
+                className={css.card}
+                key={card._id}
+                onClick={() => carouselModeOn(idx)}>
+                {marks.length > 0 && (
+                  <div className={css.checkboxContainerList}>
+                    {getStarsMarksByCardId(card._id).map((mark, index) => (
+                      <span key={index} className={css.checkboxCard}>
+                        {mark}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* <img className={css.img} src={card.url} alt="card" /> */}
+                <ImgGen
+                  className={css.img}
+                  publicId={card.public_id}
+                  isNeedPreload={true}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </>
+  );
 }

@@ -51,6 +51,13 @@ export default function SelectDecks() {
   const navigate = useNavigate();
   const { gameId } = useParams();
   const currentGame = useSelector(selectLocalGame(gameId));
+  useEffect(() => {
+    if (!currentGame) {
+      navigate("/game");
+      return;
+    }
+  }, [currentGame, navigate]);
+
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
 
   //# Page header color and text
