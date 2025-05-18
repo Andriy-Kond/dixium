@@ -46,10 +46,12 @@ export default function SortPlayers() {
     dispatch(setPageHeaderTextSecond(""));
   }, [dispatch, t]);
 
-  const isCurrentPlayerIsHost =
-    currentGame.hostPlayerId === userCredentials._id;
   // Оновлює порядок гравців і надсилає зміни через сокети.
   const handleDragEnd = event => {
+    if (!currentGame) return;
+
+    const isCurrentPlayerIsHost =
+      currentGame.hostPlayerId === userCredentials._id;
     if (!isCurrentPlayerIsHost) return; // dnd can do the host player only
 
     const { active, over } = event;
@@ -68,6 +70,10 @@ export default function SortPlayers() {
     });
   };
 
+  const isDisabledSortableContext =
+    currentGame?.hostPlayerId !== userCredentials._id ||
+    currentGame.isGameRunning;
+
   return (
     <>
       <div className={css.pageContainer}>
@@ -80,20 +86,22 @@ export default function SortPlayers() {
             {t("players_turn")}
           </p>
 
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={currentGame?.players.map(p => p._id)}
-              strategy={verticalListSortingStrategy}
-              disabled={currentGame.hostPlayerId !== userCredentials._id}>
-              <ul>
-                {currentGame?.players.map(player => (
-                  <SortablePlayer key={player._id} player={player} />
-                ))}
-              </ul>
-            </SortableContext>
-          </DndContext>
+          {currentGame && (
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={currentGame?.players.map(p => p._id)}
+                strategy={verticalListSortingStrategy}
+                disabled={isDisabledSortableContext}>
+                <ul>
+                  {currentGame?.players.map(player => (
+                    <SortablePlayer key={player._id} player={player} />
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
+          )}
         </div>
       </div>
     </>

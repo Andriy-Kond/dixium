@@ -270,6 +270,8 @@ export default function SelectDecks() {
     dispatch(setCycleState(2));
   };
 
+  const isDisabledCheckbox = currentGame.isGameRunning;
+
   return (
     <>
       <div className={css.decksContainer}>
@@ -277,21 +279,41 @@ export default function SelectDecks() {
 
         <div>
           <div className={css.totalDecksItem}>
-            <div className={css.label} onClick={handleSelectAllDecks}>
+            <label className={css.label}>
+              <input
+                className={css.input}
+                type="checkbox"
+                // checked={selectedDeckIds.includes(deck._id)}
+                onChange={handleSelectAllDecks}
+                disabled={isDisabledCheckbox}
+              />
+
               {selectAllState === CHECKED_ALL ? (
-                <MdCheckBox className={css.icon} />
+                <MdCheckBox
+                  className={clsx(css.icon, {
+                    [css.disabled]: isDisabledCheckbox,
+                  })}
+                />
               ) : selectAllState === CHECKED_USER ? (
-                <MdIndeterminateCheckBox className={css.icon} />
+                <MdIndeterminateCheckBox
+                  className={clsx(css.icon, {
+                    [css.disabled]: isDisabledCheckbox,
+                  })}
+                />
               ) : (
-                <MdCheckBoxOutlineBlank className={css.icon} />
+                <MdCheckBoxOutlineBlank
+                  className={clsx(css.icon, {
+                    [css.disabled]: isDisabledCheckbox,
+                  })}
+                />
               )}
 
-              <p className={css.itemText}>{t("total_cards")}</p>
+              <span className={css.itemText}>{t("total_cards")}</span>
               <div className={css.itemRightGroup}>
                 <p>{currentGame?.deck?.length}</p>
                 <div className={css.icon} />
               </div>
-            </div>
+            </label>
           </div>
 
           <ul className={css.list}>
@@ -303,12 +325,21 @@ export default function SelectDecks() {
                     type="checkbox"
                     checked={selectedDeckIds.includes(deck._id)}
                     onChange={() => handleSelectDeck(deck)}
+                    disabled={isDisabledCheckbox}
                   />
 
                   {selectedDeckIds.includes(deck._id) ? (
-                    <MdCheckBox className={css.icon} />
+                    <MdCheckBox
+                      className={clsx(css.icon, {
+                        [css.disabled]: isDisabledCheckbox,
+                      })}
+                    />
                   ) : (
-                    <MdCheckBoxOutlineBlank className={css.icon} />
+                    <MdCheckBoxOutlineBlank
+                      className={clsx(css.icon, {
+                        [css.disabled]: isDisabledCheckbox,
+                      })}
+                    />
                   )}
                   <span className={css.itemText}>{deck.name}</span>
                   <div className={css.itemRightGroup}>
@@ -319,7 +350,9 @@ export default function SelectDecks() {
                         navigate(`${deck._id}`, { state: { deck } })
                       }>
                       <MdArrowForwardIos
-                        className={clsx(css.icon, css.mgnLeft)}
+                        className={clsx(css.icon, css.mgnLeft, {
+                          [css.disabled]: isDisabledCheckbox,
+                        })}
                       />
                     </button>
                   </div>

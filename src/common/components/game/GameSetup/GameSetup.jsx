@@ -1,4 +1,10 @@
-import { matchPath, Outlet, useLocation, useParams } from "react-router-dom";
+import {
+  matchPath,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
@@ -7,16 +13,25 @@ import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import { distributeCards } from "utils/game/distributeCards.js";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import css from "./GameSetup.module.scss";
+import { useEffect } from "react";
 
 export default function GameSetup() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { gameId } = useParams();
   const { optimisticUpdateDispatch } = useOptimisticDispatch();
 
   const userCredentials = useSelector(selectUserCredentials);
   const currentGame = useSelector(selectLocalGame(gameId));
-  const { players, deck, isSingleCardMode, finishPoints } = currentGame;
+  useEffect(() => {
+    if (!currentGame) {
+      navigate("/game");
+      return;
+    }
+  }, [currentGame, navigate]);
+
+  // const { players, deck, isSingleCardMode, finishPoints } = currentGame;
 
   const isShowStartButton =
     (matchPath(`/game/:gameId/setup/prepare-game`, location.pathname) ||
@@ -24,14 +39,16 @@ export default function GameSetup() {
     userCredentials._id === currentGame?.hostPlayerId;
 
   const handleRunGame = () => {
+    if (!currentGame) return;
+
     const game = distributeCards(currentGame);
     if (game.message) return Notify.failure(game.message); // "Not enough cards in the deck"
 
     const updatedGame = {
       ...game,
       isGameRunning: true,
-      isSingleCardMode,
-      finishPoints: Number(finishPoints),
+      isSingleCardMode: currentGame.isSingleCardMode,
+      finishPoints: Number(currentGame.finishPoints),
     };
 
     // optimistic update:
@@ -42,8 +59,8 @@ export default function GameSetup() {
   };
 
   const isCanRunGame =
-    players?.length >= 3 &&
-    players?.length <= 12 &&
+    currentGame?.players?.length >= 3 &&
+    currentGame?.players?.length <= 12 &&
     currentGame?.deck?.length >= 84 &&
     currentGame?.finishPoints >= 10;
 

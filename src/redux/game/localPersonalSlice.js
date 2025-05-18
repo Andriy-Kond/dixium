@@ -108,12 +108,12 @@ export const localPersonalSlice = createSlice({
       const game = action.payload;
 
       // state.games = { ...state.games, [game._id]: game };
-      if (game) state.games[game._id] = game; // add new or update exist
+      state.games[game._id] = game; // add new or update exist
     },
 
     clearLocalGame: (state, action) => {
       const game = action.payload;
-      delete state.games[game._id];
+      if (state.games[game._id]) delete state.games[game._id];
     },
 
     clearLocalGames: (state, action) => {
@@ -122,7 +122,7 @@ export const localPersonalSlice = createSlice({
 
     updatePlayers: (state, action) => {
       const game = action.payload;
-      state.games[game._id].players = game.players;
+      if (state.games[game._id]) state.games[game._id].players = game.players;
     },
 
     setLocalGameStatus: (state, action) => {

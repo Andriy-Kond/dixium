@@ -73,8 +73,10 @@ export const gameRunning = (
     //* Логіка для інших гравців
     if (message) Notify.failure(message);
     const gameInState = Object.keys(games).find(key => key === game._id);
+    console.log(" game:::", game);
 
     if (gameInState) dispatch(setLocalGame(game));
+    navigate(`/game/${game._id}/current-game`);
   }
   // else {
   // dispatch(

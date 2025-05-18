@@ -140,6 +140,7 @@
   "display_mode": "Режим відображення",
   "language": "Мова",
   "check_id": "Гри з таким ID не існує",
+  "game_already_started": "Ця гра вже почалась",
   "waiting": "Очікує",
   "finish_game": "Закінчити гру",
   "players_turn": "Черга гравців",

@@ -16,6 +16,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { MdDragIndicator } from "react-icons/md";
 import css from "./SortablePlayer.module.scss";
 import { useEffect } from "react";
+import clsx from "clsx";
 
 // Component for each dnd player
 export default function SortablePlayer({ player }) {
@@ -36,9 +37,6 @@ export default function SortablePlayer({ player }) {
       return;
     }
   }, [currentGame, navigate, userActiveGameId]);
-
-  const isCurrentPlayerIsHost =
-    currentGame.hostPlayerId === userCredentials._id;
 
   // attributes – атрибути для коректної роботи 'aria-*' (доступність).
   // listeners – обробники подій для початку перетягування.
@@ -78,13 +76,29 @@ export default function SortablePlayer({ player }) {
     removePlayer(player._id);
   };
 
+  const isCurrentPlayerIsHost =
+    currentGame.hostPlayerId === userCredentials._id;
+
+  const isDisabled =
+    !isCurrentPlayerIsHost ||
+    (isCurrentPlayerIsHost && userCredentials._id === player._id) ||
+    currentGame.isGameRunning;
+
   return (
     <li
       ref={setNodeRef}
       style={style}
-      className={`${css.listItem} ${isCurrentPlayerIsHost && css.host}`}>
+      // className={`${css.listItem} ${isCurrentPlayerIsHost && css.host}`}
+      className={clsx(css.listItem, {
+        [css.host]: isCurrentPlayerIsHost,
+        [css.hostDisabled]: isDisabled,
+      })}>
       <div {...attributes} {...listeners} className={css.dragHandle}>
-        {isCurrentPlayerIsHost && <MdDragIndicator className={css.dndIcon} />}
+        {isCurrentPlayerIsHost && (
+          <MdDragIndicator
+            className={clsx(css.dndIcon, { [css.isDisabled]: isDisabled })}
+          />
+        )}
 
         <p>{`${player.name} ${
           player._id === currentGame.hostPlayerId ? t("the_host") : ""
@@ -94,10 +108,7 @@ export default function SortablePlayer({ player }) {
       {isCurrentPlayerIsHost && (
         <button
           className={css.deleteBtn}
-          disabled={
-            !isCurrentPlayerIsHost ||
-            (isCurrentPlayerIsHost && userCredentials._id === player._id)
-          }
+          disabled={isDisabled}
           onClick={handleRemovePlayer}>
           <MdDeleteOutline className={css.trashIcon} />
         </button>

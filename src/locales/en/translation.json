@@ -141,6 +141,7 @@
   "display_mode": "Display mode",
   "language": "Language",
   "check_id": "Game with this ID not exist",
+  "game_already_started": "This game already started",
   "waiting": "Waiting",
   "finish_game": "Finish game",
   "players_turn": "Players' turn",

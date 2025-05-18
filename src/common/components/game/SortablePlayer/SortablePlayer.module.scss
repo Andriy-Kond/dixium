@@ -35,6 +35,14 @@
       cursor: grabbing;
     }
   }
+
+  &.hostDisabled {
+    cursor: auto;
+
+    &:active {
+      cursor: auto;
+    }
+  }
 }
 
 .dragHandle {
@@ -59,6 +67,10 @@
   height: 16px;
   margin-right: 16px;
   color: var(--04, #e3e7e9);
+
+  &.isDisabled {
+    color: var(--10, #3b4957);
+  }
 }
 
 .trashIcon {

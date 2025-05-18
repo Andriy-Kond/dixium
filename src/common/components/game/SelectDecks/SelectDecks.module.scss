@@ -110,8 +110,12 @@
   margin-right: 16px;
 
   color: var(--04, #e3e7e9);
-
   cursor: pointer;
+
+  &.disabled {
+    color: var(--10, #3b4957);
+    cursor: auto;
+  }
 }
 
 .mgnLeft {

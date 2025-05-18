@@ -150,8 +150,8 @@ export const useSetupSocketListeners = () => {
 
     const handleGameStarted = ({ game }) => gameStarted(game, games, dispatch);
 
-    const handleFindAndJoinToGameSuccess = ({ game }) =>
-      findAndJoinToGameSuccess(game, dispatch, navigate);
+    const handleFindAndJoinToGameSuccess = ({ game, message }) =>
+      findAndJoinToGameSuccess(game, message, dispatch, navigate);
 
     const handleCardsListUpdateSuccess = ({ game, errorMessage }) =>
       cardsListUpdateSuccess(game, errorMessage, dispatch, activeActionsTest);

@@ -8,8 +8,18 @@ import {
   updateIsRedirecting,
 } from "redux/game/localPersonalSlice.js";
 
-export const findAndJoinToGameSuccess = (game, dispatch, navigate) => {
+export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
   console.log("findAndJoinToGameSuccess");
+
+  if (message && message.includes("This game already started")) {
+    dispatch(
+      showNotification({
+        message: t("game_already_started"),
+        type: "error",
+      }),
+    );
+    return;
+  }
 
   if (game === null) {
     dispatch(clearLocalGames());
@@ -19,16 +29,16 @@ export const findAndJoinToGameSuccess = (game, dispatch, navigate) => {
         type: "error",
       }),
     );
-  } else {
-    // navigate(`game/${game._id}/current-game`);
-    navigate(`game/${game._id}/setup/sort-players`);
-    dispatch(setLocalGame(game));
-    dispatch(setUserActiveGameId(game._id));
-    // dispatch(updateIsRedirecting(true));
-
-    // setTimeout(() => {
-    //   console.log("dispatch to 5 sec");
-    // }, 5000);
-    // Notify.success(t("found_game_success", { gameNumber: game.playerGameId }));
+    return;
   }
+  // navigate(`game/${game._id}/current-game`);
+  navigate(`game/${game._id}/setup/sort-players`);
+  dispatch(setLocalGame(game));
+  dispatch(setUserActiveGameId(game._id));
+  // dispatch(updateIsRedirecting(true));
+
+  // setTimeout(() => {
+  //   console.log("dispatch to 5 sec");
+  // }, 5000);
+  // Notify.success(t("found_game_success", { gameNumber: game.playerGameId }));
 };
