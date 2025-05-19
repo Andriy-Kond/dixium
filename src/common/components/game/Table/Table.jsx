@@ -1,5 +1,4 @@
 // import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { MdOutlineStarOutline, MdOutlineStar } from "react-icons/md";
 
 import useEmblaCarousel from "embla-carousel-react";
 import { Notify } from "notiflix";
@@ -29,6 +28,12 @@ import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
 import clsx from "clsx";
 import { useBackButton } from "context/BackButtonContext.jsx";
+import {
+  MdOutlineStarOutline,
+  MdOutlineStar,
+  MdStar,
+  MdStars,
+} from "react-icons/md";
 
 export default function Table({
   isActiveScreen,
@@ -307,6 +312,8 @@ export default function Table({
         (secondVotedCardId && secondVotedCardId !== activeCard._id) ||
         playerId === activeCard.ownerId;
 
+      const currentCardIndex = emblaApiCardsVote?.selectedScrollSnap() || 0;
+      const currentCard = currentGame.cardsOnTable[currentCardIndex];
       setMiddleButton(
         <>
           {/* <Button btnText="<<" onClick={carouselModeOff} /> */}
@@ -314,25 +321,35 @@ export default function Table({
           {!isCurrentPlayerStoryteller && (
             <div className={css.carouselModeBtnsWrapper}>
               <Button
+                localClassName={clsx(
+                  css.btn,
+                  firstVotedCardId &&
+                    currentCard._id === firstVotedCardId &&
+                    css.btnActive,
+                )}
+                btnStyle={["twoBtnsInRow"]}
                 onClick={() => toggleCardSelection("firstVoteCardSet")}
-                disabled={isDisabledFirstBtn || isCurrentPlayerVoted}
-                localClassName={`${firstVotedCardId && css.btnActive} ${
-                  css.currentWidth
-                }`}>
-                <MdOutlineStarOutline
+                disabled={isDisabledFirstBtn || isCurrentPlayerVoted}>
+                {/* <MdOutlineStarOutline
                   style={{ width: "20px", height: "20px" }}
-                />
+                /> */}
+                <MdStar className={css.btnStarIcon} />
               </Button>
               {playersMoreThanSix && !isSingleCardMode && (
                 <Button
+                  localClassName={clsx(
+                    css.btn,
+                    secondVotedCardId &&
+                      currentCard._id === secondVotedCardId &&
+                      css.btnActive,
+                  )}
+                  btnStyle={["twoBtnsInRow"]}
                   onClick={() => toggleCardSelection("secondVoteCardSet")}
-                  disabled={isDisabledSecondBtn || isCurrentPlayerVoted}
-                  localClassName={`${secondVotedCardId && css.btnActive} ${
-                    css.currentWidth
-                  }`}>
-                  <MdOutlineStarOutline
+                  disabled={isDisabledSecondBtn || isCurrentPlayerVoted}>
+                  {/* <MdOutlineStarOutline
                     style={{ width: "20px", height: "20px" }}
-                  />
+                  /> */}
+                  <MdStar className={css.btnStarIcon} />
                 </Button>
               )}
             </div>
@@ -407,8 +424,9 @@ export default function Table({
     }
   }, [
     activeCardIdx,
-    currentGame,
     carouselModeOff,
+    currentGame,
+    emblaApiCardsVote,
     finishRound,
     firstVotedCardId,
     handleVote,
@@ -426,12 +444,15 @@ export default function Table({
   const getStarsMarksByVoteCount = voteCount => {
     const marksVote = [];
     if (voteCount === 1) {
-      marksVote.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+      // marksVote.push(<MdStars className={css.iconStar} />);
+      marksVote.push(<MdStar className={css.iconStar} />);
     }
 
     if (voteCount === 2) {
-      marksVote.push(<MdOutlineStarOutline className={css.checkboxCard} />);
-      marksVote.push(<MdOutlineStarOutline className={css.checkboxCard} />);
+      // marksVote.push(<MdStars className={css.iconStar} />);
+      // marksVote.push(<MdStars className={css.iconStar} />);
+      marksVote.push(<MdStar className={css.iconStar} />);
+      marksVote.push(<MdStar className={css.iconStar} />);
     }
 
     return marksVote;
@@ -441,11 +462,13 @@ export default function Table({
     const marks = [];
 
     if (firstVotedCardId === cardId) {
-      marks.push(<MdOutlineStar className={css.carouselCheckbox} />);
+      // marks.push(<MdStars className={css.iconStar} />);
+      marks.push(<MdStar className={css.iconStar} />);
     }
 
     if (secondVotedCardId === cardId) {
-      marks.push(<MdOutlineStar className={css.carouselCheckbox} />);
+      // marks.push(<MdStars className={css.iconStar} />);
+      marks.push(<MdStar className={css.iconStar} />);
     }
 
     return marks;
@@ -471,17 +494,8 @@ export default function Table({
                       <div
                         // className={css.slideContainer}
                         className={clsx(css.slideContainer, {
-                          [css.slideContainerActive]: marks.length > 0,
+                          // [css.slideContainerActive]: marks.length > 0,
                         })}>
-                        {/* {marks.length > 0 && (
-                        <div className={css.checkboxContainer}>
-                          {marks.map((mark, index) => (
-                            <span key={index} className={css.checkboxCard}>
-                              {mark}
-                            </span>
-                          ))}
-                        </div>
-                      )} */}
                         <ImgGen
                           className={`${css.carouselImage} ${
                             isMounted ? css.visible : ""
@@ -489,6 +503,15 @@ export default function Table({
                           publicId={card.public_id}
                           isBig
                         />
+                        {marks.length > 0 && (
+                          <div className={css.checkboxContainer2}>
+                            {marks.map((mark, index) => (
+                              <span key={index} className={css.checkboxCard}>
+                                {mark}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </li>
                   );
@@ -505,19 +528,19 @@ export default function Table({
               return (
                 <li
                   className={clsx(css.card, {
-                    [css.slideContainerActive]: marks.length > 0,
+                    // [css.slideContainerActive]: marks.length > 0,
                   })}
                   key={card._id}
                   onClick={() => carouselModeOn(idx)}>
-                  {/* {marks.length > 0 && (
-                    <div className={css.checkboxContainerList}>
+                  {marks.length > 0 && (
+                    <div className={css.checkboxContainerNonCarousel}>
                       {getStarsMarksByCardId(card._id).map((mark, index) => (
                         <span key={index} className={css.checkboxCard}>
                           {mark}
                         </span>
                       ))}
                     </div>
-                  )} */}
+                  )}
 
                   <ImgGen
                     className={css.img}
@@ -546,9 +569,10 @@ export default function Table({
                     <div
                       // className={css.slideContainer}
                       className={clsx(css.slideContainer, {
-                        [css.slideContainerActive]: marks.length > 0,
+                        [css.slideContainerActive]:
+                          marks.length > 0 && gameStatus !== VOTING,
                       })}>
-                      {marks.length > 0 && (
+                      {gameStatus === VOTING && marks.length > 0 && (
                         <div className={css.checkboxContainer}>
                           {marks.map((mark, index) => (
                             <span key={index} className={css.checkboxCard}>
@@ -595,14 +619,19 @@ export default function Table({
 
                   <ul className={css.resultVotes}>
                     {result.votesForThisCard.map((vote, voteIdx) => {
-                      const stars = getStarsMarksByVoteCount(vote.voteCount);
+                      const marksVote = getStarsMarksByVoteCount(
+                        vote.voteCount,
+                      );
 
                       return (
                         <li className={css.voterContainer} key={voteIdx}>
                           {capitalizeWords(vote.playerName)}
                           <div className={css.resultCheckboxContainer}>
-                            {stars.map((mark, index) => (
-                              <span key={index}>{mark}</span>
+                            {marksVote.map((mark, index) => (
+                              // <span key={index}>{mark}</span>
+                              <span key={index} className={css.checkboxCard}>
+                                {mark}
+                              </span>
                             ))}
                           </div>
                         </li>

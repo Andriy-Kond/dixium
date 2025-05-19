@@ -1,3 +1,5 @@
+@import "styles/utils/mixins";
+
 .img {
   width: 100%;
   height: 100%;
@@ -25,9 +27,10 @@
 }
 
 .slideContainer {
-  position: relative;
+  // position: relative;
   padding: 4px;
-  height: 100%;
+  // height: 100%;
+  // height: fit-content;
 }
 
 .slideContainerActive {
@@ -36,27 +39,58 @@
   box-shadow: inset 0 0 0 2px var(--04, #e3e7e9); // працює
 }
 
+.checkboxContainerNonCarousel {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+
+  display: flex;
+  gap: 4px;
+}
+
 .checkboxContainer {
   position: absolute;
-  top: 4px;
-  left: 4px;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+
   display: flex;
-  gap: 5px;
-  background-color: #5d7e9e;
+  gap: 4px;
+}
 
-  height: 22px;
-  padding-top: 2px;
-  padding-left: 2px;
-  padding-right: 2px;
+.checkboxContainer2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  // border-radius: 8px 8px 0px 0px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  margin-top: 8px;
+  display: flex;
+  gap: 4px;
 }
 
 .checkboxCard {
-  width: 20px;
-  height: 20px;
+  position: relative;
+  border-radius: 50%;
+  // height: 13px;
+  // width: 13px;
+  width: 16px;
+  height: 16px;
+  // background-color: var(--04, #e3e7e9);
+}
+
+.iconStar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+
+  // color: var(--40, #161f27);
+  color: var(--04, #e3e7e9);
 }
 
 //Стилі для появи першого слайду
@@ -90,15 +124,14 @@
 }
 
 .carouselCheckbox {
-  color: #fff;
-  width: 100%;
-  height: 100%;
-}
+  // width: 100%;
+  // height: 100%;
+  // color: #fff;
+  // color: var(--04, #e3e7e9);
+  // color: var(--40, #e3e7e9);
+  // background-color: var(--04, #e3e7e9);
 
-.carouselCheckbox {
-  color: #fff;
-  width: 100%;
-  height: 100%;
+  // border-radius: 50%;
 }
 
 .currentDeckContainer {
@@ -113,30 +146,12 @@
 }
 
 .card {
+  position: relative;
   width: 96px;
   // height: auto;
 
   padding: 4px;
   background-color: transparent;
-}
-
-.checkboxContainerList {
-  position: absolute;
-  top: -22px;
-  left: 0x;
-  display: flex;
-  gap: 5px;
-  background-color: #5d7e9e;
-  color: #fff;
-
-  height: 22px;
-  padding-top: 2px;
-  padding-left: 2px;
-  padding-right: 2px;
-
-  border-radius: 8px 8px 0px 0px;
-  // border-top-left-radius: 10px;
-  // border-top-right-radius: 10px;
 }
 
 // ==================== Results styles
@@ -193,17 +208,30 @@
 
 .carouselModeBtnsWrapper {
   display: flex;
+  gap: 8px;
   flex-direction: row;
-  gap: 2px;
+  flex-grow: 1;
+  justify-content: flex-end;
 }
 
-.currentWidth {
-  width: 90px;
+// .currentWidth {
+//   width: 90px;
+// }
+
+.btn {
+  @include btn;
+  background: var(--20, #2b3847);
+  color: var(--04, #e3e7e9);
 }
 
 .btnActive {
-  // background-color: #0f7dff1f;
   background: var(--02, #c9cfd4);
+  color: var(--40, #161f27);
+}
+
+.btnStarIcon {
+  width: 16px;
+  height: 16px;
 }
 
 .cardsListFaceDown {
