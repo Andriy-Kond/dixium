@@ -1,5 +1,7 @@
 import Button from "common/components/ui/Button/index.js";
 import css from "./GameNavigationBar.module.scss";
+import Menu from "common/components/navComponents/Menu/Menu.jsx";
+import CurrentGameMenu from "../CurrentGameMenu/CurrentGameMenu.jsx";
 
 export default function GameNavigationBar({
   activeScreen,
@@ -12,25 +14,24 @@ export default function GameNavigationBar({
 }) {
   return (
     <div className={css.bottomBar}>
-      {isShowSidesBtns && (
+      {/* {isShowSidesBtns && (
         <Button
           btnText={"<"}
           onClick={onPrevScreen}
           btnStyle={["btnTransparentBorder"]}
           // disabled={activeScreen === 0}
         />
-      )}
-
+      )} */}
+      <CurrentGameMenu />
       {middleButton || <span>{`${activeScreen + 1} / ${screensLength}`}</span>}
-
-      {isShowSidesBtns && (
+      {/* {isShowSidesBtns && (
         <Button
           btnText={">"}
           onClick={onNextScreen}
           btnStyle={["btnTransparentBorder"]}
           // disabled={activeScreen === screensLength - 1}
         />
-      )}
+      )} */}
     </div>
   );
 }

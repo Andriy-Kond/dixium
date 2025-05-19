@@ -59,7 +59,6 @@ export default function Players({
         // Якщо це ведучий:
         setMiddleButton(
           <Button
-            btnStyle={["btnFlexGrow"]}
             btnText={t("start_voting")}
             onClick={startVoting}
             disabled={isStartVotingDisabled}
@@ -70,22 +69,14 @@ export default function Players({
       if (isCurrentPlayerHost && isReadyToCalculatePoints) {
         // Якщо це ведучий:
         setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={t("finish_round")}
-            onClick={finishRound}
-          />,
+          <Button btnText={t("finish_round")} onClick={finishRound} />,
         );
       } else setMiddleButton(null);
     } else if (gameStatus === ROUND_RESULTS) {
       if (isCurrentPlayerHost && isReadyToStartNewRound) {
         // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={t("start_new_round")}
-            onClick={startNewRound}
-          />,
+          <Button btnText={t("start_new_round")} onClick={startNewRound} />,
         );
       }
     } else setMiddleButton(null);

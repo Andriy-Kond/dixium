@@ -152,7 +152,6 @@ export default function LoginPage() {
                   opacity: isGoogleLoading ? 0.5 : 1,
                 }}>
                 <Button
-                  btnStyle={["btnFlexGrow"]}
                   onClick={() =>
                     googleLoginRef.current
                       ?.querySelector("div[role=button]")
@@ -170,7 +169,6 @@ export default function LoginPage() {
                     opacity: isGoogleLoading ? 0.5 : 1,
                   }}>
                   <Button
-                    btnStyle={["btnFlexGrow"]}
                     onClick={() =>
                       googleLoginRef.current
                         ?.querySelector("div[role=button]")

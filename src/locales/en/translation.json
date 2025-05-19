@@ -12,7 +12,7 @@
   "player_told_first_story": "Player <bold>{{storytellerName}}</bold> told first story. <br/> Let's go to guess it!",
   "you_have_told": "You have told your story. Waiting for other players to choose their associations cards.",
   "player_has_told": "Player {{storyteller}} has told his history. Choose a card to associate with it.",
-  "select_card": "Select a card",
+  "select_this_card": "Select this card",
   "choose_card": "Choose a card",
   "go_to_guess_story": "Go to guess the story",
   "start_voting": "Start voting",

@@ -33,7 +33,12 @@
   height: 100%;
 }
 
-.carouselWrapper {
+// ======== Carousel ========
+.carWrap {
+  padding: 8px;
+}
+
+.carousel {
   overflow: hidden;
 }
 
@@ -45,16 +50,20 @@
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
-  flex-basis: calc(100% - 46px);
+  // flex-basis: calc(100% - 8px);
+  flex-basis: 100%;
 }
 
 .slideContainer {
   position: relative;
-  padding-top: 26px;
-  padding-bottom: 8px;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding: 4px;
   height: 100%;
+}
+
+.slideContainerActive {
+  // outline: 5px solid var(--04, #e3e7e9); // стискає падінг і зображення
+  // outline: 5px solid var(--04, #e3e7e9); // не малюється
+  box-shadow: inset 0 0 0 2px var(--04, #e3e7e9); // працює
 }
 
 .checkboxContainer {
@@ -91,8 +100,8 @@
   transform: scale(0);
   opacity: 0.5;
 
-  border: 4px solid #5d7e9e;
-  border-radius: 4px;
+  // border: 4px solid #5d7e9e;
+  // border-radius: 4px;
 
   // Анімація для плавної появи слайду
   &.visible {
@@ -123,24 +132,6 @@
   height: 40px;
 }
 
-// .currentDeckContainer {
-//   padding-left: 2px;
-//   padding-right: 2px;
-// }
-
-.currentDeck {
-  margin-left: auto;
-  margin-right: auto;
-  padding-top: 26px;
-  display: flex;
-
-  flex-wrap: wrap;
-  gap: 26px 2px;
-
-  overflow-y: auto;
-  max-height: 90vh;
-}
-
 // .card {
 //   position: relative;
 //   flex-basis: calc((100% - 4px) / 3);
@@ -167,15 +158,9 @@
   // border-top-right-radius: 10px;
 }
 
-// .img {
-//   width: 100%;
-//   height: 100%;
-//   border: 4px solid #5d7e9e;
-//   border-radius: 4px;
-// }
-
 .btnActive {
-  background-color: #0f7dff1f;
+  // background-color: #0f7dff1f;
+  background: var(--02, #c9cfd4);
 }
 
 .maskContainer {

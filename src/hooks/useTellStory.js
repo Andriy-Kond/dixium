@@ -12,6 +12,7 @@ import { discardHandToTable } from "utils/game/discardHandToTable.js";
 import { useTranslation } from "react-i18next";
 
 export const useTellStory = gameId => {
+  // console.log("useTellStory");
   const { t } = useTranslation();
 
   const userCredentials = useSelector(selectUserCredentials);
@@ -72,6 +73,7 @@ export const useTellStory = gameId => {
     // setIsSubmitting(true); // Блокуємо повторні натискання
 
     const event = storytellerId ? "setNextStoryteller" : "setFirstStoryteller";
+    console.log(" tellStory >> event:::", event);
 
     socket.emit(event, { updatedGame }, response => {
       // setIsSubmitting(false); // Розблокуємо після відповіді

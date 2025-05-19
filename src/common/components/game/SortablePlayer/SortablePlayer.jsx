@@ -70,7 +70,7 @@ export default function SortablePlayer({ player }) {
   };
 
   const handleRemovePlayer = e => {
-    // console.log("onclick");
+    // console.log("onClick");
     // console.log("Button clicked, userId:", userCredentials._id);
     // e.stopPropagation(); // зупинка поширення події -- не працює
     removePlayer(player._id);

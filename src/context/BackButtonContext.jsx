@@ -19,7 +19,7 @@ export function BackButtonProvider({ children }) {
   const currentPriority = useRef(0);
 
   const showBackButton = useCallback(
-    (onClick, label = "back", priority = 0) => {
+    ({ onClick, priority = 0, label = "back" }) => {
       // console.log("Виклик showBackButton", {
       //   priority,
       //   currentPriority: currentPriority.current,
@@ -28,7 +28,7 @@ export function BackButtonProvider({ children }) {
       // setBackButtonConfig({ isVisible: true, onClick, label, priority });
       // currentPriority.current = priority;
       if (priority >= currentPriority.current) {
-        setBackButtonConfig({ isVisible: true, onClick, label, priority });
+        setBackButtonConfig({ isVisible: true, onClick, priority, label });
         currentPriority.current = priority;
         // console.log("Оновлено backButtonConfig", {
         //   isVisible: true,
@@ -42,7 +42,7 @@ export function BackButtonProvider({ children }) {
     [],
   );
 
-  const hideBackButton = useCallback((priority = 0) => {
+  const hideBackButton = useCallback(({ priority = 0 }) => {
     // console.log("Виклик hideBackButton", {
     //   priority,
     //   currentPriority: currentPriority.current,

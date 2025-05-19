@@ -109,7 +109,7 @@ export default function Table({
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
     setActiveCardIdx(idx);
-    // setIsCarouselModeTableScreen(true);
+
     dispatch(
       setIsCarouselModeTableScreen({
         gameId,
@@ -122,7 +122,7 @@ export default function Table({
 
   const exitCarouselMode = useCallback(() => {
     setIsMounted(false);
-    // setIsCarouselModeTableScreen(false);
+
     dispatch(
       setIsCarouselModeTableScreen({
         gameId,
@@ -274,7 +274,7 @@ export default function Table({
 
       setMiddleButton(
         <>
-          <Button btnText="<<" onClick={exitCarouselMode} />
+          {/* <Button btnText="<<" onClick={exitCarouselMode} /> */}
 
           {!isCurrentPlayerStoryteller && (
             <div className={css.carouselModeBtnsWrapper}>
@@ -318,7 +318,6 @@ export default function Table({
         // console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button
-            btnStyle={["btnFlexGrow"]}
             btnText={t("start_voting")}
             onClick={startVoting}
             disabled={isStartVotingDisabled}
@@ -331,20 +330,12 @@ export default function Table({
       ) {
         // console.log("це хост і всі обрали проголосували - можна рахувати бали");
         setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={t("finish_round")}
-            onClick={finishRound}
-          />,
+          <Button btnText={t("finish_round")} onClick={finishRound} />,
         );
       } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
         // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={t("start_new_round")}
-            onClick={startNewRound}
-          />,
+          <Button btnText={t("start_new_round")} onClick={startNewRound} />,
         );
       } else {
         if (isCurrentPlayerStoryteller) {
@@ -357,7 +348,6 @@ export default function Table({
             // Якщо це не сторітеллер і може голосувати (вже обрані карти)
             setMiddleButton(
               <Button
-                btnStyle={["btnFlexGrow"]}
                 btnText={t("vote_card")}
                 onClick={handleVote}
                 disabled={!isCanVote || isCurrentPlayerVoted}

@@ -113,13 +113,14 @@ export default function SelectDecks() {
     });
 
     navigate(-1);
+    // navigate(`game/${currentGame._id}/setup/select-decks`);
   }, [currentGame, navigate, optimisticCardsListUpdate]);
 
   useEffect(() => {
-    // console.log("set showBackButton in SelectDecks");
-    showBackButton(handleBackClick, "back", 2);
+    console.log("set showBackButton in SelectDecks");
+    showBackButton({ onClick: handleBackClick, priority: 2 });
 
-    return () => hideBackButton(0);
+    return () => hideBackButton({ priority: 0 });
   }, [handleBackClick, hideBackButton, showBackButton]);
 
   // const currentDeckId = useSelector(selectCurrentDeckId);

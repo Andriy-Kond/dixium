@@ -91,21 +91,21 @@ export default function Hand({
     watchDrag: isCarouselModeHandScreen && !isZoomed,
   });
 
-  //# Page header color and text
-  useEffect(() => {
-    if (!currentGame) return;
-    const { hostPlayerId, players } = currentGame;
+  // //# Page header color and text
+  // useEffect(() => {
+  //   if (!currentGame) return;
+  //   const { hostPlayerId, players } = currentGame;
 
-    const hostPlayer = players.find(player => player._id === hostPlayerId);
-    const gameHostNick = hostPlayer.name;
-    const headerTitleText = t("hand");
-    const headerTitleTextSecond = t("whom_game", { gameHostNick });
-    dispatch(setPageHeaderText(headerTitleText));
-    dispatch(setPageHeaderTextSecond(headerTitleTextSecond));
-  }, [currentGame, dispatch, t]);
+  //   const hostPlayer = players.find(player => player._id === hostPlayerId);
+  //   const gameHostNick = hostPlayer.name;
+  //   const headerTitleText = t("hand");
+  //   const headerTitleTextSecond = t("whom_game", { gameHostNick });
+  //   dispatch(setPageHeaderText(headerTitleText));
+  //   dispatch(setPageHeaderTextSecond(headerTitleTextSecond));
+  // }, [currentGame, dispatch, t]);
 
   const handleStory = useCallback(() => {
-    // console.log("handleStory");
+    console.log("handleStory");
     if (!currentGame) return;
     currentGame.gameStatus === GUESSING ? guessStory() : tellStory();
 
@@ -117,7 +117,7 @@ export default function Hand({
   }, [currentGame, dispatch, gameId, guessStory, playerId, tellStory]);
 
   const returnToHand = useCallback(() => {
-    // console.log("returnToHand");
+    console.log("returnToHand");
     const updatedGame = { ...currentGame, isFirstTurn: false };
     dispatch(setIsShowMask({ gameId, playerId, isShow: false }));
 
@@ -134,6 +134,7 @@ export default function Hand({
   }, [currentGame, dispatch, gameId, playerId, toastId]);
 
   const carouselModeOn = idx => {
+    console.log("carouselModeOn");
     setSelectedCardIdx(idx);
 
     dispatch(
@@ -148,7 +149,8 @@ export default function Hand({
     // setIsMountedCarousel(true);
   };
 
-  const handleCloseCarousel = useCallback(() => {
+  const carouselModeOff = useCallback(() => {
+    console.log("carouselModeOff");
     dispatch(
       setIsCarouselModeHandScreen({
         gameId,
@@ -159,16 +161,18 @@ export default function Hand({
   }, [dispatch, gameId, playerId]);
 
   // const exitCarouselMode = useCallback(() => {
-  //   handleCloseCarousel();
+  //   carouselModeOff();
   //   // setIsMountedCarousel(false);
   //   // setMiddleButton(null);
-  // }, [handleCloseCarousel]);
+  // }, [carouselModeOff]);
 
   const toggleCardSelection = useCallback(
     btnKey => {
+      console.log("toggleCardSelection");
       if (!currentGame) return;
-      const { isSingleCardMode, players, gameStatus } = currentGame;
+      // console.log("currentGame :>> ", currentGame);
 
+      const { isSingleCardMode, players, gameStatus } = currentGame;
       const playersMoreThanThree = players.length > 3;
 
       if (isSingleCardMode && btnKey === "secondGuessCardSet") {
@@ -187,9 +191,8 @@ export default function Hand({
       }
 
       if (gameStatus === GUESSING) {
-        // console.log("gameStatus === GUESSING");
+        console.log("gameStatus === GUESSING");
         // Встановлення локального стану карток:
-
         const isSelected =
           firstGuessCardSet?._id === currentCard._id ||
           secondGuessCardSet?._id === currentCard._id;
@@ -228,9 +231,12 @@ export default function Hand({
           }
         }
       } else if (gameStatus === LOBBY) {
+        console.log("gameStatus === LOBBY");
         if (currentCard._id === selectedCardId) {
+          console.log("removeSelectedCardId");
           dispatch(removeSelectedCardId({ gameId, playerId })); // clear
         } else {
+          console.log("setSelectedCardId");
           dispatch(
             setSelectedCardId({
               gameId,
@@ -255,10 +261,10 @@ export default function Hand({
     ],
   );
 
-  //~ is show mask
+  //~ Close carouselt when mask is showed
   useEffect(() => {
-    if (isShowMask) handleCloseCarousel();
-  }, [handleCloseCarousel, isShowMask]);
+    if (isShowMask) carouselModeOff();
+  }, [carouselModeOff, isShowMask]);
 
   //~ reInit for emblaApiCardsGuess
   useEffect(() => {
@@ -299,17 +305,17 @@ export default function Hand({
   //~ set BackButton
   useEffect(() => {
     if (isCarouselModeHandScreen) {
-      showBackButton(handleCloseCarousel, "back", 1); // Показуємо кнопку "Назад"
+      showBackButton({ onClick: carouselModeOff, priority: 2 }); // Показуємо кнопку "Назад"
     } else {
-      hideBackButton(1); // Приховуємо кнопку, коли карусель закрита
+      hideBackButton({ priority: 2 }); // Приховуємо кнопку, коли карусель закрита
     }
 
-    return () => hideBackButton(1); // Очищення при демонтажі
+    return () => hideBackButton(2); // Очищення при демонтажі
   }, [
     isCarouselModeHandScreen,
     showBackButton,
     hideBackButton,
-    handleCloseCarousel,
+    carouselModeOff,
   ]);
 
   //* setMiddleButton
@@ -389,18 +395,19 @@ export default function Hand({
       setMiddleButton(
         <>
           {/* <Button btnText="<<" onClick={exitCarouselMode} /> */}
-          <Button btnText="<<" onClick={handleCloseCarousel} />
+          {/* <Button btnText="<<" onClick={carouselModeOff} /> */}
 
           {!storytellerId ||
           (!isCurrentPlayerStoryteller && storyteller?.isGuessed) ? (
             <>
               <Button
                 btnText={
-                  gameStatus === LOBBY ? t("select_card") : t("choose_card")
+                  gameStatus === LOBBY
+                    ? t("select_this_card")
+                    : t("choose_card")
                 }
                 onClick={() => toggleCardSelection("firstGuessCardSet")}
                 disabled={isDisabledFirstBtn() || isCurrentPlayerGuessed}
-                btnStyle={["btnFlexGrow"]}
                 localClassName={
                   (firstGuessCardSet || selectedCardId) && css.btnActive
                 }
@@ -426,7 +433,6 @@ export default function Hand({
                   btnText={t("select_card")}
                   onClick={() => toggleCardSelection("firstGuessCardSet")}
                   disabled={isDisabledFirstBtn() || isCurrentPlayerGuessed}
-                  btnStyle={["btnFlexGrow"]}
                   localClassName={
                     (firstGuessCardSet || selectedCardId) && css.btnActive
                   }></Button>
@@ -448,11 +454,7 @@ export default function Hand({
           // console.log("set Mask for other players");
           // Для інших гравців показується екран-маска, та кнопка закриття маски:
           setMiddleButton(
-            <Button
-              btnStyle={["btnFlexGrow"]}
-              btnText={t("go_to_guess_story")}
-              onClick={returnToHand}
-            />,
+            <Button btnText={t("go_to_guess_story")} onClick={returnToHand} />,
           );
         }
       }
@@ -468,7 +470,6 @@ export default function Hand({
         // console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button
-            btnStyle={["btnFlexGrow"]}
             btnText={t("start_voting")}
             onClick={startVoting}
             disabled={isStartVotingDisabled}
@@ -481,20 +482,12 @@ export default function Hand({
       ) {
         // console.log("це хост і всі проголосували - можна рахувати бали");
         setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={t("finish_round")}
-            onClick={finishRound}
-          />,
+          <Button btnText={t("finish_round")} onClick={finishRound} />,
         );
       } else if (isCurrentPlayerHost && gameStatus === ROUND_RESULTS) {
         // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
-          <Button
-            btnStyle={["btnFlexGrow"]}
-            btnText={t("start_new_round")}
-            onClick={startNewRound}
-          />,
+          <Button btnText={t("start_new_round")} onClick={startNewRound} />,
         );
       } else {
         if (isCurrentPlayerStoryteller && gameStatus === !LOBBY) {
@@ -511,7 +504,6 @@ export default function Hand({
             ) {
               setMiddleButton(
                 <Button
-                  btnStyle={["btnFlexGrow"]}
                   btnText={t("tell_your_story")}
                   onClick={handleStory}
                   disabled={!selectedCardId}
@@ -525,7 +517,6 @@ export default function Hand({
               // console.log("GUESSING player not guessed");
               setMiddleButton(
                 <Button
-                  btnStyle={["btnFlexGrow"]}
                   btnText={t("guess_story")}
                   onClick={handleStory}
                   disabled={!isCanGuess() || isCurrentPlayerGuessed}
@@ -544,7 +535,7 @@ export default function Hand({
     emblaApiCardsGuess,
     finishRound,
     firstGuessCardSet,
-    handleCloseCarousel,
+    carouselModeOff,
     handleStory,
     isActiveScreen,
     isCarouselModeHandScreen,
@@ -594,7 +585,7 @@ export default function Hand({
 
   if (!currentGame) return null;
 
-  const { players, storytellerId } = currentGame;
+  const { players, storytellerId, gameStatus } = currentGame;
   const storyteller = players.find(p => p._id === storytellerId);
 
   const isCurrentPlayerStoryteller = storytellerId === playerId;
@@ -622,31 +613,35 @@ export default function Hand({
         {paragraphText}
       </p>
       {isCarouselModeHandScreen && (
-        <div className={css.carouselWrapper} ref={emblaRefCardsGuess}>
-          <ul className={css.carouselContainer}>
-            {currentPlayer?.hand.map(card => {
-              const marks = getStarsMarksByCardId(card._id);
+        <div className={css.carWrap}>
+          <div className={css.carousel} ref={emblaRefCardsGuess}>
+            <ul className={css.carouselContainer}>
+              {currentPlayer?.hand.map(card => {
+                const marks = getStarsMarksByCardId(card._id);
 
-              return (
-                <li className={css.carouselSlide} key={card._id}>
-                  <div className={css.slideContainer}>
-                    {marks.length > 0 && (
-                      <div className={css.checkboxContainer}>
-                        {marks.map((mark, index) => (
-                          <span key={index} className={css.checkboxCard}>
-                            {mark}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                return (
+                  <li className={css.carouselSlide} key={card._id}>
+                    <div
+                      className={clsx(css.slideContainer, {
+                        [css.slideContainerActive]: marks.length > 0,
+                      })}>
+                      {/* {marks.length > 0 && (
+                        <div className={css.checkboxContainer}>
+                          {marks.map((mark, index) => (
+                            <span key={index} className={css.checkboxCard}>
+                              {mark}
+                            </span>
+                          ))}
+                        </div>
+                      )} */}
 
-                    <ImgGen
-                      className={`${css.carouselImage} ${css.visible}`}
-                      publicId={card.public_id}
-                      isBig
-                    />
+                      <ImgGen
+                        className={`${css.carouselImage} ${css.visible}`}
+                        publicId={card.public_id}
+                        isBig
+                      />
 
-                    {/* // todo add zoom by modal window
+                      {/* // todo add zoom by modal window
                        <TransformWrapper
                         maxScale={5}
                         panning={{ velocityDisabled: true, disabled: !isZoomed }}
@@ -678,11 +673,12 @@ export default function Hand({
                           );
                         }}
                       </TransformWrapper> */}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       )}
 
@@ -693,10 +689,12 @@ export default function Hand({
 
             return (
               <li
-                className={css.card}
+                className={clsx(css.card, {
+                  [css.slideContainerActive]: marks.length > 0,
+                })}
                 key={card._id}
                 onClick={() => carouselModeOn(idx)}>
-                {marks.length > 0 && (
+                {/* {marks.length > 0 && (
                   <div className={css.checkboxContainerList}>
                     {getStarsMarksByCardId(card._id).map((mark, index) => (
                       <span key={index} className={css.checkboxCard}>
@@ -704,7 +702,7 @@ export default function Hand({
                       </span>
                     ))}
                   </div>
-                )}
+                )} */}
 
                 {/* <img className={css.img} src={card.url} alt="card" /> */}
                 <ImgGen

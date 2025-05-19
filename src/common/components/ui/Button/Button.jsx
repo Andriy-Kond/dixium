@@ -27,28 +27,3 @@ export default function Button({
     </button>
   );
 }
-
-// .btnPrimary {
-//   @include btnPrimary;
-// }
-
-// .btnBarMenu {
-//   @include btnBarMenu;
-// }
-
-// .twoBtnsInRow {
-//   flex-basis: 50%; // makes size 50% of parent width
-// }
-
-// .btnFlexGrow {
-//   flex-grow: 1;
-// }
-
-// .btnTransparentBorder {
-//   border: 1px solid transparent;
-// }
-
-// .whiteColor {
-//   border: 1px solid #fff;
-//   color: #fff;
-// }

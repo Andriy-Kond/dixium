@@ -81,18 +81,16 @@ export default function SharedLayout() {
   }, [navigate]);
 
   // const isGameRoute = /^\/game\/[^/]+$/.test(location.pathname); // Перевіряє /game/:gameId
-
-  const isHomePage = location.pathname === "/";
-  const isGamesListPage = location.pathname === "/game";
-
+  const isHomePage = matchPath(`/`, location.pathname);
+  const isGamesListPage = matchPath(`/game`, location.pathname);
   const isCurrentGamePage = matchPath(
     `/game/:gameId/current-game`,
     location.pathname,
   );
 
   // Логіка за замовчуванням: показувати кнопку для всіх маршрутів, окрім "/" і "/game"
-  const shouldShowBackButton =
-    !isHomePage && !isGamesListPage && !isCurrentGamePage;
+  const shouldShowBackButton = !isHomePage && !isGamesListPage;
+  // && !isCurrentGamePage;
 
   // Показ кнопки "Назад" для маршрутів.
   // useLayoutEffect виконується синхронно після всіх маніпуляцій з DOM, що може допомогти уникнути асинхронних проблем.
@@ -103,10 +101,10 @@ export default function SharedLayout() {
       // console.log("set showBackButton in SharedLayout");
       // console.log(" SharedLayout >> location.pathname:::", location.pathname);
 
-      showBackButton(handleBackClick, "back", 1);
+      showBackButton({ onClick: handleBackClick, priority: 1 });
     } else {
       // console.log("SharedLayout >> Ховаю кнопку :>> ");
-      hideBackButton(3);
+      hideBackButton({ priority: 3 });
     }
   }, [handleBackClick, hideBackButton, shouldShowBackButton, showBackButton]);
 

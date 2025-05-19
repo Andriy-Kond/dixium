@@ -33,6 +33,7 @@ import {
   setActiveScreen,
   setHasPreloaded,
   setPageHeaderText,
+  setPageHeaderTextSecond,
   setToastId,
 } from "redux/game/localPersonalSlice.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
@@ -49,6 +50,24 @@ export default function Game() {
   const { gameId } = useParams();
 
   const currentGame = useSelector(selectLocalGame(gameId));
+  const userCredentials = useSelector(selectUserCredentials);
+  const { _id: playerId } = userCredentials;
+
+  const toastId = useSelector(selectToastId(gameId, playerId));
+  const activeScreen = useSelector(selectActiveScreen(gameId, playerId)); // Number of current active screen
+
+  const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
+  const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
+
+  const { totalPreviews, loadedPreviews, preloadUrls, hasPreloaded } =
+    useSelector(selectPreloadImg);
+  const isCarouselModeHandScreen = useSelector(
+    selectIsCarouselModeHandScreen(gameId, playerId),
+  );
+  const isCarouselModeTableScreen = useSelector(
+    selectIsCarouselModeTableScreen(gameId, playerId),
+  );
+
   const [middleButton, setMiddleButton] = useState(null);
   const [isEmblaReady, setIsEmblaReady] = useState(false);
   const linksRef = useRef([]);
@@ -61,22 +80,25 @@ export default function Game() {
     }
   }, [currentGame, navigate]);
 
-  const userCredentials = useSelector(selectUserCredentials);
-  const { _id: playerId } = userCredentials;
+  //# Page header color and text
+  useEffect(() => {
+    if (!currentGame) return;
+    const { hostPlayerId, players } = currentGame;
 
-  const toastId = useSelector(selectToastId(gameId, playerId));
-  const activeScreen = useSelector(selectActiveScreen(gameId, playerId));
-  const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
-  const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
+    const hostPlayer = players.find(player => player._id === hostPlayerId);
+    const gameHostNick = hostPlayer.name;
 
-  const { totalPreviews, loadedPreviews, preloadUrls, hasPreloaded } =
-    useSelector(selectPreloadImg);
-  const isCarouselModeHandScreen = useSelector(
-    selectIsCarouselModeHandScreen(gameId, playerId),
-  );
-  const isCarouselModeTableScreen = useSelector(
-    selectIsCarouselModeTableScreen(gameId, playerId),
-  );
+    const headerTitleText =
+      activeScreen === 0
+        ? t("hand")
+        : activeScreen === 1
+        ? t("players")
+        : t("table");
+
+    const headerTitleTextSecond = t("whom_game", { gameHostNick });
+    dispatch(setPageHeaderText(headerTitleText));
+    dispatch(setPageHeaderTextSecond(headerTitleTextSecond));
+  }, [activeScreen, currentGame, dispatch, t]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -136,44 +158,6 @@ export default function Game() {
 
     return { isMustMakeMove: false, text: t("players_taking_turn") };
   }, [currentGame, isShowMask, playerId, t]);
-
-  // //# Page header color and text
-  // useEffect(() => {
-  //   if (!currentGame) return;
-  //   const { scores, players } = currentGame;
-
-  //   const gameScores = Object.values(scores);
-
-  //   const [maxId, maxVal] = Object.entries(scores).reduce(
-  //     ([maxKey, maxValue], [key, value]) =>
-  //       value > maxValue ? [key, value] : [maxKey, maxValue],
-  //     [null, -Infinity],
-  //   );
-
-  //   const maxEntries = Object.entries(scores).filter(
-  //     ([key, value]) => value === maxVal,
-  //   );
-
-  //   const winners = players.filter(p =>
-  //     maxEntries.some(([key, value]) => key === p._id),
-  //   );
-  //   // console.log("maxEntries:", maxEntries);
-  //   // console.log("winners:", winners);
-
-  //   // players.filter(p => {
-  //   //   const winnersP = maxEntries.filter(([key, value]) => key === p._id);
-  //   //   console.log(" useEffect >> maxEntries:::", maxEntries);
-  //   //       console.log(" gameEnd >> winnersP:::", winnersP);
-  //   // });
-
-  //   const { isMustMakeMove, text } = textAndColorOfHeader();
-
-  //   if (isMustMakeMove) {
-  //     dispatch(setPageHeaderText(text));
-  //   } else {
-  //     dispatch(setPageHeaderText(text));
-  //   }
-  // }, [currentGame, dispatch, textAndColorOfHeader]);
 
   // Add all publicId card's from Hand and Table to addPreviewId in Redux state
   useEffect(() => {
@@ -442,7 +426,7 @@ export default function Game() {
   return (
     <div className={css.gameContainer}>
       {/* <p>Current Game</p> */}
-      <PageBadge />
+      {/* <PageBadge /> */}
 
       <div
         className={`${css.screenCarouselWrapper} ${
