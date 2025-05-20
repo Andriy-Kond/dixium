@@ -636,7 +636,7 @@ export default function Hand({
                       )} */}
 
                       <ImgGen
-                        className={`${css.carouselImage} ${css.visible}`}
+                        className={css.carouselImage}
                         publicId={card.public_id}
                         isBig
                       />

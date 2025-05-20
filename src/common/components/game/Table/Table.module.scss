@@ -2,7 +2,7 @@
 
 .img {
   width: 100%;
-  height: 100%;
+  // height: 100%;
 }
 
 // ======== Carousel ========
@@ -24,13 +24,7 @@
   flex-shrink: 0;
   // flex-basis: calc(100% - 8px);
   flex-basis: 100%;
-}
-
-.slideContainer {
-  // position: relative;
   padding: 4px;
-  // height: 100%;
-  // height: fit-content;
 }
 
 .slideContainerActive {
@@ -50,7 +44,7 @@
   gap: 4px;
 }
 
-.checkboxContainer {
+.checkboxContainerCarousel {
   position: absolute;
   bottom: 8px;
   left: 50%;
@@ -61,7 +55,14 @@
   gap: 4px;
 }
 
-.checkboxContainer2 {
+.checkboxContainer2Carousel {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.checkboxContainer2NonCarousel {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,13 +73,16 @@
 }
 
 .checkboxCard {
-  position: relative;
-  border-radius: 50%;
+  // position: relative;
+  // border-radius: 50%;
   // height: 13px;
   // width: 13px;
-  width: 16px;
-  height: 16px;
+  // width: 16px;
+  // height: 16px;
   // background-color: var(--04, #e3e7e9);
+}
+
+.checkboxCard2 {
 }
 
 .iconStar {
@@ -93,10 +97,22 @@
   color: var(--04, #e3e7e9);
 }
 
+.iconStar2 {
+  // position: absolute;
+  // top: 50%;
+  // left: 50%;
+  // transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+
+  // color: var(--40, #161f27);
+  color: var(--04, #e3e7e9);
+}
+
 //Стилі для появи першого слайду
 .carouselImage {
   width: 100%;
-  height: 100%;
+  // height: 100%;
   object-fit: fill;
 
   // Початковий стан для всіх слайдів
@@ -106,9 +122,7 @@
   // border-radius: 4px;
 
   // Анімація для плавної появи слайду
-  &.visible {
-    animation: fadeInScale 0.3s ease forwards; // "forwards" зберігає кінцевий стан
-  }
+  animation: fadeInScale 0.3s ease forwards; // "forwards" зберігає кінцевий стан
 }
 
 // Анімація появи

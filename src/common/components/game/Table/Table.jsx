@@ -444,15 +444,15 @@ export default function Table({
   const getStarsMarksByVoteCount = voteCount => {
     const marksVote = [];
     if (voteCount === 1) {
-      // marksVote.push(<MdStars className={css.iconStar} />);
-      marksVote.push(<MdStar className={css.iconStar} />);
+      // marksVote.push(<MdStars className={css.iconStar2} />);
+      marksVote.push(<MdStar className={css.iconStar2} />);
     }
 
     if (voteCount === 2) {
-      // marksVote.push(<MdStars className={css.iconStar} />);
-      // marksVote.push(<MdStars className={css.iconStar} />);
-      marksVote.push(<MdStar className={css.iconStar} />);
-      marksVote.push(<MdStar className={css.iconStar} />);
+      // marksVote.push(<MdStars className={css.iconStar2} />);
+      // marksVote.push(<MdStars className={css.iconStar2} />);
+      marksVote.push(<MdStar className={css.iconStar2} />);
+      marksVote.push(<MdStar className={css.iconStar2} />);
     }
 
     return marksVote;
@@ -462,13 +462,13 @@ export default function Table({
     const marks = [];
 
     if (firstVotedCardId === cardId) {
-      // marks.push(<MdStars className={css.iconStar} />);
-      marks.push(<MdStar className={css.iconStar} />);
+      // marks.push(<MdStars className={css.iconStar2} />);
+      marks.push(<MdStar className={css.iconStar2} />);
     }
 
     if (secondVotedCardId === cardId) {
-      // marks.push(<MdStars className={css.iconStar} />);
-      marks.push(<MdStar className={css.iconStar} />);
+      // marks.push(<MdStars className={css.iconStar2} />);
+      marks.push(<MdStar className={css.iconStar2} />);
     }
 
     return marks;
@@ -491,28 +491,20 @@ export default function Table({
 
                   return (
                     <li className={css.carouselSlide} key={card._id}>
-                      <div
-                        // className={css.slideContainer}
-                        className={clsx(css.slideContainer, {
-                          // [css.slideContainerActive]: marks.length > 0,
-                        })}>
-                        <ImgGen
-                          className={`${css.carouselImage} ${
-                            isMounted ? css.visible : ""
-                          }`}
-                          publicId={card.public_id}
-                          isBig
-                        />
-                        {marks.length > 0 && (
-                          <div className={css.checkboxContainer2}>
-                            {marks.map((mark, index) => (
-                              <span key={index} className={css.checkboxCard}>
-                                {mark}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      <ImgGen
+                        className={css.carouselImage}
+                        publicId={card.public_id}
+                        isBig
+                      />
+                      {marks.length > 0 && (
+                        <div className={css.checkboxContainer2Carousel}>
+                          {marks.map((mark, index) => (
+                            <span key={index} className={css.checkboxCard2}>
+                              {mark}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </li>
                   );
                 })}
@@ -527,13 +519,16 @@ export default function Table({
               const marks = getStarsMarksByCardId(card._id);
               return (
                 <li
-                  className={clsx(css.card, {
-                    // [css.slideContainerActive]: marks.length > 0,
-                  })}
+                  className={css.card}
                   key={card._id}
                   onClick={() => carouselModeOn(idx)}>
+                  <ImgGen
+                    className={css.img}
+                    publicId={card.public_id}
+                    isNeedPreload={true}
+                  />
                   {marks.length > 0 && (
-                    <div className={css.checkboxContainerNonCarousel}>
+                    <div className={css.checkboxContainer2NonCarousel}>
                       {getStarsMarksByCardId(card._id).map((mark, index) => (
                         <span key={index} className={css.checkboxCard}>
                           {mark}
@@ -541,12 +536,6 @@ export default function Table({
                       ))}
                     </div>
                   )}
-
-                  <ImgGen
-                    className={css.img}
-                    publicId={card.public_id}
-                    isNeedPreload={true}
-                  />
                 </li>
               );
             })}
@@ -566,27 +555,20 @@ export default function Table({
 
                 return (
                   <li className={css.carouselSlide} key={card._id}>
-                    <div
-                      // className={css.slideContainer}
-                      className={clsx(css.slideContainer, {
-                        [css.slideContainerActive]:
-                          marks.length > 0 && gameStatus !== VOTING,
-                      })}>
-                      {gameStatus === VOTING && marks.length > 0 && (
-                        <div className={css.checkboxContainer}>
-                          {marks.map((mark, index) => (
-                            <span key={index} className={css.checkboxCard}>
-                              {mark}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <ImgGen
-                        className={css.zoomImg}
-                        publicId={card.public_id}
-                        isBig
-                      />
-                    </div>
+                    {gameStatus === VOTING && marks.length > 0 && (
+                      <div className={css.checkboxContainerCarousel}>
+                        {marks.map((mark, index) => (
+                          <span key={index} className={css.checkboxCard}>
+                            {mark}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <ImgGen
+                      className={css.zoomImg}
+                      publicId={card.public_id}
+                      isBig
+                    />
                   </li>
                 );
               })}
