@@ -22,7 +22,7 @@ export const useVote = (gameId, firstVotedCardId, secondVotedCardId) => {
 
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const votes = useSelector(selectVotes(gameId)); // { playerId: {firstVotedCardId, secondVotedCardIdn } }
-  const playersMoreThanSix = gamePlayers.length > 6;
+  const playersMoreThanSix = gamePlayers.length > 3;
 
   const vote = useCallback(() => {
     if (

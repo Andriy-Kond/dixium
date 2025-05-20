@@ -279,7 +279,7 @@ export default function Table({
 
     const isCurrentPlayerStoryteller = storytellerId === playerId;
 
-    const playersMoreThanSix = players.length > 6;
+    const playersMoreThanSix = players.length > 3;
     const isReadyToVote = !players.some(player => !player.isGuessed);
     const isReadyToCalculatePoints = players.every(player => player.isVoted);
     const isStartVotingDisabled = players.some(player => !player.isGuessed);
@@ -400,7 +400,7 @@ export default function Table({
             // Якщо це не сторітеллер і може голосувати (вже обрані карти)
             setMiddleButton(
               <Button
-                btnText={t("vote_card")}
+                btnText={t("vote")}
                 onClick={handleVote}
                 disabled={!isCanVote || isCurrentPlayerVoted}
               />,
@@ -441,7 +441,7 @@ export default function Table({
     toggleCardSelection,
   ]);
 
-  const getStarsMarksByVoteCount = voteCount => {
+  const getMarksByVoteCount = voteCount => {
     const marksVote = [];
     if (voteCount === 1) {
       // marksVote.push(<MdStars className={css.iconStar2} />);
@@ -478,6 +478,7 @@ export default function Table({
   if (!currentGame) return null;
 
   const { gameStatus, cardsOnTable, roundResults, storytellerId } = currentGame;
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
 
   if (gameStatus === VOTING) {
     return (
@@ -519,7 +520,9 @@ export default function Table({
               const marks = getStarsMarksByCardId(card._id);
               return (
                 <li
-                  className={css.card}
+                  className={clsx(css.card, {
+                    [css.slideContainerActive]: card.ownerId === playerId,
+                  })}
                   key={card._id}
                   onClick={() => carouselModeOn(idx)}>
                   <ImgGen
@@ -589,34 +592,31 @@ export default function Table({
                   isNeedPreload={true}
                 />
                 <div className={css.resultPlayers}>
-                  <span>
-                    {result.ownerId === storytellerId
-                      ? t("storyteller_guessed_card", {
-                          storyteller: result.ownerName.toUpperCase(),
-                        })
-                      : t("storytellers_card", {
-                          storyteller: result.ownerName.toUpperCase(),
-                        })}
+                  <span className={css.playerName}>
+                    {result.ownerName.toUpperCase()}
+                    {result.ownerId === storytellerId &&
+                      ` (${t("storyteller").toLowerCase()})`}
                   </span>
 
                   <ul className={css.resultVotes}>
                     {result.votesForThisCard.map((vote, voteIdx) => {
-                      const marksVote = getStarsMarksByVoteCount(
-                        vote.voteCount,
-                      );
+                      const marksVote = getMarksByVoteCount(vote.voteCount);
 
                       return (
-                        <li className={css.voterContainer} key={voteIdx}>
-                          {capitalizeWords(vote.playerName)}
-                          <div className={css.resultCheckboxContainer}>
-                            {marksVote.map((mark, index) => (
-                              // <span key={index}>{mark}</span>
-                              <span key={index} className={css.checkboxCard}>
-                                {mark}
-                              </span>
-                            ))}
-                          </div>
-                        </li>
+                        <>
+                          <li className={css.voterContainer} key={voteIdx}>
+                            <span className={css.playerName}>
+                              {capitalizeWords(vote.playerName)}
+                            </span>
+                            <div className={css.resultCheckboxContainer}>
+                              {marksVote.map((mark, index) => (
+                                <span key={index} className={css.iconStar2}>
+                                  {mark}
+                                </span>
+                              ))}
+                            </div>
+                          </li>
+                        </>
                       );
                     })}
                   </ul>

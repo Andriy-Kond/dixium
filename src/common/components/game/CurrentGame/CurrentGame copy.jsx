@@ -4,7 +4,7 @@ import Hand from "common/components/game/Hand";
 import Players from "common/components/game/Players";
 import Table from "common/components/game/Table";
 import css from "./CurrentGame.module.scss";
-import GameNavigationBar from "common/components/game/GameNavigationBar";
+import GameBottomBar from "common/components/game/GameBottomBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -489,7 +489,7 @@ export default function Game() {
         </ul>
       </div>
 
-      <GameNavigationBar
+      <GameBottomBar
         activeScreen={activeScreen}
         screensLength={screens.length}
         onPrevScreen={prevScreen}

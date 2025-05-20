@@ -160,64 +160,83 @@
 }
 
 .card {
-  position: relative;
+  // position: relative;
   width: 96px;
-  // height: auto;
+  height: fit-content;
 
   padding: 4px;
   background-color: transparent;
+  height: fit-content;
 }
 
 // ==================== Results styles
 .resultList {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  padding: 8px;
 }
 
 .resultItem {
   display: flex;
   gap: 8px;
-  padding: 8px;
-  border-bottom: 1px solid #aec2d6;
 }
 
+// .resultImg {
+//   // width: 100%;
+//   // height: 100%;
+
+//   height: 134px;
+//   min-width: 100px;
+//   object-fit: fill;
+//   border: 4px solid #5d7e9e;
+//   border-radius: 4px;
+
+//   // width: 104px;
+// }
+
 .resultImg {
-  // width: 100%;
-  // height: 100%;
-
-  height: 134px;
-  min-width: 100px;
-  object-fit: fill;
-  border: 4px solid #5d7e9e;
-  border-radius: 4px;
-
-  // width: 104px;
+  width: 101px;
+  height: fit-content;
+  padding: 4px;
 }
 
 .resultPlayers {
   width: 100%;
   display: flex;
-  gap: 24px;
   flex-direction: column;
 }
 
+.playerName {
+  color: var(--04, #e3e7e9);
+}
+
 .resultVotes {
+  margin-top: 8px;
+
   display: flex;
-  gap: 8px;
   flex-direction: column;
+  gap: 8px;
 }
 
 .voterContainer {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
-  color: #000000de;
+  align-items: center;
 }
 
 .resultCheckboxContainer {
   display: flex;
-  gap: 5px;
-  color: #5d7e9e;
+}
+
+.checkboxCard {
+  // position: relative;
+  // border-radius: 50%;
+  // height: 13px;
+  // width: 13px;
+  // width: 16px;
+  // height: 16px;
+  // background-color: var(--04, #e3e7e9);
 }
 
 .carouselModeBtnsWrapper {

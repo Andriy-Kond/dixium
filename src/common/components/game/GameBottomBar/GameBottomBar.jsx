@@ -1,9 +1,9 @@
 import Button from "common/components/ui/Button/index.js";
-import css from "./GameNavigationBar.module.scss";
 import Menu from "common/components/navComponents/Menu/Menu.jsx";
 import CurrentGameMenu from "../CurrentGameMenu/CurrentGameMenu.jsx";
+import css from "./GameBottomBar.module.scss";
 
-export default function GameNavigationBar({
+export default function GameBottomBar({
   activeScreen,
   screensLength,
   onPrevScreen,
@@ -23,7 +23,7 @@ export default function GameNavigationBar({
         />
       )} */}
       <CurrentGameMenu />
-      {middleButton || <span>{`${activeScreen + 1} / ${screensLength}`}</span>}
+      {middleButton || ""}
       {/* {isShowSidesBtns && (
         <Button
           btnText={">"}

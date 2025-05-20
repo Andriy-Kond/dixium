@@ -7,11 +7,11 @@
 export function prepareRoundResults({
   cardsOnTable,
   votes,
-  gamePlayers,
+  players,
   storytellerId,
 }) {
   const results = cardsOnTable.map(card => {
-    const ownerPlayer = gamePlayers.find(p => p._id === card.ownerId);
+    const ownerPlayer = players.find(p => p._id === card.ownerId);
     const votesForThisCard = [];
 
     Object.entries(votes).forEach(([playerId, vote]) => {
@@ -20,7 +20,7 @@ export function prepareRoundResults({
       if (vote.firstVotedCardId === card._id) voteCount++;
       if (vote.secondVotedCardId === card._id) voteCount++;
       if (voteCount > 0) {
-        const voter = gamePlayers.find(p => p._id === playerId);
+        const voter = players.find(p => p._id === playerId);
 
         votesForThisCard.push({
           playerName: voter.name,

@@ -10,7 +10,7 @@ import {
 // Ця функція враховує всі правила, включаючи бонуси за введення інших в оману:
 export const useCalculateRoundPoints = (gameId, selectedCardId) => {
   const currentGame = useSelector(selectLocalGame(gameId));
-  const { players: gamePlayers } = currentGame;
+
   const storytellerId = useSelector(selectStorytellerId(gameId));
   const isSingleCardMode = useSelector(selectIsSingleCardMode(gameId));
   const scores = useSelector(selectScores(gameId));
@@ -23,13 +23,13 @@ export const useCalculateRoundPoints = (gameId, selectedCardId) => {
   let correctVotes = 0;
 
   // кількість гравців
-  const playersQty = gamePlayers.length;
+  const playersQty = currentGame.players.length;
 
   // Чи грають гравці двома картами (isSingleCardMode === false or playersQty === 3)
   const twoCardsMode = !isSingleCardMode || playersQty === 3;
 
   // Ініціалізуємо всіх гравців з нульовими очками за раунд
-  gamePlayers.forEach(player => (points[player._id] = 0));
+  currentGame.players.forEach(player => (points[player._id] = 0));
 
   // Збираємо дані про голосування
   Object.entries(scores).forEach(([playerId, votedCardId]) => {
@@ -40,7 +40,7 @@ export const useCalculateRoundPoints = (gameId, selectedCardId) => {
     }
   });
 
-  const totalPlayers = gamePlayers.length;
+  const totalPlayers = currentGame.players.length;
 
   // Розрахунок очок ведучому (Storyteller)
   if (correctVotes === 0 || correctVotes === totalPlayers - 1) {
@@ -50,7 +50,7 @@ export const useCalculateRoundPoints = (gameId, selectedCardId) => {
   }
 
   // Розрахунок очок гравцям
-  gamePlayers.forEach(player => {
+  currentGame.players.forEach(player => {
     if (player.id !== storytellerId) {
       const votedCardId = votes[player.id];
 

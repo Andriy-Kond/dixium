@@ -106,10 +106,11 @@ export default function Players({
       if (player._id === storytellerId) {
         return (
           <>
-            <FaCircle className={css.storyteller} />
+            {/* <FaCircle className={css.storyteller} /> */}
             <span
               className={css.storytellerWrapper}
-              style={{ "--color": "#fff" }}>
+              // style={{ "--color": "#fff" }}
+            >
               {playerScore}
             </span>
           </>
@@ -118,7 +119,8 @@ export default function Players({
         return (
           <span
             className={css.storytellerWrapper}
-            style={{ "--color": "#5D7E9E" }}>
+            // style={{ "--color": "#5D7E9E" }}
+          >
             {playerScore}
           </span>
         );
@@ -141,43 +143,47 @@ export default function Players({
   //^ Render
   if (!currentGame) return null;
 
-  const { players, hostPlayerId, scores } = currentGame;
+  const { players, hostPlayerId, scores, finishPoints } = currentGame;
   return (
     <>
       {/* <p>Players</p> */}
+      <div className={css.playersContainer}>
+        <div className={css.playersTitle}>{t("players_turn")}</div>
+        <ul className={css.list}>
+          {players.map(player => {
+            const maxScore = Math.max(...Object.values(scores)); // Максимальний бал для цього раунду
 
-      <ul className={css.playersList}>
-        {players.map(player => {
-          const maxScore = Math.max(...Object.values(scores)); // Максимальний бал для цього раунду
-          const playerScore = scores[player._id] || 0; // Бал поточного гравця
-          const fillPercentage =
-            maxScore > 0 ? (playerScore / maxScore) * 100 : 0; // Відсоток замальовки для поточного гравця
+            const playerScore = scores[player._id] || 0; // Бал поточного гравця
+            const fillPercentage =
+              maxScore > 0 ? (playerScore / finishPoints) * 100 : 0; // Відсоток замальовки для поточного гравця
 
-          return (
-            <li
-              className={css.player}
-              key={player._id}
-              style={
-                isActiveScreen
-                  ? {
-                      "--fill-percentage": `${fillPercentage}%`,
-                    }
-                  : {
-                      "--fill-percentage": `0%`,
-                    }
-              }>
-              <div>
-                {player.name.toUpperCase()}
-                {hostPlayerId === player._id && " (THE HOST)"}
-              </div>
+            return (
+              <li className={css.listItem} key={player._id}>
+                <div
+                  className={css.pointsScale}
+                  style={
+                    isActiveScreen
+                      ? {
+                          "--fill-percentage": `${fillPercentage}%`,
+                        }
+                      : {
+                          "--fill-percentage": `0%`,
+                        }
+                  }
+                />
+                <span className={css.playerName}>
+                  {player.name.toUpperCase()}
+                  {hostPlayerId === player._id && " (THE HOST)"}
+                </span>
 
-              <div className={css.playerState}>
-                {getIconOfPlayerState(player, playerScore)}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                <span className={css.playerState}>
+                  {getIconOfPlayerState(player, playerScore)}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </>
   );
 }

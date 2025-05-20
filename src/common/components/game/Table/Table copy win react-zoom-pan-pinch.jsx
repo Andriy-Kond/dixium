@@ -403,7 +403,7 @@ export default function Table({
     t,
   ]);
 
-  const getStarsMarksByVoteCount = voteCount => {
+  const getMarksByVoteCount = voteCount => {
     const marksVote = [];
     if (voteCount === 1) {
       marksVote.push(<MdOutlineStarOutline className={css.checkboxCard} />);
@@ -563,7 +563,7 @@ export default function Table({
 
                   <ul className={css.resultVotes}>
                     {result.votesForThisCard.map((vote, voteIdx) => {
-                      const stars = getStarsMarksByVoteCount(vote.voteCount);
+                      const stars = getMarksByVoteCount(vote.voteCount);
 
                       return (
                         <li className={css.voterContainer} key={voteIdx}>
@@ -622,7 +622,7 @@ export default function Table({
 
                   <ul className={css.resultVotes}>
                     {result.votesForThisCard.map((vote, voteIdx) => {
-                      const stars = getStarsMarksByVoteCount(vote.voteCount);
+                      const stars = getMarksByVoteCount(vote.voteCount);
 
                       return (
                         <li className={css.voterContainer} key={voteIdx}>

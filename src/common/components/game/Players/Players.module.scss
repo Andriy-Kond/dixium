@@ -1,3 +1,64 @@
+.playersContainer {
+  padding: 8px 16px;
+}
+
+.playersTitle {
+  color: var(--00, #818f99);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.listItem {
+  position: relative;
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  align-self: stretch;
+  justify-content: space-between;
+
+  // overflow: hidden;
+
+  &:first-child::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -16px;
+    right: -16px;
+
+    border-top: 1px solid var(--20, #2b3847);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -16px;
+    right: -16px;
+
+    border-bottom: 1px solid var(--20, #2b3847);
+  }
+}
+
+.pointsScale {
+  position: absolute;
+  left: -16px;
+  right: -16px;
+  height: 100%;
+  width: calc(var(--fill-percentage) + 32px);
+  background-color: var(--40, #161f27);
+  transition: width 1s ease; /* додаткова анімація для плавності */
+  z-index: -1;
+}
+
+.playerName {
+  color: var(--04, #e3e7e9);
+}
+
 .playersList {
   display: flex;
   flex-direction: column;
@@ -7,13 +68,13 @@
 }
 
 .player {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   padding: 12px 8px 16px 12px;
-  background-color: #fff;
-  position: relative;
+  // background-color: #fff;
   overflow: hidden;
 
   &:not(:last-child) {
@@ -102,13 +163,13 @@
   // background-repeat: no-repeat;
 }
 
-.storyteller {
-  width: 20px;
-  height: 20px;
-  color: #5d7e9e;
-  // background-size: contain;
-  // background-repeat: no-repeat;
-}
+// .storyteller {
+//   width: 20px;
+//   height: 20px;
+//   color: #5d7e9e;
+//   // background-size: contain;
+//   // background-repeat: no-repeat;
+// }
 
 .storytellerCircle {
   position: relative;
@@ -118,13 +179,12 @@
 }
 
 .storytellerWrapper {
-  position: absolute;
+  // position: absolute;
 
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: var(--color); // Колір тексту
-  font-size: 12px; // Розмір шрифту
+  // top: 50%;
+  // left: 50%;
+  // transform: translate(-50%, -50%);
+  // color: var(--color); // Колір тексту
 
-  line-height: 13px;
+  color: var(--00, #818f99);
 }
