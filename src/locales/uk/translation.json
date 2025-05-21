@@ -87,7 +87,7 @@
   "found_game_success": "Гра з номером {{gameNumber}} знайдена",
   "too_many_requests": "Забагато запитів. Спробуйте ще раз пізніше.",
   "google_account_err": "Цей обліковий запис зареєстровано через Google. Будь ласка, увійдіть через Google або встановіть пароль.",
-  "register_with_google": "Зареєструватися через Google",
+  "register_with_google": "Google реєстрація",
   "login_with_google": "Увійти через Google",
   "continue_with_google": "Продовжити з Google",
   "set_password": "Встановити пароль",

@@ -112,7 +112,7 @@
 //Стилі для появи першого слайду
 .carouselImage {
   width: 100%;
-  // height: 100%;
+  // height: fit-content;
   object-fit: fill;
 
   // Початковий стан для всіх слайдів
@@ -281,12 +281,12 @@
   background-color: #aec2d6;
 }
 
-.zoomImg {
-  // todo переробити під правильні розміри
-  width: 100%;
-  height: 100%;
+// .zoomImg {
+//   // todo переробити під правильні розміри
+//   width: 100%;
+//   height: fit-content;
 
-  object-fit: fill;
-  border: 4px solid #5d7e9e;
-  border-radius: 4px;
-}
+//   object-fit: fill;
+//   border: 4px solid #5d7e9e;
+//   border-radius: 4px;
+// }

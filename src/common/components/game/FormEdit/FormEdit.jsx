@@ -1,8 +1,8 @@
 import { MdCheck, MdClear } from "react-icons/md";
-import css from "./EditingForm.module.scss";
+import css from "./FormEdit.module.scss";
 import { useRef } from "react";
 
-export default function EditingForm({
+export default function FormEdit({
   isDisableSet = false,
   isDisableReset = false,
   handleClear,

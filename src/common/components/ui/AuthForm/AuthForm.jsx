@@ -1,10 +1,11 @@
-import { BiHide, BiSolidHide } from "react-icons/bi";
-
 import { useState } from "react";
-import css from "./AuthForm.module.scss";
 import Button from "../Button/index.js";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import FormInput from "../FormInput/FormInput.jsx";
+
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+import css from "./AuthForm.module.scss";
 
 const initialState = {
   name: "",
@@ -33,12 +34,10 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
         {isRegister && (
           <label className={css.formLabel}>
             {t("name")}
-            <input
-              className={css.formInput}
-              type="text"
-              name="name"
+            <FormInput
+              name={"name"}
               placeholder={t("enter_name")}
-              value={formData.name}
+              val={formData.name}
               onChange={handleChange}
             />
           </label>
@@ -47,12 +46,10 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
         <label className={css.formLabel}>
           {t("email")}
 
-          <input
-            className={css.formInput}
-            type="text"
-            name="email"
+          <FormInput
+            name={"email"}
             placeholder={t("enter_email")}
-            value={formData?.email}
+            val={formData?.email}
             onChange={handleChange}
           />
         </label>
@@ -61,12 +58,11 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
           {t("password")}
 
           <div className={css.inputContainer}>
-            <input
-              className={css.formInput}
+            <FormInput
               type={showPassword ? "text" : "password"}
-              name="password"
+              name={"password"}
               placeholder={t("enter_password")}
-              value={formData?.password}
+              val={formData?.password}
               onChange={handleChange}
             />
 
@@ -74,9 +70,9 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
               className={css.showPasswordButton}
               onClick={toggleShowPassword}>
               {showPassword ? (
-                <BiHide className={css.hideIcon} />
+                <MdVisibility className={css.hideIcon} />
               ) : (
-                <BiSolidHide className={css.hideIcon} />
+                <MdVisibilityOff className={css.hideIcon} />
               )}
             </div>
           </div>
@@ -88,7 +84,9 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
           </Link>
         )}
 
-        <Button btnText={btnText} disabled={isDisabled} />
+        <button className={css.btn} disabled={isDisabled}>
+          {btnText}
+        </button>
       </form>
     </>
   );

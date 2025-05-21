@@ -138,13 +138,6 @@ export default function RegisterPage() {
           />
         </div>
 
-        <Button
-          onClick={() =>
-            googleLoginRef.current?.querySelector("div[role=button]")?.click()
-          }>
-          {t("register_with_google")}
-        </Button>
-
         {errorMessage?.includes("registered via Google") && (
           <div className={css.errorContainer}>
             <p>{t("google_account_error")}</p>
@@ -190,6 +183,13 @@ export default function RegisterPage() {
           onSubmit={submitCredentials}
           isDisabled={isGoogleLoading || isSignupLoading}
         />
+        <Button
+          onClick={() =>
+            googleLoginRef.current?.querySelector("div[role=button]")?.click()
+          }>
+          {t("register_with_google")}
+        </Button>
+
         <div className={css.pageFooter}></div>
       </div>
     </div>

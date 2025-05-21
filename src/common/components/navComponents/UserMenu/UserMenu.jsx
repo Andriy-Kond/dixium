@@ -25,7 +25,7 @@ import ThemeToggleRadioBtns from "common/components/ui/ThemeToggle";
 import LangSwitcherRadioBtns from "common/components/ui/LangSwitcher";
 
 import css from "./UserMenu.module.scss";
-import EditingForm from "common/components/game/EditingForm/EditingForm.jsx";
+import EditingForm from "common/components/game/FormEdit/FormEdit.jsx";
 
 export default function UserMenu({ closeMenu = () => {} }) {
   const [setNickname, { isLoading }] = useSetNicknameMutation();

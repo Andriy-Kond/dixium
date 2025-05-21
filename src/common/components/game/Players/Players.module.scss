@@ -49,7 +49,9 @@
   left: -16px;
   right: -16px;
   height: 100%;
-  width: calc(var(--fill-percentage) + 32px);
+  width: var(--fill-percentage);
+  // width: 111%;
+
   background-color: var(--40, #161f27);
   transition: width 1s ease; /* додаткова анімація для плавності */
   z-index: -1;
@@ -59,45 +61,45 @@
   color: var(--04, #e3e7e9);
 }
 
-.playersList {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0px;
-  width: 100%;
-}
+// .playersList {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: flex-start;
+//   padding: 0px;
+//   width: 100%;
+// }
 
-.player {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 12px 8px 16px 12px;
-  // background-color: #fff;
-  overflow: hidden;
+// .player {
+//   position: relative;
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   width: 100%;
+//   padding: 12px 8px 16px 12px;
+//   // background-color: #fff;
+//   overflow: hidden;
 
-  &:not(:last-child) {
-    border-bottom: 1px solid #d8e2ed;
-  }
+//   &:not(:last-child) {
+//     border-bottom: 1px solid #d8e2ed;
+//   }
 
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: var(--fill-percentage);
-    background-color: #0f7dff1f; /* один колір з прозорістю */
-    transition: width 1s ease; /* додаткова анімація для плавності */
-    z-index: 0;
-  }
+//   &::before {
+//     content: "";
+//     position: absolute;
+//     left: 0;
+//     top: 0;
+//     height: 100%;
+//     width: var(--fill-percentage);
+//     background-color: #0f7dff1f; /* один колір з прозорістю */
+//     transition: width 1s ease; /* додаткова анімація для плавності */
+//     z-index: 0;
+//   }
 
-  > * {
-    position: relative;
-    z-index: 1;
-  }
-}
+//   > * {
+//     position: relative;
+//     z-index: 1;
+//   }
+// }
 
 .playerState {
   position: relative; // для цифри в колі для оповідача
@@ -119,7 +121,8 @@
 
 .waiting {
   /* change color here */
-  color: #3498db;
+  color: var(--04, #e3e7e9);
+  animation: spin 1.2s linear infinite;
 }
 .waiting,
 .waiting:after {
@@ -142,41 +145,42 @@
   border: 2px solid currentColor;
   border-color: currentColor transparent currentColor transparent;
   animation: spin 1.2s linear infinite;
+  // animation-direction: reverse;
 }
 
 @keyframes spin {
   0% {
-    transform: rotate(0deg);
+    transform: rotate(360deg);
   }
   100% {
-    transform: rotate(360deg);
+    transform: rotate(0deg);
   }
 }
 
 // Стан "походив" з галочкою
 .guessed {
-  width: 20px;
-  height: 20px;
-  color: #5d7e9e;
+  width: 16px;
+  height: 16px;
+  color: var(--04, #e3e7e9);
   // background-image: url("/path/to/check.svg");
   // background-size: contain;
   // background-repeat: no-repeat;
 }
 
-// .storyteller {
+.storyteller {
+  width: 16px;
+  height: 16px;
+  color: var(--04, #e3e7e9);
+  // background-size: contain;
+  // background-repeat: no-repeat;
+}
+
+// .storytellerCircle {
+//   position: relative;
 //   width: 20px;
 //   height: 20px;
 //   color: #5d7e9e;
-//   // background-size: contain;
-//   // background-repeat: no-repeat;
 // }
-
-.storytellerCircle {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  color: #5d7e9e;
-}
 
 .storytellerWrapper {
   // position: absolute;

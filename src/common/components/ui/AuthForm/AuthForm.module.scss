@@ -1,15 +1,15 @@
 @import "styles/utils/breakpoints.scss";
+@import "styles/utils/mixins";
+
 .authForm {
   margin-top: auto;
-  padding: 16px;
+  padding: 16px 0;
 
   display: flex;
   flex-direction: column;
   gap: 16px;
 
-  background-color: var(--white_color);
-  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
-  caret-color: auto;
+  // caret-color: auto;
 }
 
 .formLabel {
@@ -17,19 +17,8 @@
   flex-direction: column;
   gap: 5px;
 
-  font-size: 11px;
-  line-height: 13px;
-
-  color: rgba(0, 0, 0, 0.38);
-}
-.formInput {
+  color: var(--00, #818f99);
   font-size: 14px;
-  line-height: 16px;
-  border-bottom: 1px solid rgba(15, 125, 255, 0.24);
-
-  &::placeholder {
-    color: rgba(0, 0, 0, 0.24);
-  }
 }
 
 .inputContainer {
@@ -54,19 +43,26 @@
   font-size: 0.9rem;
 }
 .hideIcon {
-  height: 100%;
-  width: 100%;
+  height: 16px;
+  width: 16px;
+
+  color: var(--04, #e3e7e9);
 }
 
 .forgotPasswordLink {
   display: block;
   margin-top: 10px;
   text-align: center;
-  color: #007bff;
-  text-decoration: none;
   font-size: 14px;
+  color: var(--Highlight, #f6902a);
+  text-decoration: none;
 
   &:hover {
     text-decoration: underline;
   }
+}
+
+.btn {
+  @include btn;
+  align-self: flex-end;
 }

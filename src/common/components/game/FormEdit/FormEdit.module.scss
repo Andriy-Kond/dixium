@@ -7,6 +7,7 @@
 
   background-color: var(--40, #161f27);
   border-bottom: 2px solid var(--20, #2b3847);
+  caret-color: auto;
 
   &.input-focused {
     border-bottom: 2px solid var(--Focus, #3275b8);

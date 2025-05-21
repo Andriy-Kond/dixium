@@ -19,7 +19,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 
 import clsx from "clsx";
-import EditingForm from "../EditingForm/EditingForm.jsx";
+import EditingForm from "../FormEdit/FormEdit.jsx";
 import InfoMessage from "common/components/ui/InfoMessage";
 import { MdArrowForwardIos } from "react-icons/md";
 

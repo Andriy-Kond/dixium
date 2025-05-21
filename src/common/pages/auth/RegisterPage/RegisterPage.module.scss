@@ -1,6 +1,7 @@
 @import "styles/utils/breakpoints.scss";
 .container {
-  margin: 0 auto;
+  // margin: 0 auto;
+  padding: 0 16px;
 
   @media screen and (min-width: $tablet) {
     width: 320px;

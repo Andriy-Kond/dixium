@@ -1,6 +1,9 @@
 @import "styles/utils/breakpoints.scss";
+@import "styles/utils/mixins";
+
 .container {
-  margin: 0 auto;
+  // margin: 0 auto;
+  padding: 0 16px;
 
   @media screen and (min-width: $tablet) {
     width: 320px;
@@ -78,4 +81,9 @@
   &:hover {
     background-color: #357ae8;
   }
+}
+
+.btn {
+  @include btn;
+  align-self: flex-end;
 }

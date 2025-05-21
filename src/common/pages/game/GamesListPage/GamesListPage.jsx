@@ -21,6 +21,7 @@ import { LOBBY } from "utils/generals/constants.js";
 
 import { MdArrowForwardIos } from "react-icons/md";
 import css from "./GamesListPage.module.scss";
+import FormInput from "common/components/game/FormEditInput/index.js";
 
 export default function GamesListPage() {
   // console.log("GamesListPage");
@@ -39,7 +40,6 @@ export default function GamesListPage() {
   } = userCredentials;
 
   const [searchGameNumber, setSearchGameNumber] = useState(null); // для пошуку (type: Number)
-  const inputRef = useRef(null);
 
   // set active game if it is to redux cash and local storage:
   const userActiveGameId = useSelector(selectUserActiveGameId);
@@ -206,16 +206,6 @@ export default function GamesListPage() {
 
   const isCanFind = getDigitCount() === 4 && searchGameNumber < 9999;
 
-  const handleFocus = () => {
-    console.log("on Focus");
-    inputRef.current.classList.add(css["input-focused"]);
-  };
-  const handleBlur = () => {
-    console.log("on Blur");
-
-    inputRef.current.classList.remove(css["input-focused"]);
-  };
-
   return (
     <>
       {/* <p>GameListPage</p> */}
@@ -250,37 +240,17 @@ export default function GamesListPage() {
         )}
 
         {!isPlayerInGame && (
-          <form className={css.searchForm} onSubmit={handleJoinSubmit}>
-            <input
-              className={`${css.searchInput} ${
-                isCanFind && css.searchInputReady
-              }`}
-              // className={css.searchInput}
-              ref={inputRef}
-              // autoFocus // виникає проблема при видаленні гри - ref не встигає сформуватись (треба додавати useEffect чи setTimeout для встановлення класу input-focused)
-              type="text"
-              onChange={handleChange}
-              placeholder={t("enter_id")}
-              inputMode="numeric"
-              maxLength={5} // 4 цифри + дефіс
-              aria-label={t("search_game_by_number")}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-            />
-
-            {/* {searchGameNumber && (
-              <button
-                className={css.clearButton}
-                type="button"
-                onClick={resetSearchGame}>
-                {t("clear")}
-              </button>
-            )} */}
-
-            <button className={css.btn} type="submit" disabled={!isCanFind}>
-              {t("join")}
-            </button>
-          </form>
+          <FormInput
+            handleSubmit={handleJoinSubmit}
+            onChange={handleChange}
+            // val={searchGameNumber}
+            inputMode={"numeric"}
+            placeholder={t("enter_id")}
+            maxLength={5} // 4 цифри + дефіс
+            ariaLabel={t("search_game_by_number")}
+            btnText={t("join")}
+            isDisableSubmitBtn={!isCanFind}
+          />
         )}
 
         {/* todo переробити умову для хоста і не хоста */}

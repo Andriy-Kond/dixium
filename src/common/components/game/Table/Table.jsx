@@ -550,15 +550,17 @@ export default function Table({
     return (
       <>
         {/* <p>Table gameStatus === ROUND_RESULTS</p> */}
+        {/* // todo виправити стилі!!!  */}
         {isCarouselModeTableScreen && (
-          <div className={css.carouselWrapper} ref={emblaRefCardsVote}>
-            <ul className={css.carouselContainer}>
-              {roundResults.map(card => {
-                const marks = getStarsMarksByCardId(card._id);
+          <div className={css.carWrap}>
+            <div className={css.carousel} ref={emblaRefCardsVote}>
+              <ul className={css.carouselContainer}>
+                {roundResults.map(card => {
+                  const marks = getStarsMarksByCardId(card._id);
 
-                return (
-                  <li className={css.carouselSlide} key={card._id}>
-                    {gameStatus === VOTING && marks.length > 0 && (
+                  return (
+                    <li className={css.carouselSlide} key={card._id}>
+                      {/* {gameStatus === VOTING && marks.length > 0 && (
                       <div className={css.checkboxContainerCarousel}>
                         {marks.map((mark, index) => (
                           <span key={index} className={css.checkboxCard}>
@@ -566,16 +568,18 @@ export default function Table({
                           </span>
                         ))}
                       </div>
-                    )}
-                    <ImgGen
-                      className={css.zoomImg}
-                      publicId={card.public_id}
-                      isBig
-                    />
-                  </li>
-                );
-              })}
-            </ul>
+                    )} */}
+                      <ImgGen
+                        // className={css.zoomImg}
+                        className={css.carouselImage}
+                        publicId={card.public_id}
+                        isBig
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         )}
 
@@ -593,7 +597,8 @@ export default function Table({
                 />
                 <div className={css.resultPlayers}>
                   <span className={css.playerName}>
-                    {result.ownerName.toUpperCase()}
+                    {/* {result.ownerName.toUpperCase()} */}
+                    {`[ ${result.ownerName.toUpperCase()} ]`}
                     {result.ownerId === storytellerId &&
                       ` (${t("storyteller").toLowerCase()})`}
                   </span>

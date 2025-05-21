@@ -134,13 +134,6 @@ export default function LoginPage() {
             />
           </div>
 
-          <Button
-            onClick={() =>
-              googleLoginRef.current?.querySelector("div[role=button]")?.click()
-            }>
-            {t("login_with_google")}
-          </Button>
-
           {errorMessage?.includes("registered via Google") && (
             <div className={css.errorContainer}>
               <p>{t("google_account_error")}</p>
@@ -186,6 +179,15 @@ export default function LoginPage() {
             onSubmit={submitCredentials}
             isDisabled={isLoginLoading}
           />
+
+          <button
+            className={css.btn}
+            onClick={() =>
+              googleLoginRef.current?.querySelector("div[role=button]")?.click()
+            }>
+            {t("login_with_google")}
+          </button>
+
           <div className={css.pageFooter}></div>
         </div>
       </div>

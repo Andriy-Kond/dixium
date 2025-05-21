@@ -1,0 +1,62 @@
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 13px 16px;
+  border-bottom: 2px solid var(--20, #2b3847);
+  background-color: var(--40, #161f27);
+
+  color: var(--04, #e3e7e9);
+
+  caret-color: auto;
+
+  &::placeholder {
+    color: var(--10, #3b4957);
+  }
+
+  &:focus {
+    border: none;
+    outline: none;
+  }
+
+  // &.searchInputReady,
+  &.input-focused {
+    border-bottom: 2px solid var(--Focus, #3275b8);
+    background: var(--Dark, #000);
+  }
+
+  // Перебиває стилі браузерів під час автозаповнення:
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--40, #161f27) inset !important;
+    -webkit-text-fill-color: var(--04, #e3e7e9) !important;
+    border-bottom: 2px solid var(--20, #2b3847) !important;
+    caret-color: auto;
+  }
+
+  &[type="text"],
+  &[type="email"],
+  &[type="password"] {
+    background-color: var(--40, #161f27) !important;
+    color: var(--04, #e3e7e9) !important;
+  }
+
+  // Для Firefox та інших браузерів
+  &:-moz-ui-invalid,
+  &:-moz-autofill {
+    background-color: var(--40, #161f27) !important;
+    color: var(--04, #e3e7e9) !important;
+  }
+
+  // Плавний перехід, щоб не блимало при перемиканні браузерних стилів
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-bottom 0.2s ease;
+
+  &:-webkit-autofill {
+    transition: background-color 5000s ease-in-out 0s,
+      color 5000s ease-in-out 0s;
+    -webkit-box-shadow: 0 0 0 30px var(--40, #161f27) inset !important;
+    -webkit-text-fill-color: var(--04, #e3e7e9) !important;
+    border-bottom: 2px solid var(--20, #2b3847) !important;
+  }
+}

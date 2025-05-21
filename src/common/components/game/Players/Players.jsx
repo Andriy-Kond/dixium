@@ -3,13 +3,8 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaCircleCheck } from "react-icons/fa6";
-import { FaCheck } from "react-icons/fa6";
-// import { CgSpinnerTwoAlt } from "react-icons/cg";
-import { FaCircle } from "react-icons/fa6";
 
 import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
-import css from "./Players.module.scss";
 import Button from "common/components/ui/Button/index.js";
 import {
   ROUND_RESULTS,
@@ -20,6 +15,14 @@ import {
 
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
+
+import { FaCircleCheck } from "react-icons/fa6";
+import { FaCheck } from "react-icons/fa6";
+// import { CgSpinnerTwoAlt } from "react-icons/cg";
+import { FaCircle } from "react-icons/fa6";
+import { MdCheckCircle, MdDone, MdCached } from "react-icons/md";
+
+import css from "./Players.module.scss";
 
 export default function Players({
   isActiveScreen,
@@ -127,16 +130,17 @@ export default function Players({
       }
     } else {
       if (player._id === storytellerId)
-        return <FaCircleCheck className={css.storyteller} />;
+        return <MdCheckCircle className={css.storyteller} />;
       else if (
         (gameStatus === GUESSING && !player.isGuessed) ||
         (gameStatus === VOTING && !player.isVoted)
       ) {
         return (
           // <CgSpinnerTwoAlt className={css.spin} />
-          <div className={css.waiting} />
+          // <div className={css.waiting} />
+          <MdCached className={css.waiting} />
         );
-      } else return <FaCheck className={css.guessed} />;
+      } else return <MdDone className={css.guessed} />;
     }
   };
 
@@ -155,7 +159,7 @@ export default function Players({
 
             const playerScore = scores[player._id] || 0; // Бал поточного гравця
             const fillPercentage =
-              maxScore > 0 ? (playerScore / finishPoints) * 100 : 0; // Відсоток замальовки для поточного гравця
+              maxScore > 0 ? (playerScore / finishPoints) * 111 : 0; // Відсоток замальовки для поточного гравця (через вихід за межі - 111% // todo переробити забравши загальний контейнер)
 
             return (
               <li className={css.listItem} key={player._id}>
@@ -163,12 +167,8 @@ export default function Players({
                   className={css.pointsScale}
                   style={
                     isActiveScreen
-                      ? {
-                          "--fill-percentage": `${fillPercentage}%`,
-                        }
-                      : {
-                          "--fill-percentage": `0%`,
-                        }
+                      ? { "--fill-percentage": `${fillPercentage}%` }
+                      : { "--fill-percentage": `0%` }
                   }
                 />
                 <span className={css.playerName}>
