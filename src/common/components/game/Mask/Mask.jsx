@@ -1,6 +1,12 @@
 import css from "./Mask.module.scss";
 
-export default function Mask({ rotation = "30", top = "50", left = "50" }) {
+export default function Mask({
+  rotation = "0",
+  top = "0",
+  left = "0",
+  translate = "0",
+  position = "relative",
+}) {
   return (
     <>
       <div className={css.mask}>
@@ -10,7 +16,11 @@ export default function Mask({ rotation = "30", top = "50", left = "50" }) {
             "--rotation": `${rotation}deg`,
             "--topOffset": `${top}%`,
             "--leftOffset": `${left}%`,
-          }}></div>
+            "--translate": `-${translate}%`,
+            "--position": `${position}`,
+          }}>
+          <span>TIXID</span>
+        </div>
       </div>
     </>
   );

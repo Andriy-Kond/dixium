@@ -185,7 +185,7 @@ export default function LoginPage() {
             onClick={() =>
               googleLoginRef.current?.querySelector("div[role=button]")?.click()
             }>
-            {t("login_with_google")}
+            {t("google_login")}
           </button>
 
           <div className={css.pageFooter}></div>

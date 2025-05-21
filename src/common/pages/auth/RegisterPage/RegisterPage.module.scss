@@ -1,4 +1,6 @@
 @import "styles/utils/breakpoints.scss";
+@import "styles/utils/mixins";
+
 .container {
   // margin: 0 auto;
   padding: 0 16px;
@@ -66,4 +68,9 @@
   &:hover {
     background-color: #0056b3;
   }
+}
+
+.btn {
+  @include btn;
+  align-self: flex-end;
 }

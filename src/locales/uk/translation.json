@@ -89,6 +89,7 @@
   "google_account_err": "Цей обліковий запис зареєстровано через Google. Будь ласка, увійдіть через Google або встановіть пароль.",
   "register_with_google": "Google реєстрація",
   "login_with_google": "Увійти через Google",
+  "google_login": "Google вхід",
   "continue_with_google": "Продовжити з Google",
   "set_password": "Встановити пароль",
   "google_account_err_register": "Цей email зареєстровано через Google. Увійдіть через Google і встановіть пароль, щоб активувати вхід через email/пароль.",

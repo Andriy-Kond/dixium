@@ -550,7 +550,6 @@ export default function Table({
     return (
       <>
         {/* <p>Table gameStatus === ROUND_RESULTS</p> */}
-        {/* // todo виправити стилі!!!  */}
         {isCarouselModeTableScreen && (
           <div className={css.carWrap}>
             <div className={css.carousel} ref={emblaRefCardsVote}>
@@ -636,14 +635,10 @@ export default function Table({
     return (
       <>
         {/* <p>Table default - cards face down</p> */}
-        <ul className={css.cardsListFaceDown}>
+        <ul className={css.currentDeckContainer}>
           {cardsOnTable.map((card, idx) => (
-            <li key={card._id}>
-              <Mask
-                rotation={30 + idx * 30}
-                top={Math.round(Math.random() * (40 - 20 + 1)) + 20}
-                left={Math.round(Math.random() * (40 - 20 + 1)) + 20}
-              />
+            <li className={css.card} key={card._id}>
+              <Mask />
             </li>
           ))}
         </ul>

@@ -90,6 +90,7 @@
   "google_account_error": "This account is registered via Google. Please sign in via Google or set a password.",
   "register_with_google": "Register with Google",
   "login_with_google": "Log In with Google",
+  "google_login": "Google Login",
   "continue_with_google": "Continue with Google",
   "set_password": "Set Password",
   "google_account_error_register": "This email is registered via Google. Log in with Google and set a password to enable email/password login.",

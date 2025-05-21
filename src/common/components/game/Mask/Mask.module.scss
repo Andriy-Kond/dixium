@@ -2,28 +2,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  // background-color: #aec2d6;
   width: 100%;
   height: 100%;
 }
 
 .card {
-  position: absolute;
   content: "";
-  // top: 50%;
-  // left: 50%;
-  // transform: translate(-50%, -50%);
+  position: var(--position);
+  top: var(--topOffset);
+  left: var(--leftOffset);
+  width: 96px;
+  height: 126px;
+  padding: 4px;
 
-  // top: 50%; // 10% - 60%
-  // left: 50%; // 20% - 40%
-  // top: var(--topOffset);
-  // left: var(--leftOffset);
-  width: 33%;
-  max-width: 100px;
-  height: 33%;
-  max-height: 134px;
-  border: 4px solid #5d7e9e;
-  transform: rotate(var(--rotation));
-  // transform: rotate(30deg);
-  background-color: #aec2d6;
+  color: var(--04, #e3e7e9);
+  box-shadow: inset 0 0 0 2px var(--04, #e3e7e9);
+
+  transform: translate(var(--translate), var(--translate))
+    rotate(var(--rotation));
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -183,12 +183,13 @@ export default function RegisterPage() {
           onSubmit={submitCredentials}
           isDisabled={isGoogleLoading || isSignupLoading}
         />
-        <Button
+        <button
+          className={css.btn}
           onClick={() =>
             googleLoginRef.current?.querySelector("div[role=button]")?.click()
           }>
           {t("register_with_google")}
-        </Button>
+        </button>
 
         <div className={css.pageFooter}></div>
       </div>

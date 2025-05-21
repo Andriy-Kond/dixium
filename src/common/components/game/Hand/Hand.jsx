@@ -599,7 +599,13 @@ export default function Hand({
   if (!isCurrentPlayerStoryteller && isShowMask) {
     return (
       <div className={css.maskContainer}>
-        <Mask />
+        <Mask
+          rotation={30}
+          top={50}
+          left={50}
+          translate={50}
+          position="absolute"
+        />
       </div>
     );
   }
