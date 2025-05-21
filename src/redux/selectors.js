@@ -70,11 +70,11 @@ export const selectIsCarouselModeTableScreen = (gameId, playerId) => state => {
   return isCarouselModeTableScreen || null;
 };
 
-export const selectZoomCardId = (gameId, playerId) => state => {
-  const key = `${gameId}_${playerId}`;
-  const zoomCardId = state.localPersonalSlice.zoomCardId[key];
-  return zoomCardId || null;
-};
+// export const selectZoomCardId = (gameId, playerId) => state => {
+//   const key = `${gameId}_${playerId}`;
+//   const zoomCardId = state.localPersonalSlice.zoomCardId[key];
+//   return zoomCardId || null;
+// };
 
 export const selectToastId = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
@@ -98,10 +98,6 @@ export const selectPageHeaderText = state =>
   state.localPersonalSlice.pageHeaderText;
 export const selectPageHeaderTextSecond = state =>
   state.localPersonalSlice.pageHeaderTextSecond;
-export const selectPageHeaderBgColor = state =>
-  state.localPersonalSlice.pageHeaderBgColor;
-export const selectPageHeaderTextColor = state =>
-  state.localPersonalSlice.pageHeaderTextColor;
 
 export const selectPreloadImg = state => state.localPersonalSlice.preloadImg;
 export const selectUserActiveGameId = state =>

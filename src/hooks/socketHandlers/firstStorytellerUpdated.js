@@ -3,7 +3,6 @@ import {
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
   setIsShowMask,
-  setZoomCardId,
   updateLocalGame,
 } from "redux/game/localPersonalSlice.js";
 
@@ -35,8 +34,6 @@ export const firstStorytellerUpdated = (game, dispatch, playerId) => {
       isCarouselModeHandScreen: false,
     }),
   );
-
-  dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
 
   dispatch(
     setIsShowMask({

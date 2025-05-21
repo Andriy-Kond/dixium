@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import {
   clearLocalState,
+  clearLocalStateForLogout,
   showNotification,
 } from "redux/game/localPersonalSlice.js";
 import { useState } from "react";
@@ -41,7 +42,8 @@ export default function UserMenu({ closeMenu = () => {} }) {
     await logoutUser();
     dispatch(clearGameInitialState());
     dispatch(clearAuthInitialState());
-    dispatch(clearLocalState(gameId));
+    // dispatch(clearLocalState(gameId));
+    dispatch(clearLocalStateForLogout());
 
     closeMenu();
   };

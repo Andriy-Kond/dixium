@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import css from "./FormInput.module.scss";
+import css from "./FormEditInput.module.scss";
 
-export default function FormInput({
+export default function FormEditInput({
   type = "text",
   name,
   placeholder,

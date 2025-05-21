@@ -2,7 +2,7 @@ import { shuffleDeck } from "./shuffleDeck.js";
 
 export const distributeCards = currentGame => {
   const { deck, discardPile, players, cardsOnTable } = currentGame;
-  const updatedDeck = [...deck];
+  const updatedDeck = [...shuffleDeck(deck)];
   const updatedDiscardPile = [...discardPile, ...cardsOnTable]; // домішую карти зі стола у відбій
 
   const cardsPerPlayer = players.length > 3 ? 6 : 7;

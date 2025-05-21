@@ -1,11 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import { GoogleLogin } from "@react-oauth/google";
 import {
+  setTheme,
   setUserActiveGameId,
-  toggleTheme,
+  setVisualTheme,
 } from "redux/game/localPersonalSlice.js";
 import { selectIsSetPassword, selectTheme } from "redux/selectors.js";
-import { LIGHT } from "utils/generals/constants.js";
+import { DARK, LIGHT } from "utils/generals/constants.js";
 import { useRef, useState } from "react";
 import { useGoogleLoginMutation } from "redux/auth/authApi.js";
 import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice.js";
@@ -18,8 +19,8 @@ import { ReactComponent as GameSloganSvg } from "imgs/game_slogan.svg";
 
 import bgLight from "imgs/mainPageBg_light_theme.png";
 import bgDark from "imgs/mainPageBg_dark_theme.png";
-import { MdArrowForwardIos } from "react-icons/md";
 import css from "./HomePage.module.scss";
+import clsx from "clsx";
 
 // import { ReactComponent as mainPageBg } from "/imgs/mainPageBg_light_theme.png";
 
@@ -28,21 +29,23 @@ export default function HomePage() {
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
   const { t } = useTranslation();
 
-  const theme = useSelector(selectTheme);
   const [googleLogin, { isLoading: isGoogleLoading }] =
     useGoogleLoginMutation();
 
   const isSetPassword = useSelector(selectIsSetPassword); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
 
   const [isHaveGoogleAcc, setIsHaveGoogleAcc] = useState(true);
-  console.log(" HomePage >> isHaveGoogleAcc:::", isHaveGoogleAcc);
 
   const handleIsHaveGoogleAcc = () => {
     if (isHaveGoogleAcc) setIsHaveGoogleAcc(false);
   };
 
+  const theme = useSelector(selectTheme);
   const handleToggleTheme = () => {
-    dispatch(toggleTheme());
+    const newTheme = theme === LIGHT ? DARK : LIGHT;
+
+    dispatch(setTheme(newTheme)); // зміна теми
+    dispatch(setVisualTheme(newTheme)); // зміна візуала теми
   };
 
   const googleLoginRef = useRef(null); // Референс для GoogleLogin
@@ -111,12 +114,12 @@ export default function HomePage() {
         />
       </div>
       <button
-        className={css.homePageGoogleLoginBtn}
-        style={
-          theme === LIGHT
-            ? { "--btnBgColor": "#2b3847", "--btnTextColor": "#e3e7e9" }
-            : { "--btnBgColor": "#e3e7e9", "--btnTextColor": "#2b3847" }
-        }
+        className={clsx(css.btn, css.homePageGoogleLoginBtn)}
+        // style={
+        //   theme === LIGHT
+        //     ? { "--btnBgColor": "#2b3847", "--btnTextColor": "#e3e7e9" }
+        //     : { "--btnBgColor": "#e3e7e9", "--btnTextColor": "#2b3847" }
+        // }
         onClick={() =>
           googleLoginRef.current?.querySelector("div[role=button]")?.click()
         }>
@@ -132,22 +135,22 @@ export default function HomePage() {
         ) : (
           <>
             <button
-              className={css.homePageAuthBtn}
-              style={
-                theme === LIGHT
-                  ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
-                  : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
-              }
+              className={css.btn}
+              // style={
+              //   theme === LIGHT
+              //     ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
+              //     : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
+              // }
               onClick={() => navigate("/login")}>
               Login
             </button>
             <button
-              className={css.homePageAuthBtn}
-              style={
-                theme === LIGHT
-                  ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
-                  : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
-              }
+              className={css.btn}
+              // style={
+              //   theme === LIGHT
+              //     ? { "--btnBgColor": "#2b3847", color: "#e3e7e9" }
+              //     : { "--btnBgColor": "#e3e7e9", color: "#2b3847" }
+              // }
               onClick={() => navigate("/register")}>
               Register
             </button>

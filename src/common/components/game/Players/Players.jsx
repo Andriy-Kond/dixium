@@ -104,7 +104,8 @@ export default function Players({
     const { gameStatus, storytellerId } = currentGame;
 
     if (gameStatus === LOBBY) {
-      return <div className={css.waiting} />;
+      // return <div className={css.waiting} />;
+      return <MdCached className={css.waiting} />;
     } else if (gameStatus === ROUND_RESULTS) {
       if (player._id === storytellerId) {
         return (
@@ -137,8 +138,8 @@ export default function Players({
       ) {
         return (
           // <CgSpinnerTwoAlt className={css.spin} />
-          // <div className={css.waiting} />
-          <MdCached className={css.waiting} />
+          <div className={css.waiting} />
+          // <MdCached className={css.waiting} />
         );
       } else return <MdDone className={css.guessed} />;
     }
@@ -159,7 +160,7 @@ export default function Players({
 
             const playerScore = scores[player._id] || 0; // Бал поточного гравця
             const fillPercentage =
-              maxScore > 0 ? (playerScore / finishPoints) * 111 : 0; // Відсоток замальовки для поточного гравця (через вихід за межі - 111% // todo переробити забравши загальний контейнер)
+              maxScore > 0 ? (playerScore / finishPoints) * 100 : 0; // Відсоток замальовки для поточного гравця (через вихід за межі - 111% // todo переробити забравши загальний контейнер)
 
             return (
               <li className={css.listItem} key={player._id}>

@@ -1,9 +1,8 @@
 import {
-  clearLocalState,
+  clearLocalStateForNewRound,
   setActiveScreen,
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
-  setZoomCardId,
   updateLocalGame,
 } from "redux/game/localPersonalSlice.js";
 
@@ -22,7 +21,8 @@ export const startNewRoundSuccess = (
 
   dispatch(updateLocalGame(game));
 
-  dispatch(clearLocalState());
+  // dispatch(clearLocalState());
+  dispatch(clearLocalStateForNewRound());
 
   dispatch(
     setActiveScreen({
@@ -47,6 +47,4 @@ export const startNewRoundSuccess = (
       isCarouselModeHandScreen: false,
     }),
   );
-
-  dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
 };

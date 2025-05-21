@@ -31,15 +31,9 @@ export default function GameSetup() {
     }
   }, [currentGame, navigate]);
 
-  // const { players, deck, isSingleCardMode, finishPoints } = currentGame;
-
-  const isShowStartButton =
-    (matchPath(`/game/:gameId/setup/prepare-game`, location.pathname) ||
-      matchPath(`/game/:gameId/setup/sort-players`, location.pathname)) &&
-    userCredentials._id === currentGame?.hostPlayerId;
-
   const handleRunGame = () => {
     if (!currentGame) return;
+    const { isSingleCardMode, finishPoints } = currentGame;
 
     const game = distributeCards(currentGame);
     if (game.message) return Notify.failure(game.message); // "Not enough cards in the deck"
@@ -47,8 +41,8 @@ export default function GameSetup() {
     const updatedGame = {
       ...game,
       isGameRunning: true,
-      isSingleCardMode: currentGame.isSingleCardMode,
-      finishPoints: Number(currentGame.finishPoints),
+      isSingleCardMode,
+      finishPoints: Number(finishPoints),
     };
 
     // optimistic update:
@@ -58,11 +52,19 @@ export default function GameSetup() {
     });
   };
 
+  if (!currentGame) return <>Error: no current game!</>;
+
+  const { players, deck, finishPoints, hostPlayerId } = currentGame;
   const isCanRunGame =
-    currentGame?.players?.length >= 3 &&
-    currentGame?.players?.length <= 12 &&
-    currentGame?.deck?.length >= 84 &&
-    currentGame?.finishPoints >= 10;
+    players?.length >= 3 &&
+    players?.length <= 12 &&
+    deck?.length >= 84 &&
+    finishPoints >= 10;
+
+  const isShowStartButton =
+    (matchPath(`/game/:gameId/setup/prepare-game`, location.pathname) ||
+      matchPath(`/game/:gameId/setup/sort-players`, location.pathname)) &&
+    userCredentials._id === hostPlayerId;
 
   return (
     <>

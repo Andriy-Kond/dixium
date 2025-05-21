@@ -1,17 +1,11 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
-import AppBar from "common/components/navComponents/AppBar";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectPageHeaderBgColor,
   selectPageHeaderText,
-  selectPageHeaderTextColor,
   selectPageHeaderTextSecond,
 } from "redux/selectors.js";
-import {
-  setPageHeaderText,
-  setPageHeaderTextSecond,
-} from "redux/game/localPersonalSlice.js";
 
 import { useTranslation } from "react-i18next";
 import { useBackButton } from "context/BackButtonContext.jsx";
@@ -34,8 +28,6 @@ export default function SharedLayout() {
 
   const pageHeaderText = useSelector(selectPageHeaderText);
   const pageHeaderTextSecond = useSelector(selectPageHeaderTextSecond);
-  const pageHeaderBgColor = useSelector(selectPageHeaderBgColor);
-  const pageHeaderTextColor = useSelector(selectPageHeaderTextColor);
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -127,12 +119,7 @@ export default function SharedLayout() {
             </div>
           }>
           {!isHomePage && (isMobile || location.pathname.includes("game")) && (
-            <header
-              className={css.pageHeader}
-              style={{
-                "--pageHeaderBgColor": pageHeaderBgColor,
-                "--pageHeaderTextColor": pageHeaderTextColor,
-              }}>
+            <header className={css.pageHeader}>
               {backButtonConfig.isVisible && (
                 <button
                   className={css.backButton}

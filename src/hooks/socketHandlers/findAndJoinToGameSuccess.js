@@ -1,12 +1,10 @@
 import { t } from "i18next";
-import { Notify } from "notiflix";
-import { replace } from "react-router-dom";
+
 import {
   clearLocalGames,
   setLocalGame,
   setUserActiveGameId,
   showNotification,
-  updateIsRedirecting,
 } from "redux/game/localPersonalSlice.js";
 
 export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
@@ -37,10 +35,4 @@ export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
   navigate(`game/${game._id}/setup/sort-players`, { replace: true });
   dispatch(setLocalGame(game));
   dispatch(setUserActiveGameId(game._id));
-  // dispatch(updateIsRedirecting(true));
-
-  // setTimeout(() => {
-  //   console.log("dispatch to 5 sec");
-  // }, 5000);
-  // Notify.success(t("found_game_success", { gameNumber: game.playerGameId }));
 };

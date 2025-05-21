@@ -1,15 +1,19 @@
 <svg width="92" height="93" viewBox="0 0 92 93" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="46" cy="46.7791" r="46" fill="url(#paint0_radial_68_3866)"/>
+<g id="logo_TIXIDO">
+<circle id="Ellipse 1" cx="46" cy="46.7791" r="46" fill="url(#paint0_radial_69_3905)"/>
+<g id="Subtract">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M70.8822 16.7685L46 41.6507L21.1178 16.7685C27.8687 11.165 36.5409 7.79599 46 7.79599C55.4591 7.79599 64.1313 11.165 70.8822 16.7685ZM36.2089 14.5047V21.7574H42.1924V28.8287H49.445V21.7574H55.7911V14.5047H36.2089Z" fill="black"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M15.9894 71.6612L40.8716 46.779L15.9894 21.8969C10.3859 28.6478 7.01695 37.32 7.01695 46.779C7.01695 56.2381 10.3859 64.9103 15.9894 71.6612ZM14.2696 36.8066V56.3888H21.5223V36.8066H14.2696Z" fill="black"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M15.9894 71.6612L40.8716 46.779L15.9894 21.8969C10.3859 28.6478 7.01697 37.32 7.01697 46.779C7.01697 56.2381 10.3859 64.9103 15.9894 71.6612ZM14.2696 36.8066V56.3888H21.5223V36.8066H14.2696Z" fill="black"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M46 85.7621C36.5409 85.7621 27.8687 82.3931 21.1178 76.7896L46 51.9075L70.8822 76.7896C64.1313 82.3931 55.4591 85.7621 46 85.7621ZM46.1813 62.9162L55.7911 75.0644H36.2089L46.1813 62.9162Z" fill="black"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M84.9831 46.779C84.9831 56.2381 81.6141 64.9103 76.0106 71.6612L51.1284 46.779L76.0106 21.8969C81.6141 28.6478 84.9831 37.32 84.9831 46.779ZM77.7304 56.3888V36.8066H70.4777V56.3888H77.7304Z" fill="black"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M84.9831 46.779C84.9831 56.2381 81.6141 64.9103 76.0106 71.6612L51.1285 46.779L76.0106 21.8969C81.6141 28.6478 84.9831 37.32 84.9831 46.779ZM77.7304 56.3888V36.8066H70.4778V56.3888H77.7304Z" fill="black"/>
+</g>
+</g>
 <defs>
-<radialGradient id="paint0_radial_68_3866" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(46 31.2791) rotate(90) scale(55.5)">
-<stop offset="0.144231" stop-color="#F6902A"/>
-<stop offset="0.403846" stop-color="#FA8029"/>
-<stop offset="0.600962" stop-color="#905419"/>
-<stop offset="1" stop-color="#1B0800"/>
+<radialGradient id="paint0_radial_69_3905" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(46 27.7791) rotate(90) scale(65)">
+<stop offset="0.0240385" stop-color="#39424A"/>
+<stop offset="0.206731" stop-color="#475159"/>
+<stop offset="0.567308" stop-color="#20282F"/>
+<stop offset="1" stop-color="#050C12"/>
 </radialGradient>
 </defs>
 </svg>

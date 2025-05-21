@@ -13,7 +13,6 @@ import {
   selectIsCarouselModeTableScreen,
   selectIsSingleCardMode,
   selectLocalGame,
-  // selectZoomCardId,
   selectRoundResults,
   selectStorytellerId,
   selectUserCredentials,
@@ -26,11 +25,10 @@ import { useVote } from "hooks/useVote.js";
 import css from "./Table.module.scss";
 import {
   setIsCarouselModeTableScreen,
-  // setZoomCardId,
   updateVotesLocal,
 } from "redux/game/localPersonalSlice.js";
 import { capitalizeWords } from "utils/game/capitalizeWords.js";
-// import LocalModal from "common/components/LocalModal";
+
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";

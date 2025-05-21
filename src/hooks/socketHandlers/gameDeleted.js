@@ -1,12 +1,8 @@
 import { toast } from "react-toastify";
 import { gameApi } from "redux/game/gameApi.js";
+import { clearGameInitialState } from "redux/game/gameSlice.js";
 import {
-  clearActiveAction,
-  clearGameInitialState,
-  setIsCreatingGame,
-} from "redux/game/gameSlice.js";
-import {
-  clearLocalState,
+  clearLocalStateForGameDelete,
   removeToastIdRef,
 } from "redux/game/localPersonalSlice.js";
 
@@ -23,11 +19,6 @@ export const gameDeleted = (
   if (!deletingGameId)
     throw new Error(`The deletingGameId is ${deletingGameId}`);
 
-  if (currentGameId === deletingGameId) {
-    console.log("navigate");
-    navigate(`/game`, { replace: true });
-  }
-
   // Інвалідувати кеш для видаленої гри
   // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: deletingGameId }]));
   dispatch(gameApi.util.resetApiState());
@@ -37,7 +28,13 @@ export const gameDeleted = (
   // dispatch(clearActiveAction({}));
   // dispatch(setIsCreatingGame(false));
   dispatch(clearGameInitialState());
-  dispatch(clearLocalState(game._id));
+  // dispatch(clearLocalState(game._id));
+  dispatch(clearLocalStateForGameDelete(game._id));
+
+  if (currentGameId === deletingGameId) {
+    console.log("current game was deleted, navigate to game");
+    navigate(`/game`, { replace: true });
+  }
 };
 
 // запуск getUserByToken:

@@ -4,7 +4,6 @@ import {
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
   setLocalGame,
-  setZoomCardId,
 } from "redux/game/localPersonalSlice.js";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 
@@ -60,8 +59,6 @@ export const gameRunning = (
         isCarouselModeHandScreen: false,
       }),
     );
-
-    dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
 
     if (relatedAction?.meta?.timer) {
       clearTimeout(relatedAction.meta.timer);

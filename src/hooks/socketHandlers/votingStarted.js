@@ -2,7 +2,6 @@ import {
   setActiveScreen,
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
-  setZoomCardId,
   updateLocalGame,
 } from "redux/game/localPersonalSlice.js";
 
@@ -38,6 +37,4 @@ export const votingStarted = (game, dispatch, playerId) => {
       isCarouselModeHandScreen: false,
     }),
   );
-
-  dispatch(setZoomCardId({ gameId: game._id, playerId, zoomCardId: null }));
 };

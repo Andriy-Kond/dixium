@@ -25,22 +25,28 @@ export function calculatePoints({
   // Підрахунок кількості голосів за карту оповідача
   let votesForStorytellerCard = 0;
   Object.entries(votes).forEach(([voterId, vote]) => {
-    if (vote.firstVotedCardId === storytellerCardId) {
-      //// console.log(
-      //   "голос за карту оповідача першою зіркою - votesForStorytellerCard++",
-      // );
+    if (
+      vote.firstVotedCardId === storytellerCardId ||
+      vote.secondVotedCardId === storytellerCardId
+    ) {
       votesForStorytellerCard++;
     }
-    if (vote.secondVotedCardId === storytellerCardId) {
-      //// console.log(
-      //   "голос за карту оповідача другою зіркою - votesForStorytellerCard++",
-      // );
-      votesForStorytellerCard++;
-    }
+    // if (vote.firstVotedCardId === storytellerCardId) {
+    //   //// console.log(
+    //   //   "голос за карту оповідача першою зіркою - votesForStorytellerCard++",
+    //   // );
+    //   votesForStorytellerCard++;
+    // }
+    // if (vote.secondVotedCardId === storytellerCardId) {
+    //   //// console.log(
+    //   //   "голос за карту оповідача другою зіркою - votesForStorytellerCard++",
+    //   // );
+    //   votesForStorytellerCard++;
+    // }
   });
 
   // Логіка підрахунку балів
-  const allVotedForStoryteller = votesForStorytellerCard === playerCount - 1; // -1, бо оповідач не голосує за себе
+  const allVotedForStoryteller = votesForStorytellerCard === playerCount - 1; // -1, бо оповідач не голосує
   const noneVotedForStoryteller = votesForStorytellerCard === 0;
 
   //// console.log(" playerCount:::", playerCount);
@@ -48,9 +54,9 @@ export function calculatePoints({
 
   // * Правила для 3 гравців, та стандартні правила для 4-6 гравців або 7-12 з isSingleCardMode
   if (allVotedForStoryteller || noneVotedForStoryteller) {
-    // console.log(
-    //   "або ніхто не вгадав гру, або всі вгадали - всім по 2 бали, оповідачу - 0",
-    // );
+    console.log(
+      "або ніхто не вгадав, або всі вгадали - всім по 2 бали, оповідачу - 0 і кінець підрахунку",
+    );
     updatedScores[storytellerId] += 0; // Оповідач отримує 0
 
     players.forEach(player => {
@@ -60,32 +66,34 @@ export function calculatePoints({
         updatedScores[player._id] += 2;
       } // Інші по 2
     });
-  } else {
-    // console.log(
-    //   "хтось вгадав карту оповідача, але не всі: оповідачу - 3 бали, всім вгадавшим теж по 3 бали. Серед цих гравців:",
-    // );
-
-    updatedScores[storytellerId] += 3; // Оповідач отримує 3
-    //// console.log("Оповідач отримує 3 бали updatedScores:::", updatedScores);
-
-    Object.entries(votes).forEach(([voterId, vote]) => {
-      if (
-        voterId !== storytellerId &&
-        (vote.firstVotedCardId === storytellerCardId ||
-          vote.secondVotedCardId === storytellerCardId)
-      ) {
-        updatedScores[voterId] += 3; // Вгадали карту оповідача - 3 бали
-        // console.log(`Гравець ${voterId} отримує 3 бали (бо вгадав)`);
-        // console.log(
-        //   `І у гравця ${voterId} стає ${updatedScores[voterId]} балів`,
-        // );
-      }
-    });
+    return updatedScores;
   }
+
+  console.log(
+    "хтось вгадав карту оповідача, але не всі: оповідачу - 3 бали, всім хто вгадав теж по 3 бали",
+  );
+
+  updatedScores[storytellerId] += 3; // Оповідач отримує 3
+  //// console.log("Оповідач отримує 3 бали updatedScores:::", updatedScores);
+
+  Object.entries(votes).forEach(([voterId, vote]) => {
+    if (
+      voterId !== storytellerId &&
+      (vote.firstVotedCardId === storytellerCardId ||
+        vote.secondVotedCardId === storytellerCardId)
+    ) {
+      updatedScores[voterId] += 3; // Вгадали карту оповідача - 3 бали
+      // console.log(`Гравець ${voterId} отримує 3 бали (бо вгадав)`);
+      // console.log(
+      //   `І у гравця ${voterId} стає ${updatedScores[voterId]} балів`,
+      // );
+    }
+  });
 
   // Додаткові бали за голоси за карти гравців (максимум 3)
   const bonusPoints = {};
   Object.entries(votes).forEach(([voterId, vote]) => {
+    console.log("Підрахунок бонусних балів (але не більше 3)");
     // Якщо віддано два голоси за одну карту, то нараховується лише один бал:
     const votedCardIds =
       vote.firstVotedCardId === vote.secondVotedCardId
@@ -119,10 +127,8 @@ export function calculatePoints({
   });
 
   // * Додаткове правило Odyssey для 7-12 гравців без isSingleCardMode
-  if (playerCount >= 7 && !isSingleCardMode) {
-    // console.log(
-    //   "правіла одісеї: +1бал, якщо дві зірки на одну карту і вона була загадана оповідачем",
-    // );
+  if (playerCount > 6 && !isSingleCardMode) {
+    console.log("+1бал, якщо 2 зірки на одну карту і вона була вгадана");
     // Додатковий бал за два голоси за правильну карту
     Object.entries(votes).forEach(([voterId, vote]) => {
       if (

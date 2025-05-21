@@ -19,7 +19,6 @@ import {
   selectIsCarouselModeHandScreen,
   selectIsCarouselModeTableScreen,
   selectIsShowMask,
-  selectZoomCardId,
   selectUserCredentials,
   selectToastId,
   selectPreloadImg,
@@ -57,7 +56,6 @@ export default function Game() {
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId)); // Number of current active screen
 
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
-  const zoomCardId = useSelector(selectZoomCardId(gameId, playerId)); // for zoom card in modal window
 
   const { totalPreviews, loadedPreviews, preloadUrls, hasPreloaded } =
     useSelector(selectPreloadImg);
@@ -103,11 +101,7 @@ export default function Game() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     align: "start", // Вирівнювання слайдів
-    watchDrag: !(
-      isCarouselModeHandScreen ||
-      isCarouselModeTableScreen ||
-      zoomCardId
-    ), // дозвіл на слайдінг при цій умові
+    watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen), // дозвіл на слайдінг при цій умові
   });
 
   const textAndColorOfHeader = useCallback(() => {
@@ -242,18 +236,9 @@ export default function Game() {
   useEffect(() => {
     if (emblaApi)
       emblaApi.reInit({
-        watchDrag: !(
-          isCarouselModeHandScreen ||
-          isCarouselModeTableScreen ||
-          zoomCardId
-        ),
+        watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen),
       });
-  }, [
-    emblaApi,
-    isCarouselModeHandScreen,
-    isCarouselModeTableScreen,
-    zoomCardId,
-  ]);
+  }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
 
   // Синхронізація activeScreen з Embla Carousel
   useEffect(() => {
@@ -278,12 +263,7 @@ export default function Game() {
   // KB events handler
   useEffect(() => {
     const handleKeyPress = event => {
-      if (
-        !emblaApi ||
-        isCarouselModeHandScreen ||
-        isCarouselModeTableScreen ||
-        zoomCardId
-      )
+      if (!emblaApi || isCarouselModeHandScreen || isCarouselModeTableScreen)
         return;
 
       if (event.key === "ArrowLeft") {
@@ -294,12 +274,7 @@ export default function Game() {
     };
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [
-    emblaApi,
-    isCarouselModeHandScreen,
-    isCarouselModeTableScreen,
-    zoomCardId,
-  ]);
+  }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
 
   const localToastRef = useRef(toastId || null); // fore show toast.info 1 time after refresh
 
@@ -444,10 +419,6 @@ export default function Game() {
                 finishRound,
                 startVoting,
                 toastId,
-                // setIsCarouselModeHandScreen,
-                // setIsCarouselModeTableScreen,
-                // toggleZoomCardId,
-                // setToggleZoomCardId,
               })}
             </li>
           ))}
@@ -461,7 +432,7 @@ export default function Game() {
         onNextScreen={nextScreen}
         middleButton={middleButton}
         isShowSidesBtns={
-          !isCarouselModeHandScreen && !isCarouselModeTableScreen && !zoomCardId
+          !isCarouselModeHandScreen && !isCarouselModeTableScreen
         }
       />
     </div>

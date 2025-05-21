@@ -1,1 +1,1 @@
-export { default } from "./FormEditInput";
+export { default } from "./FormEditInput.jsx";

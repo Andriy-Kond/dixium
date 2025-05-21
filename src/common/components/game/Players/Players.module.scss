@@ -1,9 +1,10 @@
 .playersContainer {
-  padding: 8px 16px;
+  padding: 8px 0;
 }
 
 .playersTitle {
   color: var(--00, #818f99);
+  padding: 0 16px;
 }
 
 .list {
@@ -27,8 +28,8 @@
     content: "";
     position: absolute;
     top: 0;
-    left: -16px;
-    right: -16px;
+    // left: -16px;
+    // right: -16px;
 
     border-top: 1px solid var(--20, #2b3847);
   }
@@ -37,8 +38,8 @@
     content: "";
     position: absolute;
     bottom: 0;
-    left: -16px;
-    right: -16px;
+    // left: -16px;
+    // right: -16px;
 
     border-bottom: 1px solid var(--20, #2b3847);
   }
@@ -46,8 +47,8 @@
 
 .pointsScale {
   position: absolute;
-  left: -16px;
-  right: -16px;
+  // left: -16px;
+  // right: -16px;
   height: 100%;
   width: var(--fill-percentage);
   // width: 111%;
@@ -58,6 +59,7 @@
 }
 
 .playerName {
+  padding: 0 16px;
   color: var(--04, #e3e7e9);
 }
 
@@ -106,8 +108,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
+
+  margin-right: 16px;
 
   // Додаємо анімацію обертання для спінера
   svg {
@@ -120,7 +124,10 @@
 }
 
 .waiting {
+  height: 16px;
+  width: 16px;
   /* change color here */
+
   color: var(--04, #e3e7e9);
   animation: spin 1.2s linear infinite;
 }

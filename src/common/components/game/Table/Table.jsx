@@ -1,5 +1,3 @@
-// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
 import useEmblaCarousel from "embla-carousel-react";
 import { Notify } from "notiflix";
 import { useCallback, useEffect, useState } from "react";
@@ -18,8 +16,6 @@ import { useVote } from "hooks/useVote.js";
 import css from "./Table.module.scss";
 import {
   setIsCarouselModeTableScreen,
-  setPageHeaderText,
-  setPageHeaderTextSecond,
   updateVotesLocal,
 } from "redux/game/localPersonalSlice.js";
 import { capitalizeWords } from "utils/game/capitalizeWords.js";
@@ -28,12 +24,7 @@ import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
 import clsx from "clsx";
 import { useBackButton } from "context/BackButtonContext.jsx";
-import {
-  MdOutlineStarOutline,
-  MdOutlineStar,
-  MdStar,
-  MdStars,
-} from "react-icons/md";
+import { MdStar } from "react-icons/md";
 
 export default function Table({
   isActiveScreen,
@@ -62,7 +53,6 @@ export default function Table({
     selectIsCarouselModeTableScreen(gameId, playerId),
   );
 
-  // const zoomCardId = useSelector(selectZoomCardId(gameId, playerId));
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
   const [isMounted, setIsMounted] = useState(false);
@@ -184,35 +174,6 @@ export default function Table({
     ],
   );
 
-  // const showCard = cardId => {
-  //   // setToggleZoomCardId(cardId);
-  //   // dispatch(setZoomCardId({ gameId, playerId, zoomCardId: cardId }));
-  //   dispatch(
-  //     setIsCarouselModeTableScreen({
-  //       gameId,
-  //       playerId,
-  //       isCarouselModeTableScreen: true,
-  //     }),
-  //   );
-  // };
-
-  // const closeCard = useCallback(() => {
-  //   // setToggleZoomCardId(null);
-  //   // dispatch(setZoomCardId({ gameId, playerId, zoomCardId: null }));
-  //   dispatch(
-  //     setIsCarouselModeTableScreen({
-  //       gameId,
-  //       playerId,
-  //       isCarouselModeTableScreen: false,
-  //     }),
-  //   );
-  // }, [dispatch, gameId, playerId]);
-
-  // const zoomCard = roundResults.find(
-  //   // result => result.cardId === toggleZoomCardId,
-  //   result => result.cardId === zoomCardId,
-  // );
-
   //~ reInit for emblaApiCardsVote
   useEffect(() => {
     if (!emblaApiCardsVote) return;
@@ -316,8 +277,6 @@ export default function Table({
       const currentCard = currentGame.cardsOnTable[currentCardIndex];
       setMiddleButton(
         <>
-          {/* <Button btnText="<<" onClick={carouselModeOff} /> */}
-
           {!isCurrentPlayerStoryteller && (
             <div className={css.carouselModeBtnsWrapper}>
               <Button
@@ -330,9 +289,6 @@ export default function Table({
                 btnStyle={["twoBtnsInRow"]}
                 onClick={() => toggleCardSelection("firstVoteCardSet")}
                 disabled={isDisabledFirstBtn || isCurrentPlayerVoted}>
-                {/* <MdOutlineStarOutline
-                  style={{ width: "20px", height: "20px" }}
-                /> */}
                 <MdStar className={css.btnStarIcon} />
               </Button>
               {playersMoreThanSix && !isSingleCardMode && (
@@ -346,9 +302,6 @@ export default function Table({
                   btnStyle={["twoBtnsInRow"]}
                   onClick={() => toggleCardSelection("secondVoteCardSet")}
                   disabled={isDisabledSecondBtn || isCurrentPlayerVoted}>
-                  {/* <MdOutlineStarOutline
-                    style={{ width: "20px", height: "20px" }}
-                  /> */}
                   <MdStar className={css.btnStarIcon} />
                 </Button>
               )}
@@ -358,9 +311,8 @@ export default function Table({
       );
     } else {
       // console.log("Non Carousel Mode");
-      // if (zoomCardId) {
+
       if (isCarouselModeTableScreen) {
-        // setMiddleButton(<Button btnText="<" onClick={closeCard} />);
         setMiddleButton(<Button btnText="<" onClick={carouselModeOff} />);
       } else if (
         isCurrentPlayerHost &&
@@ -405,16 +357,11 @@ export default function Table({
                 disabled={!isCanVote || isCurrentPlayerVoted}
               />,
             );
-            //  } else if (gameStatus === ROUND_RESULTS && zoomCardId) {
           } else if (
             gameStatus === ROUND_RESULTS &&
             isCarouselModeTableScreen
           ) {
             // console.log("ROUND_RESULTS && toggleZoomCard");
-            // setMiddleButton(
-            //   <Button btnText={t("back")} onClick={() => closeCard()} />,
-            // );
-
             setMiddleButton(
               <Button btnText={t("back")} onClick={() => carouselModeOff()} />,
             );
@@ -444,13 +391,10 @@ export default function Table({
   const getMarksByVoteCount = voteCount => {
     const marksVote = [];
     if (voteCount === 1) {
-      // marksVote.push(<MdStars className={css.iconStar2} />);
       marksVote.push(<MdStar className={css.iconStar2} />);
     }
 
     if (voteCount === 2) {
-      // marksVote.push(<MdStars className={css.iconStar2} />);
-      // marksVote.push(<MdStars className={css.iconStar2} />);
       marksVote.push(<MdStar className={css.iconStar2} />);
       marksVote.push(<MdStar className={css.iconStar2} />);
     }
@@ -462,12 +406,10 @@ export default function Table({
     const marks = [];
 
     if (firstVotedCardId === cardId) {
-      // marks.push(<MdStars className={css.iconStar2} />);
       marks.push(<MdStar className={css.iconStar2} />);
     }
 
     if (secondVotedCardId === cardId) {
-      // marks.push(<MdStars className={css.iconStar2} />);
       marks.push(<MdStar className={css.iconStar2} />);
     }
 
@@ -478,7 +420,6 @@ export default function Table({
   if (!currentGame) return null;
 
   const { gameStatus, cardsOnTable, roundResults, storytellerId } = currentGame;
-  const isCurrentPlayerStoryteller = storytellerId === playerId;
 
   if (gameStatus === VOTING) {
     return (
@@ -559,17 +500,7 @@ export default function Table({
 
                   return (
                     <li className={css.carouselSlide} key={card._id}>
-                      {/* {gameStatus === VOTING && marks.length > 0 && (
-                      <div className={css.checkboxContainerCarousel}>
-                        {marks.map((mark, index) => (
-                          <span key={index} className={css.checkboxCard}>
-                            {mark}
-                          </span>
-                        ))}
-                      </div>
-                    )} */}
                       <ImgGen
-                        // className={css.zoomImg}
                         className={css.carouselImage}
                         publicId={card.public_id}
                         isBig
@@ -596,7 +527,6 @@ export default function Table({
                 />
                 <div className={css.resultPlayers}>
                   <span className={css.playerName}>
-                    {/* {result.ownerName.toUpperCase()} */}
                     {`[ ${result.ownerName.toUpperCase()} ]`}
                     {result.ownerId === storytellerId &&
                       ` (${t("storyteller").toLowerCase()})`}

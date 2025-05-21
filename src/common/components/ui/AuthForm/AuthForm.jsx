@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../Button/index.js";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import FormInput from "../FormInput/FormInput.jsx";
+import FormInput from "../FormEditInput/FormEditInput.jsx";
 
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import css from "./AuthForm.module.scss";

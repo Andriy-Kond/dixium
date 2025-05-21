@@ -11,20 +11,13 @@ const localInitialState = {
   selectedCardId: {}, // for first story(teller) mode
   isCarouselModeHandScreen: {},
   isCarouselModeTableScreen: {},
-  zoomCardId: {},
+  // zoomCardId: {},
   toastId: {},
 
-  cardsSet: {},
-  // cardsSet: { firstGuessCardSet: null, secondGuessCardSet: null },
-
-  lang: EN, // en, uk, auto
-  theme: LIGHT, // light, dark
-  visualTheme: LIGHT, // light, dark, auto
+  cardsSet: {}, // cardsSet: { firstGuessCardSet: null, secondGuessCardSet: null },
 
   pageHeaderText: "",
   pageHeaderTextSecond: "",
-  pageHeaderBgColor: "",
-  pageHeaderTextColor: "",
 
   preloadImg: {
     // previewIds: [], // Унікальні publicId прев’ю-зображень
@@ -42,9 +35,12 @@ const localInitialState = {
   },
 
   isSetPassword: false,
-
   userActiveGameId: null,
-  isRedirecting: false,
+
+  // Non delete options:
+  lang: EN, // en, uk, auto
+  theme: LIGHT, // light, dark
+  visualTheme: LIGHT, // light, dark, auto
 };
 
 export const localPersonalSlice = createSlice({
@@ -93,10 +89,6 @@ export const localPersonalSlice = createSlice({
       console.log({ gameId: game._id, finishP: game.finishPoints });
 
       if (game) state.games[gameId].finishPoints = Number(finishPoints);
-    },
-
-    updateIsRedirecting: (state, action) => {
-      state.isRedirecting = action.payload;
     },
 
     setLocalGame: (state, action) => {
@@ -188,16 +180,14 @@ export const localPersonalSlice = createSlice({
     clearLocalState: (state, action) => {
       // console.log("clearLocalState");
       const gameId = action.payload;
+      const games = state.games;
       const currentLang = state.lang;
       const currentPreloadImg = state.preloadImg;
       const currentTheme = state.theme;
       const currentVisualTheme = state.visualTheme;
-      const games = state.games;
 
       const currentPageHeaderText = state.pageHeaderText;
       const currentPageHeaderTextSecond = state.pageHeaderTextSecond;
-      const currentPageHeaderBgColor = state.pageHeaderBgColor;
-      const currentPageHeaderTextColor = state.pageHeaderTextColor;
 
       // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
       // .entries перетворює об'єкт state.games у масив пар [key, value]
@@ -210,12 +200,54 @@ export const localPersonalSlice = createSlice({
         lang: currentLang,
         theme: currentTheme,
         visualTheme: currentVisualTheme,
-        preloadImg: currentPreloadImg,
+
         games: { ...updateGameList },
+        preloadImg: currentPreloadImg,
         pageHeaderText: currentPageHeaderText,
         pageHeaderTextSecond: currentPageHeaderTextSecond,
-        pageHeaderBgColor: currentPageHeaderBgColor,
-        pageHeaderTextColor: currentPageHeaderTextColor,
+      };
+    },
+
+    clearLocalStateForLogout: (state, action) => {
+      const currentLang = state.lang;
+      const currentTheme = state.theme;
+      const currentVisualTheme = state.visualTheme;
+
+      return {
+        ...localInitialState,
+        lang: currentLang,
+        theme: currentTheme,
+        visualTheme: currentVisualTheme,
+      };
+    },
+
+    clearLocalStateForGameDelete: (state, action) => {
+      const gameId = action.payload;
+      const games = state.games;
+      // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
+      // .entries перетворює об'єкт state.games у масив пар [key, value]
+      const updateGameList = Object.fromEntries(
+        Object.entries(games).filter(([key]) => key !== gameId),
+      );
+      const currentLang = state.lang;
+      const currentTheme = state.theme;
+      const currentVisualTheme = state.visualTheme;
+
+      return {
+        ...localInitialState,
+        games: { ...updateGameList },
+        lang: currentLang,
+        theme: currentTheme,
+        visualTheme: currentVisualTheme,
+      };
+    },
+
+    clearLocalStateForNewRound: (state, action) => {
+      state.votes = {};
+      state.notification = {
+        message: null,
+        duration: 1000,
+        type: "info",
       };
     },
 
@@ -229,12 +261,6 @@ export const localPersonalSlice = createSlice({
       const { gameId, playerId, isCarouselModeTableScreen } = action.payload;
       const key = `${gameId}_${playerId}`;
       state.isCarouselModeTableScreen[key] = isCarouselModeTableScreen;
-    },
-
-    setZoomCardId: (state, action) => {
-      const { gameId, playerId, zoomCardId } = action.payload;
-      const key = `${gameId}_${playerId}`;
-      state.zoomCardId[key] = zoomCardId;
     },
 
     setToastId: (state, action) => {
@@ -260,9 +286,9 @@ export const localPersonalSlice = createSlice({
       state.lang = action.payload;
     },
 
-    toggleTheme: state => {
-      state.theme = state.theme === LIGHT ? DARK : LIGHT;
-    },
+    // toggleTheme: state => {
+    //   state.theme = state.theme === LIGHT ? DARK : LIGHT;
+    // },
     setTheme: (state, action) => {
       state.theme = action.payload;
     },
@@ -272,12 +298,6 @@ export const localPersonalSlice = createSlice({
     },
     setPageHeaderTextSecond: (state, action) => {
       state.pageHeaderTextSecond = action.payload;
-    },
-    setPageHeaderBgColor: (state, action) => {
-      state.pageHeaderBgColor = action.payload;
-    },
-    setPageHeaderTextColor: (state, action) => {
-      state.pageHeaderTextColor = action.payload;
     },
 
     // & previewIds as obj:
@@ -352,7 +372,7 @@ export const {
   deleteCardsFromDeck,
   toggleIsSingleCardMode,
   setFinishPoints,
-  updateIsRedirecting,
+
   setLocalGame,
   clearLocalGame,
   clearLocalGames,
@@ -369,17 +389,16 @@ export const {
   clearLocalState,
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
-  setZoomCardId,
+
   setToastId,
   removeToastIdRef,
   setCardsSet,
   setLang,
-  toggleTheme,
+  // toggleTheme,
   setTheme,
   setPageHeaderText,
   setPageHeaderTextSecond,
   setPageHeaderBgColor,
-  setPageHeaderTextColor,
   addPreviewId,
   addPreloadUrl,
   setHasPreloaded,
@@ -389,4 +408,8 @@ export const {
   setUserActiveGameId,
   showNotification,
   hideNotification,
+
+  clearLocalStateForLogout,
+  clearLocalStateForGameDelete,
+  clearLocalStateForNewRound,
 } = localPersonalSlice.actions;

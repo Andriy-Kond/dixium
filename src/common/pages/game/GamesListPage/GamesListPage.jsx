@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import socket from "services/socket.js";
@@ -66,6 +66,7 @@ export default function GamesListPage() {
 
   // const isRedirecting = useSelector(selectIsRedirecting);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
+
   // const [searchingGame, setSearchingGame] = useState(null);
 
   //# Page header color and text
@@ -73,11 +74,6 @@ export default function GamesListPage() {
     const headerTitleText = t("tixid");
     dispatch(setPageHeaderText(headerTitleText));
   }, [dispatch, t]);
-
-  const isPlayerInGame = currentGame?.players.some(
-    player => player._id === playerId,
-  );
-  const isCurrentPlayerIsHost = currentGame?.hostPlayerId === playerId;
 
   const handleCreateGame = () => {
     const gameData = {
@@ -139,6 +135,10 @@ export default function GamesListPage() {
   // Пошук гри і приєднання до неї, якщо знайдена
   const handleJoinSubmit = e => {
     e.preventDefault();
+
+    const isPlayerInGame = currentGame?.players.some(
+      player => player._id === playerId,
+    );
     const digitCount = getDigitCount();
 
     // Відправлення запиту, якщо є всі 4 цифри
@@ -205,6 +205,20 @@ export default function GamesListPage() {
   };
 
   const isCanFind = getDigitCount() === 4 && searchGameNumber < 9999;
+
+  // if (!currentGame) {
+  //   return <></>;
+  // }
+
+  // const { players, hostPlayerId } = currentGame;
+  // const isPlayerInGame = players.some(player => player._id === playerId);
+  // const isCurrentPlayerIsHost = hostPlayerId === playerId;
+
+  // const { players, hostPlayerId } = currentGame;
+  const isPlayerInGame = currentGame?.players.some(
+    player => player._id === playerId,
+  );
+  const isCurrentPlayerIsHost = currentGame?.hostPlayerId === playerId;
 
   return (
     <>
