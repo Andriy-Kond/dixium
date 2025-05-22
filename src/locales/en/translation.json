@@ -13,6 +13,7 @@
   "you_have_told": "You have told your story. Waiting for other players to choose their associations cards.",
   "player_has_told": "Player {{storyteller}} has told his history. Choose a card to associate with it.",
   "select_this_card": "Select this card",
+
   "choose_card": "Choose a card",
   "go_to_guess_story": "Go to guess the story",
   "start_voting": "Start voting",

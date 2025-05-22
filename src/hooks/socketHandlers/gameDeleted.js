@@ -28,7 +28,7 @@ export const gameDeleted = (
   // dispatch(clearActiveAction({}));
   // dispatch(setIsCreatingGame(false));
   dispatch(clearGameInitialState());
-  // dispatch(clearLocalState(game._id));
+
   dispatch(clearLocalStateForGameDelete(game._id));
 
   if (currentGameId === deletingGameId) {

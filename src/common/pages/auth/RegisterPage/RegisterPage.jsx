@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   setIsSetPassword,
   setPageHeaderText,
+  setPageHeaderTextSecond,
   setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
@@ -39,6 +40,7 @@ export default function RegisterPage() {
   //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("register")));
+    dispatch(setPageHeaderTextSecond(""));
   }, [dispatch, t]);
 
   const submitCredentials = async e => {

@@ -9,6 +9,7 @@ import socket from "services/socket.js";
 import {
   selectActiveActions,
   selectActiveActionsTest,
+  selectLocalGame,
   selectLocalGames,
   selectToastId,
   selectUserActiveGameId,
@@ -56,17 +57,20 @@ export const useSetupSocketListeners = () => {
   const activeActions = useSelector(selectActiveActions);
   const activeActionsTest = useSelector(selectActiveActionsTest);
   const games = useSelector(selectLocalGames);
+  const currentGame = useSelector(selectLocalGame(gameId));
   const userActiveGameId = useSelector(selectUserActiveGameId);
 
   useEffect(() => {
-    if (gameId && userActiveGameId === gameId)
-      joinToGameRoom(gameId, userId, dispatch);
+    if (gameId && userActiveGameId === gameId) {
+      // console.log("перший запуск joinToGameRoom, якщо є gameId");
+      joinToGameRoom(gameId, userId, userActiveGameId, dispatch);
+    }
 
     const handleSocketConnection = event => {
-      // socketConnection(event, userId, gameId);
-
+      // console.log("handleSocketConnection");
       if (gameId && gameId === userActiveGameId)
-        joinToGameRoom(gameId, userId, dispatch);
+        // console.log("запуск joinToGameRoom у handleSocketConnection");
+        joinToGameRoom(gameId, userId, userActiveGameId, dispatch);
     };
 
     const handleError = err => showError(err, t);
@@ -160,6 +164,7 @@ export const useSetupSocketListeners = () => {
     socket.on("connect", () => handleSocketConnection("connect"));
     socket.on("reconnect", () => handleSocketConnection("reconnect"));
     if (socket.connected) handleSocketConnection(); // якщо сокет уже підключений, то одразу викликати
+
     socket.on("error", handleError);
 
     socket.on("updateUserCredentials", handleUpdateUserCredentials);

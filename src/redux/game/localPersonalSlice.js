@@ -1,7 +1,7 @@
 import storage from "redux-persist/lib/storage";
 import { createSlice } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import { DARK, EN, LIGHT } from "utils/generals/constants.js";
+import { EN, LIGHT } from "utils/generals/constants.js";
 
 const localInitialState = {
   games: {},
@@ -86,7 +86,7 @@ export const localPersonalSlice = createSlice({
     setFinishPoints: (state, action) => {
       const { gameId, finishPoints } = action.payload;
       const game = state.games[gameId];
-      console.log({ gameId: game._id, finishP: game.finishPoints });
+      // console.log({ gameId: game._id, finishP: game.finishPoints });
 
       if (game) state.games[gameId].finishPoints = Number(finishPoints);
     },
@@ -103,18 +103,24 @@ export const localPersonalSlice = createSlice({
       state.games[game._id] = game; // add new or update exist
     },
 
-    clearLocalGame: (state, action) => {
-      const game = action.payload;
-      if (state.games[game._id]) delete state.games[game._id];
-    },
-
-    clearLocalGames: (state, action) => {
-      state.games = {};
-    },
-
     updatePlayers: (state, action) => {
       const game = action.payload;
       if (state.games[game._id]) state.games[game._id].players = game.players;
+    },
+
+    removeUserFromGame: (state, action) => {
+      const { game, deletedUser } = action.payload;
+      console.log(" game:::", game);
+      console.log(" deletedUser:::", deletedUser);
+      if (!game || !deletedUser) return;
+      // if (!state.games[game._id]) return;
+
+      state.games[game._id].players = state.games[game._id].players.filter(
+        player => player._id !== deletedUser._id,
+      );
+
+      // скидаю його карти у відбій
+      state.games[game._id].discardPile = game.discardPile;
     },
 
     setLocalGameStatus: (state, action) => {
@@ -177,37 +183,6 @@ export const localPersonalSlice = createSlice({
       delete state.selectedCardId[key];
     },
 
-    clearLocalState: (state, action) => {
-      // console.log("clearLocalState");
-      const gameId = action.payload;
-      const games = state.games;
-      const currentLang = state.lang;
-      const currentPreloadImg = state.preloadImg;
-      const currentTheme = state.theme;
-      const currentVisualTheme = state.visualTheme;
-
-      const currentPageHeaderText = state.pageHeaderText;
-      const currentPageHeaderTextSecond = state.pageHeaderTextSecond;
-
-      // .fromEntries перетворює відфільтрований масив пар назад в об'єкт
-      // .entries перетворює об'єкт state.games у масив пар [key, value]
-      const updateGameList = Object.fromEntries(
-        Object.entries(games).filter(([key]) => key !== gameId),
-      );
-
-      return {
-        ...localInitialState,
-        lang: currentLang,
-        theme: currentTheme,
-        visualTheme: currentVisualTheme,
-
-        games: { ...updateGameList },
-        preloadImg: currentPreloadImg,
-        pageHeaderText: currentPageHeaderText,
-        pageHeaderTextSecond: currentPageHeaderTextSecond,
-      };
-    },
-
     clearLocalStateForLogout: (state, action) => {
       const currentLang = state.lang;
       const currentTheme = state.theme;
@@ -240,6 +215,15 @@ export const localPersonalSlice = createSlice({
         theme: currentTheme,
         visualTheme: currentVisualTheme,
       };
+    },
+
+    // deleteLocalGame: (state, action) => {
+    //   const game = action.payload;
+    //   if (state.games[game._id]) delete state.games[game._id];
+    // },
+
+    clearLocalGames: (state, action) => {
+      state.games = {};
     },
 
     clearLocalStateForNewRound: (state, action) => {
@@ -374,9 +358,10 @@ export const {
   setFinishPoints,
 
   setLocalGame,
-  clearLocalGame,
+
   clearLocalGames,
   updatePlayers,
+  removeUserFromGame,
   setLocalGameStatus,
   updateLocalGame,
   setActiveScreen,
@@ -386,7 +371,6 @@ export const {
   updateVotesLocal,
   setSelectedCardId,
   removeSelectedCardId,
-  clearLocalState,
   setIsCarouselModeHandScreen,
   setIsCarouselModeTableScreen,
 

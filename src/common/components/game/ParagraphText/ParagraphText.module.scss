@@ -1,0 +1,11 @@
+.headerMessage {
+  padding: 8px 16px;
+  margin-bottom: 8px;
+
+  color: var(--00, #818f99);
+
+  &.hightLight {
+    background: var(--Highlight, #f6902a);
+    color: var(--40, #161f27);
+  }
+}

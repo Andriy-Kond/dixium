@@ -38,13 +38,6 @@ export default function SharedLayout() {
   //   dispatch(setTheme(prefersDark ? DARK : LIGHT));
   // }, [dispatch]);
 
-  //# Page header color and text
-  // useEffect(() => {
-  //   if (!location.pathname.includes("game")) {
-  //     dispatch(setPageHeaderText("")); // clear text for Home page
-  //   }
-  // }, [dispatch, location.pathname, t]);
-
   // Check if it is mobile viewport for removing game header in Home page
   useEffect(() => {
     const updateViewport = () => {

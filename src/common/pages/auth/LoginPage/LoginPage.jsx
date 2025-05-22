@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   setIsSetPassword,
   setPageHeaderText,
+  setPageHeaderTextSecond,
   setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
@@ -35,21 +36,18 @@ export default function LoginPage() {
   //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("login")));
+    dispatch(setPageHeaderTextSecond(""));
     return () => dispatch(setIsSetPassword(false)); // Очистити прапор при демонтажі
   }, [dispatch, t]);
 
   useEffect(() => {
-    dispatch(setPageHeaderText(t("login")));
-
     // Повідомлення після успішної верифікації і перенаправлення з бекенду:
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("verified") === "true") {
       Notify.success(t("email_verified_success"));
       navigate("/login", { replace: true }); // Очистити query-параметри ("verified")
     }
-
-    return () => dispatch(setIsSetPassword(false)); // Очистити прапор при демонтажі
-  }, [dispatch, navigate, t]);
+  }, [navigate, t]);
 
   const submitCredentials = async e => {
     e.preventDefault();

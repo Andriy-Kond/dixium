@@ -62,8 +62,7 @@ export default function SelectDecks() {
 
   //# Page header color and text
   useEffect(() => {
-    const headerTitleText = t("game_cards");
-    dispatch(setPageHeaderText(headerTitleText));
+    dispatch(setPageHeaderText(t("game_cards")));
     dispatch(setPageHeaderTextSecond(""));
   }, [dispatch, t]);
 

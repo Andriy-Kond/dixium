@@ -20,8 +20,6 @@ export const startNewRoundSuccess = (
   }
 
   dispatch(updateLocalGame(game));
-
-  // dispatch(clearLocalState());
   dispatch(clearLocalStateForNewRound());
 
   dispatch(

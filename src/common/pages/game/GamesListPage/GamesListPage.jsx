@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import {
   setLocalGame,
   setPageHeaderText,
+  setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
 import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 
@@ -71,9 +72,9 @@ export default function GamesListPage() {
 
   //# Page header color and text
   useEffect(() => {
-    const headerTitleText = t("tixid");
-    dispatch(setPageHeaderText(headerTitleText));
-  }, [dispatch, t]);
+    dispatch(setPageHeaderText(t("tixid")));
+    dispatch(setPageHeaderTextSecond(""));
+  }, [currentGame, dispatch, t]);
 
   const handleCreateGame = () => {
     const gameData = {
@@ -158,19 +159,6 @@ export default function GamesListPage() {
     }
   };
 
-  const removeCurrentGame = async gameId => {
-    socket.emit("Game_Delete", { gameId, userId: playerId });
-  };
-
-  // const returnToGame = () => {
-  //   if (isCurrentPlayerIsHost && !currentGame.isGameRunning) {
-  //     navigate(`${userActiveGameId}/setup/prepare-game`);
-  //   } else {
-  //     navigate(`${userActiveGameId}/current-game`);
-  //     // navigate(-1);
-  //   }
-  // };
-
   const returnToGame = () => {
     console.log("return to game");
 
@@ -186,12 +174,48 @@ export default function GamesListPage() {
     }
   };
 
+  const removeCurrentGame = async gameId => {
+    socket.emit("Game_Delete", { gameId, userId: playerId });
+  };
+
   const removePlayer = userId => {
     if (!currentGame || !currentGame.players) return;
+    const { players, deck, discardPile } = currentGame;
 
-    const players = [...currentGame.players];
-    const newPlayers = players.filter(p => p._id !== userId);
-    const updatedGame = { ...currentGame, players: newPlayers };
+    // const newPlayers = players.filter(p => p._id !== userId);
+    const { included, excluded } = players.reduce(
+      (acc, player) => {
+        if (player._id !== userId) {
+          acc.included.push(player);
+        } else {
+          acc.excluded.push(player);
+        }
+
+        return acc;
+      },
+      {
+        included: [],
+        excluded: [],
+      },
+    );
+
+    // Перевірка, чи є видалений гравець
+    const deletedPlayer = excluded.find(player => player._id === userId);
+
+    // скидаю його карти у відбій
+    const newDiscardPile = deletedPlayer
+      ? [...discardPile, ...deletedPlayer.hand]
+      : [...discardPile];
+
+    // // Якщо треба буде у майбутньому об’єднати hand усіх видалених гравців:
+    // const deletedHands = deletePlayer.flatMap(player => player.hand);
+    // const newDiscardPile = [...discardPile, ...deletedHands];
+
+    const updatedGame = {
+      ...currentGame,
+      players: included,
+      discardPile: newDiscardPile,
+    };
 
     socket.emit("deleteUserFromGame", { updatedGame, deletedUserId: userId });
   };

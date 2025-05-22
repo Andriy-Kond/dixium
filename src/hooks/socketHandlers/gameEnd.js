@@ -4,6 +4,7 @@ import { FINISH } from "utils/generals/constants.js";
 
 export const gameEnd = (game, message, dispatch) => {
   console.log("gameEnd");
+
   if (!game) throw new Error(`The game is ${game}`);
 
   const [maxId, maxVal] = Object.entries(game.scores).reduce(
@@ -22,5 +23,5 @@ export const gameEnd = (game, message, dispatch) => {
   console.log(`The winner(s):`, winners);
   winners.map(winner => Notify.success(`Player ${winner.name} is winner!`));
 
-  dispatch(setLocalGameStatus(FINISH));
+  dispatch(setLocalGameStatus(FINISH)); // встановлюється на сервері також
 };

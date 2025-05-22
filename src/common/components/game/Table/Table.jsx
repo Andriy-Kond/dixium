@@ -9,7 +9,12 @@ import {
   selectUserCredentials,
   selectVotesLocal,
 } from "redux/selectors.js";
-import { GUESSING, ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
+import {
+  FINISH,
+  GUESSING,
+  ROUND_RESULTS,
+  VOTING,
+} from "utils/generals/constants.js";
 import Mask from "common/components/game/Mask";
 import Button from "common/components/ui/Button/index.js";
 import { useVote } from "hooks/useVote.js";
@@ -72,19 +77,6 @@ export default function Table({
     watchDrag: isCarouselModeTableScreen,
     // inViewThreshold: 0.5,
   });
-
-  // //# Page header color and text
-  // useEffect(() => {
-  //   if (!currentGame) return;
-  //   const { hostPlayerId, players } = currentGame;
-
-  //   const hostPlayer = players.find(player => player._id === hostPlayerId);
-  //   const gameHostNick = hostPlayer.name;
-  //   const headerTitleText = t("table");
-  //   const headerTitleTextSecond = t("whom_game", { gameHostNick });
-  //   dispatch(setPageHeaderText(headerTitleText));
-  //   dispatch(setPageHeaderTextSecond(headerTitleTextSecond));
-  // }, [currentGame, dispatch, t]);
 
   const handleVote = useCallback(() => {
     // console.log("handleVote");
@@ -274,7 +266,8 @@ export default function Table({
         playerId === activeCard.ownerId;
 
       const currentCardIndex = emblaApiCardsVote?.selectedScrollSnap() || 0;
-      const currentCard = currentGame.cardsOnTable[currentCardIndex];
+      const currentCard = cardsOnTable[currentCardIndex];
+
       setMiddleButton(
         <>
           {!isCurrentPlayerStoryteller && (
@@ -309,16 +302,16 @@ export default function Table({
           )}
         </>,
       );
-    } else {
+    }
+
+    if (!isCarouselModeTableScreen) {
       // console.log("Non Carousel Mode");
 
-      if (isCarouselModeTableScreen) {
-        setMiddleButton(<Button btnText="<" onClick={carouselModeOff} />);
-      } else if (
-        isCurrentPlayerHost &&
-        isReadyToVote &&
-        gameStatus === GUESSING
-      ) {
+      // if (isCarouselModeTableScreen) {
+      //   setMiddleButton(<Button btnText="<" onClick={carouselModeOff} />);
+      // } else
+
+      if (isCurrentPlayerHost && isReadyToVote && gameStatus === GUESSING) {
         // console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
           <Button
@@ -339,7 +332,11 @@ export default function Table({
       } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
         // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
-          <Button btnText={t("start_new_round")} onClick={startNewRound} />,
+          <Button
+            btnText={t("start_new_round")}
+            onClick={startNewRound}
+            disabled={gameStatus === FINISH}
+          />,
         );
       } else {
         if (isCurrentPlayerStoryteller) {
@@ -348,25 +345,24 @@ export default function Table({
         } else if (gameStatus === VOTING) {
           // console.log("блок для gameStatus VOTING");
 
-          if (!isCurrentPlayerStoryteller) {
-            // Якщо це не сторітеллер і може голосувати (вже обрані карти)
-            setMiddleButton(
-              <Button
-                btnText={t("vote")}
-                onClick={handleVote}
-                disabled={!isCanVote || isCurrentPlayerVoted}
-              />,
-            );
-          } else if (
-            gameStatus === ROUND_RESULTS &&
-            isCarouselModeTableScreen
-          ) {
-            // console.log("ROUND_RESULTS && toggleZoomCard");
-            setMiddleButton(
-              <Button btnText={t("back")} onClick={() => carouselModeOff()} />,
-            );
-          } else setMiddleButton(null);
-        } else setMiddleButton(null);
+          // Якщо це не сторітеллер і може голосувати (вже обрані карти)
+          setMiddleButton(
+            <Button
+              btnText={t("vote")}
+              onClick={handleVote}
+              disabled={!isCanVote || isCurrentPlayerVoted}
+            />,
+          );
+
+          if (isCurrentPlayerVoted) setMiddleButton(null);
+        }
+        // else if (gameStatus === ROUND_RESULTS && isCarouselModeTableScreen) {
+        //   // console.log("ROUND_RESULTS && toggleZoomCard");
+        //   setMiddleButton(
+        //     <Button btnText={t("back")} onClick={() => carouselModeOff()} />,
+        //   );
+        // }
+        else setMiddleButton(null);
       }
     }
   }, [
@@ -515,29 +511,29 @@ export default function Table({
 
         {!isCarouselModeTableScreen && (
           <ul className={css.resultList}>
-            {roundResults.map((result, idx) => (
-              <li
-                className={css.resultItem}
-                key={result.cardId}
-                onClick={() => carouselModeOn(idx)}>
-                <ImgGen
-                  className={css.resultImg}
-                  publicId={result.public_id}
-                  isNeedPreload={true}
-                />
-                <div className={css.resultPlayers}>
-                  <span className={css.playerName}>
-                    {`[ ${result.ownerName.toUpperCase()} ]`}
-                    {result.ownerId === storytellerId &&
-                      ` (${t("storyteller").toLowerCase()})`}
-                  </span>
+            {roundResults.map((result, idx) => {
+              return (
+                <li
+                  className={css.resultItem}
+                  key={result.cardId}
+                  onClick={() => carouselModeOn(idx)}>
+                  <ImgGen
+                    className={css.resultImg}
+                    publicId={result.public_id}
+                    isNeedPreload={true}
+                  />
+                  <div className={css.resultPlayers}>
+                    <span className={css.playerName}>
+                      {`[ ${result.ownerName.toUpperCase()} ]`}
+                      {result.ownerId === storytellerId &&
+                        ` (${t("storyteller").toLowerCase()})`}
+                    </span>
 
-                  <ul className={css.resultVotes}>
-                    {result.votesForThisCard.map((vote, voteIdx) => {
-                      const marksVote = getMarksByVoteCount(vote.voteCount);
+                    <ul className={css.resultVotes}>
+                      {result.votesForThisCard.map((vote, voteIdx) => {
+                        const marksVote = getMarksByVoteCount(vote.voteCount);
 
-                      return (
-                        <>
+                        return (
                           <li className={css.voterContainer} key={voteIdx}>
                             <span className={css.playerName}>
                               {capitalizeWords(vote.playerName)}
@@ -550,13 +546,13 @@ export default function Table({
                               ))}
                             </div>
                           </li>
-                        </>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </li>
-            ))}
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </>

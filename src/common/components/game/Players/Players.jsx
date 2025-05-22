@@ -11,17 +11,13 @@ import {
   GUESSING,
   VOTING,
   LOBBY,
+  FINISH,
 } from "utils/generals/constants.js";
 
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 
-import { FaCircleCheck } from "react-icons/fa6";
-import { FaCheck } from "react-icons/fa6";
-// import { CgSpinnerTwoAlt } from "react-icons/cg";
-import { FaCircle } from "react-icons/fa6";
-import { MdCheckCircle, MdDone, MdCached } from "react-icons/md";
-
+import { MdCheckCircle, MdDone, MdCached, MdStar } from "react-icons/md";
 import css from "./Players.module.scss";
 
 export default function Players({
@@ -79,7 +75,11 @@ export default function Players({
       if (isCurrentPlayerHost && isReadyToStartNewRound) {
         // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
-          <Button btnText={t("start_new_round")} onClick={startNewRound} />,
+          <Button
+            btnText={t("start_new_round")}
+            onClick={startNewRound}
+            disabled={gameStatus === FINISH}
+          />,
         );
       }
     } else setMiddleButton(null);
@@ -138,10 +138,14 @@ export default function Players({
       ) {
         return (
           // <CgSpinnerTwoAlt className={css.spin} />
-          <div className={css.waiting} />
-          // <MdCached className={css.waiting} />
+          // <div className={css.waiting} />
+          <MdCached className={css.waiting} />
         );
-      } else return <MdDone className={css.guessed} />;
+      } else {
+        if (gameStatus === GUESSING) {
+          return <MdDone className={css.guessed} />;
+        } else return <MdStar className={css.guessed} />;
+      }
     }
   };
 
@@ -160,7 +164,7 @@ export default function Players({
 
             const playerScore = scores[player._id] || 0; // Бал поточного гравця
             const fillPercentage =
-              maxScore > 0 ? (playerScore / finishPoints) * 100 : 0; // Відсоток замальовки для поточного гравця (через вихід за межі - 111% // todo переробити забравши загальний контейнер)
+              maxScore > 0 ? (playerScore / finishPoints) * 100 : 0; // Відсоток замальовки для поточного гравця
 
             return (
               <li className={css.listItem} key={player._id}>

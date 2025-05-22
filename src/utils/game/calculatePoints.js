@@ -31,18 +31,6 @@ export function calculatePoints({
     ) {
       votesForStorytellerCard++;
     }
-    // if (vote.firstVotedCardId === storytellerCardId) {
-    //   //// console.log(
-    //   //   "голос за карту оповідача першою зіркою - votesForStorytellerCard++",
-    //   // );
-    //   votesForStorytellerCard++;
-    // }
-    // if (vote.secondVotedCardId === storytellerCardId) {
-    //   //// console.log(
-    //   //   "голос за карту оповідача другою зіркою - votesForStorytellerCard++",
-    //   // );
-    //   votesForStorytellerCard++;
-    // }
   });
 
   // Логіка підрахунку балів

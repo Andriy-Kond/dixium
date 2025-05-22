@@ -15,7 +15,6 @@ import { selectUserCredentials } from "redux/selectors";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import {
-  clearLocalState,
   clearLocalStateForLogout,
   showNotification,
 } from "redux/game/localPersonalSlice.js";
@@ -27,6 +26,7 @@ import LangSwitcherRadioBtns from "common/components/ui/LangSwitcher";
 
 import css from "./UserMenu.module.scss";
 import EditingForm from "common/components/game/FormEdit/FormEdit.jsx";
+import { gameApi } from "redux/game/gameApi.js";
 
 export default function UserMenu({ closeMenu = () => {} }) {
   const [setNickname, { isLoading }] = useSetNicknameMutation();
@@ -42,8 +42,10 @@ export default function UserMenu({ closeMenu = () => {} }) {
     await logoutUser();
     dispatch(clearGameInitialState());
     dispatch(clearAuthInitialState());
-    // dispatch(clearLocalState(gameId));
     dispatch(clearLocalStateForLogout());
+
+    dispatch(gameApi.util.resetApiState()); // очищає весь стан gameApi
+    dispatch(authApi.util.resetApiState()); // очищає весь стан authApi
 
     closeMenu();
   };

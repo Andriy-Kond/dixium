@@ -18,7 +18,12 @@ import {
   selectUserCredentials,
   selectVotesLocal,
 } from "redux/selectors.js";
-import { GUESSING, ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
+import {
+  FINISH,
+  GUESSING,
+  ROUND_RESULTS,
+  VOTING,
+} from "utils/generals/constants.js";
 import Mask from "common/components/game/Mask";
 import Button from "common/components/ui/Button/index.js";
 import { useVote } from "hooks/useVote.js";
@@ -333,7 +338,11 @@ export default function Table({
       } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
         // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
-          <Button btnText={t("start_new_round")} onClick={startNewRound} />,
+          <Button
+            btnText={t("start_new_round")}
+            onClick={startNewRound}
+            disabled={gameStatus === FINISH}
+          />,
         );
       } else {
         if (isCurrentPlayerStoryteller) {

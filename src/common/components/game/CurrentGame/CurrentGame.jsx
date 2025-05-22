@@ -41,6 +41,8 @@ import { Trans, useTranslation } from "react-i18next";
 import PageBadge from "common/components/ui/PageBadge/index.js";
 import SortPlayers from "../SortPlayers/index.js";
 import { useBackButton } from "context/BackButtonContext.jsx";
+import clsx from "clsx";
+import ParagraphText from "../ParagraphText/ParagraphText.jsx";
 
 export default function Game() {
   const dispatch = useDispatch();
@@ -104,56 +106,57 @@ export default function Game() {
     watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen), // дозвіл на слайдінг при цій умові
   });
 
-  const textAndColorOfHeader = useCallback(() => {
-    const { players, storytellerId, hostPlayerId, gameStatus } = currentGame;
+  // const textAndColorOfHeader = useCallback(() => {
+  //   const { players, storytellerId, hostPlayerId, gameStatus } = currentGame;
 
-    const currentPlayer = players.find(p => p._id === playerId);
-    const storyteller = players.find(p => p._id === storytellerId);
-    const isCurrentPlayerHost = hostPlayerId === playerId;
-    const isReadyToVote = !players.some(player => !player.isGuessed);
-    const isReadyToCalculatePoints = players.every(player => player.isVoted);
+  //   const currentPlayer = players.find(p => p._id === playerId);
+  //   const storyteller = players.find(p => p._id === storytellerId);
+  //   const isCurrentPlayerHost = hostPlayerId === playerId;
+  //   const isReadyToVote = !players.some(player => !player.isGuessed);
+  //   const isReadyToCalculatePoints = players.every(player => player.isVoted);
 
-    const isCurrentPlayerStoryteller = storytellerId === playerId;
+  //   const isCurrentPlayerStoryteller = storytellerId === playerId;
 
-    if (!storytellerId || isShowMask)
-      return { isMustMakeMove: true, text: t("first_turn") };
+  //   if (!storytellerId || isShowMask)
+  //     return { isMustMakeMove: true, text: t("first_turn") };
 
-    if (gameStatus === GUESSING && !currentPlayer?.isGuessed)
-      return { isMustMakeMove: true, text: t("please_choose_card") };
+  //   if (gameStatus === GUESSING && !currentPlayer?.isGuessed)
+  //     return { isMustMakeMove: true, text: t("please_choose_card") };
 
-    if (gameStatus === VOTING && !currentPlayer?.isVoted)
-      return { isMustMakeMove: true, text: t("please_vote") };
+  //   if (gameStatus === VOTING && !currentPlayer?.isVoted)
+  //     return { isMustMakeMove: true, text: t("please_vote") };
 
-    if (gameStatus === GUESSING && isCurrentPlayerHost && isReadyToVote)
-      return { isMustMakeMove: true, text: t("all_players_guessed") };
+  //   if (gameStatus === GUESSING && isCurrentPlayerHost && isReadyToVote)
+  //     return { isMustMakeMove: true, text: t("all_players_guessed") };
 
-    if (
-      gameStatus === VOTING &&
-      isCurrentPlayerHost &&
-      isReadyToCalculatePoints
-    )
-      return { isMustMakeMove: true, text: t("all_players_voted") };
+  //   if (
+  //     gameStatus === VOTING &&
+  //     isCurrentPlayerHost &&
+  //     isReadyToCalculatePoints
+  //   )
+  //     return { isMustMakeMove: true, text: t("all_players_voted") };
 
-    if (gameStatus === ROUND_RESULTS)
-      return {
-        isMustMakeMove: isCurrentPlayerHost ? true : false,
-        text: t("rounds_results"),
-      };
+  //   if (gameStatus === ROUND_RESULTS)
+  //     return {
+  //       isMustMakeMove: isCurrentPlayerHost ? true : false,
+  //       text: t("rounds_results"),
+  //     };
 
-    if (gameStatus === LOBBY)
-      return {
-        isMustMakeMove: isCurrentPlayerStoryteller ? true : false,
-        text: isCurrentPlayerStoryteller
-          ? t("choose_card")
-          : t("storyteller_choses_card", {
-              storytellerName: storyteller?.name,
-            }),
-      };
+  //   if (gameStatus === LOBBY)
+  //     return {
+  //       isMustMakeMove: isCurrentPlayerStoryteller ? true : false,
+  //       text: isCurrentPlayerStoryteller
+  //         ? t("choose_card")
+  //         : t("storyteller_choses_card", {
+  //             storytellerName: storyteller?.name,
+  //           }),
+  //     };
 
-    return { isMustMakeMove: false, text: t("players_taking_turn") };
-  }, [currentGame, isShowMask, playerId, t]);
+  //   return { isMustMakeMove: false, text: t("players_taking_turn") };
+  // }, [currentGame, isShowMask, playerId, t]);
 
   // Add all publicId card's from Hand and Table to addPreviewId in Redux state
+
   useEffect(() => {
     if (!currentGame) return;
     const { players, cardsOnTable } = currentGame;
@@ -390,18 +393,22 @@ export default function Game() {
 
   if (!currentGame) return null;
 
-  const isCurrentPlayerStoryteller = currentGame.storytellerId === playerId;
+  const { isGameRunning, storytellerId } = currentGame;
+
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
   const isBlockScreens = isShowMask && !isCurrentPlayerStoryteller;
   const screens = isBlockScreens
     ? [<Hand />]
     : [<Hand />, <Players />, <Table />];
 
-  if (!currentGame.isGameRunning) return <SortPlayers />;
+  if (!isGameRunning) return <SortPlayers />;
 
   return (
     <div className={css.gameContainer}>
       {/* <p>Current Game</p> */}
       {/* <PageBadge /> */}
+
+      <ParagraphText />
 
       <div
         className={`${css.screenCarouselWrapper} ${

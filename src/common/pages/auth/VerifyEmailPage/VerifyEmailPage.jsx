@@ -5,7 +5,10 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
 
-import { setPageHeaderText } from "redux/game/localPersonalSlice.js";
+import {
+  setPageHeaderText,
+  setPageHeaderTextSecond,
+} from "redux/game/localPersonalSlice.js";
 import { useResendVerificationEmailMutation } from "redux/auth/authApi.js";
 import Button from "common/components/ui/Button";
 
@@ -33,6 +36,7 @@ export default function VerifyEmailPage() {
   //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("verify_email")));
+    dispatch(setPageHeaderTextSecond(""));
   }, [dispatch, t]);
 
   const resetCaptcha = captchaType => {

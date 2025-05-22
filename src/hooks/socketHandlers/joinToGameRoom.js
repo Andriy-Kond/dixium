@@ -1,13 +1,11 @@
-import { authApi } from "redux/auth/authApi.js";
-import { gameApi } from "redux/game/gameApi.js";
 import socket from "services/socket.js";
 
-export const joinToGameRoom = (gameId, userId, dispatch) => {
-  if (socket.connected && gameId && userId) {
-    console.log("joinToGameRoom");
-    // console.trace("joinToGameRoom call stack");
-    // console.log("joinToGameRoom >> userId:::", userId);
-    // console.log("joinToGameRoom >> gameId:::", gameId);
+export const joinToGameRoom = (gameId, userId, userActiveGameId, dispatch) => {
+  // console.log("вхід у joinToGameRoom");
+
+  if (gameId && gameId === userActiveGameId && socket.connected && userId) {
+    // console.log("joinToGameRoom -  send emit");
+    // console.log({ gameId, userActiveGameId, userId });
 
     socket.emit("joinToGameRoom", {
       gameId,

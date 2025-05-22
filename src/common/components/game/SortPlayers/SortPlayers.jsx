@@ -41,8 +41,7 @@ export default function SortPlayers() {
 
   //# Page header color and text
   useEffect(() => {
-    const headerTitleText = t("players");
-    dispatch(setPageHeaderText(headerTitleText));
+    dispatch(setPageHeaderText(t("players")));
     dispatch(setPageHeaderTextSecond(""));
   }, [dispatch, t]);
 

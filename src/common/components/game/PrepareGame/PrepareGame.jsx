@@ -48,9 +48,6 @@ export default function PrepareGame() {
 
   //# Page header color and text
   useEffect(() => {
-    // dispatch(
-    //   setPageHeaderText(t("game_name", { gameName: currentGame.gameName })),
-    // );
     dispatch(setPageHeaderText(t("my_game")));
     dispatch(setPageHeaderTextSecond(userCredentials.name));
   }, [currentGame.gameName, dispatch, t, userCredentials.name]);

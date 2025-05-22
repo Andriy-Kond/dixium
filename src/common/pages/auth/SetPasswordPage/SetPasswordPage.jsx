@@ -19,6 +19,7 @@ import { Notify } from "notiflix";
 import {
   setIsSetPassword,
   setPageHeaderText,
+  setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
 import { useSetPasswordMutation } from "redux/auth/authApi.js";
 import Button from "common/components/ui/Button";
@@ -38,6 +39,7 @@ export default function SetPasswordPage() {
   //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("set_password")));
+    dispatch(setPageHeaderTextSecond(""));
     return () => {
       // Очистити прапор при демонтажі компонента, якщо пароль не встановлено
       if (!passwordValue) dispatch(setIsSetPassword(false));
