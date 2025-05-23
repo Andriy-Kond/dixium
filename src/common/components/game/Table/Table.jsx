@@ -232,7 +232,7 @@ export default function Table({
 
     const isCurrentPlayerStoryteller = storytellerId === playerId;
 
-    const playersMoreThanSix = players.length > 3;
+    const playersMoreThanSix = players.length > 6;
 
     const isStartVotingDisabled = players.some(player => !player.isGuessed);
 
