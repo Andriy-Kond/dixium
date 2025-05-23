@@ -22,7 +22,7 @@ import { LOBBY } from "utils/generals/constants.js";
 
 import { MdArrowForwardIos } from "react-icons/md";
 import css from "./GamesListPage.module.scss";
-import FormInput from "common/components/game/FormEditInput/index.js";
+import FormInput from "common/components/game/FormInput";
 
 export default function GamesListPage() {
   // console.log("GamesListPage");

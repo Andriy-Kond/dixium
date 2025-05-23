@@ -19,7 +19,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 
 import clsx from "clsx";
-import EditingForm from "../FormEdit/FormEdit.jsx";
+import FormEdit from "../FormEdit";
 import InfoMessage from "common/components/ui/InfoMessage";
 import { MdArrowForwardIos } from "react-icons/md";
 
@@ -156,7 +156,7 @@ export default function PrepareGame() {
 
         <p className={css.infoText}>{t("req_for_start_game")}</p>
 
-        <EditingForm
+        <FormEdit
           isDisableSet={isDisableSetPointsBtn}
           isDisableReset={isDisableResetPointsBtn}
           handleClear={handleClearFinishPoints}

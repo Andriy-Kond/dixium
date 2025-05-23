@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import css from "./FormEditInput.module.scss";
+import css from "./FormInput.module.scss";
 
-export default function FormEditInput({
+export default function FormInput({
   handleSubmit,
   isDisableSubmitBtn = false,
   btnText = "",

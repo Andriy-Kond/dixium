@@ -120,3 +120,10 @@
   margin-left: 16px;
   color: var(--04, #e3e7e9);
 }
+
+.googleLoginContainer {
+  position: absolute;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}

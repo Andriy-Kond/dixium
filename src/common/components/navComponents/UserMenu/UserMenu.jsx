@@ -25,7 +25,7 @@ import ThemeToggleRadioBtns from "common/components/ui/ThemeToggle";
 import LangSwitcherRadioBtns from "common/components/ui/LangSwitcher";
 
 import css from "./UserMenu.module.scss";
-import EditingForm from "common/components/game/FormEdit/FormEdit.jsx";
+import FormEdit from "common/components/game/FormEdit/FormEdit.jsx";
 import { gameApi } from "redux/game/gameApi.js";
 
 export default function UserMenu({ closeMenu = () => {} }) {
@@ -114,7 +114,7 @@ export default function UserMenu({ closeMenu = () => {} }) {
       {/* Умова userCredentials.name необхідно, щоб span не блимав при завантаженні користувача */}
       {userCredentials.name && (
         <>
-          <EditingForm
+          <FormEdit
             isDisableSet={isDisableSetNicknameBtn}
             isDisableReset={isDisableResetNicknameBtn}
             handleClear={handleClearNickName}

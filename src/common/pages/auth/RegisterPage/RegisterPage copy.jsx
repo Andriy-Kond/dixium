@@ -3,12 +3,17 @@ import {
   useGoogleLoginMutation,
   useSignupUserMutation,
 } from "redux/auth/authApi";
-import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice";
+import {
+  setIsLoggedIn,
+  setUserCredentials,
+  // setUserToken,
+} from "redux/auth/authSlice";
 
 import AuthForm from "common/components/ui/AuthForm";
+import css from "common/pages/auth/RegisterPage/RegisterPage.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   setIsSetPassword,
   setPageHeaderText,
@@ -17,9 +22,8 @@ import {
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
 import Button from "common/components/ui/Button/index.js";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { selectIsSetPassword } from "redux/selectors.js";
-import css from "common/pages/auth/RegisterPage/RegisterPage.module.scss";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
@@ -28,7 +32,7 @@ export default function RegisterPage() {
 
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
   const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
-
+  const googleLoginRef = useRef(null); // Референс для GoogleLogin
   const isSetPassword = useSelector(selectIsSetPassword); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
   const [googleLogin, { isLoading: isGoogleLoading }] =
     useGoogleLoginMutation();
@@ -122,6 +126,28 @@ export default function RegisterPage() {
 
   return (
     <div className={css.container}>
+      {/* <div
+        ref={googleLoginRef}
+        className={css.googleLoginContainer}
+        style={{
+          // pointerEvents: isGoogleLoading ? "none" : "auto",
+          opacity: isGoogleLoading ? 0.5 : 1,
+          display: "none",
+        }}>
+        <GoogleLogin
+          onSuccess={handleGoogleLogin} // Отримуємо токен Google
+          onError={() => {
+            Notify.failure(t("err_google_login"));
+            console.log("Google Login Failed");
+          }}
+          text="signin"
+          // "signin": "Вхід"
+          // "signin_with": "Вхід через Google" (default)
+          // "signup_with": "Зареєструватися через Google".
+          // "continue_with": "Продовжити з Google".
+        />
+      </div> */}
+
       {errorMessage?.includes("registered via Google") && (
         <div className={css.errorContainer}>
           <p>{t("google_account_error")}</p>
@@ -132,11 +158,36 @@ export default function RegisterPage() {
               pointerEvents: isGoogleLoading ? "none" : "auto",
               opacity: isGoogleLoading ? 0.5 : 1,
             }}>
+            {/* <Button
+              onClick={() =>
+                googleLoginRef.current
+                  ?.querySelector("div[role=button]")
+                  ?.click()
+              }>
+              {t("usual_google_login")}
+            </Button> */}
             <Button onClick={handleGoogleAuth}>
               {t("usual_google_login")}
             </Button>
           </div>
 
+          {/* <div onClick={redirectToSetPass}>
+            <div
+              className={css.googleLoginContainer}
+              style={{
+                pointerEvents: isGoogleLoading ? "none" : "auto",
+                opacity: isGoogleLoading ? 0.5 : 1,
+              }}>
+              <Button
+                onClick={() =>
+                  googleLoginRef.current
+                    ?.querySelector("div[role=button]")
+                    ?.click()
+                }>
+                {t("login_and_set_password")}
+              </Button>
+            </div>
+          </div> */}
           <div
             className={css.googleLoginContainer}
             style={{
@@ -155,6 +206,13 @@ export default function RegisterPage() {
         onSubmit={submitCredentials}
         isDisabled={isGoogleLoading || isSignupLoading}
       />
+      {/* <button
+        className={css.btn}
+        onClick={() =>
+          googleLoginRef.current?.querySelector("div[role=button]")?.click()
+        }>
+        {t("register_with_google")}
+      </button> */}
 
       <button
         className={css.btn}

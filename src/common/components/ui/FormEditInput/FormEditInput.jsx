@@ -7,6 +7,7 @@ export default function FormEditInput({
   placeholder,
   value,
   onChange,
+  required = false,
 }) {
   const inputRef = useRef(null);
   const handleFocus = () => {
@@ -31,6 +32,7 @@ export default function FormEditInput({
         onChange={onChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        required={required}
       />
     </>
   );

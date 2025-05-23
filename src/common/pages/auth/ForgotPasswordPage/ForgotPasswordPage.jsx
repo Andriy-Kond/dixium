@@ -4,6 +4,7 @@ import { Notify } from "notiflix";
 import { useForgotPasswordMutation } from "redux/auth/authApi";
 import css from "./ForgotPasswordPage.module.scss";
 import Button from "common/components/ui/Button";
+import FormEditInput from "common/components/ui/FormEditInput";
 
 //^ Компонент для введення email, на який буде надіслано посилання для скидання паролю.
 export default function ForgotPasswordPage() {
@@ -28,14 +29,13 @@ export default function ForgotPasswordPage() {
       <form onSubmit={handleSubmit} className={css.form}>
         <label className={css.formLabel}>
           {t("email")}
-          <input
+          <FormEditInput
             type="email"
             name="email"
             placeholder={t("enter_email")}
             value={email}
             onChange={e => setEmail(e.target.value.trim())}
-            className={css.formInput}
-            required
+            required={true}
           />
         </label>
         <Button btnText={t("send_reset_link")} disabled={isLoading} />
