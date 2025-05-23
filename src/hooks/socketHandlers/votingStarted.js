@@ -6,7 +6,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 
 export const votingStarted = (game, dispatch, playerId) => {
-  console.log("votingStarted");
+  // console.log("votingStarted");
 
   if (!game) {
     throw new Error(`The game is ${game}`);

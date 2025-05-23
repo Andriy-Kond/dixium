@@ -8,13 +8,13 @@ const localInitialState = {
   screens: {}, // Об’єкт виду { "gameId_playerId": screen }
   isShowMask: {}, // Об’єкт виду { "gameId_playerId": Boolean }
   votes: {}, // {"gameId_playerId": {firstVotedCardId: null, secondVotedCardId: null}}
-  selectedCardId: {}, // for first story(teller) mode
   isCarouselModeHandScreen: {},
   isCarouselModeTableScreen: {},
   // zoomCardId: {},
   toastId: {},
 
   cardsSet: {}, // cardsSet: { firstGuessCardSet: null, secondGuessCardSet: null },
+  selectedCardId: {}, // for first story(teller) mode
 
   pageHeaderText: "",
   pageHeaderTextSecond: "",

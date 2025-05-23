@@ -34,8 +34,8 @@ import { MdStar } from "react-icons/md";
 export default function Table({
   isActiveScreen,
   setMiddleButton,
-  startVoting,
-  finishRound,
+  // startVoting,
+  // finishRound,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -233,8 +233,7 @@ export default function Table({
     const isCurrentPlayerStoryteller = storytellerId === playerId;
 
     const playersMoreThanSix = players.length > 3;
-    const isReadyToVote = !players.some(player => !player.isGuessed);
-    const isReadyToCalculatePoints = players.every(player => player.isVoted);
+
     const isStartVotingDisabled = players.some(player => !player.isGuessed);
 
     const isCanVote =
@@ -304,6 +303,8 @@ export default function Table({
       );
     }
 
+    const isReadyToVote = !players.some(player => !player.isGuessed);
+    const isReadyToCalculatePoints = players.every(player => player.isVoted);
     if (!isCarouselModeTableScreen) {
       // console.log("Non Carousel Mode");
 
@@ -313,22 +314,22 @@ export default function Table({
 
       if (isCurrentPlayerHost && isReadyToVote && gameStatus === GUESSING) {
         // console.log("це хост і всі обрали карти - готові до голосування");
-        setMiddleButton(
-          <Button
-            btnText={t("start_voting")}
-            onClick={startVoting}
-            disabled={isStartVotingDisabled}
-          />,
-        );
+        // setMiddleButton(
+        //   <Button
+        //     btnText={t("start_voting")}
+        //     onClick={startVoting}
+        //     disabled={isStartVotingDisabled}
+        //   />,
+        // );
       } else if (
         isCurrentPlayerHost &&
         isReadyToCalculatePoints &&
         gameStatus === VOTING
       ) {
         // console.log("це хост і всі обрали проголосували - можна рахувати бали");
-        setMiddleButton(
-          <Button btnText={t("finish_round")} onClick={finishRound} />,
-        );
+        // setMiddleButton(
+        //   <Button btnText={t("finish_round")} onClick={finishRound} />,
+        // );
       } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
         // console.log("це хост і можна починати новий раунд");
         setMiddleButton(
@@ -370,7 +371,8 @@ export default function Table({
     carouselModeOff,
     currentGame,
     emblaApiCardsVote,
-    finishRound,
+    // startVoting,
+    // finishRound,
     firstVotedCardId,
     handleVote,
     isActiveScreen,
@@ -379,7 +381,6 @@ export default function Table({
     secondVotedCardId,
     setMiddleButton,
     startNewRound,
-    startVoting,
     t,
     toggleCardSelection,
   ]);

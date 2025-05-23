@@ -5,15 +5,18 @@ import {
   selectActiveScreen,
   selectIsCarouselModeHandScreen,
   selectIsCarouselModeTableScreen,
+  selectIsShowMask,
   selectLocalGame,
   selectUserCredentials,
 } from "redux/selectors.js";
 import { GUESSING, VOTING } from "utils/generals/constants.js";
 
 import css from "./ParagraphText.module.scss";
+import { useTranslation } from "react-i18next";
 
 export default function ParagraphText() {
   const { gameId } = useParams();
+  const { t } = useTranslation();
   const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
@@ -24,6 +27,7 @@ export default function ParagraphText() {
     selectIsCarouselModeTableScreen(gameId, playerId),
   );
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId)); // Number of current active screen
+  const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
 
   if (!currentGame) return null;
 
@@ -38,25 +42,25 @@ export default function ParagraphText() {
   let paragraphText = "";
 
   const decisionTable = {
-    lobby_hand_openHand: "",
-    lobby_players: "",
-    lobby_table_openTable: "",
+    lobby_hand_openHand: `Очікуйте поки ${storyteller?.name} розкаже свою асоціацію`,
+    lobby_players: "lobby_players",
+    lobby_table_openTable: "lobby_table_openTable",
     lobby_close: `Очікуйте поки ${storyteller?.name} розкаже свою асоціацію`,
 
     notGuessing_hand_openHand: `Підберіть карту до асоціації ${storyteller?.name} і походіть нею`,
-    notGuessing_players: "",
-    notGuessing_table_openTable: "",
+    notGuessing_players: "notGuessing_players",
+    notGuessing_table_openTable: "notGuessing_table_openTable",
     notGuessing_close: `Підберіть карту до асоціації ${storyteller?.name} і походіть нею`,
 
-    notVoting_hand_openHand: "",
-    notVoting_players: "",
+    notVoting_hand_openHand: "notVoting_hand_openHand",
+    notVoting_players: "notVoting_players",
     notVoting_table_openTable: `Підберіть карту до асоціації ${storyteller?.name} і походіть нею`,
     notVoting_close: `Позначте зірочками карти, що можуть належати ${storyteller?.name}. Якщо впевнені - ставте одразу дві зірки`,
 
-    round_results_hand_openHand: "",
-    round_results_players: "",
-    round_results_table_openTable: "",
-    round_results_close: "",
+    round_results_hand_openHand: "round_results_hand_openHand",
+    round_results_players: "round_results_players",
+    round_results_table_openTable: "round_results_table_openTable",
+    round_results_close: "round_results_close",
 
     waiting: "Очікуйте поки решта гравців походить",
   };
@@ -92,13 +96,17 @@ export default function ParagraphText() {
       key = `${state}_${screen}_${carouselState}`;
     }
 
-    console.log(" ParagraphText >> key:::", key);
+    // console.log(" ParagraphText >> key:::", key);
     return decisionTable[key] || "Невідома комбінація";
   }
 
   if (!storytellerId) {
     paragraphText =
       "Придумайте асоціацію до карти і оберіть її. Розкажіть гравцям асоціацію вголос.";
+  } else if (isShowMask && !isCurrentPlayerStoryteller) {
+    paragraphText = t("player_told_first_story", {
+      storytellerName: storyteller?.name,
+    });
   } else if (isCurrentPlayerStoryteller) {
     paragraphText =
       isVoted && isGuessed
@@ -115,6 +123,7 @@ export default function ParagraphText() {
 
   const isHightLight =
     !storytellerId ||
+    isShowMask ||
     (isCurrentPlayerStoryteller && !isGuessed && !isVoted) ||
     (gameStatus === GUESSING && !isGuessed) ||
     (gameStatus === VOTING && !isVoted && isCarouselModeTableScreen) ||

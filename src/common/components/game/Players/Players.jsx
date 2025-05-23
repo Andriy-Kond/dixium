@@ -1,5 +1,3 @@
-// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,8 +21,8 @@ import css from "./Players.module.scss";
 export default function Players({
   isActiveScreen,
   setMiddleButton,
-  startVoting,
-  finishRound,
+  // startVoting,
+  // finishRound,
 }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -56,20 +54,20 @@ export default function Players({
     if (gameStatus === GUESSING) {
       if (isCurrentPlayerHost && isReadyToVote) {
         // Якщо це ведучий:
-        setMiddleButton(
-          <Button
-            btnText={t("start_voting")}
-            onClick={startVoting}
-            disabled={isStartVotingDisabled}
-          />,
-        );
+        // setMiddleButton(
+        //   <Button
+        //     btnText={t("start_voting")}
+        //     onClick={startVoting}
+        //     disabled={isStartVotingDisabled}
+        //   />,
+        // );
       } else setMiddleButton(null);
     } else if (gameStatus === VOTING) {
       if (isCurrentPlayerHost && isReadyToCalculatePoints) {
         // Якщо це ведучий:
-        setMiddleButton(
-          <Button btnText={t("finish_round")} onClick={finishRound} />,
-        );
+        // setMiddleButton(
+        //   <Button btnText={t("finish_round")} onClick={finishRound} />,
+        // );
       } else setMiddleButton(null);
     } else if (gameStatus === ROUND_RESULTS) {
       if (isCurrentPlayerHost && isReadyToStartNewRound) {
@@ -85,12 +83,12 @@ export default function Players({
     } else setMiddleButton(null);
   }, [
     currentGame,
-    finishRound,
+    // finishRound,
     isActiveScreen,
     playerId,
     setMiddleButton,
     startNewRound,
-    startVoting,
+    // startVoting,
     t,
   ]);
 

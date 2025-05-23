@@ -40,6 +40,7 @@ import { toast } from "react-toastify";
 import { Trans, useTranslation } from "react-i18next";
 import SortPlayers from "../SortPlayers/index.js";
 import ParagraphText from "../ParagraphText/ParagraphText.jsx";
+import Mask from "../Mask/Mask.jsx";
 
 export default function Game() {
   const dispatch = useDispatch();
@@ -103,6 +104,7 @@ export default function Game() {
     watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen), // дозвіл на слайдінг при цій умові
   });
 
+  // addPreviewId
   useEffect(() => {
     if (!currentGame) return;
     const { players, cardsOnTable } = currentGame;
@@ -227,50 +229,50 @@ export default function Game() {
 
   const localToastRef = useRef(toastId || null); // fore show toast.info 1 time after refresh
 
-  // Повідомлення. що хтось став першим оповідачем
-  useEffect(() => {
-    if (!currentGame) return;
+  // // Повідомлення. що хтось став першим оповідачем
+  // useEffect(() => {
+  //   if (!currentGame) return;
 
-    const { players, storytellerId } = currentGame;
-    const storyteller = players.find(p => p._id === storytellerId);
-    const isCurrentPlayerStoryteller = storytellerId === playerId;
+  //   const { players, storytellerId } = currentGame;
+  //   const storyteller = players.find(p => p._id === storytellerId);
+  //   const isCurrentPlayerStoryteller = storytellerId === playerId;
 
-    if (isShowMask) {
-      if (!localToastRef.current && !isCurrentPlayerStoryteller) {
-        localToastRef.current = true;
-        const newToastId = toast.info(
-          <>
-            {/* <p>
-              Player <b>{storyteller?.name.toUpperCase()}</b> told first story.
-              <br /> Let's go to guess it!
-            </p> */}
+  //   if (isShowMask) {
+  //     if (!localToastRef.current && !isCurrentPlayerStoryteller) {
+  //       localToastRef.current = true;
+  //       const newToastId = toast.info(
+  //         <>
+  //           {/* <p>
+  //             Player <b>{storyteller?.name.toUpperCase()}</b> told first story.
+  //             <br /> Let's go to guess it!
+  //           </p> */}
 
-            <p>
-              <Trans
-                i18nKey="player_told_first_story"
-                values={{ storytellerName: storyteller?.name.toUpperCase() }}
-                components={{ bold: <b />, br: <br /> }} // components - об'єкт, де ключі відповідають тегам у перекладі (<bold>, <br/>), а значення — JSX-компоненти, які мають бути вставлені на їх місце.
-              />
-            </p>
-          </>,
+  //           <p>
+  //             <Trans
+  //               i18nKey="player_told_first_story"
+  //               values={{ storytellerName: storyteller?.name.toUpperCase() }}
+  //               components={{ bold: <b />, br: <br /> }} // components - об'єкт, де ключі відповідають тегам у перекладі (<bold>, <br/>), а значення — JSX-компоненти, які мають бути вставлені на їх місце.
+  //             />
+  //           </p>
+  //         </>,
 
-          {
-            position: "top-center",
-            autoClose: false,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: 1,
-            theme: "colored",
-            // transition: Bounce,
-          },
-        );
+  //         {
+  //           position: "top-center",
+  //           autoClose: false,
+  //           hideProgressBar: false,
+  //           closeOnClick: true,
+  //           pauseOnHover: true,
+  //           draggable: true,
+  //           progress: 1,
+  //           theme: "colored",
+  //           // transition: Bounce,
+  //         },
+  //       );
 
-        dispatch(setToastId({ gameId, playerId, toastId: newToastId }));
-      }
-    }
-  }, [currentGame, dispatch, gameId, isShowMask, playerId]);
+  //       dispatch(setToastId({ gameId, playerId, toastId: newToastId }));
+  //     }
+  //   }
+  // }, [currentGame, dispatch, gameId, isShowMask, playerId]);
 
   const startVoting = useCallback(() => {
     // todo: протестувати без useCallBack
@@ -284,6 +286,14 @@ export default function Game() {
 
     socket.emit("startVoting", { updatedGame });
   }, [currentGame]);
+
+  useEffect(() => {
+    if (!currentGame) return;
+    const { players, gameStatus } = currentGame;
+
+    const isReadyToVote = !players.some(player => !player.isGuessed);
+    isReadyToVote && gameStatus === GUESSING && startVoting();
+  }, [currentGame, startVoting]);
 
   const finishRound = useCallback(() => {
     // todo: протестувати без useCallBack
@@ -324,6 +334,14 @@ export default function Game() {
     socket.emit("roundFinish", { updatedGame });
   }, [currentGame]);
 
+  useEffect(() => {
+    if (!currentGame) return;
+    const { players, gameStatus } = currentGame;
+
+    const isReadyToCalculatePoints = players.every(player => player.isVoted);
+    isReadyToCalculatePoints && gameStatus === VOTING && finishRound();
+  }, [currentGame, finishRound]);
+
   const stabilizedSetMiddleButton = useCallback(value => {
     // todo: протестувати без useCallBack
     setMiddleButton(value);
@@ -354,7 +372,19 @@ export default function Game() {
       {/* <p>Current Game</p> */}
       {/* <PageBadge /> */}
 
-      {!isBlockScreens && gameStatus !== ROUND_RESULTS && <ParagraphText />}
+      {gameStatus !== ROUND_RESULTS && <ParagraphText />}
+
+      {/* {isShowMask && !isCurrentPlayerStoryteller && (
+        <div className={css.maskContainer}>
+          <Mask
+            rotation={30}
+            top={50}
+            left={50}
+            translate={50}
+            position="absolute"
+          />
+        </div>
+      )} */}
 
       <div
         className={`${css.screenCarouselWrapper} ${
@@ -369,8 +399,8 @@ export default function Game() {
                 setMiddleButton: stabilizedSetMiddleButton,
                 isCarouselModeHandScreen,
                 isCarouselModeTableScreen,
-                finishRound,
-                startVoting,
+                // finishRound,
+                // startVoting,
                 toastId,
               })}
             </li>

@@ -50,12 +50,6 @@ export const selectVotesLocal = (gameId, playerId) => state => {
   return votes !== undefined ? votes : defaultVotes;
 };
 
-export const selectSelectedCardId = (gameId, playerId) => state => {
-  const key = `${gameId}_${playerId}`;
-  const selectedCardId = state.localPersonalSlice.selectedCardId[key];
-  return selectedCardId || null;
-};
-
 export const selectIsCarouselModeHandScreen = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
   const isCarouselModeHandScreen =
@@ -87,6 +81,12 @@ export const selectCardsSet = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
   const cardsSet = state.localPersonalSlice.cardsSet[key];
   return cardsSet || emptyCardsSet;
+};
+
+export const selectSelectedCardId = (gameId, playerId) => state => {
+  const key = `${gameId}_${playerId}`;
+  const selectedCardId = state.localPersonalSlice.selectedCardId[key];
+  return selectedCardId || null;
 };
 
 export const selectLang = state => state.localPersonalSlice.lang || "en";
