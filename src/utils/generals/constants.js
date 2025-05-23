@@ -1,7 +1,7 @@
 // game stages
 export const LOBBY = "lobby";
 export const GUESSING = "guessing";
-export const VOTING = "voiting";
+export const VOTING = "voting";
 export const ROUND_RESULTS = "round_results";
 export const FINISH = "finish";
 

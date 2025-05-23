@@ -7,7 +7,7 @@ export default function FormEdit({
   isDisableReset = false,
   handleClear,
   handleSet,
-  val,
+  value,
   setVal,
   labelText,
   inputMode = "text",
@@ -31,7 +31,7 @@ export default function FormEdit({
             id="input"
             type="text"
             inputMode={inputMode}
-            value={val}
+            value={value}
             onChange={e => setVal(e.target.value.trim())}
             onFocus={handleFocus}
             onBlur={handleBlur}

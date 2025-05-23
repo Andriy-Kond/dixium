@@ -1,14 +1,19 @@
+@import "styles/utils/mixins";
+
 .container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  padding: 8px 16px;
 }
 
-.pageMain {
-  text-align: center;
+.headerMessage {
+  color: var(--00, #818f99);
+  margin-bottom: 8px;
 }
 
-.error {
-  color: #ff4d4d;
-  margin: 0.5rem 0;
+.btn {
+  @include btn;
+  align-self: flex-end;
 }

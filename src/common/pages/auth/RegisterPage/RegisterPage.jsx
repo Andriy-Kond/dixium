@@ -117,33 +117,49 @@ export default function RegisterPage() {
 
   return (
     <div className={css.container}>
-      <div className={css.pageMain}>
-        <div
-          ref={googleLoginRef}
-          className={css.googleLoginContainer}
-          style={{
-            // pointerEvents: isGoogleLoading ? "none" : "auto",
-            opacity: isGoogleLoading ? 0.5 : 1,
-            display: "none",
-          }}>
-          <GoogleLogin
-            onSuccess={handleGoogleLogin} // Отримуємо токен Google
-            onError={() => {
-              Notify.failure(t("err_google_login"));
-              console.log("Google Login Failed");
-            }}
-            text="signin"
-            // "signin": "Вхід"
-            // "signin_with": "Вхід через Google" (default)
-            // "signup_with": "Зареєструватися через Google".
-            // "continue_with": "Продовжити з Google".
-          />
-        </div>
+      <div
+        ref={googleLoginRef}
+        className={css.googleLoginContainer}
+        style={{
+          // pointerEvents: isGoogleLoading ? "none" : "auto",
+          opacity: isGoogleLoading ? 0.5 : 1,
+          display: "none",
+        }}>
+        <GoogleLogin
+          onSuccess={handleGoogleLogin} // Отримуємо токен Google
+          onError={() => {
+            Notify.failure(t("err_google_login"));
+            console.log("Google Login Failed");
+          }}
+          text="signin"
+          // "signin": "Вхід"
+          // "signin_with": "Вхід через Google" (default)
+          // "signup_with": "Зареєструватися через Google".
+          // "continue_with": "Продовжити з Google".
+        />
+      </div>
 
-        {errorMessage?.includes("registered via Google") && (
-          <div className={css.errorContainer}>
-            <p>{t("google_account_error")}</p>
+      {errorMessage?.includes("registered via Google") && (
+        <div className={css.errorContainer}>
+          <p>{t("google_account_error")}</p>
 
+          <div
+            className={css.googleLoginContainer}
+            style={{
+              pointerEvents: isGoogleLoading ? "none" : "auto",
+              opacity: isGoogleLoading ? 0.5 : 1,
+            }}>
+            <Button
+              onClick={() =>
+                googleLoginRef.current
+                  ?.querySelector("div[role=button]")
+                  ?.click()
+              }>
+              {t("usual_google_login")}
+            </Button>
+          </div>
+
+          <div onClick={redirectToSetPass}>
             <div
               className={css.googleLoginContainer}
               style={{
@@ -156,45 +172,27 @@ export default function RegisterPage() {
                     ?.querySelector("div[role=button]")
                     ?.click()
                 }>
-                {t("usual_google_login")}
+                {t("login_and_set_password")}
               </Button>
             </div>
-
-            <div onClick={redirectToSetPass}>
-              <div
-                className={css.googleLoginContainer}
-                style={{
-                  pointerEvents: isGoogleLoading ? "none" : "auto",
-                  opacity: isGoogleLoading ? 0.5 : 1,
-                }}>
-                <Button
-                  onClick={() =>
-                    googleLoginRef.current
-                      ?.querySelector("div[role=button]")
-                      ?.click()
-                  }>
-                  {t("login_and_set_password")}
-                </Button>
-              </div>
-            </div>
           </div>
-        )}
+        </div>
+      )}
 
-        <AuthForm
-          isRegister={true}
-          onSubmit={submitCredentials}
-          isDisabled={isGoogleLoading || isSignupLoading}
-        />
-        <button
-          className={css.btn}
-          onClick={() =>
-            googleLoginRef.current?.querySelector("div[role=button]")?.click()
-          }>
-          {t("register_with_google")}
-        </button>
+      <AuthForm
+        isRegister={true}
+        onSubmit={submitCredentials}
+        isDisabled={isGoogleLoading || isSignupLoading}
+      />
+      <button
+        className={css.btn}
+        onClick={() =>
+          googleLoginRef.current?.querySelector("div[role=button]")?.click()
+        }>
+        {t("register_with_google")}
+      </button>
 
-        <div className={css.pageFooter}></div>
-      </div>
+      <div className={css.pageFooter}></div>
     </div>
   );
 }

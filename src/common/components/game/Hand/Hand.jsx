@@ -399,7 +399,7 @@ export default function Hand({
                   className={clsx(
                     css.btn,
                     (firstGuessCardSet || selectedCardId) &&
-                      currentCard._id === firstGuessCardSet._id &&
+                      currentCard?._id === firstGuessCardSet?._id &&
                       css.btnActive,
                   )}>
                   {gameStatus === LOBBY
@@ -590,34 +590,8 @@ export default function Hand({
   // ^Render
   if (!currentGame) return null;
 
-  const { players, storytellerId, gameStatus } = currentGame;
-  const storyteller = players.find(p => p._id === storytellerId);
-
+  const { players, storytellerId } = currentGame;
   const isCurrentPlayerStoryteller = storytellerId === playerId;
-  // const paragraphText = !storytellerId
-  //   ? t("be_the_first")
-  //   : isCurrentPlayerStoryteller
-  //   ? t("you_have_told")
-  //   : t("player_has_told", { storyteller: storyteller?.name.toUpperCase() });
-  // // `Player ${storyteller?.name.toUpperCase()} has told his history. Choose a card to associate with it.`;
-
-  // paragraphText
-  let paragraphText = "";
-  if (isCarouselModeHandScreen) {
-    if (!storytellerId)
-      paragraphText =
-        "Придумайте асоціацію до карти і оберіть її. Розкажіть гравцям асоціацію вголос.";
-  } else {
-    if (!storytellerId)
-      paragraphText =
-        "Придумайте асоціацію до однієї зі своїх карт і зробіть нею хід. Розкажіть гравцям асоціацію вголос.";
-
-    if (isCurrentPlayerStoryteller) {
-      paragraphText = "Очікуйте поки решта гравців походить.";
-    } else {
-      paragraphText = `Підберіть карту до асоціації ${storyteller.name} і зробить оберіть її.`;
-    }
-  }
 
   if (!isCurrentPlayerStoryteller && isShowMask) {
     return (
@@ -637,16 +611,6 @@ export default function Hand({
 
   return (
     <>
-      {/* <p>Hand</p> */}
-      {/* <p
-        className={clsx(css.headerMessage, {
-          [css.hightLight]:
-            !storytellerId ||
-            (gameStatus === GUESSING && !isCurrentPlayerStoryteller),
-        })}>
-        {paragraphText}
-      </p> */}
-
       {isCarouselModeHandScreen && (
         <div className={css.carWrap}>
           <div className={css.carousel} ref={emblaRefCardsGuess}>

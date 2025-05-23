@@ -161,7 +161,7 @@ export default function PrepareGame() {
           isDisableReset={isDisableResetPointsBtn}
           handleClear={handleClearFinishPoints}
           handleSet={handleSetFinishPoints}
-          val={finishPointsValue}
+          value={finishPointsValue}
           setVal={handleSetFinishPointsValue}
           labelText={t("finish_points")}
           inputMode="numeric"

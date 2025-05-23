@@ -119,7 +119,7 @@ export default function UserMenu({ closeMenu = () => {} }) {
             isDisableReset={isDisableResetNicknameBtn}
             handleClear={handleClearNickName}
             handleSet={handleSetNickname}
-            val={nicknameValue}
+            value={nicknameValue}
             setVal={setNicknameValue}
             labelText={t("nick")}
             type={"text"}

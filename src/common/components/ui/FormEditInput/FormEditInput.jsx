@@ -5,7 +5,7 @@ export default function FormEditInput({
   type = "text",
   name,
   placeholder,
-  val,
+  value,
   onChange,
 }) {
   const inputRef = useRef(null);
@@ -27,7 +27,7 @@ export default function FormEditInput({
         type={type}
         name={name}
         placeholder={placeholder}
-        value={val}
+        value={value}
         onChange={onChange}
         onFocus={handleFocus}
         onBlur={handleBlur}

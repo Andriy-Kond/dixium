@@ -5,7 +5,7 @@ export default function FormEditInput({
   handleSubmit,
   isDisableSubmitBtn = false,
   btnText = "",
-  val,
+  value,
   onChange,
   inputMode = "text",
   placeholder = "",
@@ -34,7 +34,7 @@ export default function FormEditInput({
           // autoFocus // виникає проблема при видаленні гри - ref не встигає сформуватись (треба додавати useEffect чи setTimeout для встановлення класу input-focused)
           type="text"
           onChange={onChange}
-          value={val} // ??
+          value={value} // ??
           placeholder={placeholder}
           inputMode={inputMode}
           maxLength={maxLength}

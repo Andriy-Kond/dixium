@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../Button/index.js";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import FormInput from "../FormEditInput/FormEditInput.jsx";
+import FormEditInput from "common/components/ui/FormEditInput";
 
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import css from "./AuthForm.module.scss";
@@ -34,10 +34,10 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
         {isRegister && (
           <label className={css.formLabel}>
             {t("name")}
-            <FormInput
+            <FormEditInput
               name={"name"}
               placeholder={t("enter_name")}
-              val={formData.name}
+              value={formData.name}
               onChange={handleChange}
             />
           </label>
@@ -46,10 +46,10 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
         <label className={css.formLabel}>
           {t("email")}
 
-          <FormInput
+          <FormEditInput
             name={"email"}
             placeholder={t("enter_email")}
-            val={formData?.email}
+            value={formData?.email}
             onChange={handleChange}
           />
         </label>
@@ -58,11 +58,11 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
           {t("password")}
 
           <div className={css.inputContainer}>
-            <FormInput
+            <FormEditInput
               type={showPassword ? "text" : "password"}
               name={"password"}
               placeholder={t("enter_password")}
-              val={formData?.password}
+              value={formData?.password}
               onChange={handleChange}
             />
 

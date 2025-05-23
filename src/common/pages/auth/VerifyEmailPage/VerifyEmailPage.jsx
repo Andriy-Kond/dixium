@@ -10,11 +10,11 @@ import {
   setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
 import { useResendVerificationEmailMutation } from "redux/auth/authApi.js";
-import Button from "common/components/ui/Button";
 
 import { EMAIL_TEMPLATE } from "utils/generals/constants.js";
 import css from "./VerifyEmailPage.module.scss";
 import { selectInternetStatus } from "redux/selectors.js";
+import FormEditInput from "common/components/ui/FormEditInput/index.js";
 
 export default function VerifyEmailPage() {
   const navigate = useNavigate();
@@ -212,45 +212,44 @@ export default function VerifyEmailPage() {
 
   return (
     <div className={css.container}>
-      <div className={css.pageMain}>
-        <h2>{t("verify_email")}</h2>
-        <p>{t("verify_email_message")}</p>
+      {/* <h2 className={css.infoTitle}>{t("verify_email")}</h2> */}
+      <p className={css.headerMessage}>{t("verify_email_message")}</p>
 
-        <input
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder={t("enter_email")}
-          className={css.input}
-        />
+      <FormEditInput
+        type={"email"}
+        name
+        placeholder={t("enter_email")}
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+      />
 
-        {/* reCAPTCHA v3 (невидимий) */}
+      {/* reCAPTCHA v3 (невидимий) */}
+      <ReCAPTCHA
+        ref={recaptchaV3Ref}
+        sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_V3_DIXIUM}
+        size="invisible"
+      />
+
+      {showV2Captcha && email && EMAIL_TEMPLATE.test(email) && (
         <ReCAPTCHA
-          ref={recaptchaV3Ref}
-          sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_V3_DIXIUM}
-          size="invisible"
+          ref={recaptchaV2Ref}
+          sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_V2_DIXIUM}
+          size="normal"
+          onChange={handleV2CaptchaChange}
         />
+      )}
 
-        {showV2Captcha && email && EMAIL_TEMPLATE.test(email) && (
-          <ReCAPTCHA
-            ref={recaptchaV2Ref}
-            sitekey={process.env.REACT_APP_GOOGLE_CAPTCHA_V2_DIXIUM}
-            size="normal"
-            onChange={handleV2CaptchaChange}
-          />
-        )}
-
-        <Button
-          btnText={t("resend_verification_email")}
-          onClick={() => handleResendEmail()}
-          disabled={
-            isLoading ||
-            (showV2Captcha && !recaptchaToken_v2) ||
-            !EMAIL_TEMPLATE.test(email)
-          }
-          loading={isLoading}
-        />
-      </div>
+      <button
+        className={css.btn}
+        onClick={() => handleResendEmail()}
+        disabled={
+          isLoading ||
+          (showV2Captcha && !recaptchaToken_v2) ||
+          !EMAIL_TEMPLATE.test(email)
+        }
+        loading={isLoading}>
+        {t("resend_verification_email")}
+      </button>
     </div>
   );
 }

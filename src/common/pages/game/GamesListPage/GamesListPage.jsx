@@ -281,7 +281,7 @@ export default function GamesListPage() {
           <FormInput
             handleSubmit={handleJoinSubmit}
             onChange={handleChange}
-            // val={searchGameNumber}
+            // value={searchGameNumber}
             inputMode={"numeric"}
             placeholder={t("enter_id")}
             maxLength={5} // 4 цифри + дефіс
