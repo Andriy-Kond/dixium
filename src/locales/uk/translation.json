@@ -1,4 +1,5 @@
 {
+  "err_google_login": "Помилка Google login: {{err}}",
   "deck": "Колода: {{name}}",
   "game_cards": "Гральні карти",
   "back": "Назад",

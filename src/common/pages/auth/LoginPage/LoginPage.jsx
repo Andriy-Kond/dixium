@@ -96,6 +96,7 @@ export default function LoginPage() {
     // flow: "implicit",
     prompt: "none", // Уникає повторного запиту згоди (але, здається лише з implicit)
     // scope: "email profile openid", // Потрібні scopes
+    redirect_uri: "https://dixium.vercel.app",
   });
 
   const redirectToSetPass = () => {
