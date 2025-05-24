@@ -1,4 +1,5 @@
 {
+  "err_google_login": "Google login error: {{err}}",
   "deck": "Deck: {{name}}",
   "game_cards": "Game cards",
   "back": "Back",

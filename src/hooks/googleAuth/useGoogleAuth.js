@@ -35,12 +35,12 @@ export const useGoogleAuth = () => {
 
         if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено
       } catch (err) {
-        const message = err.data?.message || t("err_google_login");
+        const message = err.data?.message || t("err_google_login", { err });
         if (message.includes("Email not verified")) {
           navigate("/verify-email");
         } else {
           Notify.failure(t("err_google_login"));
-          console.log("Google Login Error:", err.message);
+          console.log("Google Login Error:", err);
         }
       }
     },
