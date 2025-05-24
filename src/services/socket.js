@@ -1,6 +1,5 @@
 import { io } from "socket.io-client";
 const { REACT_APP_BASE_URL } = process.env;
-// const socket = io(REACT_APP_BASE_URL);
 
 const socket = io(REACT_APP_BASE_URL, {
   autoConnect: true,
