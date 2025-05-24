@@ -112,7 +112,7 @@ export default function LoginPage() {
     <>
       <div className={css.container}>
         <div className={css.pageMain}>
-          <div
+          {/* <div
             ref={googleLoginRef}
             className={css.googleLoginContainer}
             style={{
@@ -128,7 +128,7 @@ export default function LoginPage() {
               }}
               text="signin" //??? які є варіанти написів у гугла? як міняти мову в них?
             />
-          </div>
+          </div> */}
 
           {errorMessage?.includes("registered via Google") && (
             <div className={css.errorContainer}>
