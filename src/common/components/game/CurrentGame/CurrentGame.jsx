@@ -20,7 +20,6 @@ import {
   selectIsCarouselModeTableScreen,
   selectIsShowMask,
   selectUserCredentials,
-  selectToastId,
   selectPreloadImg,
   selectLocalGame,
 } from "redux/selectors.js";
@@ -33,14 +32,12 @@ import {
   setHasPreloaded,
   setPageHeaderText,
   setPageHeaderTextSecond,
-  setToastId,
 } from "redux/game/localPersonalSlice.js";
 import { shuffleDeck } from "utils/game/shuffleDeck.js";
-import { toast } from "react-toastify";
-import { Trans, useTranslation } from "react-i18next";
+
+import { useTranslation } from "react-i18next";
 import SortPlayers from "../SortPlayers/index.js";
 import ParagraphText from "../ParagraphText/ParagraphText.jsx";
-import Mask from "../Mask/Mask.jsx";
 
 export default function Game() {
   const dispatch = useDispatch();
@@ -52,7 +49,6 @@ export default function Game() {
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
 
-  const toastId = useSelector(selectToastId(gameId, playerId));
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId)); // Number of current active screen
 
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
@@ -81,7 +77,7 @@ export default function Game() {
   //# Page header color and text
   useEffect(() => {
     if (!currentGame) return;
-    const { hostPlayerId, players } = currentGame;
+    const { hostPlayerId, players, gameStatus } = currentGame;
 
     const hostPlayer = players.find(player => player._id === hostPlayerId);
     const gameHostNick = hostPlayer.name;
@@ -94,7 +90,14 @@ export default function Game() {
         : t("table");
 
     const headerTitleTextSecond = t("whom_game", { gameHostNick });
-    dispatch(setPageHeaderText(headerTitleText));
+
+    if (gameStatus === ROUND_RESULTS && activeScreen === 2) {
+      // dispatch(setPageHeaderText(t("round_N", {roundNumber})));
+      dispatch(setPageHeaderText(`${headerTitleText} round #`));
+    } else {
+      dispatch(setPageHeaderText(headerTitleText));
+    }
+
     dispatch(setPageHeaderTextSecond(headerTitleTextSecond));
   }, [activeScreen, currentGame, dispatch, t]);
 
@@ -227,53 +230,6 @@ export default function Game() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApi, isCarouselModeHandScreen, isCarouselModeTableScreen]);
 
-  const localToastRef = useRef(toastId || null); // fore show toast.info 1 time after refresh
-
-  // // Повідомлення. що хтось став першим оповідачем
-  // useEffect(() => {
-  //   if (!currentGame) return;
-
-  //   const { players, storytellerId } = currentGame;
-  //   const storyteller = players.find(p => p._id === storytellerId);
-  //   const isCurrentPlayerStoryteller = storytellerId === playerId;
-
-  //   if (isShowMask) {
-  //     if (!localToastRef.current && !isCurrentPlayerStoryteller) {
-  //       localToastRef.current = true;
-  //       const newToastId = toast.info(
-  //         <>
-  //           {/* <p>
-  //             Player <b>{storyteller?.name.toUpperCase()}</b> told first story.
-  //             <br /> Let's go to guess it!
-  //           </p> */}
-
-  //           <p>
-  //             <Trans
-  //               i18nKey="player_told_first_story"
-  //               values={{ storytellerName: storyteller?.name.toUpperCase() }}
-  //               components={{ bold: <b />, br: <br /> }} // components - об'єкт, де ключі відповідають тегам у перекладі (<bold>, <br/>), а значення — JSX-компоненти, які мають бути вставлені на їх місце.
-  //             />
-  //           </p>
-  //         </>,
-
-  //         {
-  //           position: "top-center",
-  //           autoClose: false,
-  //           hideProgressBar: false,
-  //           closeOnClick: true,
-  //           pauseOnHover: true,
-  //           draggable: true,
-  //           progress: 1,
-  //           theme: "colored",
-  //           // transition: Bounce,
-  //         },
-  //       );
-
-  //       dispatch(setToastId({ gameId, playerId, toastId: newToastId }));
-  //     }
-  //   }
-  // }, [currentGame, dispatch, gameId, isShowMask, playerId]);
-
   const startVoting = useCallback(() => {
     // todo: протестувати без useCallBack
     if (!currentGame) return;
@@ -370,21 +326,8 @@ export default function Game() {
   return (
     <div className={css.gameContainer}>
       {/* <p>Current Game</p> */}
-      {/* <PageBadge /> */}
 
       {gameStatus !== ROUND_RESULTS && <ParagraphText />}
-
-      {/* {isShowMask && !isCurrentPlayerStoryteller && (
-        <div className={css.maskContainer}>
-          <Mask
-            rotation={30}
-            top={50}
-            left={50}
-            translate={50}
-            position="absolute"
-          />
-        </div>
-      )} */}
 
       <div
         className={`${css.screenCarouselWrapper} ${
@@ -399,9 +342,6 @@ export default function Game() {
                 setMiddleButton: stabilizedSetMiddleButton,
                 isCarouselModeHandScreen,
                 isCarouselModeTableScreen,
-                // finishRound,
-                // startVoting,
-                toastId,
               })}
             </li>
           ))}

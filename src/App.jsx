@@ -18,7 +18,6 @@ import {
   selectUserToken,
 } from "./redux/selectors";
 import { useSetupSocketListeners } from "hooks/useSetupSocketListeners.js";
-import { ToastContainer } from "react-toastify";
 import { setNetworkStatus } from "redux/game/gameSlice.js";
 import { useTranslation } from "react-i18next";
 
@@ -199,18 +198,6 @@ export default function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
-
-          <ToastContainer
-            position="top-center"
-            autoClose={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            theme="light"
-            // transition="Bounce"
-          />
         </BackButtonProvider>
       </GoogleOAuthProvider>
     </>

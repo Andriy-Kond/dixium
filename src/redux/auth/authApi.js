@@ -68,13 +68,15 @@ export const authApi = createApi({
       invalidatesTags: ["User"],
     }),
 
+    //# Передача code (програмно) або token (через нативну кнопку):
     googleLogin: build.mutation({
-      query: token => ({
+      query: ({ code, token }) => ({
         url: `/api/auth/google`,
         method: "POST",
-        body: { token },
+        body: { code, token },
       }),
-      providesTags: ["User"], // бо повертає дані користувача, які можуть бути використані в кеші
+
+      providesTags: ["User"],
       invalidatesTags: ["User"],
     }),
 
@@ -172,6 +174,8 @@ export const {
   useSignupUserMutation,
   useLoginUserMutation,
   useGoogleLoginMutation,
+  useGoogleLoginCodeMutation,
+  useGoogleLoginTokenMutation,
   useLogoutUserMutation,
   useGetUserByTokenQuery,
   useUploadAvatarMutation,

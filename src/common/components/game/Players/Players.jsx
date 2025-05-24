@@ -18,12 +18,7 @@ import { useTranslation } from "react-i18next";
 import { MdCheckCircle, MdDone, MdCached, MdStar } from "react-icons/md";
 import css from "./Players.module.scss";
 
-export default function Players({
-  isActiveScreen,
-  setMiddleButton,
-  // startVoting,
-  // finishRound,
-}) {
+export default function Players({ isActiveScreen, setMiddleButton }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { gameId } = useParams();

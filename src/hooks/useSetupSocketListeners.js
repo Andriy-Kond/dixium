@@ -11,7 +11,6 @@ import {
   selectActiveActionsTest,
   selectLocalGame,
   selectLocalGames,
-  selectToastId,
   selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
@@ -45,6 +44,7 @@ import { useTranslation } from "react-i18next";
 
 export const useSetupSocketListeners = () => {
   const dispatch = useDispatch();
+
   const navigate = useNavigate();
   const { t } = useTranslation();
   const location = useLocation();
@@ -53,7 +53,7 @@ export const useSetupSocketListeners = () => {
 
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: userId } = userCredentials;
-  const toastId = useSelector(selectToastId(gameId, userId));
+
   const activeActions = useSelector(selectActiveActions);
   const activeActionsTest = useSelector(selectActiveActionsTest);
   const games = useSelector(selectLocalGames);
@@ -109,7 +109,7 @@ export const useSetupSocketListeners = () => {
 
     const handleGameDeleted = ({ game }) => {
       if (games[game._id])
-        gameDeleted(game, dispatch, gameId, userId, navigate, toastId);
+        gameDeleted(game, dispatch, gameId, userId, navigate);
     };
 
     const handlePlayersOrderUpdate = ({ game, errorMessage }) =>
@@ -226,7 +226,6 @@ export const useSetupSocketListeners = () => {
     games,
     navigate,
     t,
-    toastId,
     userActiveGameId,
     userId,
   ]);

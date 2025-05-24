@@ -20,6 +20,7 @@ import Button from "common/components/ui/Button/index.js";
 import { useGoogleLogin } from "@react-oauth/google";
 import { selectIsSetPassword } from "redux/selectors.js";
 import css from "common/pages/auth/RegisterPage/RegisterPage.module.scss";
+import { useGoogleAuth } from "hooks/googleAuth/useGoogleAuth.js";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
@@ -84,40 +85,29 @@ export default function RegisterPage() {
     }
   };
 
-  // Хук для програмного виклику Google Sign-In
+  const handleGoogleLogin = useGoogleAuth();
+
+  //# Передача code (програмно):
   const login = useGoogleLogin({
-    onSuccess: async tokenResponse => {
-      try {
-        // Відправляємо токен на сервер через RTK Query
-        const result = await googleLogin(tokenResponse).unwrap(); // .unwrap() для отримання результату мутації - data чи error
-        dispatch(setUserCredentials(result));
-        dispatch(setUserActiveGameId(result?.userActiveGameId));
-        dispatch(setIsLoggedIn(true));
-        if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено
-      } catch (err) {
-        const message = err.data?.message || t("err_google_login");
-        if (message.includes("Email not verified")) {
-          navigate("/verify-email");
-        } else {
-          Notify.failure(t("err_google_login"));
-          console.log("Google Login Error:", err.message);
-        }
-      }
-    },
+    onSuccess: handleGoogleLogin,
     onError: error => {
       Notify.failure(t("err_google_login"));
       console.error("Google login error", error);
     },
+    flow: "auth-code",
+    // flow: "implicit",
+    prompt: "none", // Уникає повторного запиту згоди (але, здається лише з implicit)
+    // scope: "email profile openid", // Потрібні scopes
   });
 
   const redirectToSetPass = () => {
     dispatch(setIsSetPassword(true)); // Встановити прапор перед входом
-    login(); // Програмний виклик Google Sign-In
+    login();
   };
 
   const handleGoogleAuth = () => {
     console.log("handleGoogleAuth");
-    login(); // Програмний виклик Google Sign-In
+    login();
   };
 
   return (

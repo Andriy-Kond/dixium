@@ -22,6 +22,7 @@ import bgLight from "imgs/mainPageBg_light_theme.png";
 import bgDark from "imgs/mainPageBg_dark_theme.png";
 import css from "./HomePage.module.scss";
 import clsx from "clsx";
+import { useGoogleAuth } from "hooks/googleAuth/useGoogleAuth.js";
 
 // import { ReactComponent as mainPageBg } from "/imgs/mainPageBg_light_theme.png";
 
@@ -51,63 +52,29 @@ export default function HomePage() {
     dispatch(setVisualTheme(newTheme)); // зміна візуала теми
   };
 
-  // const googleLoginRef = useRef(null); // Референс для GoogleLogin
-  // const handleGoogleLogin = async credentialResponse => {
-  //   try {
-  //     // Відправляємо токен на сервер через RTK Query
-  //     const result = await googleLogin(credentialResponse.credential).unwrap(); // .unwrap() для отримання результату мутації - data чи error
-  //     console.log("LoginPage >> google result:::", result);
+  const handleGoogleLogin = useGoogleAuth();
 
-  //     dispatch(setUserCredentials(result));
-  //     dispatch(setUserActiveGameId(result?.userActiveGameId));
-  //     dispatch(setIsLoggedIn(true));
-
-  //     if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено
-  //   } catch (err) {
-  //     const message = err.data?.message || t("err_google_login");
-  //     if (message.includes("Email not verified")) {
-  //       navigate("/verify-email");
-  //     } else {
-  //       Notify.failure(t("err_google_login"));
-  //       console.log("Google Login Error:", err.message);
-  //     }
-  //   }
-  // };
-
-  // Хук для програмного виклику Google Sign-In
+  //# Передача code (програмно):
   const login = useGoogleLogin({
-    onSuccess: async tokenResponse => {
-      try {
-        // Відправляємо токен на сервер через RTK Query
-        const result = await googleLogin(tokenResponse).unwrap(); // .unwrap() для отримання результату мутації - data чи error
-        dispatch(setUserCredentials(result));
-        dispatch(setUserActiveGameId(result?.userActiveGameId));
-        dispatch(setIsLoggedIn(true));
-        if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено
-      } catch (err) {
-        const message = err.data?.message || t("err_google_login");
-        if (message.includes("Email not verified")) {
-          navigate("/verify-email");
-        } else {
-          Notify.failure(t("err_google_login"));
-          console.log("Google Login Error:", err.message);
-        }
-      }
-    },
+    onSuccess: handleGoogleLogin,
     onError: error => {
       Notify.failure(t("err_google_login"));
       console.error("Google login error", error);
     },
+    flow: "auth-code",
+    // flow: "implicit",
+    prompt: "none", // Уникає повторного запиту згоди (але, здається лише з implicit)
+    // scope: "email profile openid", // Потрібні scopes
   });
 
   const redirectToSetPass = () => {
     dispatch(setIsSetPassword(true)); // Встановити прапор перед входом
-    login(); // Програмний виклик Google Sign-In
+    login();
   };
 
   const handleGoogleAuth = () => {
     console.log("handleGoogleAuth");
-    login(); // Програмний виклик Google Sign-In
+    login();
   };
 
   return (

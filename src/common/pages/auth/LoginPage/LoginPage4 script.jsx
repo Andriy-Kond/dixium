@@ -1,8 +1,4 @@
-import {
-  GoogleLogin,
-  useGoogleLogin,
-  useGoogleOAuth,
-} from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useGoogleLoginMutation,
@@ -14,7 +10,7 @@ import AuthForm from "common/components/ui/AuthForm";
 import css from "common/pages/auth/LoginPage/LoginPage.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   setIsSetPassword,
   setPageHeaderText,
@@ -22,7 +18,6 @@ import {
   setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
-import Button from "common/components/ui/Button";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -35,7 +30,6 @@ export default function LoginPage() {
 
   const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
   const isSetPassword = useSelector(selectIsSetPassword); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
-  // const googleLoginRef = useRef(null); // Референс для GoogleLogin
 
   //# Page header color and text
   useEffect(() => {
@@ -84,43 +78,16 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = async credentialResponse => {
-    try {
-      // Відправляємо токен на сервер через RTK Query
-      const result = await googleLogin(credentialResponse.credential).unwrap(); // .unwrap() для отримання результату мутації - data чи error
-      console.log("LoginPage >> google result:::", result);
-
-      dispatch(setUserCredentials(result));
-      dispatch(setUserActiveGameId(result?.userActiveGameId));
-      dispatch(setIsLoggedIn(true));
-
-      if (isSetPassword) navigate("/set-password"); // Перенаправлення, якщо прапор увімкнено
-    } catch (err) {
-      const message = err.data?.message || t("err_google_login");
-      if (message.includes("Email not verified")) {
-        navigate("/verify-email");
-      } else {
-        Notify.failure(t("err_google_login"));
-        console.log("Google Login Error:", err.message);
-      }
-    }
-  };
-
-  // const { signIn } = useGoogleOAuth({
-  //   onSuccess: handleGoogleLogin,
-  //   onError: () => {
-  //     Notify.failure(t("err_google_login"));
-  //     console.log("Google Login Failed");
-  //   },
-  //   flow: "implicit", // implicit flow використовується для програмного виклику
-  // });
-
   // Хук для програмного виклику Google Sign-In
   const login = useGoogleLogin({
-    onSuccess: async tokenResponse => {
+    onSuccess: async credentialResponse => {
+      console.log(" LoginPage >> credentialResponse:::", credentialResponse);
       try {
         // Відправляємо токен на сервер через RTK Query
-        const result = await googleLogin(tokenResponse).unwrap(); // .unwrap() для отримання результату мутації - data чи error
+        const result = await googleLogin(
+          credentialResponse.credential,
+        ).unwrap(); // .unwrap() для отримання результату мутації - data чи error
+        console.log(" LoginPage >> result:::", result);
         dispatch(setUserCredentials(result));
         dispatch(setUserActiveGameId(result?.userActiveGameId));
         dispatch(setIsLoggedIn(true));
@@ -131,7 +98,7 @@ export default function LoginPage() {
           navigate("/verify-email");
         } else {
           Notify.failure(t("err_google_login"));
-          console.log("Google Login Error:", err.message);
+          console.log("Google Login Error:", err);
         }
       }
     },
@@ -139,15 +106,65 @@ export default function LoginPage() {
       Notify.failure(t("err_google_login"));
       console.error("Google login error", error);
     },
+    // Вказуємо потрібні scopes
+    scope: "email profile openid", // Обов’язкові scopes для Google Sign-In
+    flow: "implicit", // Використовуємо implicit flow для отримання ID Token
+    responseType: "id_token", // Явно вказуємо, що хочемо ID Token
+    // prompt: "none", // Уникає повторного запиту згоди
   });
 
-  const redirectToSetPass = () => {
-    dispatch(setIsSetPassword(true)); // Встановити прапор перед входом
-    login(); // Програмний виклик Google Sign-In
-  };
+  // Ініціалізація Google Sign-In
+  useEffect(() => {
+    const handleGoogleAuthSuccess = async response => {
+      console.log("LoginPage >> response.credential:::", response.credential);
+      try {
+        const result = await googleLogin(response.credential).unwrap();
+        dispatch(setUserCredentials(result));
+        dispatch(setUserActiveGameId(result?.userActiveGameId));
+        dispatch(setIsLoggedIn(true));
+        if (isSetPassword) navigate("/set-password");
+      } catch (err) {
+        const message = err.data?.message || t("err_google_login");
+        if (message.includes("Email not verified")) {
+          navigate("/verify-email");
+        } else {
+          Notify.failure(t("err_google_login"));
+          console.log("Google Login Error:", err);
+        }
+      }
+    };
+
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID2,
+        callback: response => {
+          console.log("Google Sign-In Response:", response);
+          handleGoogleAuthSuccess(response);
+        },
+        scope: "email profile openid",
+        prompt: "none", // Уникаємо екрану згоди, якщо користувач уже авторизований
+      });
+    }
+  }, [dispatch, googleLogin, isSetPassword, navigate, t]);
 
   const handleGoogleAuth = () => {
     console.log("handleGoogleAuth");
+    if (window.google) {
+      console.log("window.google :>> ", window.google);
+      window.google.accounts.id.prompt(); // Викликаємо Google Sign-In
+    } else {
+      Notify.failure(t("err_google_login"));
+      console.error("Google Identity Services SDK not loaded");
+    }
+  };
+
+  // const handleGoogleAuth = () => {
+  //   console.log("handleGoogleAuth");
+  //   login(); // Програмний виклик Google Sign-In
+  // };
+
+  const redirectToSetPass = () => {
+    dispatch(setIsSetPassword(true)); // Встановити прапор перед входом
     login(); // Програмний виклик Google Sign-In
   };
 
@@ -155,94 +172,30 @@ export default function LoginPage() {
     <>
       <div className={css.container}>
         <div className={css.pageMain}>
-          {/* <div
-            ref={googleLoginRef}
-            className={css.googleLoginContainer}
-            style={{
-              // pointerEvents: isGoogleLoading ? "none" : "auto",
-              opacity: isGoogleLoading ? 0.5 : 1,
-              display: "none",
-            }}>
-            <GoogleLogin
-              onSuccess={handleGoogleLogin} // Отримуємо токен Google
-              onError={() => {
-                Notify.failure(t("err_google_login"));
-                console.log("Google Login Failed");
-              }}
-              text="signin" //??? які є варіанти написів у гугла? як міняти мову в них?
-              // "signin": "Вхід"
-              // "signin_with": "Вхід через Google" (default)
-              // "signup_with": "Зареєструватися через Google".
-              // "continue_with": "Продовжити з Google".
-            />
-          </div> */}
-
-          {/* {errorMessage?.includes("registered via Google") && (
-            <div className={css.errorContainer}>
-              <p>{t("google_account_error")}</p>
-
-              <div
-                className={css.googleLoginContainer}
-                style={{
-                  pointerEvents: isGoogleLoading ? "none" : "auto",
-                  opacity: isGoogleLoading ? 0.5 : 1,
-                }}>
-                <Button
-                  onClick={
-                    () => handleGoogleAuth
-                    // googleLoginRef.current
-                    //   ?.querySelector("div[role=button]")
-                    //   ?.click()
-                  }>
-                  {t("usual_google_login")}
-                </Button>
-              </div>
-
-              <div
-              // onClick={redirectToSetPass}
-              >
-                <div
-                  className={css.googleLoginContainer}
-                  style={{
-                    pointerEvents: isGoogleLoading ? "none" : "auto",
-                    opacity: isGoogleLoading ? 0.5 : 1,
-                  }}>
-                  <Button
-                    onClick={
-                      () => redirectToSetPass
-                      // googleLoginRef.current
-                      //   ?.querySelector("div[role=button]")
-                      //   ?.click()
-                    }>
-                    {t("login_and_set_password")}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )} */}
-
           {errorMessage?.includes("registered via Google") && (
             <div className={css.errorContainer}>
               <p>{t("google_account_error")}</p>
+
               <div
                 className={css.googleLoginContainer}
                 style={{
                   pointerEvents: isGoogleLoading ? "none" : "auto",
                   opacity: isGoogleLoading ? 0.5 : 1,
                 }}>
-                <Button onClick={handleGoogleAuth}>
+                <button className={css.btn} onClick={handleGoogleAuth}>
                   {t("usual_google_login")}
-                </Button>
+                </button>
               </div>
+
               <div
                 className={css.googleLoginContainer}
                 style={{
                   pointerEvents: isGoogleLoading ? "none" : "auto",
                   opacity: isGoogleLoading ? 0.5 : 1,
                 }}>
-                <Button onClick={redirectToSetPass}>
+                <button className={css.btn} onClick={redirectToSetPass}>
                   {t("login_and_set_password")}
-                </Button>
+                </button>
               </div>
             </div>
           )}
@@ -250,12 +203,8 @@ export default function LoginPage() {
           <AuthForm
             isRegister={false}
             onSubmit={submitCredentials}
-            isDisabled={isLoginLoading}
+            isDisabled={isGoogleLoading || isLoginLoading}
           />
-
-          {/* <button className={css.btn} onClick={handleGoogleAuth}>
-            {t("google_login")}
-          </button> */}
 
           <button
             className={css.btn}

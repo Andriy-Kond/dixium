@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import { MdCheck } from "react-icons/md";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +10,6 @@ import {
   selectIsShowMask,
   selectLocalGame,
   selectSelectedCardId,
-  selectToastId,
   selectUserCredentials,
 } from "redux/selectors.js";
 import {
@@ -33,7 +31,6 @@ import {
   removeSelectedCardId,
   setIsShowMask,
   setIsCarouselModeHandScreen,
-  removeToastIdRef,
   setCardsSet,
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
@@ -70,7 +67,7 @@ export default function Hand({
   const isCarouselModeHandScreen = useSelector(
     selectIsCarouselModeHandScreen(gameId, playerId),
   );
-  const toastId = useSelector(selectToastId(gameId, playerId));
+
   const cardsSet = useSelector(selectCardsSet(gameId, playerId));
   const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
   const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
@@ -124,10 +121,7 @@ export default function Hand({
     });
 
     dispatch(removeSelectedCardId({ gameId, playerId })); // clear
-
-    toast.dismiss(toastId); // Закриє відповідне повідомлення
-    dispatch(removeToastIdRef({ gameId, playerId }));
-  }, [currentGame, dispatch, gameId, playerId, toastId]);
+  }, [currentGame, dispatch, gameId, playerId]);
 
   const carouselModeOn = idx => {
     console.log("carouselModeOn");

@@ -70,12 +70,6 @@ export const selectIsCarouselModeTableScreen = (gameId, playerId) => state => {
 //   return zoomCardId || null;
 // };
 
-export const selectToastId = (gameId, playerId) => state => {
-  const key = `${gameId}_${playerId}`;
-  const toastId = state.localPersonalSlice.toastId[key];
-  return toastId || null;
-};
-
 const emptyCardsSet = { firstGuessCardSet: null, secondGuessCardSet: null };
 export const selectCardsSet = (gameId, playerId) => state => {
   const key = `${gameId}_${playerId}`;
