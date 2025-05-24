@@ -75,6 +75,9 @@ export default function HomePage() {
 
   const handleGoogleAuth = () => {
     console.log("handleGoogleAuth");
+    console.log("Redirect URI - 1:", window.location);
+    // window.location.origin = "https://dixium.vercel.app";
+    console.log("Redirect URI - 2:", window.location.origin);
     login();
   };
 

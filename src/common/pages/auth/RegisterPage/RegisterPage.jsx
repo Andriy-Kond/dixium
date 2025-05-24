@@ -108,6 +108,7 @@ export default function RegisterPage() {
 
   const handleGoogleAuth = () => {
     console.log("handleGoogleAuth");
+
     login();
   };
 
