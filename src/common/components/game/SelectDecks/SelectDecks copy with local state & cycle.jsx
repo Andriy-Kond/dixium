@@ -77,8 +77,8 @@ export default function SelectDecks() {
     } else {
       // Цикл для часткового вибору: CHECKED_ALL -> CHECKED_NONE -> CHECKED_USER
       const nextCycleState = (cycleState + 1) % 3;
-      console.log(" handleSelectAllDecks >> cycleState:::", cycleState);
-      console.log(" handleSelectAllDecks >> nextCycleState:::", nextCycleState);
+      // console.log(" handleSelectAllDecks >> cycleState:::", cycleState);
+      // console.log(" handleSelectAllDecks >> nextCycleState:::", nextCycleState);
 
       if (nextCycleState === 0) {
         // CHECKED_ALL: Обрати всі колоди
@@ -106,7 +106,7 @@ export default function SelectDecks() {
 
   // Обробка кліку на окремий чекбокс
   const handleSelectDeck = deck => {
-    console.log("cycleState:::", cycleState);
+    // console.log("cycleState:::", cycleState);
     const isSelected = selectedDeckIds.includes(deck._id);
     let newSelectedDeckIds;
     let newUserSelectedDeckIds;

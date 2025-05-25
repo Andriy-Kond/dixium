@@ -10,7 +10,7 @@ const largeSizes = [300, 600, 1200, 2400]; // для каруселі
 function determineLargeSize(currentSrc) {
   if (!currentSrc) {
     // Якщо currentSrc не визначений
-    console.log("currentSrc is null, defaulting to 600");
+    // console.log("currentSrc is null, defaulting to 600");
     return 600; // компроміс, якщо currentSrc відсутній
   }
 

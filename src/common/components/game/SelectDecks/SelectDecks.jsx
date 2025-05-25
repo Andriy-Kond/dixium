@@ -68,7 +68,7 @@ export default function SelectDecks() {
 
   const optimisticCardsListUpdate = useCallback(
     ({ previousGameState, gameId, cards, timeout = 2000 }) => {
-      console.log("optimisticCardsListUpdate");
+      // console.log("optimisticCardsListUpdate");
 
       const eventName = "CardsList_Update";
       setGameDeck({ gameId, cards }); // оптимістичне оновлення стану
@@ -103,7 +103,7 @@ export default function SelectDecks() {
 
   // унікальна кнопка повернення назад - запускає socket.emit обраних колод на сервак.
   const handleBackClick = useCallback(() => {
-    console.log("handleBackClick -> optimisticCardsListUpdate");
+    // console.log("handleBackClick -> optimisticCardsListUpdate");
 
     optimisticCardsListUpdate({
       previousGameState: currentGame,
@@ -116,7 +116,7 @@ export default function SelectDecks() {
   }, [currentGame, navigate, optimisticCardsListUpdate]);
 
   useEffect(() => {
-    console.log("set showBackButton in SelectDecks");
+    // console.log("set showBackButton in SelectDecks");
     showBackButton({ onClick: handleBackClick, priority: 2 });
 
     return () => hideBackButton({ priority: 0 });
@@ -234,7 +234,7 @@ export default function SelectDecks() {
 
   // Обробка кліку на окремий чекбокс
   const handleSelectDeck = deck => {
-    console.log("deck :>> ", deck.cards);
+    // console.log("deck :>> ", deck.cards);
     if (cycleState === 1) dispatch(setUserSelectedDeckIds([]));
 
     const isSelected = selectedDeckIds.includes(deck._id);

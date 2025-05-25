@@ -9,7 +9,7 @@ export const distributeCards = currentGame => {
 
   // Якщо карт у колоді недостатньо, то спочатку треба додати карти з "відбою" в колоду (перемішані)
   if (updatedDeck.length < cardsPerPlayer * players.length) {
-    console.log("недостатньо карт в колоді, замішую відбій");
+    // console.log("недостатньо карт в колоді, замішую відбій");
     updatedDeck.push(...shuffleDeck(updatedDiscardPile));
     updatedDiscardPile.length = 0;
   }

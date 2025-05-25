@@ -110,7 +110,7 @@ export default function Hand({
   }, [currentGame, dispatch, gameId, guessStory, playerId, tellStory]);
 
   const returnToHand = useCallback(() => {
-    console.log("returnToHand");
+    // console.log("returnToHand");
     const updatedGame = { ...currentGame, isFirstTurn: false };
     dispatch(setIsShowMask({ gameId, playerId, isShow: false }));
 
@@ -124,7 +124,7 @@ export default function Hand({
   }, [currentGame, dispatch, gameId, playerId]);
 
   const carouselModeOn = idx => {
-    console.log("carouselModeOn");
+    // console.log("carouselModeOn");
     setSelectedCardIdx(idx);
 
     dispatch(
@@ -140,7 +140,7 @@ export default function Hand({
   };
 
   const carouselModeOff = useCallback(() => {
-    console.log("carouselModeOff");
+    // console.log("carouselModeOff");
     dispatch(
       setIsCarouselModeHandScreen({
         gameId,
@@ -166,7 +166,7 @@ export default function Hand({
       const playersMoreThanThree = players.length > 3;
 
       if (isSingleCardMode && btnKey === "secondGuessCardSet") {
-        console.log("error: only one card allowed");
+        // console.log("error: only one card allowed");
         Notify.failure(t("err_only_one_card_allowed"));
         return;
       }
@@ -175,13 +175,13 @@ export default function Hand({
       const currentPlayer = players.find(p => p._id === playerId);
       const currentCard = currentPlayer?.hand[currentCardIndex];
       if (!currentCard) {
-        console.log("error: card not found");
+        // console.log("error: card not found");
         Notify.failure(t("err_card_not_found"));
         return;
       }
 
       if (gameStatus === GUESSING) {
-        console.log("gameStatus === GUESSING");
+        // console.log("gameStatus === GUESSING");
 
         // Встановлення локального стану карток:
         const isSelected =
@@ -210,7 +210,7 @@ export default function Hand({
           // Коли гравців троє, то в комірках мають бути різні карти:
           if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
             Notify.failure(t("err_cards_must_be_different"));
-            console.log("error: cards must be different");
+            // console.log("error: cards must be different");
           } else {
             dispatch(
               setCardsSet({
@@ -222,12 +222,12 @@ export default function Hand({
           }
         }
       } else if (gameStatus === LOBBY) {
-        console.log("gameStatus === LOBBY");
+        // console.log("gameStatus === LOBBY");
         if (currentCard._id === selectedCardId) {
-          console.log("removeSelectedCardId");
+          // console.log("removeSelectedCardId");
           dispatch(removeSelectedCardId({ gameId, playerId })); // clear
         } else {
-          console.log("setSelectedCardId");
+          // console.log("setSelectedCardId");
           dispatch(
             setSelectedCardId({
               gameId,
@@ -331,7 +331,7 @@ export default function Hand({
       // console.log("Carousel Mode");
       const activeCard = currentPlayer?.hand[activeCardIdx];
       if (!activeCard) {
-        console.log("error: card not found");
+        // console.log("error: card not found");
         Notify.failure(t("err_card_not_found"));
         return;
       }
@@ -347,7 +347,7 @@ export default function Hand({
         const currentCard = currentPlayer?.hand[currentCardIndex];
 
         if (!currentCard) {
-          console.log("error: card not found");
+          // console.log("error: card not found");
           Notify.failure(t("err_card_not_found"));
           return;
         }
@@ -385,12 +385,12 @@ export default function Hand({
         const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
         const currentCard = currentPlayer.hand[currentCardIndex];
 
-        console.log({
-          isCanGuess: !isCanGuess(),
-          isDisabledFirstBtn: isDisabledFirstBtn(),
-          isCurrentPlayerGuessed,
-          selectedCardId,
-        });
+        // console.log({
+        //   isCanGuess: !isCanGuess(),
+        //   isDisabledFirstBtn: isDisabledFirstBtn(),
+        //   isCurrentPlayerGuessed,
+        //   selectedCardId,
+        // });
         setMiddleButton(
           <>
             {/* <Button btnText="<<" onClick={exitCarouselMode} /> */}
@@ -484,7 +484,7 @@ export default function Hand({
         }
       }
       // else if (isCurrentPlayerHost && gameStatus === LOBBY) {
-      //   console.log("це хост і почався новий раунд (LOBBY)");
+      // console.log("це хост і почався новий раунд (LOBBY)");
       //   setMiddleButton(null);
       // }
       else if (

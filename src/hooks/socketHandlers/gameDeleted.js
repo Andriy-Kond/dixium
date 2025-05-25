@@ -25,7 +25,7 @@ export const gameDeleted = (
   dispatch(clearLocalStateForGameDelete(game._id));
 
   if (currentGameId === deletingGameId) {
-    console.log("current game was deleted, navigate to game");
+    // console.log("current game was deleted, navigate to game");
     navigate(`/game`, { replace: true });
   }
 };

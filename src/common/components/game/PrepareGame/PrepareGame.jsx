@@ -121,7 +121,7 @@ export default function PrepareGame() {
   };
 
   const handleClearFinishPoints = () => {
-    console.log("handleClearFinishPoints");
+    // console.log("handleClearFinishPoints");
     dispatch(setFinishPoints({ gameId, finishPoints: 30 }));
     setFinishPointsValue(30);
 

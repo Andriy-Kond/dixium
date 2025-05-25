@@ -30,7 +30,7 @@ export const gameEntry = (game, player, dispatch) => {
   //         dispatch(updateCurrentPlayer({ gameId: game._id, player })); // оновлення gameSlice
   //       }
   //     } else {
-  //       console.log(`Game ${game._id} not found`);
+  // console.log(`Game ${game._id} not found`);
   //       Notify.failure(`Game with ID ${game._id} not found`);
   //     }
   //   }),

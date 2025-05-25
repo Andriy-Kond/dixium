@@ -14,11 +14,11 @@ export default function FormInput({
 }) {
   const inputRef = useRef(null);
   const handleFocus = () => {
-    console.log("on Focus");
+    // console.log("on Focus");
     inputRef.current.classList.add(css["input-focused"]);
   };
   const handleBlur = () => {
-    console.log("on Blur");
+    // console.log("on Blur");
 
     inputRef.current.classList.remove(css["input-focused"]);
   };

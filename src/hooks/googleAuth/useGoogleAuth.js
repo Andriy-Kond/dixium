@@ -42,7 +42,7 @@ export const useGoogleAuth = () => {
           navigate("/verify-email");
         } else {
           Notify.failure(t("err_google_login"));
-          console.log("Google Login Error:", err);
+          // console.log("Google Login Error:", err);
         }
       }
     },

@@ -57,7 +57,7 @@ export default function LoginPage() {
     userCredentials.email = userCredentials.email.toLowerCase();
 
     try {
-      console.log("loginUser");
+      // console.log("loginUser");
       const result = await loginUser(userCredentials).unwrap();
 
       dispatch(setUserCredentials(result));
@@ -75,7 +75,7 @@ export default function LoginPage() {
       } else {
         Notify.failure(message);
         dispatch(setIsLoggedIn(false));
-        console.log("Error: no access", err);
+        // console.log("Error: no access", err);
       }
     }
   };
@@ -105,7 +105,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleAuth = () => {
-    console.log("handleGoogleAuth");
+    // console.log("handleGoogleAuth");
     login();
   };
 
@@ -125,7 +125,7 @@ export default function LoginPage() {
               onSuccess={handleGoogleLogin} // Отримуємо токен Google
               onError={() => {
                 Notify.failure(t("err_google_login"));
-                console.log("Google Login Failed");
+               // console.log("Google Login Failed");
               }}
               text="signin" //??? які є варіанти написів у гугла? як міняти мову в них?
             />

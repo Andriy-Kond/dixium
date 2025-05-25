@@ -155,8 +155,8 @@ export default function Game() {
         link.fetchpriority = "high";
         link.crossorigin = "anonymous";
         link.onerror = () =>
-          console.log(`Failed to preload image: ${preloadUrl}`);
-        document.head.appendChild(link);
+          // console.log(`Failed to preload image: ${preloadUrl}`);
+          document.head.appendChild(link);
         linksRef.current.push(link);
       });
       // console.log("Links in head:", linksRef.current.length);

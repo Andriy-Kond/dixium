@@ -13,7 +13,7 @@ export const startNewRoundSuccess = (
   activeActions,
   playerId,
 ) => {
-  console.log("startNewRoundSuccess");
+  // console.log("startNewRoundSuccess");
 
   if (!game) {
     throw new Error(`The game is ${game}`);

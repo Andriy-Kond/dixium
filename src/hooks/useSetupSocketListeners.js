@@ -101,7 +101,7 @@ export const useSetupSocketListeners = () => {
       });
 
     const handlePlayerJoined_test = ({ game, player, message }) => {
-      console.log("handlePlayerJoined_test");
+      // console.log("handlePlayerJoined_test");
     };
 
     const handleUserDeletedFromGame = ({ game, deletedUser }) =>

@@ -118,7 +118,7 @@ export default function Table({
       const currentCard = currentGame.cardsOnTable[currentCardIndex];
 
       if (!currentCard) {
-        console.log("error: card not found");
+        // console.log("error: card not found");
         Notify.failure(t("err_card_not_found"));
         return;
       }
@@ -252,7 +252,7 @@ export default function Table({
       // console.log("Carousel Mode");
       const activeCard = cardsOnTable[activeCardIdx];
       if (!activeCard) {
-        console.log("error: card not found");
+        // console.log("error: card not found");
         Notify.failure(t("err_card_not_found"));
         return;
       }

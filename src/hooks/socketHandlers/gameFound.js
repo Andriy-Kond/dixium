@@ -7,7 +7,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 
 export const gameFound = (game, dispatch) => {
-  console.log("gameFound");
+  // console.log("gameFound");
   // if (!game) throw new Error(`The game is ${game}`);
 
   if (game === null) {

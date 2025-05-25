@@ -94,7 +94,7 @@ export default function SharedLayout() {
   }, [handleBackClick, hideBackButton, shouldShowBackButton, showBackButton]);
 
   // useEffect(() => {
-  //   console.log(
+  // console.log(
   //     "SharedLayout >> Ховаю кнопку, бо розмонтувався компонент :>> ",
   //   );
   //   return () => hideBackButton(0);

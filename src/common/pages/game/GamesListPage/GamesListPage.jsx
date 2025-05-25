@@ -144,7 +144,7 @@ export default function GamesListPage() {
 
     // Відправлення запиту, якщо є всі 4 цифри
     if (searchGameNumber && digitCount === 4 && searchGameNumber <= 9999) {
-      console.log("send findAndJoinToGame");
+      // console.log("send findAndJoinToGame");
       socket.emit("findAndJoinToGame_req", {
         searchGameNumber,
         player: {
@@ -160,7 +160,7 @@ export default function GamesListPage() {
   };
 
   const returnToGame = () => {
-    console.log("return to game");
+    // console.log("return to game");
 
     if (!currentGame.isGameRunning) {
       if (isCurrentPlayerIsHost) {

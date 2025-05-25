@@ -89,7 +89,7 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
 
   const getIconOfPlayerState = (player, playerScore) => {
     if (!player) {
-      console.log(" getIconOfPlayerState >> player нема повертаюсь:::", player);
+      // console.log(" getIconOfPlayerState >> player нема повертаюсь:::", player);
       return;
     }
 

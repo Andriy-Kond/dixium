@@ -80,7 +80,7 @@ export default function RegisterPage() {
       } else {
         Notify.failure(message);
         dispatch(setIsLoggedIn(false));
-        console.log("Error: no access", err);
+        // console.log("Error: no access", err);
       }
     }
   };
@@ -107,8 +107,7 @@ export default function RegisterPage() {
   };
 
   const handleGoogleAuth = () => {
-    console.log("handleGoogleAuth");
-
+    // console.log("handleGoogleAuth");
     login();
   };
 

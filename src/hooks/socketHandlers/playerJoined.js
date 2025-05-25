@@ -12,7 +12,7 @@ export const playerJoined = ({
   navigate,
   dispatch,
 }) => {
-  console.log("playerJoined");
+  // console.log("playerJoined");
   const { _id: gameId } = game;
 
   if (!gameId) throw new Error(`The gameId is ${gameId}`);

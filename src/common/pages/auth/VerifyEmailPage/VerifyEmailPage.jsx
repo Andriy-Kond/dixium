@@ -52,9 +52,10 @@ export default function VerifyEmailPage() {
           // Оновлює <iframe>: Скидає внутрішній стан Google reCAPTCHA API, що може включати оновлення <iframe> або відправлення мережевих запитів до Google.
           // Запобігає повторному використанню токена: Гарантує, що старий токен не буде використано повторно, що важливо для безпеки.
           recaptchaV2Ref.current.reset();
-          console.log("reCAPTCHA v2 reset successfully");
+          // console.log("reCAPTCHA v2 reset successfully");
         } catch (err) {
-          console.log("Error resetting reCAPTCHA v2:", err);
+          Notify.failure("Error resetting reCAPTCHA v2:", err);
+          // console.log("Error resetting reCAPTCHA v2:", err);
         }
       }, 1000); // Затримка 1 секунда
     }
@@ -66,9 +67,10 @@ export default function VerifyEmailPage() {
       resetTimeout_v3.current = setTimeout(() => {
         try {
           recaptchaV3Ref.current.reset();
-          console.log("reCAPTCHA v3 reset successfully");
+          // console.log("reCAPTCHA v3 reset successfully");
         } catch (err) {
-          console.log("Error resetting reCAPTCHA v3:", err);
+          Notify.failure("Error resetting reCAPTCHA v2:", err);
+          // console.log("Error resetting reCAPTCHA v3:", err);
         }
       }, 1000);
     }
@@ -77,14 +79,14 @@ export default function VerifyEmailPage() {
   const handleResendEmail = async (token_v2 = null) => {
     if (!email || !EMAIL_TEMPLATE.test(email)) {
       Notify.failure(t("invalid_email"));
-      console.log(t("invalid_email"));
+      // console.log(t("invalid_email"));
       return;
     }
 
     // Базова перевірка чи користувач підключений до мережі (для запобігання зависанню капчі): запобігає спробам відправити запит до сервера або викликати reCAPTCHA, якщо користувач не підключений до Інтернету.
     if (!isOnline) {
       Notify.failure(t("no_internet"));
-      console.log(t("no_internet"));
+      // console.log(t("no_internet"));
       return;
     }
 
@@ -102,7 +104,7 @@ export default function VerifyEmailPage() {
         try {
           if (!recaptchaV3Ref.current) {
             Notify.failure(t("recaptcha_failed"));
-            console.log("reCAPTCHA v3 ref not initialized");
+            // console.log("reCAPTCHA v3 ref not initialized");
             return;
           }
 
@@ -121,11 +123,11 @@ export default function VerifyEmailPage() {
           // Обробка помилки, якщо є використання reCAPTCHA v3, але токен не валідний
           if (!token_v3) {
             Notify.failure(t("recaptcha_failed"));
-            console.log(t("recaptcha_failed"), token_v3);
+            // console.log(t("recaptcha_failed"), token_v3);
             return;
           }
         } catch (err) {
-          console.log("Error in reCAPTCHA v3:", err);
+          // console.log("Error in reCAPTCHA v3:", err);
           setShowV2Captcha(true);
           return;
         }
@@ -148,13 +150,13 @@ export default function VerifyEmailPage() {
       ]);
 
       Notify.success(t("verification_email_sent"));
-      console.log(t("verification_email_sent"));
+      // console.log(t("verification_email_sent"));
 
       setShowV2Captcha(false);
       setRecaptchaToken_v2(null);
       navigate("/login");
     } catch (err) {
-      console.log(" Виникла якась помилка >> err:::", err);
+      // console.log(" Виникла якась помилка >> err:::", err);
       const message = err?.data?.message || t("err_no_access");
 
       if (
@@ -171,7 +173,7 @@ export default function VerifyEmailPage() {
         usedCaptchaType = null; // щоб уникнути скидання щойно показаної reCAPTCHA v2
       } else {
         Notify.failure(message);
-        console.log(message);
+        // console.log(message);
       }
     } finally {
       if (usedCaptchaType) {
@@ -193,12 +195,12 @@ export default function VerifyEmailPage() {
         await handleResendEmail(token_v2);
       } catch (err) {
         Notify.failure(t("recaptcha_failed"));
-        console.log(t("recaptcha_failed"), err);
+        // console.log(t("recaptcha_failed"), err);
       }
     } else {
       Notify.failure(t("please_complete_recaptcha"));
-      console.log("reCAPTCHA v2 failed or expired");
-      console.log(t("please_complete_recaptcha"));
+      // console.log("reCAPTCHA v2 failed or expired");
+      // console.log(t("please_complete_recaptcha"));
     }
   };
 

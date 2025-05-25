@@ -13,7 +13,7 @@ export const userDeletedFromGame = ({
   dispatch,
   navigate,
 }) => {
-  console.log("userDeletedFromGame");
+  // console.log("userDeletedFromGame");
 
   if (!game) throw new Error(`The game is ${game}`);
 
@@ -21,14 +21,14 @@ export const userDeletedFromGame = ({
   if (deletedUser && deletedUser._id === userId) {
     // Delete current user from game if it still in room
 
-    console.log("це юзер якого видалили");
+    // console.log("це юзер якого видалили");
     navigate("/game");
     dispatch(setUserActiveGameId(null));
     // dispatch(deleteLocalGame(game));
     dispatch(clearLocalStateForGameDelete(game._id));
     socket.emit("leaveRoom", game._id);
   } else {
-    console.log("це інший юзер -оновлюю масив юзерів");
+    // console.log("це інший юзер -оновлюю масив юзерів");
     // dispatch(setLocalGame(game));
     // dispatch(updatePlayers(game));
     dispatch(removeUserFromGame({ game, deletedUser }));

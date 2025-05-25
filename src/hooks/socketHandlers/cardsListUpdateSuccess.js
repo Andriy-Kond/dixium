@@ -9,7 +9,7 @@ export const cardsListUpdateSuccess = (
   dispatch,
   activeActionsTest,
 ) => {
-  console.log("cardsListUpdateSuccess");
+  // console.log("cardsListUpdateSuccess");
 
   const relatedAction = Object.values(activeActionsTest).find(
     value => value.previousGameState._id === game._id,

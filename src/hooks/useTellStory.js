@@ -33,7 +33,7 @@ export const useTellStory = gameId => {
     }
 
     if (!selectedCardId) {
-      console.log("No card selected!");
+      // console.log("No card selected!");
       Notify.failure(t("err_no_card_selected"));
       return;
     }
@@ -73,7 +73,7 @@ export const useTellStory = gameId => {
     // setIsSubmitting(true); // Блокуємо повторні натискання
 
     const event = storytellerId ? "setNextStoryteller" : "setFirstStoryteller";
-    console.log(" tellStory >> event:::", event);
+    // console.log(" tellStory >> event:::", event);
 
     socket.emit(event, { updatedGame }, response => {
       // setIsSubmitting(false); // Розблокуємо після відповіді

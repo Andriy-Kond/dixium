@@ -73,7 +73,7 @@ export default function UserMenu({ closeMenu = () => {} }) {
 
     try {
       const result = await setNickname({ nickname: nicknameValue }).unwrap();
-      console.log(" handleSetNickname >> result:::", result);
+      // console.log(" handleSetNickname >> result:::", result);
 
       dispatch(
         showNotification({
@@ -86,7 +86,7 @@ export default function UserMenu({ closeMenu = () => {} }) {
       dispatch(setUserCredentials({ ...userCredentials, name: result.name })); // update authSlice
     } catch (err) {
       Notify.failure(`${t("err")}: ${err.message}`);
-      console.log("err: :>> ", err.message);
+      // console.log("err: :>> ", err.message);
     }
   };
 

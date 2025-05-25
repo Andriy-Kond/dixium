@@ -8,7 +8,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 
 export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
-  console.log("findAndJoinToGameSuccess");
+  // console.log("findAndJoinToGameSuccess");
 
   if (message && message.includes("This game already started")) {
     dispatch(

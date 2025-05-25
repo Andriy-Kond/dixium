@@ -109,8 +109,8 @@ export const localPersonalSlice = createSlice({
 
     removeUserFromGame: (state, action) => {
       const { game, deletedUser } = action.payload;
-      console.log(" game:::", game);
-      console.log(" deletedUser:::", deletedUser);
+      // console.log(" game:::", game);
+      // console.log(" deletedUser:::", deletedUser);
       if (!game || !deletedUser) return;
       // if (!state.games[game._id]) return;
 

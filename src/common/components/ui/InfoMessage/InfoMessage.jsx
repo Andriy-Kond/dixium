@@ -33,7 +33,7 @@ export default function InfoMessage() {
   }, [dispatch, duration, message]);
 
   const handleClose = () => {
-    console.log("handleClose");
+    // console.log("handleClose");
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       dispatch(hideNotification());
