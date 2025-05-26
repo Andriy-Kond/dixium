@@ -1,4 +1,5 @@
 {
+  "player_removed_from_game": "Гравець {{playerName}} покинув гру",
   "err_google_login": "Помилка Google login: {{err}}",
   "deck": "Колода: {{name}}",
   "game_cards": "Гральні карти",
@@ -19,8 +20,9 @@
   "choose_card": "Обрати карту",
   "go_to_guess_story": "Підібрати асоціацію",
   "start_voting": "Почати голосування",
+  "round": "Раунд {{currentRoundNumber}}",
   "finish_round": "Завершити раунд",
-  "start_new_round": "Почати новий раунд",
+  "start_new_round": "Почати наступний раунд",
   "tell_your_story": "Розкажи свою історію",
   "guess_story": "Підібрати карту",
   "the_host": " (Ведучий)",

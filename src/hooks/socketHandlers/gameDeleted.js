@@ -10,6 +10,7 @@ export const gameDeleted = (
   navigate,
 ) => {
   const { _id: deletingGameId } = game;
+  // console.log(" deletingGameId:::", deletingGameId);
 
   if (!deletingGameId)
     throw new Error(`The deletingGameId is ${deletingGameId}`);

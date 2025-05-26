@@ -68,13 +68,42 @@ export const gameRunning = (
     navigate(`/game/${game._id}/current-game`, { replace: true });
   } else {
     //* Логіка для інших гравців
-    if (message) Notify.failure(message);
-    const gameInState = Object.keys(games).find(key => key === game._id);
-    // console.log(" game:::", game);
+    if (message) {
+      // Notify.failure(message);
+      return;
+    }
 
-    if (gameInState) dispatch(setLocalGame(game));
-    navigate(`/game/${game._id}/current-game`, { replace: true });
+    const isGameInState = Object.keys(games).find(key => key === game._id);
+    if (isGameInState) {
+      dispatch(setLocalGame(game));
+      dispatch(
+        setActiveScreen({
+          gameId: game._id,
+          playerId,
+          screen: 0,
+        }),
+      );
+
+      dispatch(
+        setIsCarouselModeTableScreen({
+          gameId: game._id,
+          playerId,
+          isCarouselModeTableScreen: false,
+        }),
+      );
+
+      dispatch(
+        setIsCarouselModeHandScreen({
+          gameId: game._id,
+          playerId,
+          isCarouselModeHandScreen: false,
+        }),
+      );
+
+      navigate(`/game/${game._id}/current-game`, { replace: true });
+    }
   }
+
   // else {
   // dispatch(
   //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {

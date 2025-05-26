@@ -14,6 +14,7 @@ import { distributeCards } from "utils/game/distributeCards.js";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
 import css from "./GameSetup.module.scss";
 import { useEffect } from "react";
+import InfoMessage from "common/components/ui/InfoMessage/InfoMessage.jsx";
 
 export default function GameSetup() {
   const location = useLocation();
@@ -43,11 +44,12 @@ export default function GameSetup() {
       isGameRunning: true,
       isSingleCardMode,
       finishPoints: Number(finishPoints),
+      currentRoundNumber: 1,
     };
 
     // optimistic update:
     optimisticUpdateDispatch({
-      eventName: "gameRun",
+      eventName: "Game_Run",
       updatedGame,
     });
   };
@@ -70,6 +72,10 @@ export default function GameSetup() {
     <>
       <div className={css.setupContainer}>
         {/* <p>game setup</p> */}
+        <div className={css.infoMessageContainer}>
+          <InfoMessage />
+        </div>
+
         <Outlet />
 
         {isShowStartButton && (

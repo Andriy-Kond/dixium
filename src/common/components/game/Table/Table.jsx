@@ -31,12 +31,7 @@ import clsx from "clsx";
 import { useBackButton } from "context/BackButtonContext.jsx";
 import { MdStar } from "react-icons/md";
 
-export default function Table({
-  isActiveScreen,
-  setMiddleButton,
-  // startVoting,
-  // finishRound,
-}) {
+export default function Table({ isActiveScreen, setMiddleButton }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -61,10 +56,6 @@ export default function Table({
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
   const [isMounted, setIsMounted] = useState(false);
-
-  //  Гравців === 3 - голосування за 1 карту.
-  //  Гравців 3-6 - голосування за 1 карту
-  //  Гравців 7-12 - голосування за 1 карту якщо режиму isSingleCardMode, інакше - за 2 карти
 
   // const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
   const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
@@ -484,7 +475,9 @@ export default function Table({
         )}
       </>
     );
-  } else if (gameStatus === ROUND_RESULTS) {
+  }
+
+  if (gameStatus === ROUND_RESULTS) {
     return (
       <>
         {/* <p>Table gameStatus === ROUND_RESULTS</p> */}
@@ -558,18 +551,18 @@ export default function Table({
         )}
       </>
     );
-  } else {
-    return (
-      <>
-        {/* <p>Table default - cards face down</p> */}
-        <ul className={css.currentDeckContainer}>
-          {cardsOnTable.map((card, idx) => (
-            <li className={css.card} key={card._id}>
-              <Mask />
-            </li>
-          ))}
-        </ul>
-      </>
-    );
   }
+
+  return (
+    <>
+      {/* <p>Table default - cards face down</p> */}
+      <ul className={css.currentDeckContainer}>
+        {cardsOnTable.map((card, idx) => (
+          <li className={css.card} key={card._id}>
+            <Mask />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 }

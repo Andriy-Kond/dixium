@@ -86,7 +86,7 @@ export default function GamesListPage() {
       hostPlayerId: playerId,
       hostPlayerName: name,
       storytellerId: null,
-      currentRound: 0,
+      currentRoundNumber: 0,
       cardsOnTable: [],
       votes: {},
       scores: {},

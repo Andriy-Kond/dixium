@@ -1,7 +1,10 @@
 import { t } from "i18next";
 import { Notify } from "notiflix";
 import { gameApi } from "redux/game/gameApi.js";
-import { updatePlayers } from "redux/game/localPersonalSlice.js";
+import {
+  showNotification,
+  updatePlayers,
+} from "redux/game/localPersonalSlice.js";
 
 export const playerJoined = ({
   game,
@@ -23,10 +26,18 @@ export const playerJoined = ({
     // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]))  ;
   }
 
-  // Notify about new player
+  // // Notify about new player
+  // message &&
+  //   Notify.success(
+  //     t("player_joined", { playerName: player.name.toUpperCase() }),
+  //   );
   message &&
-    Notify.success(
-      t("player_joined", { playerName: player.name.toUpperCase() }),
+    dispatch(
+      showNotification({
+        message: t("player_joined", { playerName: player.name.toUpperCase() }),
+        // duration: 1000,
+        type: "info", // Для стилізації (success, error, info)
+      }),
     );
 
   // якщо цей гравець - це тільки-но доданий гравець і він НЕ на сторінці з цією поточною грою

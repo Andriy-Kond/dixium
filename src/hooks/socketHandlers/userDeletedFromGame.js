@@ -1,8 +1,10 @@
+import { t } from "i18next";
 import { gameApi } from "redux/game/gameApi.js";
 import {
   clearLocalStateForGameDelete,
   removeUserFromGame,
   setUserActiveGameId,
+  showNotification,
 } from "redux/game/localPersonalSlice.js";
 import socket from "services/socket.js";
 
@@ -20,7 +22,6 @@ export const userDeletedFromGame = ({
   // deletedUser can be undefined if not found on server
   if (deletedUser && deletedUser._id === userId) {
     // Delete current user from game if it still in room
-
     // console.log("це юзер якого видалили");
     navigate("/game");
     dispatch(setUserActiveGameId(null));
@@ -28,6 +29,15 @@ export const userDeletedFromGame = ({
     dispatch(clearLocalStateForGameDelete(game._id));
     socket.emit("leaveRoom", game._id);
   } else {
+    dispatch(
+      showNotification({
+        message: t("player_removed_from_game", {
+          playerName: deletedUser.name,
+        }),
+        // duration: 1000,
+        type: "info", // Для стилізації (success, error, info)
+      }),
+    );
     // console.log("це інший юзер -оновлюю масив юзерів");
     // dispatch(setLocalGame(game));
     // dispatch(updatePlayers(game));

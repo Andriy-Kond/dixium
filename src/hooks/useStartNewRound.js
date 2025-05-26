@@ -51,7 +51,7 @@ export const useStartNewRound = gameId => {
     const finalUpdatedGame = {
       ...updatedGame,
       players: updatedPlayers,
-      currentRound: updatedGame.currentRound + 1, // todo перевірити чи десь потрібен)
+      currentRoundNumber: updatedGame.currentRoundNumber + 1,
       storytellerId: newStoryteller._id,
       votes: {}, // обнуляю голосування
       gameStatus: LOBBY, // встановлюю статус гри в початковий

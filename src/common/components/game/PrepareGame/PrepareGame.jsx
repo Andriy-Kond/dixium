@@ -20,7 +20,6 @@ import {
 
 import clsx from "clsx";
 import FormEdit from "../FormEdit";
-import InfoMessage from "common/components/ui/InfoMessage";
 import { MdArrowForwardIos } from "react-icons/md";
 
 export default function PrepareGame() {
@@ -79,10 +78,6 @@ export default function PrepareGame() {
       );
     }
   };
-
-  // const handleFinishPoints = e => {
-  //   dispatch(setFinishPoints({ gameId, finishPoints: e.target.value.trim() }));
-  // };
 
   const handleSetFinishPoints = () => {
     if (!finishPointsValue) {
@@ -150,10 +145,6 @@ export default function PrepareGame() {
     <>
       {/* <h1>Prepare Game</h1> */}
       <div className={css.pageContainer}>
-        <div className={css.infoMessageContainer}>
-          <InfoMessage />
-        </div>
-
         <p className={css.infoText}>{t("req_for_start_game")}</p>
 
         <FormEdit

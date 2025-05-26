@@ -20,3 +20,9 @@ npm install @cloudinary/url-gen @cloudinary/react
   aria-label={t("search_game_by_number")}
 />
 ```
+
+# Roles
+
+Гравців === 3 - голосування за 1 карту.
+Гравців 3-6 - голосування за 1 карту
+Гравців 7-12 - голосування за 1 карту якщо режиму isSingleCardMode, інакше - за 2 карти

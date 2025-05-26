@@ -39,7 +39,7 @@ import { useTranslation } from "react-i18next";
 import SortPlayers from "../SortPlayers/index.js";
 import ParagraphText from "../ParagraphText/ParagraphText.jsx";
 
-export default function Game() {
+export default function CurrentGame() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -77,7 +77,8 @@ export default function Game() {
   //# Page header color and text
   useEffect(() => {
     if (!currentGame) return;
-    const { hostPlayerId, players, gameStatus } = currentGame;
+    const { hostPlayerId, players, gameStatus, currentRoundNumber } =
+      currentGame;
 
     const hostPlayer = players.find(player => player._id === hostPlayerId);
     const gameHostNick = hostPlayer.name;
@@ -92,8 +93,7 @@ export default function Game() {
     const headerTitleTextSecond = t("whom_game", { gameHostNick });
 
     if (gameStatus === ROUND_RESULTS && activeScreen === 2) {
-      // dispatch(setPageHeaderText(t("round_N", {roundNumber})));
-      dispatch(setPageHeaderText(`${headerTitleText} round #`));
+      dispatch(setPageHeaderText(t("round", { currentRoundNumber })));
     } else {
       dispatch(setPageHeaderText(headerTitleText));
     }
@@ -125,18 +125,15 @@ export default function Game() {
 
   // Preload large imgs (by add <link> to document.head)
   useEffect(() => {
-    // console.log("Preload check:", {
-    //   loadedPreviews,
-    //   totalPreviews,
-    //   hasPreloaded,
-    //   preloadUrls,
-    // });
-
     // Очищаємо старі лінки, якщо кількість URL змінилася
-
     if (linksRef.current.length > preloadUrls.length) {
       // console.log("очищення linksRef.current");
-      linksRef.current.forEach(link => document.head.removeChild(link));
+      linksRef.current.forEach(link => {
+        // Перевірка, чи є link у document.head
+        if (document.head.contains(link)) document.head.removeChild(link);
+      });
+
+      // Оновлення linksRef.current
       linksRef.current = [];
     }
 
@@ -171,7 +168,11 @@ export default function Game() {
   useEffect(() => {
     return () => {
       // console.log("Game unmounted, cleaning up...");
-      linksRef.current.forEach(link => document.head.removeChild(link));
+      linksRef.current.forEach(link => {
+        // console.log(" return >> link:::", link);
+        // Перевірка, чи є link у document.head
+        if (document.head.contains(link)) document.head.removeChild(link);
+      });
       linksRef.current = [];
       dispatch(resetPreload());
     };

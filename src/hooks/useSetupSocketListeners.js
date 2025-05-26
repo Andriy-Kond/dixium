@@ -108,6 +108,7 @@ export const useSetupSocketListeners = () => {
       userDeletedFromGame({ game, deletedUser, userId, dispatch, navigate });
 
     const handleGameDeleted = ({ game }) => {
+      // console.log("handleGameDeleted");
       if (games[game._id])
         gameDeleted(game, dispatch, gameId, userId, navigate);
     };
