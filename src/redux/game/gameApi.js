@@ -1,9 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
-const { REACT_APP_BASE_URL, REACT_APP_BASE_URL_DEPLOY } = process.env;
+const {
+  REACT_APP_BASE_URL, // DEV: http://localhost:3001, DEPLOY: https://dixium-backend-mongo-cloudinary.onrender.com
+} = process.env;
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: REACT_APP_BASE_URL_DEPLOY,
+  baseUrl: REACT_APP_BASE_URL,
   // For works by token:
   prepareHeaders: (headers, { getState }) => {
     const token = getState().authSlice.user.token;
