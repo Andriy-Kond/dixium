@@ -21,8 +21,8 @@ export const userDeletedFromGame = ({
 
   // deletedUser can be undefined if not found on server
   if (deletedUser && deletedUser._id === userId) {
-    // Delete current user from game if it still in room
     // console.log("це юзер якого видалили");
+    // Delete current user from game if it still in room
     navigate("/game");
     dispatch(setUserActiveGameId(null));
     // dispatch(deleteLocalGame(game));

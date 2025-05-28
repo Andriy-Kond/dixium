@@ -19,6 +19,11 @@ export const selectCycleState = state => state.gameSlice.cycleState;
 export const selectInternetStatus = state => state.gameSlice.internetStatus;
 
 //* localPersonalSlice selectors:
+export const selectComponentHeight = state =>
+  state.localPersonalSlice.componentHeight;
+export const selectIsHeightReady = state =>
+  state.localPersonalSlice.isHeightReady;
+
 export const selectIsRedirecting = state =>
   state.localPersonalSlice.isRedirecting;
 export const selectIsSetPassword = state =>

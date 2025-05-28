@@ -24,7 +24,7 @@ export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
     dispatch(clearLocalGames());
     dispatch(
       showNotification({
-        message: t("check_id"),
+        message: t("check_id"), // todo перевірити стилі з вирівнюванням ліворуч
         type: "error",
       }),
     );

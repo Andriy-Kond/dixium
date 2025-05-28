@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useGetAllDecksQuery } from "redux/game/gameApi.js";
 import {
   setPageHeaderText,
@@ -12,6 +12,9 @@ import css from "./DeckCards.module.scss";
 
 export default function DeckCards() {
   const dispatch = useDispatch();
+  // Інший варіант передачі колоди:
+  // const { state } = useLocation();
+  // console.log(" DeckCards >> deckCards:::", state.deckCards);
 
   const { deckId } = useParams();
   const { data: allDecks, isLoading } = useGetAllDecksQuery();
@@ -28,9 +31,7 @@ export default function DeckCards() {
     return <div>Loading...</div>;
   }
 
-  if (!deck) {
-    return <div>Deck not found</div>;
-  }
+  if (!deck) return <div>Deck not found</div>;
 
   return (
     <>

@@ -15,15 +15,15 @@ export const gameDeleted = (
   if (!deletingGameId)
     throw new Error(`The deletingGameId is ${deletingGameId}`);
 
-  // Інвалідувати кеш для видаленої гри
-  // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: deletingGameId }]));
-  dispatch(gameApi.util.resetApiState());
-
   // dispatch(clearActiveAction({}));
   // dispatch(setIsCreatingGame(false));
   dispatch(clearGameInitialState());
 
   dispatch(clearLocalStateForGameDelete(game._id));
+
+  // Інвалідувати кеш для видаленої гри
+  // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: deletingGameId }]));
+  dispatch(gameApi.util.resetApiState());
 
   if (currentGameId === deletingGameId) {
     // console.log("current game was deleted, navigate to game");

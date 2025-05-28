@@ -1,11 +1,11 @@
-import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
-import { useDispatch, useSelector } from "react-redux";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useDispatch } from "react-redux";
 import {
   useGoogleLoginMutation,
   useLoginUserMutation,
 } from "redux/auth/authApi";
 import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice";
-import { selectIsSetPassword } from "redux/selectors";
+
 import AuthForm from "common/components/ui/AuthForm";
 import css from "common/pages/auth/LoginPage/LoginPage.module.scss";
 import { Notify } from "notiflix";
@@ -30,13 +30,12 @@ export default function LoginPage() {
     useGoogleLoginMutation();
 
   const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
-  const isSetPassword = useSelector(selectIsSetPassword); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
 
   //# Page header color and text
   useEffect(() => {
     dispatch(setPageHeaderText(t("login")));
     dispatch(setPageHeaderTextSecond(""));
-    return () => dispatch(setIsSetPassword(false)); // Очистити прапор при демонтажі
+    return () => dispatch(setIsSetPassword(false)); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
   }, [dispatch, t]);
 
   // Повідомлення після успішної верифікації і перенаправлення з бекенду:
@@ -100,7 +99,7 @@ export default function LoginPage() {
   });
 
   const redirectToSetPass = () => {
-    dispatch(setIsSetPassword(true)); // Встановити прапор перед входом
+    dispatch(setIsSetPassword(true)); // Встановити прапор перед входом (перенаправляти користувача на додаткове встановлення паролю після google-авторизації)
     login();
   };
 

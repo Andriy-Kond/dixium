@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import socket from "services/socket.js";
@@ -12,6 +12,7 @@ import {
 import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 
 import {
+  selectComponentHeight,
   selectLocalGame,
   selectUserActiveGameId,
   selectUserCredentials,
@@ -23,9 +24,12 @@ import { LOBBY } from "utils/generals/constants.js";
 import { MdArrowForwardIos } from "react-icons/md";
 import css from "./GamesListPage.module.scss";
 import FormInput from "common/components/game/FormInput";
+import { useComponentHeight } from "hooks/socketHandlers/useComponentHeight.js";
 
 export default function GamesListPage() {
-  // console.log("GamesListPage");
+  useEffect(() => {
+    console.log("render GamesListPage");
+  }, []);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -47,31 +51,48 @@ export default function GamesListPage() {
 
   const { data: activeGame, isFetching: isFetchingCurrentGame } =
     useGetCurrentGameQuery(userActiveGameId, {
-      skip: !userActiveGameId || userActiveGameId === "",
+      skip: !userActiveGameId || userActiveGameId.trim() === "",
     });
+
+  //# Визначення висоти компонента
+  // const componentRef = useRef(null);
+  // const isHeightReady = useComponentHeight(componentRef.current);
+  // const componentHeight = useSelector(selectComponentHeight);
+  // // console.log(" GamesListPage >> componentHeight:::", componentHeight);
+
+  const componentRef = useRef(null);
+  useComponentHeight(componentRef);
 
   // set active game
   useEffect(() => {
-    if (!userActiveGameId || !activeGame || isFetchingCurrentGame) return;
-    // console.log("GamesListPage set activeGame:::", activeGame.gameName);
+    if (!userActiveGameId || isFetchingCurrentGame) return;
 
-    // console.log(
-    //   " useEffect >> userActiveGameId !== activeGame?._id:::",
-    //   userActiveGameId !== activeGame?._id,
-    // );
+    const isUserInGame = activeGame?.players.find(
+      player => player?._id === userCredentials._id,
+    );
+    if (!activeGame || !isUserInGame) {
+      dispatch(setLocalGame(null));
+      socket.emit("UserActiveGameId_Clear", { userId: userCredentials._id }); // очищення поля на сервері
+      return;
+    }
+
     // console.log("встановлюю активну гру ", activeGame?.gameName);
     if (userActiveGameId === activeGame._id) {
       dispatch(setLocalGame(activeGame));
     }
-  }, [activeGame, dispatch, isFetchingCurrentGame, userActiveGameId]);
+  }, [
+    activeGame,
+    isFetchingCurrentGame,
+    userActiveGameId,
+    userCredentials._id,
+    dispatch,
+  ]);
 
-  // const isRedirecting = useSelector(selectIsRedirecting);
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
-
-  // const [searchingGame, setSearchingGame] = useState(null);
 
   //# Page header color and text
   useEffect(() => {
+    // console.log("currentGame", currentGame);
     dispatch(setPageHeaderText(t("tixid")));
     dispatch(setPageHeaderTextSecond(""));
   }, [currentGame, dispatch, t]);
@@ -112,9 +133,11 @@ export default function GamesListPage() {
   //   }
   // }, [games, searchGameNumber]);
 
+  const [formattedValue, setFormattedValue] = useState("");
+
   const handleChange = e => {
-    const input = e.target;
-    const inputRawValue = input.value.replace(/[^0-9]/g, ""); // Фільтрує лише цифри
+    // const input = e.target;
+    const inputRawValue = e.target.value.replace(/[^0-9]/g, ""); // Фільтрує лише цифри
     const inputValue = inputRawValue.slice(0, 4); // Обмеження до 4 цифр
 
     const numericValue = inputValue ? parseInt(inputValue, 10) : null; // Якщо inputValue порожній, numericValue буде null, що унеможливлює NaN при відправленні на сервер у emitSearch
@@ -124,9 +147,12 @@ export default function GamesListPage() {
     let formattedValue = inputRawValue;
     if (inputRawValue.length > 2) {
       formattedValue = `${inputRawValue.slice(0, 2)}-${inputRawValue.slice(2)}`; // Значення для відображення з дефісом
+    } else {
+      formattedValue = inputRawValue;
     }
 
-    input.value = formattedValue; // Оновити значення інпута
+    setFormattedValue(formattedValue);
+    // input.value = formattedValue; // Оновити значення інпута
   };
 
   // Допоміжна функція для підрахунку кількості цифр
@@ -180,9 +206,9 @@ export default function GamesListPage() {
 
   const removePlayer = userId => {
     if (!currentGame || !currentGame.players) return;
+
     const { players, deck, discardPile } = currentGame;
 
-    // const newPlayers = players.filter(p => p._id !== userId);
     const { included, excluded } = players.reduce(
       (acc, player) => {
         if (player._id !== userId) {
@@ -229,25 +255,24 @@ export default function GamesListPage() {
   };
 
   const isCanFind = getDigitCount() === 4 && searchGameNumber < 9999;
-
-  // if (!currentGame) {
-  //   return <></>;
-  // }
-
-  // const { players, hostPlayerId } = currentGame;
-  // const isPlayerInGame = players.some(player => player._id === playerId);
-  // const isCurrentPlayerIsHost = hostPlayerId === playerId;
-
-  // const { players, hostPlayerId } = currentGame;
   const isPlayerInGame = currentGame?.players.some(
     player => player._id === playerId,
   );
   const isCurrentPlayerIsHost = currentGame?.hostPlayerId === playerId;
 
+  // Відображення лоадера, якщо висота ще не готова
+  // if (!isHeightReady) {
+  //   return (
+  //     <div className={css.suspenseLoaderContainer}>
+  //       <span className={css.loader} />
+  //     </div>
+  //   );
+  // }
+
   return (
     <>
       {/* <p>GameListPage</p> */}
-      <div className={css.pageContainer}>
+      <div className={css.pageContainer} ref={componentRef}>
         <div className={css.infoMessageContainer}>
           <InfoMessage />
         </div>
@@ -288,6 +313,7 @@ export default function GamesListPage() {
             ariaLabel={t("search_game_by_number")}
             btnText={t("join")}
             isDisableSubmitBtn={!isCanFind}
+            value={formattedValue}
           />
         )}
 

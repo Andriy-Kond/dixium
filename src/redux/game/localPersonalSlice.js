@@ -10,7 +10,9 @@ const localInitialState = {
   votes: {}, // {"gameId_playerId": {firstVotedCardId: null, secondVotedCardId: null}}
   isCarouselModeHandScreen: {},
   isCarouselModeTableScreen: {},
-  // zoomCardId: {},
+  // componentHeight: 0,
+  componentHeight: 0,
+  isHeightReady: false,
 
   cardsSet: {}, // cardsSet: { firstGuessCardSet: null, secondGuessCardSet: null },
   selectedCardId: {}, // for first story(teller) mode
@@ -49,6 +51,15 @@ export const localPersonalSlice = createSlice({
     // addLocalGamesList: (state, action) => {
     //   state.games = action.payload;
     // },
+
+    setComponentHeight: (state, action) => {
+      // console.log("  action.payload:::", action.payload);
+      state.componentHeight = action.payload;
+    },
+
+    setIsHeightReady: (state, action) => {
+      state.isHeightReady = action.payload;
+    },
 
     setVisualTheme: (state, action) => {
       state.visualTheme = action.payload;
@@ -96,10 +107,18 @@ export const localPersonalSlice = createSlice({
       //   " localPersonalSlice>> setLocalGame action.payload:::",
       //   action.payload?.gameName,
       // );
+
       const game = action.payload;
 
       // state.games = { ...state.games, [game._id]: game };
-      state.games[game._id] = game; // add new or update exist
+      if (game) {
+        console.log("game exist");
+        state.games[game._id] = game; // add new or update exist
+      } else if (state.games[game?._id]) {
+        console.log("game NOT exist");
+        delete state.games[game._id];
+      }
+      return;
     },
 
     updatePlayers: (state, action) => {
@@ -206,6 +225,8 @@ export const localPersonalSlice = createSlice({
       const currentLang = state.lang;
       const currentTheme = state.theme;
       const currentVisualTheme = state.visualTheme;
+      const newPageHeaderText = state.pageHeaderText;
+      const newPageHeaderTextSecond = state.pageHeaderTextSecond;
 
       return {
         ...localInitialState,
@@ -213,6 +234,8 @@ export const localPersonalSlice = createSlice({
         lang: currentLang,
         theme: currentTheme,
         visualTheme: currentVisualTheme,
+        pageHeaderText: newPageHeaderText,
+        pageHeaderTextSecond: newPageHeaderTextSecond,
       };
     },
 
@@ -338,6 +361,8 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
+  setComponentHeight,
+  setIsHeightReady,
   setVisualTheme,
   setGameDeck,
   deleteCardsFromDeck,

@@ -1,11 +1,25 @@
 @import "styles/utils/mixins";
+@import "styles/utils/breakpoints";
 
-.setupContainer {
+.setupOuterContainer {
+  position: relative;
+  min-height: $minHeight;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  // flex-grow: 1;
+
+  width: 100vw;
+}
+
+.setupInnerContainer {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
+  max-width: $mobileMax;
 }
 
 .infoMessageContainer {
@@ -13,7 +27,7 @@
   z-index: 100;
   top: 0;
   left: 0;
-  opacity: 0.92;
+  // opacity: 0.92;
 }
 
 .btnStart {
@@ -24,4 +38,14 @@
   display: flex;
   justify-content: center;
   background: var(--30, #1c2732);
+}
+
+.bgInnerContainer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 44px;
+  background: var(--30, #1c2732);
+  // outline: 1px solid red;
+  z-index: -1;
 }

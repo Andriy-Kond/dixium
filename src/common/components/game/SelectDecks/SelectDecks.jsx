@@ -1,13 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-// import { setCurrentDeckId } from "redux/game/gameSlice.js";
-// import Button from "common/components/ui/Button/index.js";
-// import ImgGen from "common/components/ui/ImgGen/index.js";
-import {
-  // useGetCurrentDeckQuery,
-  useGetAllDecksQuery,
-} from "redux/game/gameApi.js";
+
+import { useGetAllDecksQuery } from "redux/game/gameApi.js";
 import {
   selectCycleState,
   selectLocalGame,
@@ -316,11 +311,11 @@ export default function SelectDecks() {
               )}
 
               <span className={css.itemText}>{t("total_cards")}</span>
-              <div className={css.itemRightGroup}>
-                <p>{currentGame?.deck?.length}</p>
-                <div className={css.icon} />
-              </div>
             </label>
+            <div className={css.itemRightGroup}>
+              <p>{currentGame?.deck?.length}</p>
+              <div className={css.icon} />
+            </div>
           </div>
 
           <ul className={css.list}>
@@ -349,21 +344,23 @@ export default function SelectDecks() {
                     />
                   )}
                   <span className={css.itemText}>{deck.name}</span>
-                  <div className={css.itemRightGroup}>
-                    <p>{deck.cards.length}</p>
-                    <button
-                      className={css.iconBtn}
-                      onClick={() =>
-                        navigate(`${deck._id}`, { state: { deck } })
-                      }>
-                      <MdArrowForwardIos
-                        className={clsx(css.icon, css.mgnLeft, {
-                          [css.disabled]: isDisabledCheckbox,
-                        })}
-                      />
-                    </button>
-                  </div>
                 </label>
+                <button
+                  className={css.itemRightGroup}
+                  onClick={() =>
+                    navigate(`${deck._id}`, {
+                      state: { deckCards: deck.cards }, // інший варіант передачі колоди
+                    })
+                  }>
+                  <p>{deck.cards.length}</p>
+                  <span className={css.iconBtn}>
+                    <MdArrowForwardIos
+                      className={clsx(css.icon, css.mgnLeft, {
+                        [css.disabled]: isDisabledCheckbox,
+                      })}
+                    />
+                  </span>
+                </button>
               </li>
             ))}
           </ul>

@@ -6,20 +6,20 @@
   flex-direction: column;
   gap: 16px;
 }
-.redirectContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+// .redirectContainer {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
 
-  width: 100%;
-  height: 44px;
-  padding: 0 14px 0 16px;
+//   width: 100%;
+//   height: 44px;
+//   padding: 0 14px 0 16px;
 
-  background-color: var(--btnBgColor);
-  color: var(--btnTextColor);
+//   background-color: var(--btnBgColor);
+//   color: var(--btnTextColor);
 
-  cursor: pointer;
-}
+//   cursor: pointer;
+// }
 
 .list {
   display: flex;
@@ -83,10 +83,12 @@
 }
 
 .label {
-  width: 100%;
+  // width: 100%;
   height: 100%;
   display: flex;
+  gap: 16px;
   align-items: center;
+  cursor: pointer;
 
   color: var(--04, #e3e7e9);
 }
@@ -100,17 +102,15 @@
   display: flex;
   align-items: center;
   height: 100%;
-  cursor: auto;
 }
 
 .icon {
   width: 16px;
   height: 16px;
   height: 100%;
-  margin-right: 16px;
+  // margin-right: 16px;
 
   color: var(--04, #e3e7e9);
-  cursor: pointer;
 
   &.disabled {
     color: var(--10, #3b4957);
@@ -120,7 +120,7 @@
 
 .mgnLeft {
   margin-right: 0;
-  margin-left: 16px;
+  // margin-left: 16px;
 }
 
 .itemText {
@@ -130,13 +130,19 @@
   &::first-letter {
     text-transform: uppercase;
   }
+
+  // cursor: pointer;
 }
 
 .itemRightGroup {
   display: flex;
   margin-left: auto;
   align-items: center;
+  gap: 16px;
   height: 100%;
+
+  color: var(--04, #e3e7e9);
+  cursor: pointer;
 }
 
 //* checkbox

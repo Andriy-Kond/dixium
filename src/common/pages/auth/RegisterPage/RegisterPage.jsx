@@ -1,10 +1,11 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   useGoogleLoginMutation,
   useSignupUserMutation,
 } from "redux/auth/authApi";
 import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice";
 
+import { useGoogleAuth } from "hooks/googleAuth/useGoogleAuth.js";
 import AuthForm from "common/components/ui/AuthForm";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
@@ -18,9 +19,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import Button from "common/components/ui/Button/index.js";
 import { useGoogleLogin } from "@react-oauth/google";
-import { selectIsSetPassword } from "redux/selectors.js";
+
 import css from "common/pages/auth/RegisterPage/RegisterPage.module.scss";
-import { useGoogleAuth } from "hooks/googleAuth/useGoogleAuth.js";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
@@ -30,7 +30,6 @@ export default function RegisterPage() {
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
   const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
 
-  const isSetPassword = useSelector(selectIsSetPassword); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
   const [googleLogin, { isLoading: isGoogleLoading }] =
     useGoogleLoginMutation();
 
@@ -38,6 +37,8 @@ export default function RegisterPage() {
   useEffect(() => {
     dispatch(setPageHeaderText(t("register")));
     dispatch(setPageHeaderTextSecond(""));
+
+    return () => dispatch(setIsSetPassword(false)); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
   }, [dispatch, t]);
 
   const submitCredentials = async e => {

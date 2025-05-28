@@ -1,7 +1,9 @@
 @import "styles/utils/mixins";
+@import "styles/utils/breakpoints";
 
 .pageContainer {
   position: relative;
+  min-height: $minHeight;
   padding: 8px 16px;
 
   display: flex;
@@ -13,7 +15,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  opacity: 0.92;
+  // opacity: 0.92;
 }
 
 .waitingList {

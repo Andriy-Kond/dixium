@@ -16,6 +16,14 @@ body {
   // min-height: 100vh;
   // height: 100%;
   background-color: var(--Dark, #000); /* Фон на всю сторінку */
+
+  // Видалення синього квадрату виділення (фокус) на мобільному Chrome
+  -webkit-tap-highlight-color: transparent; /* Прибирає підсвітку при натисканні */
+
+  // // debug:
+  // * {
+  //   outline: 1px solid rgba(255, 0, 0, 0.2);
+  // }
 }
 
 // #root {
