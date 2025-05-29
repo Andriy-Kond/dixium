@@ -12,25 +12,10 @@
   margin: 0 auto;
   min-height: 100vh;
   height: 100%;
+  // background-color: var(--30, #1c2732);
 }
 
-.sharedHeader,
-.sharedFooter {
-  width: 100vw;
-  background: var(--30, #1c2732);
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-
-  @media screen and (min-height: ($minHeight + 1)) {
-    height: calc((100vh - var(--height) - 44px) / 2);
-  }
-
-  &.visible {
-    opacity: 1;
-  }
-}
-
-.pageHeader {
+.pageHeaderOuterContainer {
   position: sticky;
   top: 0;
   left: 0;
@@ -47,13 +32,25 @@
   background-color: var(--30, #1c2732);
 }
 
-.pageHeaderContainer {
+.pageHeaderInnerContainer {
+  position: relative;
   max-width: $mobileMax;
   flex-grow: 1;
 
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.infoMessageContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+
+  // opacity: 0.92;
+  z-index: 100;
 }
 
 .pageHeaderTextContainer {

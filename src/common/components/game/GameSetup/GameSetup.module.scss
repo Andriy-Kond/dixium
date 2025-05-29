@@ -2,15 +2,13 @@
 @import "styles/utils/breakpoints";
 
 .setupOuterContainer {
-  position: relative;
-  min-height: $minHeight;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  // flex-grow: 1;
-
   width: 100vw;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--50, #0f171e);
 }
 
 .setupInnerContainer {
@@ -19,16 +17,20 @@
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
+  min-width: $mobileMin;
   max-width: $mobileMax;
+  min-height: $minHeight;
+
+  background-color: var(--Dark, #000);
 }
 
-.infoMessageContainer {
-  position: absolute;
-  z-index: 100;
-  top: 0;
-  left: 0;
-  // opacity: 0.92;
-}
+// .infoMessageContainer {
+//   position: absolute;
+//   z-index: 100;
+//   top: 0;
+//   left: 0;
+//   // opacity: 0.92;
+// }
 
 .btnStart {
   @include btnInverse;

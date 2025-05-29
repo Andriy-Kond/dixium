@@ -101,9 +101,9 @@ export default function GameSetup() {
     <div className={css.setupOuterContainer} ref={componentRef}>
       {/* <p>game setup</p> */}
       <div className={css.setupInnerContainer}>
-        <div className={css.infoMessageContainer}>
+        {/* <div className={css.infoMessageContainer}>
           <InfoMessage />
-        </div>
+        </div> */}
 
         <Outlet />
         {isShowStartButton && (

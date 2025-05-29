@@ -272,63 +272,65 @@ export default function GamesListPage() {
   return (
     <>
       {/* <p>GameListPage</p> */}
-      <div className={css.pageContainer} ref={componentRef}>
-        <div className={css.infoMessageContainer}>
-          <InfoMessage />
-        </div>
-        <p className={css.infoText}>
-          {isPlayerInGame
-            ? t("req_for_join_to_other_game")
-            : t("req_for_join_game")}
-        </p>
+      <div className={css.pageOuterContainer} ref={componentRef}>
+        <div className={css.pageInnerContainer}>
+          {/* <div className={css.infoMessageContainer}>
+            <InfoMessage />
+          </div> */}
+          <p className={css.infoText}>
+            {isPlayerInGame
+              ? t("req_for_join_to_other_game")
+              : t("req_for_join_game")}
+          </p>
 
-        {isPlayerInGame && (
-          <div className={`${css.waitingList} ${css.mgnTop}`}>
-            <p className={css.infoText}>
-              {`${t("active_game")} ID: ${currentGame.playerGameId}`}
-            </p>
-            <div className={`${css.listItem} ${css.mgnBtm}`}>
-              <p className={css.activeText}>
-                {isCurrentPlayerIsHost ? t("my_game") : userCredentials.name}
+          {isPlayerInGame && (
+            <div className={`${css.waitingList} ${css.mgnTop}`}>
+              <p className={css.infoText}>
+                {`${t("active_game")} ID: ${currentGame.playerGameId}`}
               </p>
-              <button className={css.activeBtnLink} onClick={returnToGame}>
-                <span>{t("waiting")}</span>
-                <MdArrowForwardIos className={css.btnLinkIcon} />
+              <div className={`${css.listItem} ${css.mgnBtm}`}>
+                <p className={css.activeText}>
+                  {isCurrentPlayerIsHost ? t("my_game") : userCredentials.name}
+                </p>
+                <button className={css.activeBtnLink} onClick={returnToGame}>
+                  <span>{t("waiting")}</span>
+                  <MdArrowForwardIos className={css.btnLinkIcon} />
+                </button>
+              </div>
+              <button className={css.btn} onClick={finishGame}>
+                {t("finish_game")}
               </button>
             </div>
-            <button className={css.btn} onClick={finishGame}>
-              {t("finish_game")}
-            </button>
-          </div>
-        )}
+          )}
 
-        {!isPlayerInGame && (
-          <FormInput
-            handleSubmit={handleJoinSubmit}
-            onChange={handleChange}
-            // value={searchGameNumber}
-            inputMode={"numeric"}
-            placeholder={t("enter_id")}
-            maxLength={5} // 4 цифри + дефіс
-            ariaLabel={t("search_game_by_number")}
-            btnText={t("join")}
-            isDisableSubmitBtn={!isCanFind}
-            value={formattedValue}
-          />
-        )}
+          {!isPlayerInGame && (
+            <FormInput
+              handleSubmit={handleJoinSubmit}
+              onChange={handleChange}
+              // value={searchGameNumber}
+              inputMode={"numeric"}
+              placeholder={t("enter_id")}
+              maxLength={5} // 4 цифри + дефіс
+              ariaLabel={t("search_game_by_number")}
+              btnText={t("join")}
+              isDisableSubmitBtn={!isCanFind}
+              value={formattedValue}
+            />
+          )}
 
-        {/* todo переробити умову для хоста і не хоста */}
-        {!userActiveGameId && (
-          <>
-            <p className={css.infoText}>{t("create_own_game")}</p>
+          {/* todo переробити умову для хоста і не хоста */}
+          {!userActiveGameId && (
+            <>
+              <p className={css.infoText}>{t("create_own_game")}</p>
 
-            <button className={css.btn} onClick={handleCreateGame}>
-              {`${t("create_new_game")} ID:${playerGameId}`}
-            </button>
-          </>
-        )}
+              <button className={css.btn} onClick={handleCreateGame}>
+                {`${t("create_new_game")} ID:${playerGameId}`}
+              </button>
+            </>
+          )}
 
-        <UserMenu />
+          <UserMenu />
+        </div>
       </div>
     </>
   );

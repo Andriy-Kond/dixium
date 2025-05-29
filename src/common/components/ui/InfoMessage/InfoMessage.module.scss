@@ -1,13 +1,30 @@
-// todo - стилі з вирівнюванням ліворуч
 .infoMessage {
   display: flex;
-  width: 320px;
-  padding: 8px 16px;
+  width: 100%;
+  padding-left: 16px;
+  min-height: 44px;
+
   // flex-direction: column;
-  // justify-content: left;
-  // align-items: center;
+  justify-content: space-between;
+  align-items: center;
+
   gap: 8px;
   background: var(--Highlight, #f6902a);
+  cursor: auto;
+}
+
+.infoMessageIconContainer {
+  padding: 14px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+.infoMessageIcon {
+  width: 16px;
+  height: 16px;
 }
 
 // .success {

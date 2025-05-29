@@ -13,6 +13,7 @@ import { useBackButton } from "context/BackButtonContext.jsx";
 import { MdArrowBack } from "react-icons/md";
 import css from "./SharedLayout.module.scss";
 import clsx from "clsx";
+import InfoMessage from "common/components/ui/InfoMessage/InfoMessage.jsx";
 
 export default function SharedLayout() {
   const navigate = useNavigate();
@@ -83,12 +84,12 @@ export default function SharedLayout() {
   return (
     <>
       <main className={css.mainContainer}>
-        {isHeightReady ? (
+        {/* {isHeightReady ? (
           <div
             className={clsx(css.sharedHeader, { [css.visible]: isHeightReady })}
             style={{ "--height": `${componentHeight}px` }}
           />
-        ) : null}
+        ) : null} */}
         <Suspense
           fallback={
             <div className={css.suspenseLoaderContainer}>
@@ -96,8 +97,11 @@ export default function SharedLayout() {
             </div>
           }>
           {!isHomePage && (
-            <header className={css.pageHeader}>
-              <div className={css.pageHeaderContainer}>
+            <header className={css.pageHeaderOuterContainer}>
+              <div className={css.pageHeaderInnerContainer}>
+                <div className={css.infoMessageContainer}>
+                  <InfoMessage />
+                </div>
                 {backButtonConfig.isVisible && (
                   <button
                     className={css.backButton}
@@ -117,14 +121,14 @@ export default function SharedLayout() {
           )}
 
           <Outlet />
-          {isHeightReady ? (
+          {/* {isHeightReady ? (
             <div
               className={clsx(css.sharedHeader, {
                 [css.visible]: isHeightReady,
               })}
               style={{ "--height": `${componentHeight}px` }}
             />
-          ) : null}
+          ) : null} */}
         </Suspense>
       </main>
     </>

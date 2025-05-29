@@ -1,7 +1,17 @@
 @import "styles/utils/mixins";
 @import "styles/utils/breakpoints";
 
-.pageContainer {
+.pageOuterContainer {
+  width: 100vw;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--50, #0f171e);
+}
+
+.pageInnerContainer {
   position: relative;
   min-height: $minHeight;
   padding: 8px 16px;
@@ -9,14 +19,20 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: $mobileMin;
+  max-width: $mobileMax;
+
+  background-color: var(--Dark, #000);
 }
 
-.infoMessageContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  // opacity: 0.92;
-}
+// .infoMessageContainer {
+//   position: absolute;
+//   top: 0px;
+//   left: 0;
+//   right: 0;
+//   width: 100%;
+//   // opacity: 0.92;
+// }
 
 .waitingList {
   display: flex;
