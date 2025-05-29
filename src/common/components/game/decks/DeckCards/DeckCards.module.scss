@@ -3,7 +3,10 @@
   padding: 8px;
 
   display: flex;
-  justify-content: left;
+  // justify-content: left;
+  align-items: center;
+  justify-content: center;
+
   flex-wrap: wrap;
   row-gap: 16px;
   column-gap: 8px;

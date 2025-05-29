@@ -19,6 +19,9 @@ export const selectCycleState = state => state.gameSlice.cycleState;
 export const selectInternetStatus = state => state.gameSlice.internetStatus;
 
 //* localPersonalSlice selectors:
+export const selectLocationFrom = state =>
+  state.localPersonalSlice.locationFrom;
+
 export const selectComponentHeight = state =>
   state.localPersonalSlice.componentHeight;
 export const selectIsHeightReady = state =>
@@ -113,7 +116,7 @@ export const selectGame = gameId => state =>
 
 //# якщо games - це об'єкт:
 export const selectStorytellerId = gameId => state =>
-  state.localPersonalSlice.games[gameId].storytellerId;
+  state.localPersonalSlice.games[gameId]?.storytellerId;
 //# якщо games - це масив:
 // export const selectStorytellerId = gameId => {
 //   const game = selectGame(gameId);
@@ -143,7 +146,10 @@ export const selectStorytellerId = gameId => state =>
 //   state.localPersonalSlice.games[gameId]?.isGameStarted;
 
 export const selectIsSingleCardMode = gameId => state =>
-  state.localPersonalSlice.games[gameId].isSingleCardMode;
+  state.localPersonalSlice.games[gameId]?.isSingleCardMode;
+
+export const selectFinishPoints = gameId => state =>
+  state.localPersonalSlice.games[gameId]?.finishPoints;
 
 // //! kill
 // export const selectIsPlayerGuessed = (gameId, playerId) => state => {
@@ -163,13 +169,13 @@ export const selectHostPlayerId = gameId => state =>
   state.localPersonalSlice.games[gameId].hostPlayerId;
 
 export const selectVotes = gameId => state =>
-  state.localPersonalSlice.games[gameId].votes;
+  state.localPersonalSlice.games[gameId]?.votes;
 
 export const selectScores = gameId => state =>
-  state.localPersonalSlice.games[gameId].scores;
+  state.localPersonalSlice.games[gameId]?.scores;
 
 export const selectRoundResults = gameId => state =>
-  state.localPersonalSlice.games[gameId].roundResults;
+  state.localPersonalSlice.games[gameId]?.roundResults;
 
 export const selectNotification = state =>
   state.localPersonalSlice.notification;

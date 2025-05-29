@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-
 import {
   authApi,
   useLogoutUserMutation,
@@ -73,7 +72,6 @@ export default function UserMenu({ closeMenu = () => {} }) {
 
     try {
       const result = await setNickname({ nickname: nicknameValue }).unwrap();
-      // console.log(" handleSetNickname >> result:::", result);
 
       dispatch(
         showNotification({
@@ -101,11 +99,10 @@ export default function UserMenu({ closeMenu = () => {} }) {
     setNicknameValue(userCredentials.name);
   };
 
-  const btnStyle = ["btnBarMenu"];
-  const isDisableSetNicknameBtn =
-    !nicknameValue ||
-    nicknameValue.length < 3 ||
-    nicknameValue === userCredentials.name;
+  // const isDisableSetNicknameBtn =
+  //   !nicknameValue ||
+  //   nicknameValue.length < 3 ||
+  //   nicknameValue === userCredentials.name;
 
   const isDisableResetNicknameBtn = nicknameValue === userCredentials.name;
 
@@ -115,14 +112,16 @@ export default function UserMenu({ closeMenu = () => {} }) {
       {userCredentials.name && (
         <>
           <FormEdit
-            isDisableSet={isDisableSetNicknameBtn}
+            // isDisableSet={isDisableSetNicknameBtn}
             isDisableReset={isDisableResetNicknameBtn}
             handleClear={handleClearNickName}
             handleSet={handleSetNickname}
             value={nicknameValue}
+            initialValue={userCredentials.name}
             setVal={setNicknameValue}
             labelText={t("nick")}
             type={"text"}
+            isLoading={isLoading}
           />
 
           <div>

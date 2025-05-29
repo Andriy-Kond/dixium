@@ -1,26 +1,29 @@
-import { Suspense, useCallback, useEffect, useState } from "react";
-import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Suspense, useCallback, useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   selectComponentHeight,
   selectIsHeightReady,
+  selectLocationFrom,
   selectPageHeaderText,
   selectPageHeaderTextSecond,
 } from "redux/selectors.js";
 
+import InfoMessage from "common/components/ui/InfoMessage/InfoMessage.jsx";
 import { useBackButton } from "context/BackButtonContext.jsx";
 import { MdArrowBack } from "react-icons/md";
 import css from "./SharedLayout.module.scss";
-import clsx from "clsx";
-import InfoMessage from "common/components/ui/InfoMessage/InfoMessage.jsx";
+import { setLocationFrom } from "redux/game/localPersonalSlice.js";
 
 export default function SharedLayout() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
   const pageHeaderText = useSelector(selectPageHeaderText);
   const pageHeaderTextSecond = useSelector(selectPageHeaderTextSecond);
+  const locationFrom = useSelector(selectLocationFrom);
 
   //# Визначення висоти компонента
   const componentHeight = useSelector(selectComponentHeight);
@@ -30,9 +33,14 @@ export default function SharedLayout() {
   }, [componentHeight]);
   const isHeightReady = useSelector(selectIsHeightReady);
 
+  useEffect(() => {
+    dispatch(setLocationFrom(null));
+  }, [dispatch, location.state?.from]);
+
   const handleBackClick = useCallback(() => {
-    navigate(-1); // Повертається на попередній маршрут у стеку історії
-  }, [navigate]);
+    console.log(" handleBackClick >> locationFrom:::", locationFrom);
+    navigate(locationFrom || -1); // Повертається на попередній маршрут у стеку історії
+  }, [locationFrom, navigate]);
 
   // const isGameRoute = /^\/game\/[^/]+$/.test(location.pathname); // Перевіряє /game/:gameId
   const isHomePage = location.pathname === "/";
@@ -57,12 +65,12 @@ export default function SharedLayout() {
     }
   }, [handleBackClick, hideBackButton, shouldShowBackButton, showBackButton]);
 
-  useEffect(() => {
-    console.log(
-      "SharedLayout >> Ховаю кнопку, бо розмонтувався компонент :>> ",
-    );
-    return () => hideBackButton(0);
-  }, [hideBackButton]);
+  // useEffect(() => {
+  //   console.log(
+  //     "SharedLayout >> Ховаю кнопку, бо розмонтувався компонент :>> ",
+  //   );
+  //   return () => hideBackButton(0);
+  // }, [hideBackButton]);
 
   // const [shouldRender, setShouldRender] = useState(false);
 

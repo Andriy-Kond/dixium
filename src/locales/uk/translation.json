@@ -17,6 +17,7 @@
   "select_this_card": "Обрати цю карту",
   "points_changed": "Кількість змінено успішно",
   "points_reset": "Кількість встановлено за замовчуванням",
+  "points_must_be_more_then_10": "Мінімально може бути 10 балів",
   "choose_card": "Обрати карту",
   "go_to_guess_story": "Підібрати асоціацію",
   "start_voting": "Почати голосування",

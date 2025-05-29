@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import {
+  selectFinishPoints,
   selectLocalGame,
   selectUserActiveGameId,
   selectUserCredentials,
@@ -12,6 +13,7 @@ import css from "./PrepareGame.module.scss";
 import { useTranslation } from "react-i18next";
 import {
   setFinishPoints,
+  setLocationFrom,
   setPageHeaderText,
   setPageHeaderTextSecond,
   showNotification,
@@ -21,12 +23,19 @@ import {
 import clsx from "clsx";
 import FormEdit from "../FormEdit";
 import { MdArrowForwardIos } from "react-icons/md";
+import socket from "services/socket.js";
 
 export default function PrepareGame() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { gameId } = useParams();
+
+  useEffect(() => {
+    dispatch(setLocationFrom("/game"));
+  }, [dispatch, location.state?.from]);
 
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentGame = useSelector(selectLocalGame(gameId));
@@ -50,9 +59,10 @@ export default function PrepareGame() {
     dispatch(setPageHeaderText(t("my_game")));
     dispatch(setPageHeaderTextSecond(userCredentials.name));
   }, [currentGame.gameName, dispatch, t, userCredentials.name]);
+  const finishPoints = useSelector(selectFinishPoints(gameId));
 
   const [finishPointsValue, setFinishPointsValue] = useState(
-    currentGame.finishPoints,
+    currentGame?.finishPoints || 30,
   );
 
   const isDisabledCheckbox =
@@ -80,39 +90,23 @@ export default function PrepareGame() {
   };
 
   const handleSetFinishPoints = () => {
-    if (!finishPointsValue) {
-      dispatch(
-        showNotification({
-          message: t("points_cant_be_empty"),
-          type: "error",
-        }),
-      );
-      return;
-    }
-
-    if (finishPointsValue < 10) {
+    if (!finishPointsValue || finishPointsValue < 10) {
       dispatch(
         showNotification({
           message: t("points_must_be_more_then_10"),
           type: "error",
         }),
       );
+      setFinishPointsValue(10);
+      dispatch(setFinishPoints({ gameId, finishPoints: 10 }));
+      socket.emit("Set_Finish_Points", { gameId, finishPoints: 10 });
       return;
     }
 
-    dispatch(
-      setFinishPoints({
-        gameId,
-        finishPoints: finishPointsValue,
-      }),
-    );
-
-    dispatch(
-      showNotification({
-        message: t("points_changed"),
-        type: "success",
-      }),
-    );
+    socket.emit("Set_Finish_Points", {
+      gameId,
+      finishPoints: finishPointsValue,
+    });
   };
 
   const handleClearFinishPoints = () => {
@@ -156,6 +150,8 @@ export default function PrepareGame() {
           setVal={handleSetFinishPointsValue}
           labelText={t("finish_points")}
           inputMode="numeric"
+          initialValue={finishPoints}
+          // isLoading={isLoading}
         />
 
         <div className={css.checkboxWrapper}>
@@ -181,7 +177,11 @@ export default function PrepareGame() {
           <p className={css.activeText}>{t("players")}</p>
           <button
             className={css.btnLink}
-            onClick={() => navigate(`/game/${gameId}/setup/sort-players`)}>
+            onClick={() =>
+              navigate(`/game/${gameId}/setup/sort-players`, {
+                state: { from: location },
+              })
+            }>
             <span>{`${currentGame.players.length}`}</span>
             <MdArrowForwardIos className={css.btnLinkIcon} />
           </button>
@@ -192,7 +192,11 @@ export default function PrepareGame() {
           <p className={css.activeText}>{t("game_cards")}</p>
           <button
             className={css.btnLink}
-            onClick={() => navigate(`/game/${gameId}/setup/select-decks`)}>
+            onClick={() =>
+              navigate(`/game/${gameId}/setup/select-decks`, {
+                state: { from: location },
+              })
+            }>
             <span>{`${currentGame?.deck?.length}`}</span>
             <MdArrowForwardIos className={css.btnLinkIcon} />
           </button>

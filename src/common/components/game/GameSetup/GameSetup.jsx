@@ -88,23 +88,10 @@ export default function GameSetup() {
       matchPath(`/game/:gameId/setup/sort-players`, location.pathname)) &&
     userCredentials._id === hostPlayerId;
 
-  // Відображення лоадера, якщо висота ще не готова
-  // if (!isHeightReady) {
-  //   return (
-  //     <div className={css.suspenseLoaderContainer}>
-  //       <span className={css.loader} />
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className={css.setupOuterContainer} ref={componentRef}>
       {/* <p>game setup</p> */}
       <div className={css.setupInnerContainer}>
-        {/* <div className={css.infoMessageContainer}>
-          <InfoMessage />
-        </div> */}
-
         <Outlet />
         {isShowStartButton && (
           <div className={css.startBtnContainer}>
@@ -117,7 +104,10 @@ export default function GameSetup() {
           </div>
         )}
       </div>
-      <div className={css.bgInnerContainer} />
+      <div
+        className={css.bgInnerContainer}
+        style={{ "--color": isShowStartButton ? "#1c2732" : "#0f171e" }}
+      />
     </div>
   );
 }

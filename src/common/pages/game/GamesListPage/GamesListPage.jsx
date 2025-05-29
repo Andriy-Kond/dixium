@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import socket from "services/socket.js";
 
 import { useTranslation } from "react-i18next";
@@ -12,13 +12,12 @@ import {
 import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 
 import {
-  selectComponentHeight,
   selectLocalGame,
   selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
 import UserMenu from "common/components/navComponents/UserMenu";
-import InfoMessage from "common/components/ui/InfoMessage";
+
 import { LOBBY } from "utils/generals/constants.js";
 
 import { MdArrowForwardIos } from "react-icons/md";
@@ -32,6 +31,7 @@ export default function GamesListPage() {
   }, []);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const userCredentials = useSelector(selectUserCredentials);
 
@@ -188,16 +188,23 @@ export default function GamesListPage() {
   const returnToGame = () => {
     // console.log("return to game");
 
-    if (!currentGame.isGameRunning) {
-      if (isCurrentPlayerIsHost) {
-        navigate(`${userActiveGameId}/setup/prepare-game`);
-      } else {
-        navigate(`${userActiveGameId}/setup/sort-players`);
-      }
-    } else {
-      navigate(`${userActiveGameId}/current-game`);
-      // navigate(-1);
-    }
+    // if (!currentGame.isGameRunning) {
+    //   if (isCurrentPlayerIsHost) {
+    //     navigate(`${userActiveGameId}/setup/prepare-game`);
+    //   } else {
+    //     navigate(`${userActiveGameId}/setup/sort-players`);
+    //   }
+    // } else {
+    //   navigate(`${userActiveGameId}/current-game`);
+    //   // navigate(-1);
+    // }
+    const targetPath = !currentGame.isGameRunning
+      ? isCurrentPlayerIsHost
+        ? `${userActiveGameId}/setup/prepare-game`
+        : `${userActiveGameId}/setup/sort-players`
+      : `${userActiveGameId}/current-game`;
+
+    navigate(targetPath, { state: { from: location } });
   };
 
   const removeCurrentGame = async gameId => {
@@ -260,23 +267,11 @@ export default function GamesListPage() {
   );
   const isCurrentPlayerIsHost = currentGame?.hostPlayerId === playerId;
 
-  // Відображення лоадера, якщо висота ще не готова
-  // if (!isHeightReady) {
-  //   return (
-  //     <div className={css.suspenseLoaderContainer}>
-  //       <span className={css.loader} />
-  //     </div>
-  //   );
-  // }
-
   return (
     <>
       {/* <p>GameListPage</p> */}
       <div className={css.pageOuterContainer} ref={componentRef}>
         <div className={css.pageInnerContainer}>
-          {/* <div className={css.infoMessageContainer}>
-            <InfoMessage />
-          </div> */}
           <p className={css.infoText}>
             {isPlayerInGame
               ? t("req_for_join_to_other_game")

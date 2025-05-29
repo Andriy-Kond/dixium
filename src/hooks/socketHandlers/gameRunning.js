@@ -6,6 +6,7 @@ import {
   setLocalGame,
 } from "redux/game/localPersonalSlice.js";
 import { clearActiveAction } from "redux/game/gameSlice.js";
+import { gameApi } from "redux/game/gameApi.js";
 
 export const gameRunning = (
   games,
@@ -76,6 +77,8 @@ export const gameRunning = (
     const isGameInState = Object.keys(games).find(key => key === game._id);
     if (isGameInState) {
       dispatch(setLocalGame(game));
+      dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+
       dispatch(
         setActiveScreen({
           gameId: game._id,

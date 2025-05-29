@@ -61,7 +61,7 @@ export default function HomePage() {
 
   return (
     <div className={css.homePageContainer}>
-      <div className={css.gameBgHeader} />
+      {/* <div className={css.gameBgHeader} /> */}
       <div className={css.gameBg}>
         <GameNameSvg className={css.gameName} />
         <GameSloganSvg className={css.gameSlogan} />
@@ -97,7 +97,7 @@ export default function HomePage() {
           )}
         </div>
       </div>
-      <div className={css.gameBgFooter} />
+      {/* <div className={css.gameBgFooter} /> */}
     </div>
   );
 }

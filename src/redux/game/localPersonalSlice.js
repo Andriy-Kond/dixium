@@ -42,6 +42,8 @@ const localInitialState = {
   lang: EN, // en, uk, auto
   theme: LIGHT, // light, dark
   visualTheme: LIGHT, // light, dark, auto
+
+  locationFrom: null,
 };
 
 export const localPersonalSlice = createSlice({
@@ -51,6 +53,10 @@ export const localPersonalSlice = createSlice({
     // addLocalGamesList: (state, action) => {
     //   state.games = action.payload;
     // },
+
+    setLocationFrom: (state, action) => {
+      state.locationFrom = action.payload;
+    },
 
     setComponentHeight: (state, action) => {
       // console.log("  action.payload:::", action.payload);
@@ -361,6 +367,7 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
+  setLocationFrom,
   setComponentHeight,
   setIsHeightReady,
   setVisualTheme,

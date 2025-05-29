@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { useGetAllDecksQuery } from "redux/game/gameApi.js";
@@ -7,6 +7,7 @@ import {
   selectCycleState,
   selectLocalGame,
   selectSelectedDeckIds,
+  selectUserCredentials,
   selectUserSelectedDeckIds,
 } from "redux/selectors.js";
 import { useCallback, useEffect } from "react";
@@ -24,6 +25,7 @@ import {
 import {
   deleteCardsFromDeck,
   setGameDeck,
+  setLocationFrom,
   setPageHeaderText,
   setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
@@ -54,6 +56,21 @@ export default function SelectDecks() {
   }, [currentGame, navigate]);
 
   const { showBackButton, hideBackButton, backButtonConfig } = useBackButton();
+
+  const userCredentials = useSelector(selectUserCredentials);
+  const { _id: userId, playerGameId } = userCredentials;
+
+  useEffect(() => {
+    if (!currentGame) return;
+    const { _id: gameId, hostPlayerId } = currentGame;
+
+    const isCurrentPlayerIsHost = hostPlayerId === userId;
+    if (isCurrentPlayerIsHost) {
+      dispatch(setLocationFrom(`/game/${gameId}/setup/prepare-game`));
+    } else {
+      dispatch(setLocationFrom(`/game`));
+    }
+  }, [currentGame, dispatch, userId]);
 
   //# Page header color and text
   useEffect(() => {

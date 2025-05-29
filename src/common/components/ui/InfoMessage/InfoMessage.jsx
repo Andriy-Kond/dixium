@@ -54,14 +54,12 @@ export default function InfoMessage() {
         !infoMessageRef.current.contains(event.target)
       ) {
         // Клік відбувся поза InfoMessage
-        dispatch(hideNotification());
-
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = null;
-        }
-
-        handleClose();
+        // dispatch(hideNotification());
+        // if (timerRef.current) {
+        //   clearTimeout(timerRef.current);
+        //   timerRef.current = null;
+        // }
+        // handleClose();
       }
     };
 

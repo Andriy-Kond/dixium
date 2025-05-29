@@ -61,3 +61,60 @@ export const {
   useFindGameQuery,
   useUpdateCurrentGameMutation,
 } = gameApi;
+
+// Інвалідувати кеш для гри
+// dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+
+// dispatch(gameApi.util.resetApiState());
+
+// dispatch(authApi.util.invalidateTags(["User"])); // update authApi
+// dispatch(gameApi.util.invalidateTags([{ type: "Game", id: gameId }]));
+// dispatch(gameApi.util.invalidateTags(["Game"]));
+// dispatch(gameApi.util.getCurrentGame(gameId));
+
+// dispatch(
+//   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+//     // Якщо гра вже є, оновлюємо її
+//     if (game._id in draft) {
+//       const currentGame = draft[game._id];
+
+//       if (currentGame) {
+//         draft[game._id].isGameStarted = game.isGameStarted;
+
+//         const playerIdx = currentGame.players.findIndex(
+//           p => p._id === player._id,
+//         );
+
+//         if (playerIdx !== -1) {
+//           currentGame.players[playerIdx] = player;
+//           // оновлення кешу gameApi Redux
+//           // dispatch(updateCurrentPlayer({ gameId: game._id, player })); // оновлення gameSlice
+//         } else {
+//           currentGame.players.push(player);
+//         }
+//         dispatch(updateCurrentPlayer({ gameId: game._id, player })); // оновлення gameSlice
+//       }
+//     } else {
+// console.log(`Game ${game._id} not found`);
+//       Notify.failure(`Game with ID ${game._id} not found`);
+//     }
+//   }),
+// );
+
+// dispatch(
+//   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
+//     if (game._id in draft) {
+//       // Якщо гра вже є, оновлюємо її
+//       dispatch(updateLocalGame(game)); // оновлення gameSlice (для актуального локального стейту)
+//       draft[game._id] = game; // оновлення кешу gameApi (для рендерингу переліку ігор)
+
+//       dispatch(
+//         setActiveScreen({
+//           gameId: game._id,
+//           playerId: playerId,
+//           screen: 0,
+//         }),
+//       );
+//     }
+//   }),
+// );

@@ -9,6 +9,7 @@ import socket from "services/socket.js";
 import {
   selectActiveActions,
   selectActiveActionsTest,
+  selectFinishPoints,
   selectLocalGame,
   selectLocalGames,
   selectUserActiveGameId,
@@ -38,6 +39,7 @@ import {
   userActiveGameIdUpdated,
   findAndJoinToGameSuccess,
   cardsListUpdateSuccess,
+  setFinishPointsSuccess,
 } from "./socketHandlers";
 import { votingStarted } from "./socketHandlers/votingStarted.js";
 import { useTranslation } from "react-i18next";
@@ -59,6 +61,7 @@ export const useSetupSocketListeners = () => {
   const games = useSelector(selectLocalGames);
   const currentGame = useSelector(selectLocalGame(gameId));
   const userActiveGameId = useSelector(selectUserActiveGameId);
+  const currentFinishPoints = useSelector(selectFinishPoints(gameId));
 
   useEffect(() => {
     if (gameId && userActiveGameId === gameId) {
@@ -161,6 +164,15 @@ export const useSetupSocketListeners = () => {
     const handleCardsListUpdateSuccess = ({ game, errorMessage }) =>
       cardsListUpdateSuccess(game, errorMessage, dispatch, activeActionsTest);
 
+    const handleSetFinishPointsSuccess = ({ gameId, finishPoints }) => {
+      setFinishPointsSuccess({
+        gameId,
+        finishPoints,
+        currentFinishPoints,
+        dispatch,
+      });
+    };
+
     // console.log(`Setting up socket listeners for component ${Math.random()}`); // дебаг унікальності
     socket.on("connect", () => handleSocketConnection("connect"));
     socket.on("reconnect", () => handleSocketConnection("reconnect"));
@@ -190,6 +202,7 @@ export const useSetupSocketListeners = () => {
     socket.on("Game_Started", handleGameStarted);
     socket.on("findAndJoinToGame_Success", handleFindAndJoinToGameSuccess);
     socket.on("CardsList_Update_Success", handleCardsListUpdateSuccess);
+    socket.on("Set_Finish_Points_Success", handleSetFinishPointsSuccess);
 
     return () => {
       // console.log("Cleaning up socket listeners");
@@ -218,10 +231,12 @@ export const useSetupSocketListeners = () => {
       socket.off("Game_Started", handleGameStarted);
       socket.off("findAndJoinToGame_Success", handleFindAndJoinToGameSuccess);
       socket.off("CardsList_Update_Success", handleCardsListUpdateSuccess);
+      socket.off("Set_Finish_Points_Success", handleSetFinishPointsSuccess);
     };
   }, [
     activeActions,
     activeActionsTest,
+    currentFinishPoints,
     dispatch,
     gameId,
     games,

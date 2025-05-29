@@ -17,6 +17,7 @@
   "select_this_card": "Select this card",
   "points_changed": "Points is changed success",
   "points_reset": "Points is set by default",
+  "points_must_be_more_then_10": "Can be 10 points minimum",
   "choose_card": "Choose a card",
   "go_to_guess_story": "Choose an association",
   "start_voting": "Start voting",

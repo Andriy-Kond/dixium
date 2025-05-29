@@ -7,9 +7,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 
 export const firstStorytellerUpdated = (game, dispatch, playerId) => {
-  if (!game) {
-    throw new Error(`The game is ${game}`);
-  }
+  if (!game) throw new Error(`The game is ${game}`);
 
   dispatch(
     setActiveScreen({

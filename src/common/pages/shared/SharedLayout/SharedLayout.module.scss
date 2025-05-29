@@ -23,7 +23,6 @@
   z-index: 10;
 
   width: 100vw;
-  height: 44px;
 
   display: flex;
   align-items: center;
@@ -33,6 +32,7 @@
 }
 
 .pageHeaderInnerContainer {
+  height: 44px;
   position: relative;
   max-width: $mobileMax;
   flex-grow: 1;

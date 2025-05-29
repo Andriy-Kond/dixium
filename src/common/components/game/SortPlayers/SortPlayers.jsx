@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
@@ -18,6 +18,7 @@ import css from "./SortPlayers.module.scss";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import {
+  setLocationFrom,
   setPageHeaderText,
   setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
@@ -30,6 +31,7 @@ export default function SortPlayers() {
 
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const userCredentials = useSelector(selectUserCredentials);
+  const { _id: userId, playerGameId } = userCredentials;
   const currentGame = useSelector(selectLocalGame(userActiveGameId));
 
   useEffect(() => {
@@ -38,6 +40,24 @@ export default function SortPlayers() {
       return;
     }
   }, [currentGame, navigate]);
+
+  // const location = useLocation();
+  // useEffect(() => {
+  //   dispatch(setLocationFrom(location.state?.from));
+  //   // console.log(" useEffect >> location.state:::", location);
+  // }, [dispatch, location.state?.from]);
+
+  useEffect(() => {
+    if (!currentGame) return;
+    const { _id: gameId, hostPlayerId } = currentGame;
+
+    const isCurrentPlayerIsHost = hostPlayerId === userId;
+    if (isCurrentPlayerIsHost) {
+      dispatch(setLocationFrom(`/game/${gameId}/setup/prepare-game`));
+    } else {
+      dispatch(setLocationFrom(`/game`));
+    }
+  }, [currentGame, dispatch, userId]);
 
   //# Page header color and text
   useEffect(() => {

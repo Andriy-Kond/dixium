@@ -94,13 +94,16 @@
     #717e88 100%
   );
 
-  --mainPageHeader: linear-gradient(
-    180deg,
-    #0d1319 0%,
-    #060c11 73.15%,
-    #02080d 99.88%
-  );
-  --mainPageFooter: #738089;
+  // --mainPageHeader: linear-gradient(
+  //   180deg,
+  //   #0d1319 0%,
+  //   #060c11 73.15%,
+  //   #02080d 99.88%
+  // );
+
+  // --mainPageHeader: #01050a;
+  --mainPageHeader: #02080d;
+  --mainPageFooter: #717e87;
 
   --logoShadow: radial-gradient(
     50% 50% at 50% 50%,

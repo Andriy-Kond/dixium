@@ -3,7 +3,7 @@ import css from "./FormEdit.module.scss";
 import { useRef } from "react";
 
 export default function FormEdit({
-  isDisableSet = false,
+  // isDisableSet = false,
   isDisableReset = false,
   handleClear,
   handleSet,
@@ -11,16 +11,23 @@ export default function FormEdit({
   setVal,
   labelText,
   inputMode = "text",
+  initialValue,
+  isLoading,
 }) {
   // зміна стилю форми при фокусі на інпуті для старих браузерів (для нових (з 2018р ) можна використовувати &:focus-within )
   const formRef = useRef(null);
+
   const handleFocus = () => formRef.current.classList.add(css["input-focused"]);
-  const handleBlur = () =>
+
+  const handleBlur = async () => {
     formRef.current.classList.remove(css["input-focused"]);
+    if (value !== initialValue) await handleSet(); // щоб не відсилати зайві запити, якщо нікнейм не змінився
+  };
 
   return (
     <>
       <form className={css.form} ref={formRef}>
+        {/* {isLoading && <div className={css.loading}>Loading...</div>} */}
         <label className={css.label} htmlFor="input">
           {labelText}
         </label>
@@ -31,20 +38,20 @@ export default function FormEdit({
             id="input"
             type="text"
             inputMode={inputMode}
-            value={value}
+            value={value || ""}
             onChange={e => setVal(e.target.value.trim())}
             onFocus={handleFocus}
             onBlur={handleBlur}
           />
 
           <div className={css.buttonsContainer}>
-            <button
-              type="button"
+            {/* <button
+              type="submit"
               className={css.inputBtn}
               onClick={handleSet}
               disabled={isDisableSet}>
               <MdCheck className={css.inputBtnIcon} />
-            </button>
+            </button> */}
 
             <button
               type="button"

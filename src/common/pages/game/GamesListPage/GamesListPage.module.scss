@@ -14,6 +14,7 @@
 .pageInnerContainer {
   position: relative;
   min-height: $minHeight;
+  max-height: $maxHeight;
   padding: 8px 16px;
 
   display: flex;

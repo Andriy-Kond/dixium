@@ -7,7 +7,7 @@ import {
 import { selectComponentHeight, selectIsHeightReady } from "redux/selectors.js";
 
 export function useComponentHeight(ref) {
-  console.log("useComponentHeight >> ref.current:::", ref.current);
+  // console.log("useComponentHeight >> ref.current:::", ref.current);
   const dispatch = useDispatch();
   const debounceTimeout = useRef(null);
   const componentHeight = useSelector(selectComponentHeight);

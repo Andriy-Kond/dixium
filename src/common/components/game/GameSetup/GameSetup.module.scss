@@ -2,6 +2,7 @@
 @import "styles/utils/breakpoints";
 
 .setupOuterContainer {
+  position: relative;
   width: 100vw;
 
   display: flex;
@@ -20,20 +21,11 @@
   min-width: $mobileMin;
   max-width: $mobileMax;
   min-height: $minHeight;
+  max-height: $maxHeight;
 
   background-color: var(--Dark, #000);
-}
 
-// .infoMessageContainer {
-//   position: absolute;
-//   z-index: 100;
-//   top: 0;
-//   left: 0;
-//   // opacity: 0.92;
-// }
-
-.btnStart {
-  @include btnInverse;
+  z-index: 1;
 }
 
 .startBtnContainer {
@@ -42,12 +34,18 @@
   background: var(--30, #1c2732);
 }
 
+.btnStart {
+  @include btnInverse;
+}
+
 .bgInnerContainer {
   position: absolute;
   bottom: 0;
-  width: 100%;
+  width: 100vw;
   height: 44px;
   background: var(--30, #1c2732);
   // outline: 1px solid red;
-  z-index: -1;
+  z-index: 0;
+
+  background-color: var(--color);
 }

@@ -4,9 +4,7 @@ import { updateLocalGame } from "redux/game/localPersonalSlice.js";
 
 export const playerVoteSuccess = (game, message, dispatch, activeActions) => {
   // console.log("playerVoteSuccess");
-  if (!game) {
-    throw new Error(`The game is ${game}`);
-  }
+  if (!game) throw new Error(`The game is ${game}`);
 
   const relatedAction = Object.values(activeActions).find(
     action => action.payload.updatedGame._id === game._id,

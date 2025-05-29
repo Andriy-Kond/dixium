@@ -23,3 +23,4 @@ export * from "./gameStarted.js";
 export * from "./gameRunning.js";
 export * from "./findAndJoinToGameSuccess.js";
 export * from "./cardsListUpdateSuccess.js";
+export * from "./setFinishPointsSuccess.js";

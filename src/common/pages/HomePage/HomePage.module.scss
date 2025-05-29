@@ -8,6 +8,14 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+
+  background: linear-gradient(
+    180deg,
+    var(--mainPageHeader) 50%,
+    var(--mainPageFooter) 50%
+  );
+
+  background: --enter-on;
 }
 
 .gameBgHeader {

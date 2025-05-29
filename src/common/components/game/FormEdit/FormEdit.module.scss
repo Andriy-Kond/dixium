@@ -1,3 +1,12 @@
+.loading {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 1;
+
+  transition: opacity 1s ease-in-out;
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -46,6 +55,42 @@
     border: none;
     outline: none;
   }
+
+  // Перебиває стилі браузерів під час автозаповнення:
+  &:-webkit-autofill {
+    // transition: background-color 5000s ease-in-out 0s,
+    //   color 5000s ease-in-out 0s;
+    -webkit-box-shadow: 0 0 0 30px var(--40, #161f27) inset !important;
+    -webkit-text-fill-color: var(--04, #e3e7e9) !important;
+    // border-bottom: 2px solid var(--20, #2b3847) !important;
+  }
+
+  // &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px var(--Dark, #000) inset !important;
+    -webkit-text-fill-color: var(--04, #e3e7e9) !important;
+    // border-bottom: 2px solid var(--20, #2b3847) !important;
+    caret-color: auto;
+  }
+
+  &[type="text"],
+  &[type="email"],
+  &[type="password"] {
+    // background-color: var(--40, #161f27) !important;
+    // color: var(--04, #e3e7e9) !important;
+  }
+
+  // Для Firefox та інших браузерів
+  &:-moz-ui-invalid,
+  &:-moz-autofill {
+    background-color: var(--40, #161f27) !important;
+    color: var(--04, #e3e7e9) !important;
+  }
+
+  // Плавний перехід, щоб не блимало при перемиканні браузерних стилів
+  // transition: background-color 0.2s ease, color 0.2s ease,
+  //   border-bottom 0.2s ease;
 }
 
 .buttonsContainer {

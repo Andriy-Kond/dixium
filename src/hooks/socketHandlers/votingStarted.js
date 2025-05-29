@@ -8,9 +8,7 @@ import {
 export const votingStarted = (game, dispatch, playerId) => {
   // console.log("votingStarted");
 
-  if (!game) {
-    throw new Error(`The game is ${game}`);
-  }
+  if (!game) throw new Error(`The game is ${game}`);
 
   dispatch(updateLocalGame(game));
 
