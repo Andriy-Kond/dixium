@@ -103,10 +103,6 @@ export const useSetupSocketListeners = () => {
         dispatch,
       });
 
-    const handlePlayerJoined_test = ({ game, player, message }) => {
-      // console.log("handlePlayerJoined_test");
-    };
-
     const handleUserDeletedFromGame = ({ game, deletedUser }) =>
       userDeletedFromGame({ game, deletedUser, userId, dispatch, navigate });
 
@@ -185,7 +181,6 @@ export const useSetupSocketListeners = () => {
     socket.on("gameFirstTurnUpdated", handleGameFirstTurnUpdate);
     socket.on("game_Created", handleGameCreated);
     socket.on("playerJoined", handlePlayerJoined);
-    socket.on("playerJoined_test", handlePlayerJoined_test);
     socket.on("userDeletedFromGame", handleUserDeletedFromGame);
     socket.on("Game_Deleted", handleGameDeleted);
     socket.on("playersOrderUpdated", handlePlayersOrderUpdate);

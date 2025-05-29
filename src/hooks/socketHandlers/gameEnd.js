@@ -1,4 +1,5 @@
 import { Notify } from "notiflix";
+import { gameApi } from "redux/game/gameApi.js";
 import { setLocalGameStatus } from "redux/game/localPersonalSlice.js";
 import { FINISH } from "utils/generals/constants.js";
 
@@ -24,4 +25,5 @@ export const gameEnd = (game, message, dispatch) => {
   winners.map(winner => Notify.success(`Player ${winner.name} is winner!`));
 
   dispatch(setLocalGameStatus(FINISH)); // встановлюється на сервері також
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
 };

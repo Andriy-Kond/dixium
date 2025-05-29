@@ -17,19 +17,19 @@ export const gameDeleted = (
 
   // dispatch(clearActiveAction({}));
   // dispatch(setIsCreatingGame(false));
-  dispatch(clearGameInitialState());
+  dispatch(clearGameInitialState()); // clear gameSlice
+  dispatch(clearLocalStateForGameDelete(game._id)); // clear part of localPersonalSlice
 
-  dispatch(clearLocalStateForGameDelete(game._id));
-
-  // Інвалідувати кеш для видаленої гри
-  // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: deletingGameId }]));
-  dispatch(gameApi.util.resetApiState());
+  // dispatch(gameApi.util.resetApiState()); // очистити стан повністю (разом з кешем getAllDecks, getCurrentDeck, etc.)
+  // Оптимістичне оновлення кешу: видалити гру
+  dispatch(
+    gameApi.util.updateQueryData("getCurrentGame", deletingGameId, () => null),
+  );
+  // Інвалідувати тег для консистентності (якщо видалено було дарма, то буде новий запит)
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: deletingGameId }]));
 
   if (currentGameId === deletingGameId) {
     // console.log("current game was deleted, navigate to game");
     navigate(`/game`, { replace: true });
   }
 };
-
-// запуск getUserByToken:
-// dispatch(authApi.util.invalidateTags(["User"]));

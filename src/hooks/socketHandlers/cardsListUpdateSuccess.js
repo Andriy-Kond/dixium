@@ -35,9 +35,8 @@ export const cardsListUpdateSuccess = (
           cards: game.deck,
         }),
       );
-
-      dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
     }
+    dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
 
     // скидаю таймер і видаляю подію зі стеку
     if (relatedAction.timer) {
@@ -46,8 +45,9 @@ export const cardsListUpdateSuccess = (
     }
   } else {
     // Логіка для інших гравців
-    if (errorMessage) Notify.failure(`error: ${errorMessage}`);
-    else {
+    if (errorMessage) {
+      Notify.failure(`error: ${errorMessage}`);
+    } else {
       dispatch(
         setGameDeck({
           gameId: game._id,

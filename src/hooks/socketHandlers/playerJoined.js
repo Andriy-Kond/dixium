@@ -26,6 +26,8 @@ export const playerJoined = ({
     // dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]))  ;
   }
 
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+
   // // Notify about new player
   // message &&
   //   Notify.success(

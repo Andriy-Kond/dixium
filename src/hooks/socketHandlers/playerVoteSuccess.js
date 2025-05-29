@@ -1,4 +1,5 @@
 import { Notify } from "notiflix";
+import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import { updateLocalGame } from "redux/game/localPersonalSlice.js";
 
@@ -19,6 +20,7 @@ export const playerVoteSuccess = (game, message, dispatch, activeActions) => {
       dispatch(updateLocalGame(relatedAction.meta.previousGameState));
       Notify.failure(message);
     } else dispatch(updateLocalGame(game));
+    dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
 
     if (relatedAction?.meta?.timer) {
       clearTimeout(relatedAction.meta.timer);
@@ -26,7 +28,11 @@ export const playerVoteSuccess = (game, message, dispatch, activeActions) => {
     }
   } else {
     // Логіка для інших гравців
-    if (message) Notify.failure(message);
-    else dispatch(updateLocalGame(game));
+    if (message) {
+      Notify.failure(message);
+    } else {
+      dispatch(updateLocalGame(game));
+      dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+    }
   }
 };

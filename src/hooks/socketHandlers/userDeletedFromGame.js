@@ -27,6 +27,7 @@ export const userDeletedFromGame = ({
     dispatch(setUserActiveGameId(null));
     // dispatch(deleteLocalGame(game));
     dispatch(clearLocalStateForGameDelete(game._id));
+    dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
     socket.emit("leaveRoom", game._id);
   } else {
     dispatch(
@@ -42,7 +43,6 @@ export const userDeletedFromGame = ({
     // dispatch(setLocalGame(game));
     // dispatch(updatePlayers(game));
     dispatch(removeUserFromGame({ game, deletedUser }));
-
     dispatch(gameApi.util.resetApiState()); // очищає весь стан gameApi
   }
 };

@@ -1,3 +1,4 @@
+import { gameApi } from "redux/game/gameApi.js";
 import {
   clearLocalStateForNewRound,
   setActiveScreen,
@@ -20,6 +21,7 @@ export const startNewRoundSuccess = (
   }
 
   dispatch(updateLocalGame(game));
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
   dispatch(clearLocalStateForNewRound());
 
   dispatch(

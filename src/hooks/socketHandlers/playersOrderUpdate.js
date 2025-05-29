@@ -1,4 +1,5 @@
 import { Notify } from "notiflix";
+import { gameApi } from "redux/game/gameApi.js";
 import { clearActiveAction } from "redux/game/gameSlice.js";
 import { updateLocalGame } from "redux/game/localPersonalSlice.js";
 
@@ -26,13 +27,19 @@ export const playersOrderUpdate = (
       Notify.failure(errorMessage);
     } else dispatch(updateLocalGame(game));
 
+    dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+
     if (relatedAction?.meta?.timer) {
       clearTimeout(relatedAction.meta.timer);
       dispatch(clearActiveAction(key));
     }
   } else {
     // Логіка для інших гравців
-    if (errorMessage) Notify.failure(errorMessage);
-    else dispatch(updateLocalGame(game));
+    if (errorMessage) {
+      Notify.failure(errorMessage);
+    } else {
+      dispatch(updateLocalGame(game));
+      dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+    }
   }
 };

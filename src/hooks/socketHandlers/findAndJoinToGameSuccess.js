@@ -1,4 +1,5 @@
 import { t } from "i18next";
+import { gameApi } from "redux/game/gameApi.js";
 
 import {
   clearLocalGames,
@@ -22,6 +23,8 @@ export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
 
   if (game === null) {
     dispatch(clearLocalGames());
+    dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+
     dispatch(
       showNotification({
         message: t("check_id"), // todo перевірити стилі з вирівнюванням ліворуч
@@ -34,5 +37,6 @@ export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
   // navigate(`game/${game._id}/current-game`);
   navigate(`game/${game._id}/setup/sort-players`, { replace: true });
   dispatch(setLocalGame(game));
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
   dispatch(setUserActiveGameId(game._id));
 };

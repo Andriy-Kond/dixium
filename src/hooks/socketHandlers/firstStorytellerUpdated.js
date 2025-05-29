@@ -1,3 +1,4 @@
+import { gameApi } from "redux/game/gameApi.js";
 import {
   setActiveScreen,
   setIsCarouselModeHandScreen,
@@ -42,4 +43,5 @@ export const firstStorytellerUpdated = (game, dispatch, playerId) => {
   );
 
   dispatch(updateLocalGame(game));
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
 };

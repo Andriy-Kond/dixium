@@ -1,3 +1,4 @@
+import { gameApi } from "redux/game/gameApi.js";
 import { setIsCreatingGame } from "redux/game/gameSlice.js";
 import {
   setLocalGame,
@@ -14,5 +15,7 @@ export const gameCreated = (game, dispatch, navigate) => {
   dispatch(setLocalGame(game));
   dispatch(setIsCreatingGame(true)); // todo скинути після початку гри.
   dispatch(setUserActiveGameId(game._id));
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+
   navigate(`game/${game._id}/setup/prepare-game`);
 };

@@ -148,6 +148,7 @@ export const authApi = createApi({
         method: "POST",
         body: { email, recaptchaToken, captchaType },
       }),
+
       invalidatesTags: ["User"],
     }),
 

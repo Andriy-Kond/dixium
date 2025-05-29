@@ -37,6 +37,8 @@ export const gameRunning = (
     // Server response or response late (more then 10 sec) -> state update
     else dispatch(setLocalGame(game));
 
+    dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+
     dispatch(
       setActiveScreen({
         gameId: game._id,

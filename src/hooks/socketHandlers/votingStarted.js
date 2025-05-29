@@ -1,3 +1,4 @@
+import { gameApi } from "redux/game/gameApi.js";
 import {
   setActiveScreen,
   setIsCarouselModeHandScreen,
@@ -11,6 +12,7 @@ export const votingStarted = (game, dispatch, playerId) => {
   if (!game) throw new Error(`The game is ${game}`);
 
   dispatch(updateLocalGame(game));
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
 
   dispatch(
     setActiveScreen({

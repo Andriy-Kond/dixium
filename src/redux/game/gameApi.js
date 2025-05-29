@@ -118,3 +118,14 @@ export const {
 //     }
 //   }),
 // );
+
+// запуск getUserByToken:
+// dispatch(authApi.util.invalidateTags(["User"]));
+
+// // dispatch(gameApi.util.resetApiState()); // очистити стан повністю (разом з кешем getAllDecks, getCurrentDeck, etc.)
+// // Оптимістичне оновлення кешу: видалити гру
+// dispatch(
+//   gameApi.util.updateQueryData("getCurrentGame", deletingGameId, () => null),
+// );
+// // Інвалідувати тег для консистентності (якщо видалено було дарма, то буде новий запит)
+// dispatch(gameApi.util.invalidateTags([{ type: "Game", id: deletingGameId }]));

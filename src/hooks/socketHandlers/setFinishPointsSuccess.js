@@ -1,4 +1,5 @@
 import { t } from "i18next";
+import { gameApi } from "redux/game/gameApi.js";
 import {
   setFinishPoints,
   showNotification,
@@ -12,8 +13,12 @@ export const setFinishPointsSuccess = ({
 }) => {
   if (!gameId) throw new Error(`The game is ${gameId}`);
 
-  if (currentFinishPoints === finishPoints) return;
-
   dispatch(setFinishPoints({ gameId, finishPoints }));
-  dispatch(showNotification({ message: t("points_changed"), type: "success" }));
+  dispatch(gameApi.util.invalidateTags([{ type: "Game", id: gameId }]));
+
+  if (currentFinishPoints !== finishPoints) {
+    dispatch(
+      showNotification({ message: t("points_changed"), type: "success" }),
+    );
+  }
 };
