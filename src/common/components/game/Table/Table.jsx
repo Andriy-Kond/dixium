@@ -444,34 +444,36 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
         )}
 
         {!isCarouselModeTableScreen && (
-          <ul className={css.currentDeckContainer}>
-            {cardsOnTable.map((card, idx) => {
-              const marks = getStarsMarksByCardId(card._id);
-              return (
-                <li
-                  className={clsx(css.card, {
-                    [css.slideContainerActive]: card.ownerId === playerId,
-                  })}
-                  key={card._id}
-                  onClick={() => carouselModeOn(idx)}>
-                  <ImgGen
-                    className={css.img}
-                    publicId={card.public_id}
-                    isNeedPreload={true}
-                  />
-                  {marks.length > 0 && (
-                    <div className={css.checkboxContainer2NonCarousel}>
-                      {getStarsMarksByCardId(card._id).map((mark, index) => (
-                        <span key={index} className={css.checkboxCard}>
-                          {mark}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+          <div className={css.nonCarouselContainer}>
+            <ul className={css.currentDeckContainer}>
+              {cardsOnTable.map((card, idx) => {
+                const marks = getStarsMarksByCardId(card._id);
+                return (
+                  <li
+                    className={clsx(css.card, {
+                      [css.slideContainerActive]: card.ownerId === playerId,
+                    })}
+                    key={card._id}
+                    onClick={() => carouselModeOn(idx)}>
+                    <ImgGen
+                      className={css.img}
+                      publicId={card.public_id}
+                      isNeedPreload={true}
+                    />
+                    {marks.length > 0 && (
+                      <div className={css.checkboxContainer2NonCarousel}>
+                        {getStarsMarksByCardId(card._id).map((mark, index) => (
+                          <span key={index} className={css.checkboxCard}>
+                            {mark}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         )}
       </>
     );

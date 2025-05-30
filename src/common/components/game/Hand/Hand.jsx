@@ -311,18 +311,14 @@ export default function Hand({
 
   //* setMiddleButton
   useEffect(() => {
-    if (!isActiveScreen) return;
-    if (!currentGame) return;
-    const { gameStatus, storytellerId, players, hostPlayerId, cardsOnTable } =
-      currentGame;
+    if (!isActiveScreen || !currentGame) return;
 
+    const { gameStatus, storytellerId, players, hostPlayerId } = currentGame;
     const currentPlayer = players.find(p => p._id === playerId);
-
     const isCurrentPlayerHost = hostPlayerId === playerId;
     const isCurrentPlayerGuessed = players.some(
-      player => player._id === playerId && player.isGuessed,
+      p => p._id === playerId && p.isGuessed,
     );
-
     const playersMoreThanThree = players.length > 3;
     const isCurrentPlayerStoryteller = storytellerId === playerId;
     const storyteller = players.find(p => p._id === storytellerId);
@@ -337,9 +333,11 @@ export default function Hand({
       }
 
       const isCanGuess = () => {
-        if (!playersMoreThanThree)
+        if (!playersMoreThanThree) {
           return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
-        else return !!firstGuessCardSet?._id;
+        } else {
+          return !!firstGuessCardSet?._id;
+        }
       };
 
       const isDisabledFirstBtn = () => {
@@ -379,23 +377,14 @@ export default function Hand({
                 firstGuessCardSet._id === activeCard._id);
       };
 
-      if (isCurrentPlayerGuessed) {
-        setMiddleButton(null);
-      } else {
+      if (isCurrentPlayerGuessed) setMiddleButton(null);
+
+      if (!isCurrentPlayerGuessed) {
         const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
         const currentCard = currentPlayer.hand[currentCardIndex];
 
-        // console.log({
-        //   isCanGuess: !isCanGuess(),
-        //   isDisabledFirstBtn: isDisabledFirstBtn(),
-        //   isCurrentPlayerGuessed,
-        //   selectedCardId,
-        // });
         setMiddleButton(
           <>
-            {/* <Button btnText="<<" onClick={exitCarouselMode} /> */}
-            {/* <Button btnText="<<" onClick={carouselModeOff} /> */}
-
             {!storytellerId ||
             (!isCurrentPlayerStoryteller && storyteller?.isGuessed) ? (
               <>
@@ -406,14 +395,10 @@ export default function Hand({
                       currentCard?._id === firstGuessCardSet?._id &&
                       css.btnActive,
                   )}
-                  // onClick={() => toggleCardSelection("firstGuessCardSet")}
                   onClick={handleStory}
                   disabled={
                     isDisabledFirstBtn() ||
                     isCurrentPlayerGuessed ||
-                    // ||
-                    // !selectedCardId ||
-                    // !isCanGuess()
                     (!selectedCardId && !isCanGuess())
                   }>
                   {gameStatus === LOBBY
@@ -445,7 +430,9 @@ export default function Hand({
                   <button
                     className={clsx(
                       css.btn,
-                      (firstGuessCardSet || selectedCardId) && css.btnActive,
+                      (firstGuessCardSet || selectedCardId) &&
+                        currentCard?._id === firstGuessCardSet?._id &&
+                        css.btnActive,
                     )}
                     // onClick={() => toggleCardSelection("firstGuessCardSet")}
                     onClick={handleStory}
@@ -721,18 +708,20 @@ export default function Hand({
       )}
 
       {!isCarouselModeHandScreen && (
-        <ul className={css.currentDeckContainer}>
-          {currentPlayer?.hand.map((card, idx) => {
-            const marks = getStarsMarksByCardId(card._id);
+        <>
+          <div className={css.nonCarouselContainer}>
+            <ul className={css.currentDeckContainer}>
+              {currentPlayer?.hand.map((card, idx) => {
+                const marks = getStarsMarksByCardId(card._id);
 
-            return (
-              <li
-                className={clsx(css.card, {
-                  [css.slideContainerActive]: marks.length > 0,
-                })}
-                key={card._id}
-                onClick={() => carouselModeOn(idx)}>
-                {/* {marks.length > 0 && (
+                return (
+                  <li
+                    className={clsx(css.card, {
+                      [css.slideContainerActive]: marks.length > 0,
+                    })}
+                    key={card._id}
+                    onClick={() => carouselModeOn(idx)}>
+                    {/* {marks.length > 0 && (
                   <div className={css.checkboxContainerList}>
                     {getStarsMarksByCardId(card._id).map((mark, index) => (
                       <span key={index} className={css.checkboxCard}>
@@ -742,16 +731,18 @@ export default function Hand({
                   </div>
                 )} */}
 
-                {/* <img className={css.img} src={card.url} alt="card" /> */}
-                <ImgGen
-                  className={css.img}
-                  publicId={card.public_id}
-                  isNeedPreload={true}
-                />
-              </li>
-            );
-          })}
-        </ul>
+                    {/* <img className={css.img} src={card.url} alt="card" /> */}
+                    <ImgGen
+                      className={css.img}
+                      publicId={card.public_id}
+                      isNeedPreload={true}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </>
       )}
     </>
   );

@@ -1,4 +1,5 @@
 @import "styles/utils/mixins";
+@import "styles/utils/breakpoints";
 
 // .headerMessage {
 //   padding: 8px 16px;
@@ -11,15 +12,27 @@
 //   }
 // }
 
+.nonCarouselContainer {
+  display: flex;
+  justify-content: center;
+}
+
 .currentDeckContainer {
   position: relative;
   padding: 8px;
-
   display: flex;
   justify-content: left;
   flex-wrap: wrap;
   row-gap: 16px;
   column-gap: 8px;
+
+  max-width: $mobileStandard;
+
+  // display: grid;
+  // grid-template-columns: repeat(auto-fit, 96px); /* Ширина картки */
+  // justify-content: start; /* Картки вирівняні по лівому краю */
+  // width: fit-content; /* Контейнер займає ширину вмісту */
+  // width: 100%;
 }
 
 .card {
