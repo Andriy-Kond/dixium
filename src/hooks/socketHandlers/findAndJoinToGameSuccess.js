@@ -21,13 +21,13 @@ export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
     return;
   }
 
-  if (game === null || !game) {
+  if (game === null || !game || !game._id) {
     dispatch(clearLocalGames());
     dispatch(gameApi.util.invalidateTags(["Game"]));
 
     dispatch(
       showNotification({
-        message: t("check_id"), // todo перевірити стилі з вирівнюванням ліворуч
+        message: t("check_id"),
         type: "error",
       }),
     );

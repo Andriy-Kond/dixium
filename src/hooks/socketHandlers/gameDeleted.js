@@ -24,6 +24,10 @@ export const gameDeleted = (
   dispatch(
     gameApi.util.updateQueryData("getCurrentGame", deletingGameId, () => null),
   );
+  // "getCurrentGame" — це назва ендпоінта, для якого оновлюється кеш.
+  // deletingGameId — аргумент (ідентифікатор гри), для якого змінюється кеш.
+  // () => null — функція, яка визначає нове значення кешу (в цьому випадку null).
+
   // Інвалідувати тег для консистентності (якщо видалено було дарма, то буде новий запит)
   dispatch(gameApi.util.invalidateTags([{ type: "Game", id: deletingGameId }]));
 

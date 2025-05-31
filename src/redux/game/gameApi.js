@@ -72,6 +72,11 @@ export const {
 // dispatch(gameApi.util.invalidateTags(["Game"]));
 // dispatch(gameApi.util.getCurrentGame(gameId));
 
+// dispatch(gameApi.util.updateQueryData("getCurrentGame", deletingGameId, () => null));
+// "getCurrentGame" — це назва ендпоінта, для якого оновлюється кеш.
+// deletingGameId — аргумент (ідентифікатор гри), для якого змінюється кеш.
+// () => null — функція, яка визначає нове значення кешу (в цьому випадку null).
+
 // dispatch(
 //   gameApi.util.updateQueryData("getAllGames", undefined, draft => {
 //     // Якщо гра вже є, оновлюємо її

@@ -130,7 +130,10 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
           </div>
         </label>
 
-        <button className={css.btn} disabled={isDisabled || isGoogleLoading}>
+        <button
+          type="submit"
+          className={css.btn}
+          disabled={isDisabled || isGoogleLoading}>
           {btnText}
         </button>
 
@@ -153,6 +156,7 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
           </div> */}
 
         <button
+          type="button"
           className={css.btn}
           onClick={handleGoogleAuth}
           disabled={isGoogleLoading}>

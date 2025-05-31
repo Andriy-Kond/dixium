@@ -11,7 +11,7 @@ export const gameFound = (game, dispatch) => {
   // console.log("gameFound");
   // if (!game) throw new Error(`The game is ${game}`);
 
-  if (game === null || !game) {
+  if (game === null || !game || !game._id) {
     dispatch(clearLocalGames());
     dispatch(gameApi.util.invalidateTags(["Game"]));
 
