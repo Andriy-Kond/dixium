@@ -11,12 +11,14 @@ export const cardsListUpdateSuccess = (
 ) => {
   // console.log("cardsListUpdateSuccess");
 
+  if (!game) throw new Error(`The game is ${game}`);
+
   const relatedAction = Object.values(activeActionsTest).find(
     value => value.previousGameState._id === game._id,
   );
 
+  // Логіка для ініціатора
   if (relatedAction) {
-    // Логіка для ініціатора
     const key = `${relatedAction.eventName}-${game._id}`;
 
     if (errorMessage) {
@@ -36,6 +38,7 @@ export const cardsListUpdateSuccess = (
         }),
       );
     }
+
     dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
 
     // скидаю таймер і видаляю подію зі стеку
@@ -43,8 +46,10 @@ export const cardsListUpdateSuccess = (
       clearTimeout(relatedAction.timer);
       dispatch(clearActiveActionTest(key));
     }
-  } else {
-    // Логіка для інших гравців
+  }
+
+  // Логіка для інших гравців
+  if (!relatedAction) {
     if (errorMessage) {
       Notify.failure(`error: ${errorMessage}`);
     } else {

@@ -28,8 +28,8 @@ export default function SharedLayout() {
   //# Визначення висоти компонента
   const componentHeight = useSelector(selectComponentHeight);
   useEffect(() => {
-    console.log("render SharedLayout");
-    console.log("SharedLayout >> componentHeight:", componentHeight);
+    // console.log("render SharedLayout");
+    // console.log("SharedLayout >> componentHeight:", componentHeight);
   }, [componentHeight]);
   const isHeightReady = useSelector(selectIsHeightReady);
 
@@ -38,7 +38,7 @@ export default function SharedLayout() {
   }, [dispatch, location.state?.from]);
 
   const handleBackClick = useCallback(() => {
-    console.log(" handleBackClick >> locationFrom:::", locationFrom);
+    // console.log(" handleBackClick >> locationFrom:::", locationFrom);
     navigate(locationFrom || -1); // Повертається на попередній маршрут у стеку історії
   }, [locationFrom, navigate]);
 

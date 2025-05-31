@@ -40,7 +40,8 @@ export const gameApi = createApi({
       // providesTags: (result, error, gameId) => [{ type: "Game", id: gameId }],
       providesTags: (result, error, gameId) =>
         result ? [{ type: "Game", id: gameId }] : ["Game"],
-    }),
+    }), // забезпечує точкову інвалідацію для конкретної гри, коли result існує dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }])),
+    // і загальну інвалідацію для "Game", коли результат відсутній ( dispatch(gameApi.util.invalidateTags(["Game"]))).
 
     findGame: builder.query({
       query: playerGameId => `dixium/games/find/${playerGameId}`, // Get current game
@@ -55,7 +56,6 @@ export const gameApi = createApi({
 export const {
   useGetAllDecksQuery,
   useGetCurrentDeckQuery,
-
   // useGetAllGamesQuery,
   useGetCurrentGameQuery,
   useFindGameQuery,

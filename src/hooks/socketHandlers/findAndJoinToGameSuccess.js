@@ -9,7 +9,7 @@ import {
 } from "redux/game/localPersonalSlice.js";
 
 export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
-  // console.log("findAndJoinToGameSuccess");
+  console.log("findAndJoinToGameSuccess");
 
   if (message && message.includes("This game already started")) {
     dispatch(
@@ -21,9 +21,9 @@ export const findAndJoinToGameSuccess = (game, message, dispatch, navigate) => {
     return;
   }
 
-  if (game === null) {
+  if (game === null || !game) {
     dispatch(clearLocalGames());
-    dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
+    dispatch(gameApi.util.invalidateTags(["Game"]));
 
     dispatch(
       showNotification({

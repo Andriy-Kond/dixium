@@ -97,7 +97,7 @@ export default function App() {
   useEffect(() => {
     // Коли Promise відхиляється (наприклад, через помилку) і немає обробника catch, браузер генерує подію unhandledrejection.
     const handleUnhandledRejection = event => {
-      console.error("Unhandled promise rejection:", event.reason);
+      console.error("Unhandled promise rejection:", event?.reason);
       // .reason - містить причину відхилення (rejection) асинхронного Promise
       event.preventDefault(); // запобігає тому, щоб браузер виводив стандартне повідомлення про помилку в консоль (наприклад, Uncaught (in promise) Timeout)
     };

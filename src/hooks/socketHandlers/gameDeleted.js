@@ -16,7 +16,6 @@ export const gameDeleted = (
     throw new Error(`The deletingGameId is ${deletingGameId}`);
 
   // dispatch(clearActiveAction({}));
-  // dispatch(setIsCreatingGame(false));
   dispatch(clearGameInitialState()); // clear gameSlice
   dispatch(clearLocalStateForGameDelete(game._id)); // clear part of localPersonalSlice
 

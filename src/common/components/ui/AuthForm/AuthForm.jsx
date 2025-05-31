@@ -102,6 +102,7 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
             placeholder={t("enter_email")}
             value={formData?.email}
             onChange={handleChange}
+            type="email"
           />
         </label>
 

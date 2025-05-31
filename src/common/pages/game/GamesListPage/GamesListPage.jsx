@@ -44,7 +44,7 @@ export default function GamesListPage() {
     _id: playerId,
   } = userCredentials;
 
-  const [searchGameNumber, setSearchGameNumber] = useState(null); // для пошуку (type: Number)
+  const [searchGameNumber, setSearchGameNumber] = useState(null); // для пошуку (type: text)
 
   // set active game if it is to redux cash and local storage:
   const userActiveGameId = useSelector(selectUserActiveGameId);
@@ -133,15 +133,15 @@ export default function GamesListPage() {
   //   }
   // }, [games, searchGameNumber]);
 
-  const [formattedValue, setFormattedValue] = useState("");
+  const [formattedValue, setFormattedValue] = useState(""); // для відображення (type: text)
 
   const handleChange = e => {
     // const input = e.target;
     const inputRawValue = e.target.value.replace(/[^0-9]/g, ""); // Фільтрує лише цифри
     const inputValue = inputRawValue.slice(0, 4); // Обмеження до 4 цифр
 
-    const numericValue = inputValue ? parseInt(inputValue, 10) : null; // Якщо inputValue порожній, numericValue буде null, що унеможливлює NaN при відправленні на сервер у emitSearch
-    setSearchGameNumber(numericValue); // type: Number
+    // const numericValue = inputValue ? parseInt(inputValue, 10) : null; // Якщо inputValue порожній, numericValue буде null, що унеможливлює NaN при відправленні на сервер у emitSearch
+    setSearchGameNumber(inputValue); // type: text
 
     // Форматування для відображення
     let formattedValue = inputRawValue;
@@ -151,13 +151,9 @@ export default function GamesListPage() {
       formattedValue = inputRawValue;
     }
 
-    setFormattedValue(formattedValue);
+    setFormattedValue(formattedValue); // type: text
     // input.value = formattedValue; // Оновити значення інпута
   };
-
-  // Допоміжна функція для підрахунку кількості цифр
-  const getDigitCount = () =>
-    searchGameNumber ? String(searchGameNumber).length : 0;
 
   // Пошук гри і приєднання до неї, якщо знайдена
   const handleJoinSubmit = e => {
@@ -166,13 +162,12 @@ export default function GamesListPage() {
     const isPlayerInGame = currentGame?.players.some(
       player => player._id === playerId,
     );
-    const digitCount = getDigitCount();
 
     // Відправлення запиту, якщо є всі 4 цифри
-    if (searchGameNumber && digitCount === 4 && searchGameNumber <= 9999) {
+    if (searchGameNumber?.length === 4 && Number(searchGameNumber) <= 9999) {
       // console.log("send findAndJoinToGame");
       socket.emit("findAndJoinToGame_req", {
-        searchGameNumber,
+        searchGameNumber: Number(searchGameNumber),
         player: {
           _id: playerId,
           name,
@@ -261,7 +256,8 @@ export default function GamesListPage() {
     }
   };
 
-  const isCanFind = getDigitCount() === 4 && searchGameNumber < 9999;
+  const isCanFind =
+    searchGameNumber?.length === 4 && Number(searchGameNumber) <= 9999;
   const isPlayerInGame = currentGame?.players.some(
     player => player._id === playerId,
   );
@@ -303,13 +299,13 @@ export default function GamesListPage() {
               handleSubmit={handleJoinSubmit}
               onChange={handleChange}
               // value={searchGameNumber}
+              value={formattedValue}
               inputMode={"numeric"}
               placeholder={t("enter_id")}
               maxLength={5} // 4 цифри + дефіс
               ariaLabel={t("search_game_by_number")}
               btnText={t("join")}
               isDisableSubmitBtn={!isCanFind}
-              value={formattedValue}
             />
           )}
 

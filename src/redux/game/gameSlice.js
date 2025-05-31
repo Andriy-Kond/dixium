@@ -3,7 +3,6 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const gameInitialState = {
-  isCreatingGame: false,
   currentDeckId: null,
   activeActions: {},
   activeActionsTest: {},
@@ -18,10 +17,6 @@ export const gameSlice = createSlice({
   name: "gameSlice",
   initialState: gameInitialState,
   reducers: {
-    setIsCreatingGame: (state, action) => {
-      state.isCreatingGame = action.payload;
-    },
-
     setCurrentDeckId: (state, action) => {
       state.currentDeckId = action.payload;
     },
@@ -75,7 +70,6 @@ export const persistedGameReducer = persistReducer(
 );
 
 export const {
-  setIsCreatingGame,
   setCurrentDeckId,
   setSelectedDeckIds,
   setUserSelectedDeckIds,

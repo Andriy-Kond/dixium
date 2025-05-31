@@ -28,11 +28,7 @@ export const playerJoined = ({
 
   dispatch(gameApi.util.invalidateTags([{ type: "Game", id: game._id }]));
 
-  // // Notify about new player
-  // message &&
-  //   Notify.success(
-  //     t("player_joined", { playerName: player.name.toUpperCase() }),
-  //   );
+  // Notify about new player
   message &&
     dispatch(
       showNotification({
