@@ -39,7 +39,6 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className={css.container}>
-      {/* <h2>{t("reset_password")}</h2> */}
       <form onSubmit={handleSubmit} className={css.form}>
         <label className={css.formLabel}>
           {t("email")}

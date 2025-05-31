@@ -1,9 +1,5 @@
-// import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
-import {
-  // useGoogleLoginMutation,
-  useLoginUserMutation,
-} from "redux/auth/authApi";
+import { useLoginUserMutation } from "redux/auth/authApi";
 import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice";
 
 import AuthForm from "common/components/ui/AuthForm";
@@ -19,7 +15,6 @@ import {
   setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
-// import { useGoogleAuth } from "hooks/googleAuth/useGoogleAuth.js";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -27,10 +22,6 @@ export default function LoginPage() {
   const { t } = useTranslation();
 
   const [loginUser, { isLoading: isLoginLoading }] = useLoginUserMutation();
-  // const [googleLogin, { isLoading: isGoogleLoading }] =
-  //   useGoogleLoginMutation();
-
-  // const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
 
   //# Page header color and text
   useEffect(() => {
@@ -80,101 +71,16 @@ export default function LoginPage() {
     }
   };
 
-  // const handleGoogleLogin = useGoogleAuth();
-
-  //# Передача token через нативну кнопку:
-  // const googleLoginRef = useRef(null); // Референс для GoogleLogin
-
-  //# Передача code (програмно):
-  // const login = useGoogleLogin({
-  //   onSuccess: handleGoogleLogin,
-  //   onError: error => {
-  //     Notify.failure(t("err_google_login"));
-  //     console.error("Google login error", error);
-  //   },
-  //   flow: "auth-code",
-  //   // flow: "implicit",
-  //   // prompt: "none", // Уникає повторного запиту згоди (але, здається лише з implicit)
-  //   // scope: "email profile openid", // Потрібні scopes
-  //   redirect_uri: "https://dixium.vercel.app",
-  // });
-
-  // const redirectToSetPass = () => {
-  //   dispatch(setIsSetPassword(true)); // Встановити прапор перед входом (перенаправляти користувача на додаткове встановлення паролю після google-авторизації)
-  //   login();
-  // };
-
-  // const handleGoogleAuth = () => {
-  //   // console.log("handleGoogleAuth");
-  //   login();
-  // };
-
   return (
     <>
       <div className={css.container}>
-        {/* <div className={css.pageMain}> */}
-        {/* <div
-            ref={googleLoginRef}
-            className={css.googleLoginContainer}
-            style={{
-              // pointerEvents: isGoogleLoading ? "none" : "auto",
-              opacity: isGoogleLoading ? 0.5 : 1,
-            }}>
-            <GoogleLogin
-              style={{ display: "none !important" }}
-              onSuccess={handleGoogleLogin} // Отримуємо токен Google
-              onError={() => {
-                Notify.failure(t("err_google_login"));
-               // console.log("Google Login Failed");
-              }}
-              text="signin" //??? які є варіанти написів у гугла? як міняти мову в них?
-            />
-          </div> */}
-
-        {/* {errorMessage?.includes("registered via Google") && (
-            <div className={css.errorContainer}>
-              <p>{t("google_account_error")}</p>
-
-              <div
-                className={css.googleLoginContainer}
-                style={{
-                  pointerEvents: isGoogleLoading ? "none" : "auto",
-                  opacity: isGoogleLoading ? 0.5 : 1,
-                }}>
-                <button className={css.btn} onClick={handleGoogleAuth}>
-                  {t("usual_google_login")}
-                </button>
-              </div>
-
-              <div
-                className={css.googleLoginContainer}
-                style={{
-                  pointerEvents: isGoogleLoading ? "none" : "auto",
-                  opacity: isGoogleLoading ? 0.5 : 1,
-                }}>
-                <button className={css.btn} onClick={redirectToSetPass}>
-                  {t("login_and_set_password")}
-                </button>
-              </div>
-            </div>
-          )} */}
-
         <AuthForm
           isRegister={false}
           onSubmit={submitCredentials}
-          // isDisabled={isGoogleLoading || isLoginLoading}
           isDisabled={isLoginLoading}
         />
 
-        {/* <button
-            className={css.btn}
-            onClick={handleGoogleAuth}
-            disabled={isGoogleLoading}>
-            {t("google_login")}
-          </button> */}
-
         <div className={css.pageFooter} />
-        {/* </div> */}
       </div>
     </>
   );

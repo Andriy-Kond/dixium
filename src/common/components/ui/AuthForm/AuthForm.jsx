@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import Button from "../Button/index.js";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import FormEditInput from "common/components/ui/FormEditInput";
@@ -54,8 +53,8 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
 
   const handleGoogleLogin = useGoogleAuth();
 
-  //# Передача token через нативну кнопку:
-  const googleLoginRef = useRef(null); // Референс для GoogleLogin
+  // //# Передача token через нативну кнопку:
+  // const googleLoginRef = useRef(null); // Референс для GoogleLogin
 
   //# Передача code (програмно):
   const login = useGoogleLogin({
@@ -133,6 +132,24 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
         <button className={css.btn} disabled={isDisabled || isGoogleLoading}>
           {btnText}
         </button>
+
+        {/* <div
+            ref={googleLoginRef}
+            className={css.googleLoginContainer}
+            style={{
+              // pointerEvents: isGoogleLoading ? "none" : "auto",
+              opacity: isGoogleLoading ? 0.5 : 1,
+            }}>
+            <GoogleLogin
+              style={{ display: "none !important" }}
+              onSuccess={handleGoogleLogin} // Отримуємо токен Google
+              onError={() => {
+                Notify.failure(t("err_google_login"));
+               // console.log("Google Login Failed");
+              }}
+              text="signin"
+            />
+          </div> */}
 
         <button
           className={css.btn}
