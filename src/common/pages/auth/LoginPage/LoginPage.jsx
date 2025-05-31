@@ -1,7 +1,7 @@
-import { useGoogleLogin } from "@react-oauth/google";
+// import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
 import {
-  useGoogleLoginMutation,
+  // useGoogleLoginMutation,
   useLoginUserMutation,
 } from "redux/auth/authApi";
 import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice";
@@ -10,15 +10,16 @@ import AuthForm from "common/components/ui/AuthForm";
 import css from "common/pages/auth/LoginPage/LoginPage.module.scss";
 import { Notify } from "notiflix";
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import {
+  setErrMessage,
   setIsSetPassword,
   setPageHeaderText,
   setPageHeaderTextSecond,
   setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
-import { useGoogleAuth } from "hooks/googleAuth/useGoogleAuth.js";
+// import { useGoogleAuth } from "hooks/googleAuth/useGoogleAuth.js";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -26,10 +27,10 @@ export default function LoginPage() {
   const { t } = useTranslation();
 
   const [loginUser, { isLoading: isLoginLoading }] = useLoginUserMutation();
-  const [googleLogin, { isLoading: isGoogleLoading }] =
-    useGoogleLoginMutation();
+  // const [googleLogin, { isLoading: isGoogleLoading }] =
+  //   useGoogleLoginMutation();
 
-  const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
+  // const [errorMessage, setErrorMessage] = useState(null); // Відстеження конкретних google помилок
 
   //# Page header color and text
   useEffect(() => {
@@ -38,14 +39,14 @@ export default function LoginPage() {
     return () => dispatch(setIsSetPassword(false)); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
   }, [dispatch, t]);
 
-  // Повідомлення після успішної верифікації і перенаправлення з бекенду:
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("verified") === "true") {
-      Notify.success(t("email_verified_success"));
-      navigate("/login", { replace: true }); // Очистити query-параметри ("verified")
-    }
-  }, [navigate, t]);
+  // // Повідомлення після успішної верифікації і перенаправлення з бекенду:
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   if (urlParams.get("verified") === "true") {
+  //     Notify.success(t("email_verified_success"));
+  //     navigate("/login", { replace: true }); // Очистити query-параметри ("verified")
+  //   }
+  // }, [navigate, t]);
 
   // Вхід через AuthForm
   const submitCredentials = async e => {
@@ -62,11 +63,11 @@ export default function LoginPage() {
       dispatch(setUserCredentials(result));
       dispatch(setUserActiveGameId(result?.userActiveGameId));
       dispatch(setIsLoggedIn(true));
-      setErrorMessage(null); // Очистити помилку при успіху
+      dispatch(setErrMessage(null)); // Очистити помилку при успіху
     } catch (err) {
       const message = err?.data.message || t("err_no_access");
       if (message.includes("registered via Google")) {
-        setErrorMessage(message); // Показати помилку для Google
+        dispatch(setErrMessage(message)); // Показати помилку для Google
       } else if (message.includes("Email not verified")) {
         navigate("/verify-email");
       } else if (message.includes("Too many requests")) {
@@ -79,40 +80,40 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = useGoogleAuth();
+  // const handleGoogleLogin = useGoogleAuth();
 
   //# Передача token через нативну кнопку:
-  const googleLoginRef = useRef(null); // Референс для GoogleLogin
+  // const googleLoginRef = useRef(null); // Референс для GoogleLogin
 
   //# Передача code (програмно):
-  const login = useGoogleLogin({
-    onSuccess: handleGoogleLogin,
-    onError: error => {
-      Notify.failure(t("err_google_login"));
-      console.error("Google login error", error);
-    },
-    flow: "auth-code",
-    // flow: "implicit",
-    // prompt: "none", // Уникає повторного запиту згоди (але, здається лише з implicit)
-    // scope: "email profile openid", // Потрібні scopes
-    redirect_uri: "https://dixium.vercel.app",
-  });
+  // const login = useGoogleLogin({
+  //   onSuccess: handleGoogleLogin,
+  //   onError: error => {
+  //     Notify.failure(t("err_google_login"));
+  //     console.error("Google login error", error);
+  //   },
+  //   flow: "auth-code",
+  //   // flow: "implicit",
+  //   // prompt: "none", // Уникає повторного запиту згоди (але, здається лише з implicit)
+  //   // scope: "email profile openid", // Потрібні scopes
+  //   redirect_uri: "https://dixium.vercel.app",
+  // });
 
-  const redirectToSetPass = () => {
-    dispatch(setIsSetPassword(true)); // Встановити прапор перед входом (перенаправляти користувача на додаткове встановлення паролю після google-авторизації)
-    login();
-  };
+  // const redirectToSetPass = () => {
+  //   dispatch(setIsSetPassword(true)); // Встановити прапор перед входом (перенаправляти користувача на додаткове встановлення паролю після google-авторизації)
+  //   login();
+  // };
 
-  const handleGoogleAuth = () => {
-    // console.log("handleGoogleAuth");
-    login();
-  };
+  // const handleGoogleAuth = () => {
+  //   // console.log("handleGoogleAuth");
+  //   login();
+  // };
 
   return (
     <>
       <div className={css.container}>
-        <div className={css.pageMain}>
-          {/* <div
+        {/* <div className={css.pageMain}> */}
+        {/* <div
             ref={googleLoginRef}
             className={css.googleLoginContainer}
             style={{
@@ -130,7 +131,7 @@ export default function LoginPage() {
             />
           </div> */}
 
-          {errorMessage?.includes("registered via Google") && (
+        {/* {errorMessage?.includes("registered via Google") && (
             <div className={css.errorContainer}>
               <p>{t("google_account_error")}</p>
 
@@ -156,23 +157,24 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-          )}
+          )} */}
 
-          <AuthForm
-            isRegister={false}
-            onSubmit={submitCredentials}
-            isDisabled={isGoogleLoading || isLoginLoading}
-          />
+        <AuthForm
+          isRegister={false}
+          onSubmit={submitCredentials}
+          // isDisabled={isGoogleLoading || isLoginLoading}
+          isDisabled={isLoginLoading}
+        />
 
-          <button
+        {/* <button
             className={css.btn}
             onClick={handleGoogleAuth}
             disabled={isGoogleLoading}>
             {t("google_login")}
-          </button>
+          </button> */}
 
-          <div className={css.pageFooter} />
-        </div>
+        <div className={css.pageFooter} />
+        {/* </div> */}
       </div>
     </>
   );

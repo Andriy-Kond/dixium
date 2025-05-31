@@ -1,16 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Notify } from "notiflix";
 import { useForgotPasswordMutation } from "redux/auth/authApi";
 import css from "./ForgotPasswordPage.module.scss";
 import Button from "common/components/ui/Button";
 import FormEditInput from "common/components/ui/FormEditInput";
+import { useDispatch } from "react-redux";
+import {
+  setIsSetPassword,
+  setPageHeaderText,
+  setPageHeaderTextSecond,
+} from "redux/game/localPersonalSlice.js";
 
 //^ Компонент для введення email, на який буде надіслано посилання для скидання паролю.
 export default function ForgotPasswordPage() {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
+
+  //# Page header color and text
+  useEffect(() => {
+    dispatch(setPageHeaderText(t("reset_password")));
+    dispatch(setPageHeaderTextSecond(""));
+    return () => dispatch(setIsSetPassword(false)); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
+  }, [dispatch, t]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -25,7 +39,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className={css.container}>
-      <h2>{t("reset_password")}</h2>
+      {/* <h2>{t("reset_password")}</h2> */}
       <form onSubmit={handleSubmit} className={css.form}>
         <label className={css.formLabel}>
           {t("email")}
@@ -38,7 +52,9 @@ export default function ForgotPasswordPage() {
             required={true}
           />
         </label>
-        <Button btnText={t("send_reset_link")} disabled={isLoading} />
+        <button className={css.btn} disabled={isLoading}>
+          {t("send_reset_link")}
+        </button>
       </form>
     </div>
   );

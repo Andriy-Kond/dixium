@@ -2,12 +2,14 @@
 @import "styles/utils/mixins";
 
 .container {
+  width: 100%;
   // margin: 0 auto;
   padding: 0 16px;
 
-  @media screen and (min-width: $tablet) {
-    width: 320px;
-  }
+  background-color: var(--Dark, #000);
+  // @media screen and (min-width: $tablet) {
+  //   width: 320px;
+  // }
 }
 
 .pageHeader {
@@ -24,14 +26,14 @@
   color: var(--revers_font_color);
 }
 
-.pageMain {
-  display: flex;
-  flex-direction: column;
+// .pageMain {
+//   display: flex;
+//   flex-direction: column;
 
-  background-color: var(--secondary_color);
-  // height: calc(100vh - 44px - 44px - 32px);
-  height: var(--main_screen_height);
-}
+//   background-color: var(--secondary_color);
+//   // height: calc(100vh - 44px - 44px - 32px);
+//   height: var(--main_screen_height);
+// }
 
 .pageFooter {
   height: 32px;

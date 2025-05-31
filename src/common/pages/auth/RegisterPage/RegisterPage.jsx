@@ -114,7 +114,7 @@ export default function RegisterPage() {
 
   return (
     <div className={css.container}>
-      {errorMessage?.includes("registered via Google") && (
+      {/* {errorMessage?.includes("registered via Google") && (
         <div className={css.errorContainer}>
           <p>{t("google_account_error")}</p>
 
@@ -140,20 +140,20 @@ export default function RegisterPage() {
             </Button>
           </div>
         </div>
-      )}
+      )} */}
 
       <AuthForm
         isRegister={true}
         onSubmit={submitCredentials}
-        isDisabled={isGoogleLoading || isSignupLoading}
+        isDisabled={isSignupLoading}
       />
 
-      <button
+      {/* <button
         className={css.btn}
         onClick={handleGoogleAuth}
         disabled={isGoogleLoading}>
         {t("register_with_google")}
-      </button>
+      </button> */}
 
       <div className={css.pageFooter} />
     </div>

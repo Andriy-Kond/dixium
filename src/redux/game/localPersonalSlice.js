@@ -44,6 +44,8 @@ const localInitialState = {
   visualTheme: LIGHT, // light, dark, auto
 
   locationFrom: null,
+
+  errMessage: null,
 };
 
 export const localPersonalSlice = createSlice({
@@ -53,6 +55,10 @@ export const localPersonalSlice = createSlice({
     // addLocalGamesList: (state, action) => {
     //   state.games = action.payload;
     // },
+
+    setErrMessage: (state, action) => {
+      state.errMessage = action.payload;
+    },
 
     setLocationFrom: (state, action) => {
       state.locationFrom = action.payload;
@@ -367,6 +373,7 @@ export const persistedActiveScreenReducer = persistReducer(
 );
 
 export const {
+  setErrMessage,
   setLocationFrom,
   setComponentHeight,
   setIsHeightReady,

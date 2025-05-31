@@ -19,6 +19,7 @@ export const selectCycleState = state => state.gameSlice.cycleState;
 export const selectInternetStatus = state => state.gameSlice.internetStatus;
 
 //* localPersonalSlice selectors:
+export const selectErrMessage = state => state.localPersonalSlice.errMessage;
 export const selectLocationFrom = state =>
   state.localPersonalSlice.locationFrom;
 
