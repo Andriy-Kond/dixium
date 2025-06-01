@@ -18,13 +18,15 @@
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
+
+  width: 100%;
   min-width: $mobileMin;
   max-width: $mobileMax;
+
   min-height: $minHeight;
   max-height: $maxHeight;
 
   background-color: var(--Dark, #000);
-
   z-index: 1;
 }
 
@@ -44,7 +46,6 @@
   width: 100vw;
   height: 44px;
   background: var(--30, #1c2732);
-  // outline: 1px solid red;
   z-index: 0;
 
   background-color: var(--color);

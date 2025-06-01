@@ -1,55 +1,30 @@
 @import "styles/utils/mixins";
 @import "styles/utils/breakpoints";
 
-// .headerMessage {
-//   padding: 8px 16px;
-
-//   color: var(--00, #818f99);
-
-//   &.hightLight {
-//     background: var(--Highlight, #f6902a);
-//     color: var(--40, #161f27);
-//   }
-// }
-
-.nonCarouselContainer {
-  display: flex;
-  justify-content: center;
+.btn {
+  @include btn;
+  background: var(--20, #2b3847);
+  color: var(--04, #e3e7e9);
 }
 
-.currentDeckContainer {
-  position: relative;
-  padding: 8px;
-  display: flex;
-  justify-content: left;
-  flex-wrap: wrap;
-  row-gap: 16px;
-  column-gap: 8px;
-
-  max-width: $mobileStandard;
-
-  // display: grid;
-  // grid-template-columns: repeat(auto-fit, 96px); /* Ширина картки */
-  // justify-content: start; /* Картки вирівняні по лівому краю */
-  // width: fit-content; /* Контейнер займає ширину вмісту */
-  // width: 100%;
+.btnActive {
+  background: var(--02, #c9cfd4);
+  color: var(--40, #161f27);
 }
 
-.card {
-  width: 96px;
-  // height: auto;
-
-  padding: 4px;
-  background-color: transparent;
+.checkboxCard {
+  width: 20px;
+  height: 20px;
 }
 
-.img {
+.maskContainer {
   width: 100%;
   height: 100%;
+  background-color: var(--Dark, #000);
 }
 
 // ======== Carousel ========
-.carWrap {
+.cardWrap {
   padding: 8px;
 }
 
@@ -65,7 +40,6 @@
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
-  // flex-basis: calc(100% - 8px);
   flex-basis: 100%;
 }
 
@@ -81,30 +55,6 @@
   box-shadow: inset 0 0 0 2px var(--04, #e3e7e9); // працює
 }
 
-.checkboxContainer {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  display: flex;
-  gap: 5px;
-  background-color: #5d7e9e;
-
-  height: 22px;
-  padding-top: 2px;
-  padding-left: 2px;
-  padding-right: 2px;
-
-  // border-radius: 8px 8px 0px 0px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  color: white;
-}
-
-.checkboxCard {
-  width: 20px;
-  height: 20px;
-}
-
 //Стилі для появи першого слайду
 .carouselImage {
   width: 100%;
@@ -114,9 +64,6 @@
   // Початковий стан для всіх слайдів
   transform: scale(0);
   opacity: 0.5;
-
-  // border: 4px solid #5d7e9e;
-  // border-radius: 4px;
 
   // Анімація для плавної появи слайду
   animation: fadeInScale 0.3s ease forwards; // "forwards" зберігає кінцевий стан
@@ -133,78 +80,36 @@
     opacity: 1;
   }
 }
+// ======== /Carousel ========
 
-.checkboxBase {
+.nonCarouselContainer {
   display: flex;
-  color: #5d7e9e;
+  justify-content: center;
 }
 
-.carouselCheckbox {
-  @extend .checkboxBase;
-  width: 40px;
-  height: 40px;
-}
+.currentDeckContainer {
+  position: relative;
 
-// .card {
-//   position: relative;
-//   flex-basis: calc((100% - 4px) / 3);
-//   height: 134px;
-//   // overflow: hidden;
-// }
+  // max-width: $mobileStandard;
+  width: 100%;
+  padding: 8px;
 
-.checkboxContainerList {
-  position: absolute;
-  top: -22px;
-  left: 0x;
   display: flex;
-  gap: 5px;
-  background-color: #5d7e9e;
-  color: #fff;
-
-  height: 22px;
-  padding-top: 2px;
-  padding-left: 2px;
-  padding-right: 2px;
-
-  border-radius: 8px 8px 0px 0px;
-  // border-top-left-radius: 10px;
-  // border-top-right-radius: 10px;
+  justify-content: left;
+  flex-wrap: wrap;
+  row-gap: 16px;
+  column-gap: 8px;
 }
 
-// .btnActive {
-//   // background-color: #0f7dff1f;
-//   background: var(--02, #c9cfd4);
-// }
+.card {
+  width: 96px;
+  padding: 4px;
 
-.btn {
-  @include btn;
-  background: var(--20, #2b3847);
-  color: var(--04, #e3e7e9);
+  background-color: transparent;
+  flex-basis: calc((100% - 16px) / 3);
 }
 
-.btnActive {
-  background: var(--02, #c9cfd4);
-  color: var(--40, #161f27);
-}
-
-.maskContainer {
+.img {
   width: 100%;
   height: 100%;
-  // background-color: #aec2d6;
-  background-color: var(--Dark, #000);
-}
-
-.zoomCardWrapper {
-  position: relative;
-}
-
-.zoomTools {
-  position: absolute;
-  content: "";
-  top: 0;
-  left: 0;
-  display: flex;
-  gap: 5px;
-  font-size: 24px;
-  z-index: 1;
 }

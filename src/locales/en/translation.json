@@ -1,4 +1,11 @@
 {
+  "think_about_association": "Come up with an association for your card and choose it. Share the association aloud with the players.",
+  "wait_other_players_turn": "Wait until the other players take their turn.",
+  "wait_tellers_story": "Wait until {{name}} shares their association.",
+  "select_card_make_turn": "Choose a card that matches {{name}}'s association and play it.",
+  "check_cards_one_two_stars": "Mark the cards that might belong to {{name}} with stars. If you're confident, place two stars right away.",
+  "unknown_combination": "Unknown combination",
+
   "player_removed_from_game": "The player {{playerName}} has left the game",
   "err_google_login": "Google login error: {{err}}",
   "deck": "Deck: {{name}}",
@@ -69,7 +76,7 @@
   "err_no_players_available_to_select_storyteller": "Error: No players available to select a storyteller.",
   "err_no_card_selected": "Error: No card selected!",
   "err_selected_card_not_found_in_hand": "Error: Selected card not found in hand!",
-  "err_no_access": "Error: no access",
+  "err_no_access": "Error: no access {{err}}",
   "err_no_response_server": "Error: No response from server for {{eventName}}. Reverting state.",
   "info_someone_else_is_already_the_storyteller": "Someone else is already the storyteller!",
   "player_joined": "Player {{playerName}} joined to game",

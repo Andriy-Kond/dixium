@@ -47,18 +47,7 @@ export default function RegisterPage() {
       form.reset();
       dispatch(setErrMessage(null)); // Очистити помилку при успіху
       Notify.success(t("registration_success"));
-
-      // dispatch(setUserToken(user.token));
-
-      // Here you can immediately come to private route:
-      // and/or navigate to needed page:
-      // navigate("/somePrivatPage",  { replace: true });
-      // Якщо вказати значення true, то новий лист підмінить собою найвищий. Це використовується досить рідко, наприклад при логіні, щоб користувач не зміг повернутися кнопкою «назад» на сторінку логіна після входу, адже він уже в системі і робити йому там нічого.
-
-      // Or you can switch to login page after registration:
-      // navigate("/login");
     } catch (err) {
-      // Notify.failure(result.error.data.message);
       const message = err.data?.message || t("err_no_access");
       if (message.includes("registered via Google")) {
         dispatch(setErrMessage(message));

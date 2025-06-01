@@ -13,22 +13,19 @@ export default function FormInput({
   ariaLabel = "",
 }) {
   const inputRef = useRef(null);
+
   const handleFocus = () => {
-    // console.log("on Focus");
     inputRef.current.classList.add(css["input-focused"]);
   };
-  const handleBlur = () => {
-    // console.log("on Blur");
 
+  const handleBlur = () => {
     inputRef.current.classList.remove(css["input-focused"]);
   };
+
   return (
     <>
       <form className={css.searchForm} onSubmit={handleSubmit}>
         <input
-          // className={`${css.searchInput} ${
-          //   isCanFind && css.searchInputReady
-          // }`}
           className={css.searchInput}
           ref={inputRef}
           // autoFocus // виникає проблема при видаленні гри - ref не встигає сформуватись (треба додавати useEffect чи setTimeout для встановлення класу input-focused)
@@ -42,15 +39,6 @@ export default function FormInput({
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
-
-        {/* {searchGameNumber && (
-              <button
-                className={css.clearButton}
-                type="button"
-                onClick={resetSearchGame}>
-                {t("clear")}
-              </button>
-            )} */}
 
         <button className={css.btn} type="submit" disabled={isDisableSubmitBtn}>
           {btnText}

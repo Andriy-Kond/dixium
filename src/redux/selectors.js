@@ -6,7 +6,6 @@ export const selectUserToken = state => state.authSlice.user.token;
 export const selectUserCredentials = state => state.authSlice.user;
 
 //* gameSlice:
-// export const selectIsCreatingGame = state => state.gameSlice.isCreatingGame;
 export const selectCurrentDeckId = state => state.gameSlice.currentDeckId;
 export const selectActiveActions = state => state.gameSlice.activeActions;
 export const selectActiveActionsTest = state =>

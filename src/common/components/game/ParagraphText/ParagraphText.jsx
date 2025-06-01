@@ -1,6 +1,9 @@
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+
+import { useTranslation } from "react-i18next";
+
 import {
   selectActiveScreen,
   selectIsCarouselModeHandScreen,
@@ -9,10 +12,14 @@ import {
   selectLocalGame,
   selectUserCredentials,
 } from "redux/selectors.js";
-import { GUESSING, VOTING } from "utils/generals/constants.js";
-
+import {
+  GUESSING,
+  HAND,
+  PLAYERS,
+  TABLE,
+  VOTING,
+} from "utils/generals/constants.js";
 import css from "./ParagraphText.module.scss";
-import { useTranslation } from "react-i18next";
 
 export default function ParagraphText() {
   const { gameId } = useParams();
@@ -33,94 +40,119 @@ export default function ParagraphText() {
 
   const { players, storytellerId, gameStatus } = currentGame;
   const storyteller = players.find(p => p._id === storytellerId);
-  const isCurrentPlayerStoryteller = storytellerId === playerId;
+  const name = storyteller?.name;
 
+  const isCurrentPlayerStoryteller = storytellerId === playerId;
   const currentPlayer = players.find(p => p._id === playerId) || [];
   const { isGuessed, isVoted } = currentPlayer;
 
-  // * paragraphText
+  const OPEN_HAND = "openHand";
+  const OPEN_TABLE = "openTable";
+  const CLOSE = "close";
+  const WAITING = "waiting";
+  const NOT_GUESSING = "notGuessing";
+  const NOT_VOTING = "notVoting";
+
   let paragraphText = "";
 
   const decisionTable = {
-    lobby_hand_openHand: `Очікуйте поки ${storyteller?.name} розкаже свою асоціацію`,
+    lobby_hand_openHand: t("waiting_tellers_story", { name }),
     lobby_players: "lobby_players",
     lobby_table_openTable: "lobby_table_openTable",
-    lobby_close: `Очікуйте поки ${storyteller?.name} розкаже свою асоціацію`,
+    lobby_close: t("waiting_tellers_story", { name }),
 
-    notGuessing_hand_openHand: `Підберіть карту до асоціації ${storyteller?.name} і походіть нею`,
+    notGuessing_hand_openHand: t("select_card_make_turn", { name }),
     notGuessing_players: "notGuessing_players",
     notGuessing_table_openTable: "notGuessing_table_openTable",
-    notGuessing_close: `Підберіть карту до асоціації ${storyteller?.name} і походіть нею`,
+    notGuessing_close: t("select_card_make_turn", { name }),
 
     notVoting_hand_openHand: "notVoting_hand_openHand",
     notVoting_players: "notVoting_players",
-    notVoting_table_openTable: `Підберіть карту до асоціації ${storyteller?.name} і походіть нею`,
-    notVoting_close: `Позначте зірочками карти, що можуть належати ${storyteller?.name}. Якщо впевнені - ставте одразу дві зірки`,
+    notVoting_table_openTable: t("select_card_make_turn", { name }),
+    notVoting_close: t("check_cards_one_two_stars", { name }),
 
     round_results_hand_openHand: "round_results_hand_openHand",
     round_results_players: "round_results_players",
     round_results_table_openTable: "round_results_table_openTable",
     round_results_close: "round_results_close",
 
-    waiting: "Очікуйте поки решта гравців походить",
+    waiting: t("wait_other_players_turn"),
   };
 
-  function handleGameState(
-    gameStatus,
-    activeScreen,
+  // Визначення стану гри
+  const getGameState = () => {
+    if (gameStatus === GUESSING) return isGuessed ? WAITING : NOT_GUESSING;
+    if (gameStatus === VOTING) return isVoted ? WAITING : NOT_VOTING;
+    return gameStatus;
+  };
+
+  // Визначення стану екрану (Hand - 0, Players - 1, Table - 2)
+  const getScreenState = () => {
+    switch (activeScreen) {
+      case 0:
+        return HAND;
+      case 1:
+        return PLAYERS;
+      case 2:
+        return TABLE;
+      default:
+        return HAND;
+    }
+  };
+
+  // Визначення стану каруселі
+  const getCarouselState = () => {
+    if (isCarouselModeHandScreen) return OPEN_HAND;
+    if (isCarouselModeTableScreen) return OPEN_TABLE;
+    return CLOSE;
+  };
+
+  function findParagraphText(
     isCarouselModeHandScreen,
     isCarouselModeTableScreen,
   ) {
-    // Hand - 0, Players - 1, Table - 2
-    const screen =
-      activeScreen === 0 ? "hand" : activeScreen === 1 ? "players" : "table";
-
-    const carouselState = isCarouselModeHandScreen
-      ? "openHand"
-      : isCarouselModeTableScreen
-      ? "openTable"
-      : "close";
-
-    let state = gameStatus;
-    if (gameStatus === GUESSING) state = isGuessed ? "waiting" : "notGuessing";
-    if (gameStatus === VOTING) state = isVoted ? "waiting" : "notVoting";
+    const screen = getScreenState();
+    const carouselState = getCarouselState();
+    const state = getGameState();
 
     let key = "";
-    if (state === "waiting") {
-      key = "waiting";
-    } else if (!isCarouselModeHandScreen && !isCarouselModeTableScreen) {
-      key = `${state}_${carouselState}`;
-    } else if (screen === "players") {
-      key = `${state}_${screen}`;
-    } else {
-      key = `${state}_${screen}_${carouselState}`;
+    if (state === WAITING) key = WAITING;
+
+    if (state !== WAITING) {
+      if (!isCarouselModeHandScreen && !isCarouselModeTableScreen) {
+        key = `${state}_${carouselState}`;
+      } else if (screen === PLAYERS) {
+        key = `${state}_${screen}`;
+      } else {
+        key = `${state}_${screen}_${carouselState}`;
+      }
     }
 
-    // console.log(" ParagraphText >> key:::", key);
-    return decisionTable[key] || "Невідома комбінація";
+    // console.log("ParagraphText >> key:::", key);
+    return decisionTable[key] || t("unknown_combination");
   }
 
-  if (!storytellerId) {
-    paragraphText =
-      "Придумайте асоціацію до карти і оберіть її. Розкажіть гравцям асоціацію вголос.";
-  } else if (isShowMask && !isCurrentPlayerStoryteller) {
-    paragraphText = t("player_told_first_story", {
-      storytellerName: storyteller?.name,
-    });
-  } else if (isCurrentPlayerStoryteller) {
-    paragraphText =
-      isVoted && isGuessed
-        ? "Очікуйте поки решта гравців походить"
-        : "Придумайте асоціацію до карти і оберіть її. Розкажіть гравцям асоціацію вголос.";
-  } else {
-    paragraphText = handleGameState(
-      gameStatus,
-      activeScreen,
-      isCarouselModeHandScreen,
-      isCarouselModeTableScreen,
-    );
+  if (!storytellerId) paragraphText = t("think_about_association");
+
+  if (storytellerId) {
+    if (isShowMask && !isCurrentPlayerStoryteller) {
+      paragraphText = t("player_told_first_story", { name });
+    } else if (isCurrentPlayerStoryteller) {
+      paragraphText =
+        isVoted && isGuessed
+          ? t("wait_other_players_turn")
+          : t("think_about_association");
+    } else {
+      paragraphText = findParagraphText(
+        gameStatus,
+        activeScreen,
+        isCarouselModeHandScreen,
+        isCarouselModeTableScreen,
+      );
+    }
   }
 
+  // Визначення, чи потрібно підсвітити текст
   const isHightLight =
     !storytellerId ||
     isShowMask ||
@@ -128,72 +160,6 @@ export default function ParagraphText() {
     (gameStatus === GUESSING && !isGuessed) ||
     (gameStatus === VOTING && !isVoted && isCarouselModeTableScreen) ||
     (gameStatus === VOTING && !isVoted && activeScreen === 2);
-
-  // // Carousel in Hand
-  // if (isCarouselModeHandScreen) {
-  //   if (gameStatus === GUESSING && !isGuessed) {
-  //     paragraphText =
-  //       "Підберіть карту до асоціації [Nick 2] і зробить оберіть її.";
-  //   }
-  //   if (gameStatus === VOTING && !isVoted) {
-  //     if (activeScreen === 2) {
-  //       // 2 - table screen
-  //       paragraphText = `Підберіть карту до асоціації ${storyteller.name} і оберіть її.`;
-  //     } else {
-  //       paragraphText = "Очікуйте поки решта гравців проголосують.";
-  //     }
-  //   } else if (gameStatus === VOTING && isVoted) {
-  //     paragraphText = "Очікуйте поки решта гравців проголосують.";
-  //   }
-  // }
-
-  // // Carousel in Table
-  // if (isCarouselModeTableScreen) {
-  //   if (gameStatus === GUESSING && !isGuessed) {
-  //     paragraphText =
-  //       "Підберіть карту до асоціації [Nick 2] і зробить оберіть її.";
-  //   }
-  //   if (gameStatus === VOTING && !isVoted) {
-  //     if (activeScreen === 2) {
-  //       // 2 - table screen
-  //       paragraphText = `Підберіть карту до асоціації ${storyteller.name} і оберіть її.`;
-  //     } else {
-  //       paragraphText = "Очікуйте поки решта гравців проголосують.";
-  //     }
-  //   } else if (gameStatus === VOTING && isVoted) {
-  //     paragraphText = "Очікуйте поки решта гравців проголосують.";
-  //   }
-  // }
-
-  // // Non carousel
-  // if (!isCarouselModeHandScreen && !isCarouselModeTableScreen) {
-  //   // Hand
-  //   if (activeScreen === 0) {
-  //   }
-
-  //   // Players
-  //   if (activeScreen === 1) {
-  //   }
-
-  //   // Table
-  //   if (activeScreen === 2) {
-  //   }
-
-  //   if (gameStatus === GUESSING && !isGuessed) {
-  //     paragraphText = `Підберіть карту до асоціації ${storyteller.name} і зробить оберіть її.`;
-  //   }
-
-  //   if (gameStatus === VOTING && !isVoted) {
-  //     if (activeScreen === 2) {
-  //       // 2 - table screen
-  //       paragraphText = `Позначте зірочками карти, що можуть належати ${storyteller.name}. Якщо впевнені - ставте одразу дві зірки.`;
-  //     } else {
-  //       paragraphText = "";
-  //     }
-  //   } else if (gameStatus === VOTING && isVoted) {
-  //     paragraphText = "Очікуйте поки решта гравців проголосують.";
-  //   }
-  // }
 
   return (
     <>

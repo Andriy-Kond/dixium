@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGetAllDecksQuery } from "redux/game/gameApi.js";
 import {
   setPageHeaderText,
@@ -35,7 +35,6 @@ export default function DeckCards() {
 
   return (
     <>
-      {/* <h1>Deck Cards</h1> */}
       <ul className={css.currentDeckContainer}>
         {deck.cards?.map(card => (
           <li className={css.card} key={card._id}>

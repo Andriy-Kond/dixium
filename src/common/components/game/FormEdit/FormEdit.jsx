@@ -46,9 +46,9 @@ export default function FormEdit({
 
           <div className={css.buttonsContainer}>
             {/* <button
-              type="submit"
               className={css.inputBtn}
               onClick={handleSet}
+              type="submit"
               disabled={isDisableSet}>
               <MdCheck className={css.inputBtnIcon} />
             </button> */}

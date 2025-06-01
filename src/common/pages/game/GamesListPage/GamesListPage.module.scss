@@ -20,20 +20,13 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  width: 100%;
   min-width: $mobileMin;
   max-width: $mobileMax;
 
   background-color: var(--Dark, #000);
 }
-
-// .infoMessageContainer {
-//   position: absolute;
-//   top: 0px;
-//   left: 0;
-//   right: 0;
-//   width: 100%;
-//   // opacity: 0.92;
-// }
 
 .waitingList {
   display: flex;

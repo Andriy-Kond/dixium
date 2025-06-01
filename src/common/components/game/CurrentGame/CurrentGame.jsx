@@ -7,12 +7,7 @@ import css from "./CurrentGame.module.scss";
 import GameBottomBar from "common/components/game/GameBottomBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  GUESSING,
-  LOBBY,
-  ROUND_RESULTS,
-  VOTING,
-} from "utils/generals/constants.js";
+import { GUESSING, ROUND_RESULTS, VOTING } from "utils/generals/constants.js";
 import socket from "services/socket.js";
 import {
   selectActiveScreen,
@@ -326,8 +321,6 @@ export default function CurrentGame() {
 
   return (
     <div className={css.gameContainer}>
-      {/* <p>Current Game</p> */}
-
       {gameStatus !== ROUND_RESULTS && <ParagraphText />}
 
       <div
@@ -341,8 +334,6 @@ export default function CurrentGame() {
               {cloneElement(screen, {
                 isActiveScreen: activeScreen === index,
                 setMiddleButton: stabilizedSetMiddleButton,
-                isCarouselModeHandScreen,
-                isCarouselModeTableScreen,
               })}
             </li>
           ))}

@@ -58,12 +58,10 @@ export const gameSlice = createSlice({
 
     // setFirstStoryteller: (state, action) => {
     //   const { gameId, playerId } = action.payload;
-
     //   //# якщо games - це об'єкт:
     //   const game = state.games[gameId];
     //   //# якщо games - це масив:
     //   // const game = state.games.find(game => game._id === gameId);
-
     //   if (game && !game.storytellerId) {
     //     game.storytellerId = playerId;
     //   }
@@ -71,12 +69,10 @@ export const gameSlice = createSlice({
 
     // nextStoryteller: (state, action) => {
     //   const { gameId } = action.payload;
-
     //   //# якщо games - це об'єкт:
     //   const game = state.games[gameId];
     //   //# якщо games - це масив:
     //   // const game = state.games.find(game => game._id === gameId);
-
     //   if (game) {
     //     const currentIndex = game.players.findIndex(
     //       player => player._id === game.storytellerId,

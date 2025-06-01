@@ -9,3 +9,12 @@
 
   background: var(--30, #1c2732);
 }
+
+.btnMenu {
+  display: flex;
+  align-items: center;
+
+  padding: 14px 16px;
+  color: var(--04, #e3e7e9);
+  background: var(--20, #2b3847);
+}

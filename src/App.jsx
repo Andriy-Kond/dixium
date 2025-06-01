@@ -61,6 +61,28 @@ export default function App() {
   const authUserToken = useSelector(selectUserToken);
   const theme = useSelector(selectTheme);
 
+  // Дозволяє скролити внутрішній контейнер body
+  useEffect(() => {
+    const isHomePage = location.pathname === "/";
+
+    const getPageHeight = () => {
+      if (isHomePage) return "100vh";
+      else return `${window.innerHeight}px`;
+    };
+
+    document.body.style.height = getPageHeight();
+
+    window.addEventListener("resize", () => {
+      document.body.style.height = getPageHeight();
+    });
+
+    return () => {
+      window.removeEventListener("resize", () => {
+        document.body.style.height = getPageHeight();
+      });
+    };
+  }, [location.pathname]);
+
   const {
     data: userData,
     isSuccess,

@@ -23,6 +23,7 @@ export default function HomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
   const { t } = useTranslation();
+  const { REACT_APP_REDIRECT_URI } = process.env;
 
   const [googleLogin, { isLoading: isGoogleLoading }] =
     useGoogleLoginMutation();
@@ -51,7 +52,8 @@ export default function HomePage() {
       console.error("Google login error", error);
     },
     flow: "auth-code",
-    redirect_uri: "https://dixium.vercel.app",
+    // redirect_uri: "https://dixium.vercel.app",
+    redirect_uri: REACT_APP_REDIRECT_URI,
   });
 
   const handleGoogleAuth = () => {

@@ -23,8 +23,11 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
+
   const [formData, setFormData] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
+
+  const { REACT_APP_REDIRECT_URI } = process.env;
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
@@ -67,7 +70,8 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
     // flow: "implicit",
     // prompt: "none", // Уникає повторного запиту згоди (але, здається лише з implicit)
     // scope: "email profile openid", // Потрібні scopes
-    redirect_uri: "https://dixium.vercel.app",
+    // redirect_uri: "https://dixium.vercel.app",
+    redirect_uri: REACT_APP_REDIRECT_URI,
   });
 
   const redirectToSetPass = () => {
@@ -170,7 +174,7 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
         )}
       </form>
 
-      {errorMessage?.includes("registered via Google") && (
+      {/* {errorMessage?.includes("registered via Google") && (
         <div className={css.errorContainer}>
           <p>{t("google_account_error")}</p>
 
@@ -196,7 +200,7 @@ export default function AuthForm({ isRegister, onSubmit, isDisabled }) {
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 }

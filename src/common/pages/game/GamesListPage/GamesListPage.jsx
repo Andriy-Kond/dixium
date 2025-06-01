@@ -1,29 +1,26 @@
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import socket from "services/socket.js";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useTranslation } from "react-i18next";
+
+import socket from "services/socket.js";
+import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
 import {
   setLocalGame,
   setPageHeaderText,
   setPageHeaderTextSecond,
 } from "redux/game/localPersonalSlice.js";
-import { useGetCurrentGameQuery } from "redux/game/gameApi.js";
-
 import {
   selectLocalGame,
   selectUserActiveGameId,
   selectUserCredentials,
 } from "redux/selectors.js";
 import UserMenu from "common/components/navComponents/UserMenu";
-
+import FormInput from "common/components/game/FormInput";
 import { LOBBY } from "utils/generals/constants.js";
-
 import { MdArrowForwardIos } from "react-icons/md";
 import css from "./GamesListPage.module.scss";
-import FormInput from "common/components/game/FormInput";
-import { useComponentHeight } from "hooks/socketHandlers/useComponentHeight.js";
 
 export default function GamesListPage() {
   useEffect(() => {
@@ -53,15 +50,6 @@ export default function GamesListPage() {
     useGetCurrentGameQuery(userActiveGameId, {
       skip: !userActiveGameId || userActiveGameId.trim() === "",
     });
-
-  //# Визначення висоти компонента
-  // const componentRef = useRef(null);
-  // const isHeightReady = useComponentHeight(componentRef.current);
-  // const componentHeight = useSelector(selectComponentHeight);
-  // // console.log(" GamesListPage >> componentHeight:::", componentHeight);
-
-  const componentRef = useRef(null);
-  useComponentHeight(componentRef);
 
   // set active game
   useEffect(() => {
@@ -121,18 +109,6 @@ export default function GamesListPage() {
     socket.emit("Game_Create", { gameData });
   };
 
-  // useEffect(() => {
-  //   // Скидати поле пошуку лише коли така гра знайдена
-  //   const searchingGame = Object.values(games).find(
-  //     game => game.playerGameId === searchGameNumber,
-  //   );
-
-  //   if (searchingGame) {
-  //     inputRef.current.value = "";
-  //     setSearchGameNumber(null);
-  //   }
-  // }, [games, searchGameNumber]);
-
   const [formattedValue, setFormattedValue] = useState(""); // для відображення (type: text)
 
   const handleChange = e => {
@@ -182,17 +158,6 @@ export default function GamesListPage() {
 
   const returnToGame = () => {
     // console.log("return to game");
-
-    // if (!currentGame.isGameRunning) {
-    //   if (isCurrentPlayerIsHost) {
-    //     navigate(`${userActiveGameId}/setup/prepare-game`);
-    //   } else {
-    //     navigate(`${userActiveGameId}/setup/sort-players`);
-    //   }
-    // } else {
-    //   navigate(`${userActiveGameId}/current-game`);
-    //   // navigate(-1);
-    // }
     const targetPath = !currentGame.isGameRunning
       ? isCurrentPlayerIsHost
         ? `${userActiveGameId}/setup/prepare-game`
@@ -235,10 +200,6 @@ export default function GamesListPage() {
       ? [...discardPile, ...deletedPlayer.hand]
       : [...discardPile];
 
-    // // Якщо треба буде у майбутньому об’єднати hand усіх видалених гравців:
-    // const deletedHands = deletePlayer.flatMap(player => player.hand);
-    // const newDiscardPile = [...discardPile, ...deletedHands];
-
     const updatedGame = {
       ...currentGame,
       players: included,
@@ -265,8 +226,7 @@ export default function GamesListPage() {
 
   return (
     <>
-      {/* <p>GameListPage</p> */}
-      <div className={css.pageOuterContainer} ref={componentRef}>
+      <div className={css.pageOuterContainer}>
         <div className={css.pageInnerContainer}>
           <p className={css.infoText}>
             {isPlayerInGame
@@ -298,7 +258,6 @@ export default function GamesListPage() {
             <FormInput
               handleSubmit={handleJoinSubmit}
               onChange={handleChange}
-              // value={searchGameNumber}
               value={formattedValue}
               inputMode={"numeric"}
               placeholder={t("enter_id")}

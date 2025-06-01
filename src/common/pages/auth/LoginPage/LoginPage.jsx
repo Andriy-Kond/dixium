@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLoginUserMutation } from "redux/auth/authApi";
 import { setIsLoggedIn, setUserCredentials } from "redux/auth/authSlice";
 
@@ -15,12 +15,14 @@ import {
   setUserActiveGameId,
 } from "redux/game/localPersonalSlice.js";
 import { useNavigate } from "react-router-dom";
+import { selectErrMessage } from "redux/selectors.js";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Для перенаправлення на сторінку з встановлення логіну, якщо користувач авторизований раніше по google
   const { t } = useTranslation();
 
+  const err = useSelector(selectErrMessage);
   const [loginUser, { isLoading: isLoginLoading }] = useLoginUserMutation();
 
   //# Page header color and text
@@ -29,15 +31,6 @@ export default function LoginPage() {
     dispatch(setPageHeaderTextSecond(""));
     return () => dispatch(setIsSetPassword(false)); // Чи потрібно перенаправляти користувача на додаткове встановлення паролю після google-авторизації
   }, [dispatch, t]);
-
-  // // Повідомлення після успішної верифікації і перенаправлення з бекенду:
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   if (urlParams.get("verified") === "true") {
-  //     Notify.success(t("email_verified_success"));
-  //     navigate("/login", { replace: true }); // Очистити query-параметри ("verified")
-  //   }
-  // }, [navigate, t]);
 
   // Вхід через AuthForm
   const submitCredentials = async e => {
@@ -56,12 +49,17 @@ export default function LoginPage() {
       dispatch(setIsLoggedIn(true));
       dispatch(setErrMessage(null)); // Очистити помилку при успіху
     } catch (err) {
-      const message = err?.data.message || t("err_no_access");
-      if (message.includes("registered via Google")) {
+      console.log("LoginPage >> err:::", err);
+      console.log(`Socket connect_error: ${JSON.stringify(err, null, 2)}`);
+      const message =
+        err?.data?.message ||
+        t("err_no_access", { err: JSON.stringify(err, null, 2) });
+      // dispatch(setErrMessage(null));
+      if (message?.includes("registered via Google")) {
         dispatch(setErrMessage(message)); // Показати помилку для Google
-      } else if (message.includes("Email not verified")) {
+      } else if (message?.includes("Email not verified")) {
         navigate("/verify-email");
-      } else if (message.includes("Too many requests")) {
+      } else if (message?.includes("Too many requests")) {
         Notify.failure(t("too_many_requests"));
       } else {
         Notify.failure(message);
@@ -74,6 +72,7 @@ export default function LoginPage() {
   return (
     <>
       <div className={css.container}>
+        {err && <div>{`${err}`}</div>}
         <AuthForm
           isRegister={false}
           onSubmit={submitCredentials}

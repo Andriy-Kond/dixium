@@ -5,28 +5,19 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Notify } from "notiflix";
-import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-import {
-  selectComponentHeight,
-  selectLocalGame,
-  selectUserCredentials,
-} from "redux/selectors.js";
+import { useTranslation } from "react-i18next";
+import { Notify } from "notiflix";
+
+import { selectLocalGame, selectUserCredentials } from "redux/selectors.js";
 import { distributeCards } from "utils/game/distributeCards.js";
 import { useOptimisticDispatch } from "hooks/useOptimisticDispatch.js";
-import css from "./GameSetup.module.scss";
-import { useEffect, useRef } from "react";
-import InfoMessage from "common/components/ui/InfoMessage/InfoMessage.jsx";
 
-import { useComponentHeight } from "hooks/socketHandlers/useComponentHeight.js";
+import css from "./GameSetup.module.scss";
 
 export default function GameSetup() {
-  useEffect(() => {
-    console.log("render GameSetup");
-  }, []);
-
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -41,16 +32,6 @@ export default function GameSetup() {
       return;
     }
   }, [currentGame, navigate]);
-
-  //# Визначення висоти компонента
-  const componentRef = useRef(null);
-  useComponentHeight(componentRef);
-  // const componentRef = useRef(null);
-  // useComponentHeight(componentRef.current);
-  // const componentHeight = useSelector(selectComponentHeight);
-  // useEffect(() => {
-  // }, [componentHeight]);
-  // console.log(" GameSetup >> componentHeight:::", componentHeight);
 
   const handleRunGame = () => {
     if (!currentGame) return;
@@ -89,8 +70,7 @@ export default function GameSetup() {
     userCredentials._id === hostPlayerId;
 
   return (
-    <div className={css.setupOuterContainer} ref={componentRef}>
-      {/* <p>game setup</p> */}
+    <div className={css.setupOuterContainer}>
       <div className={css.setupInnerContainer}>
         <Outlet />
         {isShowStartButton && (
