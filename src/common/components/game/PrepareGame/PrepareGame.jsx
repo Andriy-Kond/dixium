@@ -70,7 +70,11 @@ export default function PrepareGame() {
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(playerGameId.toString()); // копіювання в буфер
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(playerGameId.toString()); // копіювання в буфер
+      } else {
+        console.warn("Clipboard API не підтримується у цьому середовищі.");
+      }
 
       dispatch(
         showNotification({

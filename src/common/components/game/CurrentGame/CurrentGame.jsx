@@ -43,11 +43,8 @@ export default function CurrentGame() {
   const currentGame = useSelector(selectLocalGame(gameId));
   const userCredentials = useSelector(selectUserCredentials);
   const { _id: playerId } = userCredentials;
-
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId)); // Number of current active screen
-
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
-
   const { totalPreviews, loadedPreviews, preloadUrls, hasPreloaded } =
     useSelector(selectPreloadImg);
   const isCarouselModeHandScreen = useSelector(
@@ -239,13 +236,14 @@ export default function CurrentGame() {
     socket.emit("startVoting", { updatedGame });
   }, [currentGame]);
 
-  useEffect(() => {
-    if (!currentGame) return;
-    const { players, gameStatus } = currentGame;
+  // // автоматичний початок голосування
+  // useEffect(() => {
+  //   if (!currentGame) return;
+  //   const { players, gameStatus } = currentGame;
 
-    const isReadyToVote = !players.some(player => !player.isGuessed);
-    isReadyToVote && gameStatus === GUESSING && startVoting();
-  }, [currentGame, startVoting]);
+  //   const isReadyToVote = !players.some(player => !player.isGuessed);
+  //   isReadyToVote && gameStatus === GUESSING && startVoting();
+  // }, [currentGame, startVoting]);
 
   const finishRound = useCallback(() => {
     // todo: протестувати без useCallBack
@@ -286,13 +284,14 @@ export default function CurrentGame() {
     socket.emit("roundFinish", { updatedGame });
   }, [currentGame]);
 
-  useEffect(() => {
-    if (!currentGame) return;
-    const { players, gameStatus } = currentGame;
+  // // автоматичне закінчення раунду
+  // useEffect(() => {
+  //   if (!currentGame) return;
+  //   const { players, gameStatus } = currentGame;
 
-    const isReadyToCalculatePoints = players.every(player => player.isVoted);
-    isReadyToCalculatePoints && gameStatus === VOTING && finishRound();
-  }, [currentGame, finishRound]);
+  //   const isReadyToCalculatePoints = players.every(player => player.isVoted);
+  //   isReadyToCalculatePoints && gameStatus === VOTING && finishRound();
+  // }, [currentGame, finishRound]);
 
   const stabilizedSetMiddleButton = useCallback(value => {
     // todo: протестувати без useCallBack
@@ -334,6 +333,8 @@ export default function CurrentGame() {
               {cloneElement(screen, {
                 isActiveScreen: activeScreen === index,
                 setMiddleButton: stabilizedSetMiddleButton,
+                startVoting,
+                finishRound,
               })}
             </li>
           ))}

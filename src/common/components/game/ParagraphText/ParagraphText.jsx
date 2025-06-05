@@ -107,29 +107,29 @@ export default function ParagraphText() {
     return CLOSE;
   };
 
-  function findParagraphText(
-    isCarouselModeHandScreen,
-    isCarouselModeTableScreen,
-  ) {
-    const screen = getScreenState();
+  function findParagraphText() {
+    const gameState = getGameState();
+    const screenState = getScreenState();
     const carouselState = getCarouselState();
-    const state = getGameState();
 
     let key = "";
-    if (state === WAITING) key = WAITING;
+    if (gameState === WAITING) key = WAITING;
 
-    if (state !== WAITING) {
+    if (gameState !== WAITING) {
       if (!isCarouselModeHandScreen && !isCarouselModeTableScreen) {
-        key = `${state}_${carouselState}`;
-      } else if (screen === PLAYERS) {
-        key = `${state}_${screen}`;
+        key = `${gameState}_${carouselState}`;
+      } else if (screenState === PLAYERS) {
+        key = `${gameState}_${screenState}`;
       } else {
-        key = `${state}_${screen}_${carouselState}`;
+        key = `${gameState}_${screenState}_${carouselState}`;
       }
     }
 
     // console.log("ParagraphText >> key:::", key);
-    return decisionTable[key] || t("unknown_combination");
+    return (
+      decisionTable[key] ||
+      t("unknown_combination", { key, gameState, screenState, carouselState })
+    );
   }
 
   if (!storytellerId) paragraphText = t("think_about_association");
@@ -143,12 +143,7 @@ export default function ParagraphText() {
           ? t("wait_other_players_turn")
           : t("think_about_association");
     } else {
-      paragraphText = findParagraphText(
-        gameStatus,
-        activeScreen,
-        isCarouselModeHandScreen,
-        isCarouselModeTableScreen,
-      );
+      paragraphText = findParagraphText();
     }
   }
 

@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import socket from "services/socket.js";
 import { GUESSING, LOBBY } from "utils/generals/constants.js";
 import {
@@ -10,9 +10,11 @@ import { useCallback } from "react";
 import { Notify } from "notiflix";
 import { discardHandToTable } from "utils/game/discardHandToTable.js";
 import { useTranslation } from "react-i18next";
+import { removeSelectedCardId } from "redux/game/localPersonalSlice.js";
 
 export const useTellStory = gameId => {
   // console.log("useTellStory");
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const userCredentials = useSelector(selectUserCredentials);
@@ -48,9 +50,6 @@ export const useTellStory = gameId => {
     }
 
     // If storyteller not defined, the player becomes the first storyteller
-    // todo: logic for storytellerId === true (maybe just add "&& !isFirstTurn"?)
-    // console.log("emit to soket :>> ");
-    // if (!isFirstTurn) {
     const { updatedCardsOnTable, updatedPlayers } = discardHandToTable({
       playerHand: currentPlayer?.hand || [],
       movedCards: [movedCard],
@@ -81,10 +80,13 @@ export const useTellStory = gameId => {
         console.error("Failed to update game:", response.error);
       }
     });
-    // }
+
+    dispatch(removeSelectedCardId({ gameId, playerId })); // clear selectedCardId
   }, [
     cardsOnTable,
     currentGame,
+    dispatch,
+    gameId,
     gameStatus,
     playerId,
     players,

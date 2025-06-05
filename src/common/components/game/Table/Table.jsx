@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   selectIsCarouselModeTableScreen,
+  selectIsShowMask,
   selectLocalGame,
   selectUserCredentials,
   selectVotesLocal,
@@ -31,7 +32,12 @@ import clsx from "clsx";
 import { useBackButton } from "context/BackButtonContext.jsx";
 import { MdStar } from "react-icons/md";
 
-export default function Table({ isActiveScreen, setMiddleButton }) {
+export default function Table({
+  isActiveScreen,
+  setMiddleButton,
+  startVoting,
+  finishRound,
+}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -40,6 +46,7 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
   const { _id: playerId } = userCredentials;
   const { gameId } = useParams();
   const currentGame = useSelector(selectLocalGame(gameId));
+  const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
   useEffect(() => {
     if (!currentGame) {
       navigate("/game");
@@ -55,9 +62,7 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
-  const [isMounted, setIsMounted] = useState(false);
 
-  // const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
   const vote = useVote(gameId, firstVotedCardId, secondVotedCardId);
   const startNewRound = useStartNewRound(gameId);
 
@@ -76,7 +81,6 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
 
   const carouselModeOn = idx => {
     setSelectedCardIdx(idx);
-    setActiveCardIdx(idx);
 
     dispatch(
       setIsCarouselModeTableScreen({
@@ -85,12 +89,11 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
         isCarouselModeTableScreen: true,
       }),
     );
-    setIsMounted(true);
+
+    setActiveCardIdx(idx);
   };
 
   const carouselModeOff = useCallback(() => {
-    setIsMounted(false);
-
     dispatch(
       setIsCarouselModeTableScreen({
         gameId,
@@ -98,8 +101,64 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
         isCarouselModeTableScreen: false,
       }),
     );
-    setMiddleButton(null);
-  }, [dispatch, gameId, playerId, setMiddleButton]);
+  }, [dispatch, gameId, playerId]);
+
+  //~ Close carousel when mask is showed
+  useEffect(() => {
+    if (isShowMask) carouselModeOff();
+  }, [carouselModeOff, isShowMask]);
+
+  //~ reInit for emblaApiCardsVote
+  useEffect(() => {
+    if (!emblaApiCardsVote) return;
+
+    emblaApiCardsVote.reInit({
+      watchDrag: isCarouselModeTableScreen,
+    });
+  }, [emblaApiCardsVote, isCarouselModeTableScreen]);
+
+  useEffect(() => {
+    if (emblaApiCardsVote) emblaApiCardsVote.scrollTo(activeCardIdx);
+  }, [activeCardIdx, emblaApiCardsVote]);
+
+  //~ Get active card's index
+  useEffect(() => {
+    if (!emblaApiCardsVote) return;
+
+    const onSelect = () =>
+      setActiveCardIdx(emblaApiCardsVote.selectedScrollSnap());
+    emblaApiCardsVote.on("select", onSelect); // Підписка на подію зміни слайда
+
+    return () => emblaApiCardsVote.off("select", onSelect);
+  }, [emblaApiCardsVote]);
+
+  //~ KB events handler
+  useEffect(() => {
+    const handleKeyPress = event => {
+      if (!emblaApiCardsVote) return;
+      if (event.key === "ArrowLeft") emblaApiCardsVote.scrollPrev();
+      else if (event.key === "ArrowRight") emblaApiCardsVote.scrollNext();
+    };
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [emblaApiCardsVote]);
+
+  //~ set BackButton
+  useEffect(() => {
+    if (isCarouselModeTableScreen) {
+      showBackButton({ onClick: carouselModeOff, priority: 2 }); // Показуємо кнопку "Назад"
+    } else {
+      hideBackButton(2); // Приховуємо кнопку, коли карусель закрита
+    }
+
+    return () => hideBackButton({ priority: 2 }); // Очищення при демонтажі
+  }, [
+    carouselModeOff,
+    hideBackButton,
+    isCarouselModeTableScreen,
+    showBackButton,
+  ]);
 
   // select card(s)
   const toggleCardSelection = useCallback(
@@ -157,61 +216,10 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
     ],
   );
 
-  //~ reInit for emblaApiCardsVote
-  useEffect(() => {
-    if (!emblaApiCardsVote) return;
-
-    emblaApiCardsVote.reInit({
-      watchDrag: isCarouselModeTableScreen,
-    });
-  }, [emblaApiCardsVote, isCarouselModeTableScreen]);
-
-  useEffect(() => {
-    if (emblaApiCardsVote) emblaApiCardsVote.scrollTo(activeCardIdx);
-  }, [activeCardIdx, emblaApiCardsVote]);
-
-  //~ Get active card's index
-  useEffect(() => {
-    if (!emblaApiCardsVote) return;
-
-    const onSelect = () =>
-      setActiveCardIdx(emblaApiCardsVote.selectedScrollSnap());
-    emblaApiCardsVote.on("select", onSelect); // Підписка на подію зміни слайда
-
-    return () => emblaApiCardsVote.off("select", onSelect);
-  }, [emblaApiCardsVote]);
-
-  //~ KB events handler
-  useEffect(() => {
-    const handleKeyPress = event => {
-      if (!emblaApiCardsVote) return;
-      if (event.key === "ArrowLeft") emblaApiCardsVote.scrollPrev();
-      else if (event.key === "ArrowRight") emblaApiCardsVote.scrollNext();
-    };
-    window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [emblaApiCardsVote]);
-
-  //~ set BackButton
-  useEffect(() => {
-    if (isCarouselModeTableScreen) {
-      showBackButton({ onClick: carouselModeOff, priority: 2 }); // Показуємо кнопку "Назад"
-    } else {
-      hideBackButton(2); // Приховуємо кнопку, коли карусель закрита
-    }
-
-    return () => hideBackButton({ priority: 2 }); // Очищення при демонтажі
-  }, [
-    carouselModeOff,
-    hideBackButton,
-    isCarouselModeTableScreen,
-    showBackButton,
-  ]);
-
   //* setMiddleButton
   useEffect(() => {
-    if (!isActiveScreen) return;
-    if (!currentGame) return;
+    if (!isActiveScreen || !currentGame) return;
+
     const {
       storytellerId,
       cardsOnTable,
@@ -220,11 +228,8 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
       players,
       hostPlayerId,
     } = currentGame;
-
     const isCurrentPlayerStoryteller = storytellerId === playerId;
-
     const playersMoreThanSix = players.length > 6;
-
     const isStartVotingDisabled = players.some(player => !player.isGuessed);
 
     const isCanVote =
@@ -237,133 +242,122 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
     );
 
     const isCurrentPlayerHost = hostPlayerId === playerId;
-    const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
 
     if (isCarouselModeTableScreen) {
-      // console.log("Carousel Mode");
-      const activeCard = cardsOnTable[activeCardIdx];
-      if (!activeCard) {
-        // console.log("error: card not found");
-        Notify.failure(t("err_card_not_found"));
-        return;
-      }
+      console.log("Table: Carousel Mode");
+      setMiddleButton(null);
 
-      const isDisabledFirstBtn =
-        (firstVotedCardId && firstVotedCardId !== activeCard._id) ||
-        playerId === activeCard.ownerId;
-      const isDisabledSecondBtn =
-        (secondVotedCardId && secondVotedCardId !== activeCard._id) ||
-        playerId === activeCard.ownerId;
+      if (gameStatus !== ROUND_RESULTS && !isCurrentPlayerStoryteller) {
+        const activeCard = cardsOnTable[activeCardIdx];
+        if (!activeCard) {
+          // console.log("error: card not found");
+          Notify.failure(t("err_card_not_found"));
+          return;
+        }
 
-      const currentCardIndex = emblaApiCardsVote?.selectedScrollSnap() || 0;
-      const currentCard = cardsOnTable[currentCardIndex];
+        const isDisabledFirstBtn =
+          (firstVotedCardId && firstVotedCardId !== activeCard._id) ||
+          playerId === activeCard.ownerId;
 
-      setMiddleButton(
-        <>
-          {!isCurrentPlayerStoryteller && (
-            <div className={css.carouselModeBtnsWrapper}>
+        const isDisabledSecondBtn =
+          (secondVotedCardId && secondVotedCardId !== activeCard._id) ||
+          playerId === activeCard.ownerId;
+
+        const currentCardIndex = emblaApiCardsVote?.selectedScrollSnap() || 0;
+        const currentCard = cardsOnTable[currentCardIndex];
+
+        setMiddleButton(
+          <div className={css.carouselModeBtnsWrapper}>
+            <Button
+              localClassName={clsx(
+                css.btn,
+                firstVotedCardId &&
+                  currentCard._id === firstVotedCardId &&
+                  css.btnActive,
+              )}
+              btnStyle={["twoBtnsInRow"]}
+              onClick={() => toggleCardSelection("firstVoteCardSet")}
+              disabled={isDisabledFirstBtn || isCurrentPlayerVoted}>
+              <MdStar className={css.btnStarIcon} />
+            </Button>
+
+            {playersMoreThanSix && !isSingleCardMode && (
               <Button
                 localClassName={clsx(
                   css.btn,
-                  firstVotedCardId &&
-                    currentCard._id === firstVotedCardId &&
+                  secondVotedCardId &&
+                    currentCard._id === secondVotedCardId &&
                     css.btnActive,
                 )}
                 btnStyle={["twoBtnsInRow"]}
-                onClick={() => toggleCardSelection("firstVoteCardSet")}
-                disabled={isDisabledFirstBtn || isCurrentPlayerVoted}>
+                onClick={() => toggleCardSelection("secondVoteCardSet")}
+                disabled={isDisabledSecondBtn || isCurrentPlayerVoted}>
                 <MdStar className={css.btnStarIcon} />
               </Button>
-              {playersMoreThanSix && !isSingleCardMode && (
-                <Button
-                  localClassName={clsx(
-                    css.btn,
-                    secondVotedCardId &&
-                      currentCard._id === secondVotedCardId &&
-                      css.btnActive,
-                  )}
-                  btnStyle={["twoBtnsInRow"]}
-                  onClick={() => toggleCardSelection("secondVoteCardSet")}
-                  disabled={isDisabledSecondBtn || isCurrentPlayerVoted}>
-                  <MdStar className={css.btnStarIcon} />
-                </Button>
-              )}
-            </div>
-          )}
-        </>,
-      );
+            )}
+          </div>,
+        );
+      }
     }
 
     const isReadyToVote = !players.some(player => !player.isGuessed);
     const isReadyToCalculatePoints = players.every(player => player.isVoted);
+
     if (!isCarouselModeTableScreen) {
       // console.log("Non Carousel Mode");
-
-      // if (isCarouselModeTableScreen) {
-      //   setMiddleButton(<Button btnText="<" onClick={carouselModeOff} />);
-      // } else
-
-      if (isCurrentPlayerHost && isReadyToVote && gameStatus === GUESSING) {
-        // console.log("це хост і всі обрали карти - готові до голосування");
-        // setMiddleButton(
-        //   <Button
-        //     btnText={t("start_voting")}
-        //     onClick={startVoting}
-        //     disabled={isStartVotingDisabled}
-        //   />,
-        // );
-      } else if (
-        isCurrentPlayerHost &&
-        isReadyToCalculatePoints &&
-        gameStatus === VOTING
+      setMiddleButton(null); // обнуляю кнопку для усіх при старті нового раунду
+      if (
+        gameStatus === VOTING &&
+        !isCurrentPlayerVoted &&
+        !isCurrentPlayerStoryteller
       ) {
-        // console.log("це хост і всі обрали проголосували - можна рахувати бали");
-        // setMiddleButton(
-        //   <Button btnText={t("finish_round")} onClick={finishRound} />,
-        // );
-      } else if (isCurrentPlayerHost && isReadyToStartNewRound) {
-        // console.log("це хост і можна починати новий раунд");
+        // Якщо це не сторітеллер і може голосувати (вже обрані карти)
         setMiddleButton(
           <Button
-            btnText={t("start_new_round")}
-            onClick={startNewRound}
-            disabled={gameStatus === FINISH}
+            btnText={t("vote")}
+            onClick={handleVote}
+            disabled={!isCanVote || isCurrentPlayerVoted}
           />,
         );
-      } else {
-        if (isCurrentPlayerStoryteller) {
-          // console.log("встановлюю кнопку в нуль для сторітелера");
-          setMiddleButton(null);
-        } else if (gameStatus === VOTING) {
-          // console.log("блок для gameStatus VOTING");
-
-          // Якщо це не сторітеллер і може голосувати (вже обрані карти)
+      } else if (isCurrentPlayerHost) {
+        if (gameStatus === GUESSING && isReadyToVote) {
+          // console.log("це хост і всі обрали карти - готові до голосування");
           setMiddleButton(
-            <Button
-              btnText={t("vote")}
-              onClick={handleVote}
-              disabled={!isCanVote || isCurrentPlayerVoted}
-            />,
+            <button
+              className={css.btn}
+              onClick={startVoting}
+              disabled={isStartVotingDisabled}>
+              {t("start_voting")}
+            </button>,
           );
-
-          if (isCurrentPlayerVoted) setMiddleButton(null);
         }
-        // else if (gameStatus === ROUND_RESULTS && isCarouselModeTableScreen) {
-        //   // console.log("ROUND_RESULTS && toggleZoomCard");
-        //   setMiddleButton(
-        //     <Button btnText={t("back")} onClick={() => carouselModeOff()} />,
-        //   );
-        // }
-        else setMiddleButton(null);
-      }
+
+        if (gameStatus === VOTING && isReadyToCalculatePoints) {
+          // console.log("це хост і всі обрали проголосували - можна рахувати бали");
+          setMiddleButton(
+            <button className={css.btn} onClick={finishRound}>
+              {t("finish_round")}
+            </button>,
+          );
+        }
+
+        if (gameStatus === ROUND_RESULTS) {
+          setMiddleButton(
+            <button
+              className={css.btn}
+              onClick={startNewRound}
+              disabled={gameStatus === FINISH}>
+              {t("start_new_round")}
+            </button>,
+          );
+        }
+      } else setMiddleButton(null);
     }
   }, [
     activeCardIdx,
-    carouselModeOff,
     currentGame,
     emblaApiCardsVote,
-    // startVoting,
-    // finishRound,
+    finishRound,
     firstVotedCardId,
     handleVote,
     isActiveScreen,
@@ -372,6 +366,7 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
     secondVotedCardId,
     setMiddleButton,
     startNewRound,
+    startVoting,
     t,
     toggleCardSelection,
   ]);
@@ -451,15 +446,18 @@ export default function Table({ isActiveScreen, setMiddleButton }) {
                 return (
                   <li
                     className={clsx(css.card, {
-                      [css.slideContainerActive]: card.ownerId === playerId,
+                      // [css.slideContainerActive]: card.ownerId === playerId,
                     })}
                     key={card._id}
                     onClick={() => carouselModeOn(idx)}>
                     <ImgGen
-                      className={css.img}
+                      className={clsx(css.img, {
+                        [css.slideContainerActive]: card.ownerId === playerId,
+                      })}
                       publicId={card.public_id}
                       isNeedPreload={true}
                     />
+
                     {marks.length > 0 && (
                       <div className={css.checkboxContainer2NonCarousel}>
                         {getStarsMarksByCardId(card._id).map((mark, index) => (

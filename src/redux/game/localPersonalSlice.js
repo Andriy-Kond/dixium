@@ -15,7 +15,7 @@ const localInitialState = {
   isHeightReady: false,
 
   cardsSet: {}, // cardsSet: { firstGuessCardSet: null, secondGuessCardSet: null },
-  selectedCardId: {}, // for first story(teller) mode
+  selectedCardId: {}, // storyteller's card
 
   pageHeaderText: "",
   pageHeaderTextSecond: "",
@@ -75,6 +75,13 @@ export const localPersonalSlice = createSlice({
 
     setVisualTheme: (state, action) => {
       state.visualTheme = action.payload;
+    },
+
+    setStorytellerId: (state, action) => {
+      const { gameId, storytellerId } = action.payload;
+      console.log({ gameId, storytellerId });
+      const game = state.games[gameId];
+      if (game) state.games[gameId].storytellerId = storytellerId;
     },
 
     setGameDeck: (state, action) => {
@@ -378,6 +385,7 @@ export const {
   setComponentHeight,
   setIsHeightReady,
   setVisualTheme,
+  setStorytellerId,
   setGameDeck,
   deleteCardsFromDeck,
   toggleIsSingleCardMode,

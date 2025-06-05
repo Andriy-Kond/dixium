@@ -103,7 +103,8 @@ const stateMachine = {
     const text =
       screenConfig[carouselState] ||
       stateConfig.close ||
-      t("unknown_combination");
+      `${(gameState, screenState, carouselState)}`;
+    // t("unknown_combination", { gameState, screenState, carouselState });
 
     return typeof text === "function" ? text(t, name) : text;
   },

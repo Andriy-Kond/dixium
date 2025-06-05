@@ -1,10 +1,10 @@
 {
   "think_about_association": "Come up with an association for your card and choose it. Share the association aloud with the players.",
   "wait_other_players_turn": "Wait until the other players take their turn.",
-  "wait_tellers_story": "Wait until {{name}} shares their association.",
+  "waiting_tellers_story": "Wait until {{name}} shares their association.",
   "select_card_make_turn": "Choose a card that matches {{name}}'s association and play it.",
   "check_cards_one_two_stars": "Mark the cards that might belong to {{name}} with stars. If you're confident, place two stars right away.",
-  "unknown_combination": "Unknown combination",
+  "unknown_combination": "Unknown combination: {{key}}, {{gameState}}, {{screenState}}, {{carouselState}}",
 
   "player_removed_from_game": "The player {{playerName}} has left the game",
   "err_google_login": "Google login error: {{err}}",

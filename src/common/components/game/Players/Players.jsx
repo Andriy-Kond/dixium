@@ -18,7 +18,12 @@ import { useTranslation } from "react-i18next";
 import { MdCheckCircle, MdDone, MdCached, MdStar } from "react-icons/md";
 import css from "./Players.module.scss";
 
-export default function Players({ isActiveScreen, setMiddleButton }) {
+export default function Players({
+  isActiveScreen,
+  setMiddleButton,
+  startVoting,
+  finishRound,
+}) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { gameId } = useParams();
@@ -39,51 +44,52 @@ export default function Players({ isActiveScreen, setMiddleButton }) {
     if (!isActiveScreen) return;
     if (!currentGame) return;
     const { gameStatus, hostPlayerId, players } = currentGame;
-
     const isReadyToVote = !players.some(player => !player.isGuessed);
     const isReadyToCalculatePoints = players.every(player => player.isVoted);
-    const isStartVotingDisabled = players.some(player => !player.isGuessed);
     const isCurrentPlayerHost = hostPlayerId === playerId;
-    const isReadyToStartNewRound = gameStatus === ROUND_RESULTS;
 
-    if (gameStatus === GUESSING) {
-      if (isCurrentPlayerHost && isReadyToVote) {
-        // Якщо це ведучий:
-        // setMiddleButton(
-        //   <Button
-        //     btnText={t("start_voting")}
-        //     onClick={startVoting}
-        //     disabled={isStartVotingDisabled}
-        //   />,
-        // );
-      } else setMiddleButton(null);
-    } else if (gameStatus === VOTING) {
-      if (isCurrentPlayerHost && isReadyToCalculatePoints) {
-        // Якщо це ведучий:
-        // setMiddleButton(
-        //   <Button btnText={t("finish_round")} onClick={finishRound} />,
-        // );
-      } else setMiddleButton(null);
-    } else if (gameStatus === ROUND_RESULTS) {
-      if (isCurrentPlayerHost && isReadyToStartNewRound) {
-        // console.log("це хост і можна починати новий раунд");
+    if (isCurrentPlayerHost) {
+      if (gameStatus === GUESSING && isReadyToVote) {
+        const isStartVotingDisabled = players.some(player => !player.isGuessed);
+        // console.log("це хост і всі обрали карти - готові до голосування");
         setMiddleButton(
-          <Button
-            btnText={t("start_new_round")}
+          <button
+            className={css.btn}
+            onClick={startVoting}
+            disabled={isStartVotingDisabled}>
+            {t("start_voting")}
+          </button>,
+        );
+      }
+
+      if (gameStatus === VOTING && isReadyToCalculatePoints) {
+        // console.log("це хост і всі проголосували - можна рахувати бали");
+        setMiddleButton(
+          <button className={css.btn} onClick={finishRound}>
+            {t("finish_round")}
+          </button>,
+        );
+      }
+
+      if (gameStatus === ROUND_RESULTS) {
+        setMiddleButton(
+          <button
+            className={css.btn}
             onClick={startNewRound}
-            disabled={gameStatus === FINISH}
-          />,
+            disabled={gameStatus === FINISH}>
+            {t("start_new_round")}
+          </button>,
         );
       }
     } else setMiddleButton(null);
   }, [
     currentGame,
-    // finishRound,
+    finishRound,
     isActiveScreen,
     playerId,
     setMiddleButton,
     startNewRound,
-    // startVoting,
+    startVoting,
     t,
   ]);
 

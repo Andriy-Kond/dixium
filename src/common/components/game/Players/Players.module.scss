@@ -1,3 +1,11 @@
+@import "styles/utils/mixins";
+
+.btn {
+  @include btn;
+  background: var(--20, #2b3847);
+  color: var(--04, #e3e7e9);
+}
+
 .playersContainer {
   padding: 8px 0;
 }

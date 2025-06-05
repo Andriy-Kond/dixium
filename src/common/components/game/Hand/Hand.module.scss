@@ -12,6 +12,11 @@
   color: var(--40, #161f27);
 }
 
+.twoBtnInRow {
+  display: flex;
+  gap: 8px;
+}
+
 .checkboxCard {
   width: 20px;
   height: 20px;
@@ -90,7 +95,6 @@
 .currentDeckContainer {
   position: relative;
 
-  // max-width: $mobileStandard;
   width: 100%;
   padding: 8px;
 

@@ -20,8 +20,6 @@ import {
   FINISH,
 } from "utils/generals/constants.js";
 
-import css from "./Hand.module.scss";
-import Button from "common/components/ui/Button";
 import Mask from "../Mask/Mask.jsx";
 import { useTellStory } from "hooks/useTellStory.js";
 import { useGuess } from "hooks/useGuess.js";
@@ -32,14 +30,21 @@ import {
   setIsShowMask,
   setIsCarouselModeHandScreen,
   setCardsSet,
+  setStorytellerId,
 } from "redux/game/localPersonalSlice.js";
 import { useStartNewRound } from "hooks/useStartNewRound.js";
 import { useTranslation } from "react-i18next";
 import ImgGen from "common/components/ui/ImgGen";
 import { useBackButton } from "context/BackButtonContext.jsx";
 import clsx from "clsx";
+import css from "./Hand.module.scss";
 
-export default function Hand({ isActiveScreen, setMiddleButton }) {
+export default function Hand({
+  isActiveScreen,
+  setMiddleButton,
+  startVoting,
+  finishRound,
+}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -62,16 +67,13 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
     selectIsCarouselModeHandScreen(gameId, playerId),
   );
 
-  const cardsSet = useSelector(selectCardsSet(gameId, playerId));
   const selectedCardId = useSelector(selectSelectedCardId(gameId, playerId));
+
+  const cardsSet = useSelector(selectCardsSet(gameId, playerId));
   const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
 
   const [selectedCardIdx, setSelectedCardIdx] = useState(0); // for open current clicked card
   const [activeCardIdx, setActiveCardIdx] = useState(0); // idx of active card
-
-  const tellStory = useTellStory(gameId);
-  const guessStory = useGuess(gameId, cardsSet);
-  const startNewRound = useStartNewRound(gameId);
 
   const [emblaRefCardsGuess, emblaApiCardsGuess] = useEmblaCarousel({
     loop: true,
@@ -80,25 +82,9 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
     watchDrag: isCarouselModeHandScreen,
   });
 
-  const handleStory = useCallback(() => {
-    // console.log("handleStory");
-    if (!currentGame) return;
-    currentGame.gameStatus === GUESSING ? guessStory() : tellStory();
-
-    const emptyCardsSet = { firstGuessCardSet: null, secondGuessCardSet: null };
-    dispatch(setCardsSet({ gameId, playerId, cardsSet: emptyCardsSet })); // не обов'язково
-
-    dispatch(removeSelectedCardId({ gameId, playerId })); // clear
-
-    // закриваю карусель
-    dispatch(
-      setIsCarouselModeHandScreen({
-        gameId,
-        playerId,
-        isCarouselModeHandScreen: false,
-      }),
-    );
-  }, [currentGame, dispatch, gameId, guessStory, playerId, tellStory]);
+  const tellStory = useTellStory(gameId);
+  const guessStory = useGuess(gameId);
+  const startNewRound = useStartNewRound(gameId);
 
   const returnToHand = useCallback(() => {
     // console.log("returnToHand");
@@ -140,100 +126,6 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
     );
   }, [dispatch, gameId, playerId]);
 
-  const toggleCardSelection = useCallback(
-    btnKey => {
-      // console.log("toggleCardSelection");
-      if (!currentGame) return;
-
-      const { isSingleCardMode, players, gameStatus } = currentGame;
-      const playersMoreThanThree = players.length > 3;
-
-      if (isSingleCardMode && btnKey === "secondGuessCardSet") {
-        // console.log("error: only one card allowed");
-        Notify.failure(t("err_only_one_card_allowed"));
-        return;
-      }
-
-      const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
-      const currentPlayer = players.find(p => p._id === playerId);
-      const currentCard = currentPlayer?.hand[currentCardIndex];
-      if (!currentCard) {
-        // console.log("error: card not found");
-        Notify.failure(t("err_card_not_found"));
-        return;
-      }
-
-      if (gameStatus === GUESSING) {
-        // console.log("gameStatus === GUESSING");
-        // Встановлення локального стану карток:
-        const isSelected =
-          firstGuessCardSet?._id === currentCard._id ||
-          secondGuessCardSet?._id === currentCard._id;
-
-        if (isSelected && cardsSet[btnKey]?._id === currentCard._id) {
-          dispatch(
-            setCardsSet({
-              gameId,
-              playerId,
-              cardsSet: { ...cardsSet, [btnKey]: null },
-            }),
-          );
-
-          return;
-        }
-
-        const otherCard =
-          btnKey === "firstGuessCardSet"
-            ? secondGuessCardSet
-            : firstGuessCardSet;
-
-        // Якщо картки не обрані
-        if (!firstGuessCardSet || !secondGuessCardSet) {
-          // Коли гравців троє, то в комірках мають бути різні карти:
-          if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
-            Notify.failure(t("err_cards_must_be_different"));
-            // console.log("error: cards must be different");
-          } else {
-            dispatch(
-              setCardsSet({
-                gameId,
-                playerId,
-                cardsSet: { ...cardsSet, [btnKey]: currentCard },
-              }),
-            );
-          }
-        }
-      } else if (gameStatus === LOBBY) {
-        // console.log("gameStatus === LOBBY");
-        if (currentCard._id === selectedCardId) {
-          // console.log("removeSelectedCardId");
-          dispatch(removeSelectedCardId({ gameId, playerId })); // clear
-        } else {
-          // console.log("setSelectedCardId");
-          dispatch(
-            setSelectedCardId({
-              gameId,
-              playerId,
-              selectedCardId: currentCard._id,
-            }),
-          );
-        }
-      }
-    },
-    [
-      cardsSet,
-      currentGame,
-      dispatch,
-      emblaApiCardsGuess,
-      firstGuessCardSet,
-      gameId,
-      playerId,
-      secondGuessCardSet,
-      selectedCardId,
-      t,
-    ],
-  );
-
   //~ Close carousel when mask is showed
   useEffect(() => {
     if (isShowMask) carouselModeOff();
@@ -247,6 +139,10 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
       watchDrag: isCarouselModeHandScreen,
     });
   }, [emblaApiCardsGuess, isCarouselModeHandScreen]);
+
+  useEffect(() => {
+    if (emblaApiCardsGuess) emblaApiCardsGuess.scrollTo(activeCardIdx);
+  }, [activeCardIdx, emblaApiCardsGuess]);
 
   // // ??
   // useEffect(() => {
@@ -272,6 +168,7 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
       else if (event.key === "ArrowRight") emblaApiCardsGuess.scrollNext();
     };
     window.addEventListener("keydown", handleKeyPress);
+
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [emblaApiCardsGuess]);
 
@@ -291,6 +188,238 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
     carouselModeOff,
   ]);
 
+  //# для оповідача
+  useEffect(() => {
+    if (!currentGame) return;
+
+    const { storytellerId, players } = currentGame;
+    console.log("storytellerId:::", storytellerId);
+
+    const currentPlayer = players.find(p => p._id === playerId);
+    if (currentPlayer?.isGuessed) return;
+
+    const isCurrentPlayerStoryteller = storytellerId === playerId;
+    console.log("isCurrentPlayerStoryteller:::", isCurrentPlayerStoryteller);
+
+    if (isCurrentPlayerStoryteller) {
+      if (selectedCardId) {
+        tellStory(selectedCardId);
+
+        // закриваю карусель
+        dispatch(
+          setIsCarouselModeHandScreen({
+            gameId,
+            playerId,
+            isCarouselModeHandScreen: false,
+          }),
+        );
+      }
+    }
+  }, [currentGame, dispatch, gameId, playerId, selectedCardId, tellStory]);
+
+  //# для інших гравців
+  useEffect(() => {
+    // console.log({ firstGuessCardSet, secondGuessCardSet });
+    if (!currentGame) return;
+
+    const { players, storytellerId, isSingleCardMode } = currentGame;
+    const currentPlayer = players.find(p => p._id === playerId);
+    if (currentPlayer?.isGuessed) return;
+
+    const isCurrentPlayerStoryteller = storytellerId === playerId;
+    const playersMoreThanThree = players.length > 3;
+
+    if (!isCurrentPlayerStoryteller) {
+      if (!playersMoreThanThree) {
+        if (firstGuessCardSet && secondGuessCardSet) {
+          guessStory({ firstGuessCardSet, secondGuessCardSet });
+
+          // закриваю карусель
+          dispatch(
+            setIsCarouselModeHandScreen({
+              gameId,
+              playerId,
+              isCarouselModeHandScreen: false,
+            }),
+          );
+        }
+      }
+
+      if (playersMoreThanThree) {
+        if (isSingleCardMode) {
+          if (firstGuessCardSet) {
+            guessStory({ firstGuessCardSet, secondGuessCardSet: null });
+
+            // закриваю карусель
+            dispatch(
+              setIsCarouselModeHandScreen({
+                gameId,
+                playerId,
+                isCarouselModeHandScreen: false,
+              }),
+            );
+          }
+        } else {
+          if (firstGuessCardSet && secondGuessCardSet) {
+            guessStory({ firstGuessCardSet, secondGuessCardSet });
+
+            // закриваю карусель
+            dispatch(
+              setIsCarouselModeHandScreen({
+                gameId,
+                playerId,
+                isCarouselModeHandScreen: false,
+              }),
+            );
+          }
+        }
+      }
+    }
+  }, [
+    currentGame,
+    dispatch,
+    emblaApiCardsGuess,
+    gameId,
+    guessStory,
+    playerId,
+    firstGuessCardSet,
+    secondGuessCardSet,
+  ]);
+
+  const handleBtn = useCallback(
+    btnKey => {
+      console.log("handleBtn", btnKey);
+      if (!currentGame) return;
+
+      const { players, storytellerId, isSingleCardMode } = currentGame;
+      const isCurrentPlayerStoryteller = storytellerId === playerId;
+      const currentPlayer = players.find(p => p._id === playerId);
+      const playersMoreThanThree = players.length > 3;
+      const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
+      const currentCard = currentPlayer?.hand[currentCardIndex];
+
+      if (!currentCard) {
+        console.log("error: card not found");
+        Notify.failure(t("err_card_not_found"));
+        return;
+      }
+
+      //# Для оповідача або Якщо оповідача ще нема
+      if (isCurrentPlayerStoryteller || !storytellerId) {
+        dispatch(
+          setSelectedCardId({
+            gameId,
+            playerId,
+            selectedCardId: currentCard._id,
+          }),
+        );
+
+        // якщо оповідач ще не визначений
+        !storytellerId &&
+          dispatch(
+            setStorytellerId({ gameId, storytellerId: currentPlayer._id }),
+          );
+        return;
+      }
+
+      //# для інших гравців
+      if (!isCurrentPlayerStoryteller) {
+        // В режимі однієї карти обрати другу неможливо
+        if (isSingleCardMode && btnKey === "secondGuessCardSet") {
+          console.log("error: only one card allowed");
+          Notify.failure(t("err_only_one_card_allowed"));
+          return;
+        }
+
+        const otherCard =
+          btnKey === "firstGuessCardSet"
+            ? secondGuessCardSet
+            : firstGuessCardSet;
+
+        if (!playersMoreThanThree) {
+          if (!firstGuessCardSet || !secondGuessCardSet) {
+            // Коли гравців троє, то в комірках мають бути різні карти:
+            if (otherCard?._id === currentCard._id) {
+              Notify.failure(t("err_cards_must_be_different"));
+              // console.log("error: cards must be different");
+              return;
+            }
+          }
+
+          dispatch(
+            setCardsSet({
+              gameId,
+              playerId,
+              cardsSet: { ...cardsSet, [btnKey]: currentCard },
+            }),
+          );
+          // setCardsSet({ ...cardsSet, [btnKey]: currentCard });
+
+          if (firstGuessCardSet && secondGuessCardSet) {
+            guessStory({ firstGuessCardSet, secondGuessCardSet });
+
+            // закриваю карусель
+            dispatch(
+              setIsCarouselModeHandScreen({
+                gameId,
+                playerId,
+                isCarouselModeHandScreen: false,
+              }),
+            );
+
+            return;
+          }
+        }
+
+        if (playersMoreThanThree) {
+          if (isSingleCardMode) {
+            if (firstGuessCardSet) {
+              guessStory({ firstGuessCardSet, secondGuessCardSet: null });
+
+              // закриваю карусель
+              dispatch(
+                setIsCarouselModeHandScreen({
+                  gameId,
+                  playerId,
+                  isCarouselModeHandScreen: false,
+                }),
+              );
+
+              return;
+            }
+          } else {
+            if (firstGuessCardSet && secondGuessCardSet) {
+              guessStory({ firstGuessCardSet, secondGuessCardSet });
+
+              // закриваю карусель
+              dispatch(
+                setIsCarouselModeHandScreen({
+                  gameId,
+                  playerId,
+                  isCarouselModeHandScreen: false,
+                }),
+              );
+
+              return;
+            }
+          }
+        }
+      }
+    },
+    [
+      cardsSet,
+      currentGame,
+      dispatch,
+      emblaApiCardsGuess,
+      firstGuessCardSet,
+      gameId,
+      guessStory,
+      playerId,
+      secondGuessCardSet,
+      t,
+    ],
+  );
+
   //* setMiddleButton
   useEffect(() => {
     if (!isActiveScreen || !currentGame) return;
@@ -305,87 +434,117 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
     const isCurrentPlayerStoryteller = storytellerId === playerId;
     const storyteller = players.find(p => p._id === storytellerId);
 
-    if (isCarouselModeHandScreen) {
-      // console.log("Carousel Mode");
-      const activeCard = currentPlayer?.hand[activeCardIdx];
-      if (!activeCard) {
-        // console.log("error: card not found");
-        Notify.failure(t("err_card_not_found"));
-        return;
+    if (isShowMask) {
+      // console.log("isShowMask");
+      if (isCurrentPlayerStoryteller) {
+        // console.log("returnToHand() for isCurrentPlayerStoryteller ");
+        returnToHand(); // для оповідача екран-маска автоматично закривається
+      } else {
+        // console.log("set Mask for other players");
+        // Для інших гравців показується екран-маска, та кнопка закриття маски:
+        setMiddleButton(
+          <button className={css.btn} onClick={returnToHand}>
+            {t("go_to_guess_story")}
+          </button>,
+        );
       }
+    }
 
-      const isCanGuess = () => {
-        if (!playersMoreThanThree) {
-          return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
-        } else {
-          return !!firstGuessCardSet?._id;
-        }
-      };
-
-      const isDisabledFirstBtn = () => {
-        const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
-        const currentCard = currentPlayer?.hand[currentCardIndex];
-
-        if (!currentCard) {
+    if (!isShowMask) {
+      if (isCarouselModeHandScreen) {
+        // console.log("Carousel Mode");
+        const activeCard = currentPlayer?.hand[activeCardIdx];
+        if (!activeCard) {
           // console.log("error: card not found");
           Notify.failure(t("err_card_not_found"));
           return;
         }
 
-        if (gameStatus === LOBBY)
-          return selectedCardId && selectedCardId !== currentCard._id;
+        const isCanGuess = () => {
+          if (!playersMoreThanThree) {
+            return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
+          } else {
+            return !!firstGuessCardSet?._id;
+          }
+        };
 
-        if (gameStatus === GUESSING) {
-          if (playersMoreThanThree)
-            return (
-              firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
-            );
-          else
-            return (
-              (firstGuessCardSet && firstGuessCardSet._id !== activeCard._id) ||
-              (!firstGuessCardSet &&
-                secondGuessCardSet &&
-                secondGuessCardSet._id === activeCard._id)
-            );
-        }
-      };
+        const isDisabledFirstBtn = () => {
+          const currentCardIndex =
+            emblaApiCardsGuess?.selectedScrollSnap() || 0;
+          const currentCard = currentPlayer?.hand[currentCardIndex];
 
-      const isDisabledSecondBtn = () => {
-        return playersMoreThanThree
-          ? secondGuessCardSet && secondGuessCardSet._id !== activeCard._id
-          : (secondGuessCardSet && secondGuessCardSet._id !== activeCard._id) ||
-              (!secondGuessCardSet &&
-                firstGuessCardSet &&
-                firstGuessCardSet._id === activeCard._id);
-      };
+          if (!currentCard) {
+            // console.log("error: card not found");
+            Notify.failure(t("err_card_not_found"));
+            return;
+          }
 
-      if (isCurrentPlayerGuessed) setMiddleButton(null);
+          if (gameStatus === LOBBY)
+            return selectedCardId && selectedCardId !== currentCard._id;
 
-      if (!isCurrentPlayerGuessed) {
-        const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
-        const currentCard = currentPlayer.hand[currentCardIndex];
+          if (gameStatus === GUESSING) {
+            if (playersMoreThanThree)
+              return (
+                firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
+              );
+            else
+              return (
+                (firstGuessCardSet &&
+                  firstGuessCardSet._id !== activeCard._id) ||
+                (!firstGuessCardSet &&
+                  secondGuessCardSet &&
+                  secondGuessCardSet._id === activeCard._id)
+              );
+          }
+        };
 
-        setMiddleButton(
-          <>
-            {!storytellerId ||
-            (!isCurrentPlayerStoryteller && storyteller?.isGuessed) ? (
-              <>
+        const isDisabledSecondBtn = () => {
+          return playersMoreThanThree
+            ? secondGuessCardSet && secondGuessCardSet._id !== activeCard._id
+            : (secondGuessCardSet &&
+                secondGuessCardSet._id !== activeCard._id) ||
+                (!secondGuessCardSet &&
+                  firstGuessCardSet &&
+                  firstGuessCardSet._id === activeCard._id);
+        };
+
+        if (isCurrentPlayerGuessed) setMiddleButton(null);
+
+        if (!isCurrentPlayerGuessed) {
+          const currentCardIndex =
+            emblaApiCardsGuess?.selectedScrollSnap() || 0;
+          const currentCard = currentPlayer.hand[currentCardIndex];
+
+          if (
+            !storytellerId ||
+            (!isCurrentPlayerStoryteller && storyteller?.isGuessed)
+          ) {
+            // Це не оповідач, а оповідач вже проголосував, або оповідача ще немає
+            const btnText =
+              gameStatus === LOBBY ? t("tell_your_story") : t("choose_card");
+
+            setMiddleButton(
+              <div className={css.twoBtnInRow}>
                 <button
                   className={clsx(
                     css.btn,
-                    (firstGuessCardSet || selectedCardId) &&
-                      currentCard?._id === firstGuessCardSet?._id &&
-                      css.btnActive,
+                    // (firstGuessCardSet || selectedCardId) &&
+                    //   currentCard?._id === firstGuessCardSet?._id &&
+                    //   css.btnActive,
                   )}
-                  onClick={handleStory}
+                  onClick={() => handleBtn("firstGuessCardSet")}
                   disabled={
                     isDisabledFirstBtn() ||
                     isCurrentPlayerGuessed ||
-                    (!selectedCardId && !isCanGuess())
-                  }>
-                  {gameStatus === LOBBY
-                    ? t("select_this_card")
-                    : t("choose_card")}
+                    firstGuessCardSet
+                  }
+                  // disabled={
+                  //   isDisabledFirstBtn() ||
+                  //   isCurrentPlayerGuessed ||
+                  //   (!selectedCardId && !isCanGuess()) // todo перевірити цю умову disabled для інших станів
+                  // }
+                >
+                  {btnText}
                 </button>
 
                 {!playersMoreThanThree &&
@@ -395,122 +554,111 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
                     <button
                       className={clsx(
                         css.btn,
-                        secondGuessCardSet && css.btnActive,
+                        // secondGuessCardSet && css.btnActive,
                       )}
-                      onClick={() => toggleCardSelection("secondGuessCardSet")}
+                      onClick={() => handleBtn("secondGuessCardSet")}
                       disabled={
-                        isDisabledSecondBtn() || isCurrentPlayerGuessed
-                      }>
-                      {t("choose_card")}
+                        isDisabledSecondBtn() ||
+                        isCurrentPlayerGuessed ||
+                        secondGuessCardSet
+                      }
+                      // disabled={
+                      //   isDisabledSecondBtn() || isCurrentPlayerGuessed
+                      // }
+                    >
+                      {btnText}
                     </button>
                   ))}
-              </>
-            ) : (
-              isCurrentPlayerStoryteller &&
-              !currentPlayer?.isGuessed && (
-                <>
-                  <button
-                    className={clsx(
-                      css.btn,
-                      (firstGuessCardSet || selectedCardId) &&
-                        currentCard?._id === firstGuessCardSet?._id &&
-                        css.btnActive,
-                    )}
-                    // onClick={() => toggleCardSelection("firstGuessCardSet")}
-                    onClick={handleStory}
-                    disabled={
-                      isDisabledFirstBtn() ||
-                      isCurrentPlayerGuessed ||
-                      (!selectedCardId && !isCanGuess())
-                    }>
-                    {t("select_this_card")}
-                  </button>
-                </>
-              )
-            )}
-          </>,
-        );
+              </div>,
+            );
+          } else if (isCurrentPlayerStoryteller && !currentPlayer?.isGuessed) {
+            // це сторітеллер і він ще не обрав асоціацію
+            setMiddleButton(
+              <button
+                className={clsx(
+                  css.btn,
+                  (firstGuessCardSet || selectedCardId) &&
+                    currentCard?._id === firstGuessCardSet?._id &&
+                    css.btnActive,
+                )}
+                // onClick={() => toggleCardSelection("firstGuessCardSet")}
+                onClick={() => handleBtn("firstGuessCardSet")}
+                disabled={isCurrentPlayerGuessed}
+                // disabled={
+                //   isDisabledFirstBtn() ||
+                //   isCurrentPlayerGuessed ||
+                //   (!selectedCardId && !isCanGuess())
+                // }
+              >
+                {t("select_this_card")}
+              </button>,
+            );
+          }
+        }
       }
-    }
 
-    const isReadyToVote = !players.some(player => !player.isGuessed);
-    const isReadyToCalculatePoints = players.every(player => player.isVoted);
-    if (!isCarouselModeHandScreen) {
-      // console.log("Non Carousel Mode");
-      setMiddleButton(null); // обнуляю кнопку для усіх при старті нового раунду
+      const isReadyToVote = !players.some(player => !player.isGuessed);
+      const isReadyToCalculatePoints = players.every(player => player.isVoted);
+      if (!isCarouselModeHandScreen) {
+        // console.log("Non Carousel Mode");
+        setMiddleButton(null); // обнуляю кнопку для усіх при старті нового раунду
 
-      if (isShowMask) {
-        // console.log("isShowMask");
-        if (isCurrentPlayerStoryteller) {
-          // console.log("returnToHand() for isCurrentPlayerStoryteller ");
-          returnToHand(); // для оповідача екран-маска автоматично закривається
-        } else {
-          // console.log("set Mask for other players");
-          // Для інших гравців показується екран-маска, та кнопка закриття маски:
-          setMiddleButton(
-            <Button btnText={t("go_to_guess_story")} onClick={returnToHand} />,
-          );
-        }
-      } else if (
-        isCurrentPlayerHost &&
-        isReadyToVote &&
-        gameStatus === GUESSING
-      ) {
-      } else if (
-        isCurrentPlayerHost &&
-        isReadyToCalculatePoints &&
-        gameStatus === VOTING
-      ) {
-      } else if (isCurrentPlayerHost && gameStatus === ROUND_RESULTS) {
-        // console.log("це хост і можна починати новий раунд");
-        setMiddleButton(
-          <Button
-            btnText={t("start_new_round")}
-            onClick={startNewRound}
-            disabled={gameStatus === FINISH}
-          />,
-        );
-      } else {
-        if (isCurrentPlayerStoryteller && gameStatus === !LOBBY) {
-          // console.log("встановлюю кнопку в нуль для оповідача");
-          setMiddleButton(null);
-        } else {
-          if (gameStatus === LOBBY) {
-            // console.log("gameStatus LOBBY - встановити кнопку tell your story");
-            if (
-              !storytellerId ||
-              (storytellerId && isCurrentPlayerStoryteller)
-            ) {
-            }
-          } else if (gameStatus === GUESSING) {
-            // console.log("блок для gameStatus GUESSING");
+        if (isCurrentPlayerHost) {
+          if (gameStatus === GUESSING && isReadyToVote) {
+            const isStartVotingDisabled = players.some(
+              player => !player.isGuessed,
+            );
+            // console.log("це хост і всі обрали карти - готові до голосування");
+            setMiddleButton(
+              <button
+                className={css.btn}
+                onClick={startVoting}
+                disabled={isStartVotingDisabled}>
+                {t("start_voting")}
+              </button>,
+            );
+          }
 
-            if (!isCurrentPlayerGuessed) {
-            } else {
-              setMiddleButton(null);
-            }
-          } else setMiddleButton(null);
-        }
+          if (gameStatus === VOTING && isReadyToCalculatePoints) {
+            // console.log("це хост і всі проголосували - можна рахувати бали");
+            setMiddleButton(
+              <button className={css.btn} onClick={finishRound}>
+                {t("finish_round")}
+              </button>,
+            );
+          }
+
+          if (gameStatus === ROUND_RESULTS) {
+            setMiddleButton(
+              <button
+                className={css.btn}
+                onClick={startNewRound}
+                disabled={gameStatus === FINISH}>
+                {t("start_new_round")}
+              </button>,
+            );
+          }
+        } else setMiddleButton(null);
       }
     }
   }, [
     activeCardIdx,
     currentGame,
     emblaApiCardsGuess,
+    finishRound,
     firstGuessCardSet,
-    carouselModeOff,
-    handleStory,
+    handleBtn,
     isActiveScreen,
     isCarouselModeHandScreen,
     isShowMask,
     playerId,
     returnToHand,
     secondGuessCardSet,
-    selectedCardId,
     setMiddleButton,
     startNewRound,
+    startVoting,
+    selectedCardId,
     t,
-    toggleCardSelection,
   ]);
 
   // Set star(s) to card(s):
@@ -558,16 +706,6 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
   const { isGuessed, isVoted } = currentPlayer;
   const storyteller = players.find(p => p._id === storytellerId);
 
-  const handleCardClick = () => {
-    // console.log("handleCardClick");
-    if (
-      (gameStatus === GUESSING && !isGuessed) ||
-      (gameStatus === VOTING && !isVoted) ||
-      (gameStatus === LOBBY && isCurrentPlayerStoryteller && !isVoted) ||
-      (gameStatus === LOBBY && !storyteller)
-    )
-      toggleCardSelection("firstGuessCardSet");
-  };
   return (
     <>
       {isCarouselModeHandScreen && (
@@ -581,7 +719,8 @@ export default function Hand({ isActiveScreen, setMiddleButton }) {
                   <li
                     className={css.carouselSlide}
                     key={card._id}
-                    onClick={handleCardClick}>
+                    // onClick={handleCardClick}
+                  >
                     <div
                       className={clsx(css.slideContainer, {
                         [css.slideContainerActive]: marks.length > 0,

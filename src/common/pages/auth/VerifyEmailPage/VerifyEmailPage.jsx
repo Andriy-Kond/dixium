@@ -219,7 +219,7 @@ export default function VerifyEmailPage() {
 
       <FormEditInput
         type={"email"}
-        name
+        name={"email"}
         placeholder={t("enter_email")}
         value={email}
         onChange={e => setEmail(e.target.value)}
@@ -248,8 +248,7 @@ export default function VerifyEmailPage() {
           isLoading ||
           (showV2Captcha && !recaptchaToken_v2) ||
           !EMAIL_TEMPLATE.test(email)
-        }
-        loading={isLoading}>
+        }>
         {t("resend_verification_email")}
       </button>
     </div>

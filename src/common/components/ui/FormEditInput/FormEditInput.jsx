@@ -3,7 +3,7 @@ import css from "./FormEditInput.module.scss";
 
 export default function FormEditInput({
   type = "text",
-  name,
+  name = "",
   placeholder,
   value,
   onChange,
