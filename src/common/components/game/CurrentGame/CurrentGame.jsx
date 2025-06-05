@@ -99,25 +99,27 @@ export default function CurrentGame() {
     watchDrag: !(isCarouselModeHandScreen || isCarouselModeTableScreen), // дозвіл на слайдінг при цій умові
   });
 
-  // addPreviewId
+  //* Add link preloading addPreviewId
   useEffect(() => {
     if (!currentGame) return;
     const { players, cardsOnTable } = currentGame;
 
     const currentPlayer = players.find(p => p._id === playerId);
+
     if (currentPlayer) {
       const allCards = [...currentPlayer.hand, ...cardsOnTable];
       allCards.forEach(card => {
         dispatch(addPreviewId(card.public_id));
         // console.log("Adding previewId in Game", card.public_id);
       });
+      // console.log("Adding previewIds for", allCards.length, "cards");
     }
-    // console.log("Adding previewIds for", allCards.length, "cards");
   }, [currentGame, dispatch, playerId]);
 
   // Preload large imgs (by add <link> to document.head)
   useEffect(() => {
     // Очищаємо старі лінки, якщо кількість URL змінилася
+    // console.log("clear old links if qty was changed");
     if (linksRef.current.length > preloadUrls.length) {
       // console.log("очищення linksRef.current");
       linksRef.current.forEach(link => {
@@ -130,6 +132,7 @@ export default function CurrentGame() {
     }
 
     // Завантажити лише нові URL, які ще не предзавантажені (ще не є в linksRef.current)
+    // console.log("Upload new URL");
     const urlsToPreload = preloadUrls.filter(
       url => !linksRef.current.some(link => link.href === url),
     );
@@ -144,8 +147,9 @@ export default function CurrentGame() {
         link.fetchpriority = "high";
         link.crossorigin = "anonymous";
         link.onerror = () =>
-          // console.log(`Failed to preload image: ${preloadUrl}`);
-          document.head.appendChild(link);
+          console.log(`Failed to preload image: ${preloadUrl}`);
+
+        document.head.appendChild(link);
         linksRef.current.push(link);
       });
       // console.log("Links in head:", linksRef.current.length);
@@ -161,7 +165,7 @@ export default function CurrentGame() {
     return () => {
       // console.log("Game unmounted, cleaning up...");
       linksRef.current.forEach(link => {
-        // console.log(" return >> link:::", link);
+        // console.log("return >> link:::", link);
         // Перевірка, чи є link у document.head
         if (document.head.contains(link)) document.head.removeChild(link);
       });
@@ -169,6 +173,7 @@ export default function CurrentGame() {
       dispatch(resetPreload());
     };
   }, [dispatch]);
+  //* /Add link preloading addPreviewId
 
   // Якщо треба додати можливість змінювати activeScreen вручну (наприклад, через зовнішній UI), то це буде гарантією, що карусель завжди синхронізується зі станом activeScreen
   useEffect(() => {

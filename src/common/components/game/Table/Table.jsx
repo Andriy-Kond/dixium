@@ -420,6 +420,7 @@ export default function Table({
                         className={css.carouselImage}
                         publicId={card.public_id}
                         isBig
+                        isNeedPreload={true}
                       />
                       {marks.length > 0 && (
                         <div className={css.checkboxContainer2Carousel}>
@@ -494,6 +495,7 @@ export default function Table({
                         className={css.carouselImage}
                         publicId={card.public_id}
                         isBig
+                        isNeedPreload={true}
                       />
                     </li>
                   );

@@ -193,13 +193,13 @@ export default function Hand({
     if (!currentGame) return;
 
     const { storytellerId, players } = currentGame;
-    console.log("storytellerId:::", storytellerId);
+    // console.log("storytellerId:::", storytellerId);
 
     const currentPlayer = players.find(p => p._id === playerId);
     if (currentPlayer?.isGuessed) return;
 
     const isCurrentPlayerStoryteller = storytellerId === playerId;
-    console.log("isCurrentPlayerStoryteller:::", isCurrentPlayerStoryteller);
+    // console.log("isCurrentPlayerStoryteller:::", isCurrentPlayerStoryteller);
 
     if (isCurrentPlayerStoryteller) {
       if (selectedCardId) {
@@ -729,6 +729,7 @@ export default function Hand({
                         className={css.carouselImage}
                         publicId={card.public_id}
                         isBig
+                        isNeedPreload={true}
                       />
                     </div>
                   </li>

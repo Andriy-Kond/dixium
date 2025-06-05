@@ -313,7 +313,7 @@ export const localPersonalSlice = createSlice({
       state.pageHeaderTextSecond = action.payload;
     },
 
-    // & previewIds as obj:
+    //& /previewIds as obj:
     addPreviewId: (state, action) => {
       const publicId = action.payload;
       if (!state.preloadImg.previewIds[publicId]) {
@@ -345,6 +345,7 @@ export const localPersonalSlice = createSlice({
     setTotalPreviews: (state, action) => {
       state.preloadImg.totalPreviews = action.payload;
     },
+    //& /previewIds as obj
 
     setIsSetPassword: (state, action) => {
       state.isSetPassword = action.payload;

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
+
 import { addPreloadUrl } from "redux/game/localPersonalSlice.js";
 import { getImageUrl } from "utils/generals/getImageUrl.js";
 
@@ -9,20 +10,20 @@ const largeSizes = [300, 600, 1200, 2400]; // для каруселі
 function determineLargeSize(currentSrc) {
   if (!currentSrc) {
     // Якщо currentSrc не визначений
-    console.log("currentSrc is null, defaulting to 600");
+    // console.log("currentSrc is null, defaulting to 600");
     return 600; // компроміс, якщо currentSrc відсутній
   }
 
   const sizeIndex = previewSizes.findIndex(size =>
     currentSrc.includes(`w_${size}`),
   );
-  return sizeIndex !== -1 ? largeSizes[sizeIndex] : 600; // Якщо не знайдено, буде 600 як компроміс
+  return sizeIndex !== -1 ? largeSizes[sizeIndex] : 600; // Якщо не знайдено, повертаємо 600 як компроміс
 }
 
 export default function ImgGen({ className, publicId, isBig, isNeedPreload }) {
   const dispatch = useDispatch();
 
-  const width = isBig ? 300 : 100; // Різні розміри для каруселі і прев'ю
+  const width = isBig ? 300 : 100; // Різні розміри для каруселі і прев’ю
   const imgRef = useRef(null);
 
   // Для зображення за замовчуванням (src у img)
@@ -47,11 +48,9 @@ export default function ImgGen({ className, publicId, isBig, isNeedPreload }) {
   // Відстежуємо завантаження прев’ю
   useEffect(() => {
     const imgElement = imgRef.current;
-
     if (isNeedPreload && imgElement) {
       const handleLoad = () => {
         const currentSrc = imgElement.currentSrc;
-        // console.log("Image loaded, currentSrc:", currentSrc);
         if (currentSrc) {
           const largeSize = determineLargeSize(currentSrc);
           const preloadUrl = getImageUrl({ publicId, width: largeSize });
@@ -65,15 +64,17 @@ export default function ImgGen({ className, publicId, isBig, isNeedPreload }) {
   }, [isNeedPreload, dispatch, publicId]);
 
   return (
-    <img
-      className={className}
-      ref={imgRef}
-      alt={isBig ? "enlarged card" : "card"}
-      src={imageUrl}
-      srcSet={srcSet}
-      sizes={sizes}
-      fetchpriority={isBig ? "high" : "auto"}
-      // loading="lazy"
-    />
+    <>
+      <img
+        className={className}
+        ref={imgRef}
+        alt={isBig ? "enlarged card" : "card"}
+        src={imageUrl}
+        srcSet={srcSet}
+        sizes={sizes}
+        fetchpriority={isBig ? "high" : "auto"}
+        loading="lazy"
+      />
+    </>
   );
 }
