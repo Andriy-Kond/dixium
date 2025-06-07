@@ -24,14 +24,14 @@ export const getImageUrl = ({
     // .delivery("dpr_auto") // dpr_auto - автоматична щільність для retina (1x, 2x, 3x) !Не потрібно для веб-додатків, бо ширина задається у компоненті ImgGen, який дозволяє браузеру обирати необхідне зображення під різні типи і розміри дисплеїв. Але потрібно для натівних додатків (React-native)! Але тоді базову ширину краще передавати базово. Наприклад, 100 для прев’ю, 300 для каруселі, без srcSet e ImgGen
     .toURL();
 
-  console.log(
-    "Generated URL:",
-    url,
-    "for publicId:",
-    publicId,
-    "width:",
-    width,
-  );
+  // console.log(
+  //   "Generated URL:",
+  //   url,
+  //   "for publicId:",
+  //   publicId,
+  //   "width:",
+  //   width,
+  // );
   return url;
 };
 

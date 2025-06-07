@@ -244,7 +244,7 @@ export default function Table({
     const isCurrentPlayerHost = hostPlayerId === playerId;
 
     if (isCarouselModeTableScreen) {
-      console.log("Table: Carousel Mode");
+      // console.log("Table: Carousel Mode");
       setMiddleButton(null);
 
       if (gameStatus !== ROUND_RESULTS && !isCurrentPlayerStoryteller) {

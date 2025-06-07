@@ -48,10 +48,10 @@ export default function InfoMessage() {
 
   // Обробка кліків поза InfoMessage
   useEffect(() => {
-    const handleClickOutside = event => {
+    const handleClickOutside = e => {
       if (
         infoMessageRef.current &&
-        !infoMessageRef.current.contains(event.target)
+        !infoMessageRef.current.contains(e.target)
       ) {
         // Клік відбувся поза InfoMessage
         // dispatch(hideNotification());

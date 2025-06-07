@@ -25,12 +25,12 @@ export const useGuess = gameId => {
       const { players, cardsOnTable, isSingleCardMode } = currentGame;
       const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
 
-      const playersMoreThanThree = players.length > 3;
+      const isPlayersMoreThanThree = players.length > 3;
       const playersMoreThanSix = players.length > 6;
 
       if (
         !firstGuessCardSet ||
-        (!playersMoreThanThree && !secondGuessCardSet) ||
+        (!isPlayersMoreThanThree && !secondGuessCardSet) ||
         (!isSingleCardMode && !secondGuessCardSet)
       ) {
         console.warn("guess Story: Invalid card selection!");
@@ -39,17 +39,17 @@ export const useGuess = gameId => {
       }
 
       const getMovedCards = () => {
-        if (playersMoreThanThree && isSingleCardMode) {
+        if (isPlayersMoreThanThree && isSingleCardMode) {
           return [firstGuessCardSet];
         } else if (
-          !playersMoreThanThree ||
+          !isPlayersMoreThanThree ||
           (playersMoreThanSix && !isSingleCardMode)
         ) {
           return [firstGuessCardSet, secondGuessCardSet];
         }
       };
 
-      // const movedCards = playersMoreThanThree
+      // const movedCards = isPlayersMoreThanThree
       //   ? // || firstGuessCardSet._id === secondGuessCardSet._id
       //     [firstGuessCardSet]
       //   : [firstGuessCardSet, secondGuessCardSet];

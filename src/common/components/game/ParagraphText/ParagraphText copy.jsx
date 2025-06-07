@@ -1,7 +1,8 @@
-import clsx from "clsx";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
+import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -36,6 +37,9 @@ export default function ParagraphText() {
   const activeScreen = useSelector(selectActiveScreen(gameId, playerId)); // Number of current active screen
   const isShowMask = useSelector(selectIsShowMask(gameId, playerId));
 
+  const [phText, setPhText] = useState("");
+  const [isHightLight, setIsHightLight] = useState(false);
+
   if (!currentGame) return null;
 
   const { players, storytellerId, gameStatus, hostPlayerId } = currentGame;
@@ -55,8 +59,6 @@ export default function ParagraphText() {
   const NOT_VOTING = "notVoting";
   const PLAYERS_QTY = players.length > 3 ? "moreThree" : "lessThree";
 
-  let paragraphText = "";
-  let isHightLight = false;
   // "waiting_tellers_story": "Очікуйте поки {{name}} розкаже свою асоціацію",
   // "select_card_make_turn": "Підберіть карту до асоціації {{name}} і походіть нею",
   // "select_two_cards": "Підберіть дві карти до асоціації {{name}}",
@@ -151,50 +153,48 @@ export default function ParagraphText() {
   }
 
   if (!storytellerId) {
-    paragraphText = t("think_about_association");
-    isHightLight = false;
+    setPhText(t("think_about_association"));
+    setIsHightLight(false);
   }
 
   if (storytellerId) {
-    paragraphText = "";
-    isHightLight = false;
-
     if (isCurrentPlayerStoryteller) {
       if (isVoted && isGuessed) {
-        paragraphText = t("wait_other_players_turn");
-        isHightLight = false;
+        setPhText(t("wait_other_players_turn"));
+        setIsHightLight(false);
       } else {
-        paragraphText = t("think_about_association");
-        isHightLight = true;
+        setPhText(t("think_about_association"));
+        setIsHightLight(true);
       }
     }
 
-    const isReadyToVote = !players.some(player => !player.isGuessed);
+    const isReadyToVote = players.every(player => player.isGuessed);
     const isReadyToCalculatePoints = players.every(player => player.isVoted);
-    // console.log({ isReadyToVote, isReadyToCalculatePoints });
+    console.log({ isReadyToVote, isReadyToCalculatePoints });
 
     if (!isCurrentPlayerStoryteller) {
       if (isShowMask) {
-        paragraphText = t("player_told_first_story", { name });
-        isHightLight = true;
+        setPhText(t("player_told_first_story", { name }));
+        setIsHightLight(true);
       } else {
-        paragraphText = findParagraphText();
+        setPhText(findParagraphText());
 
         // Визначення, чи потрібно підсвітити текст
-        isHightLight =
+        setIsHightLight(
           (gameStatus === GUESSING && !isGuessed) ||
-          (gameStatus === VOTING && !isVoted && isCarouselModeTableScreen) ||
-          (gameStatus === VOTING && !isVoted && activeScreen === 2);
+            (gameStatus === VOTING && !isVoted && isCarouselModeTableScreen) ||
+            (gameStatus === VOTING && !isVoted && activeScreen === 2),
+        );
       }
     }
 
     if (isCurrentPlayerHost) {
-      if (gameStatus === GUESSING && isReadyToVote) {
-        paragraphText = t("push_vote_btn_for_next_stage");
-        isHightLight = true;
-      } else if (gameStatus === VOTING && isReadyToCalculatePoints) {
-        paragraphText = t("push_finish_round_btn_for_next_stage");
-        isHightLight = true;
+      if (isReadyToVote) {
+        setPhText(t("push_vote_btn_for_next_stage"));
+        setIsHightLight(true);
+      } else if (isReadyToCalculatePoints) {
+        setPhText(t("push_finish_round_btn_for_next_stage"));
+        setIsHightLight(true);
       }
     }
   }
@@ -206,7 +206,7 @@ export default function ParagraphText() {
           className={clsx(css.headerMessage, {
             [css.hightLight]: isHightLight,
           })}>
-          {paragraphText}
+          {phText}
         </p>
       )}
     </>

@@ -3,9 +3,12 @@
   "wait_other_players_turn": "Wait until the other players take their turn.",
   "waiting_tellers_story": "Wait until {{name}} shares their association.",
   "select_card_make_turn": "Choose a card that matches {{name}}'s association and play it.",
+  "select_two_cards": "Choose two cards that matches {{name}}'s association.",
   "check_cards_one_two_stars": "Mark the cards that might belong to {{name}} with stars. If you're confident, place two stars right away.",
+  "check_card_by_one_star": "Mark one card that might belong to {{name}} with star.",
   "unknown_combination": "Unknown combination: {{key}}, {{gameState}}, {{screenState}}, {{carouselState}}",
-
+  "push_vote_btn_for_next_stage": "Click 'START VOTING' to move to the next stage.",
+  "push_finish_round_btn_for_next_stage": "Click 'FINISH ROUND' to move to the next stage.",
   "player_removed_from_game": "The player {{playerName}} has left the game",
   "err_google_login": "Google login error: {{err}}",
   "deck": "Deck: {{name}}",

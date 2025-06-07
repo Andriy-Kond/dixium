@@ -227,10 +227,10 @@ export default function Hand({
     if (currentPlayer?.isGuessed) return;
 
     const isCurrentPlayerStoryteller = storytellerId === playerId;
-    const playersMoreThanThree = players.length > 3;
+    const isPlayersMoreThanThree = players.length > 3;
 
     if (!isCurrentPlayerStoryteller) {
-      if (!playersMoreThanThree) {
+      if (!isPlayersMoreThanThree) {
         if (firstGuessCardSet && secondGuessCardSet) {
           guessStory({ firstGuessCardSet, secondGuessCardSet });
 
@@ -245,7 +245,7 @@ export default function Hand({
         }
       }
 
-      if (playersMoreThanThree) {
+      if (isPlayersMoreThanThree) {
         if (isSingleCardMode) {
           if (firstGuessCardSet) {
             guessStory({ firstGuessCardSet, secondGuessCardSet: null });
@@ -288,13 +288,13 @@ export default function Hand({
 
   const handleBtn = useCallback(
     btnKey => {
-      console.log("handleBtn", btnKey);
+      // console.log("handleBtn", btnKey);
       if (!currentGame) return;
 
       const { players, storytellerId, isSingleCardMode } = currentGame;
       const isCurrentPlayerStoryteller = storytellerId === playerId;
       const currentPlayer = players.find(p => p._id === playerId);
-      const playersMoreThanThree = players.length > 3;
+      const isPlayersMoreThanThree = players.length > 3;
       const currentCardIndex = emblaApiCardsGuess?.selectedScrollSnap() || 0;
       const currentCard = currentPlayer?.hand[currentCardIndex];
 
@@ -336,7 +336,7 @@ export default function Hand({
             ? secondGuessCardSet
             : firstGuessCardSet;
 
-        if (!playersMoreThanThree) {
+        if (!isPlayersMoreThanThree) {
           if (!firstGuessCardSet || !secondGuessCardSet) {
             // Коли гравців троє, то в комірках мають бути різні карти:
             if (otherCard?._id === currentCard._id) {
@@ -371,7 +371,7 @@ export default function Hand({
           }
         }
 
-        if (playersMoreThanThree) {
+        if (isPlayersMoreThanThree) {
           if (isSingleCardMode) {
             if (firstGuessCardSet) {
               guessStory({ firstGuessCardSet, secondGuessCardSet: null });
@@ -430,7 +430,7 @@ export default function Hand({
     const isCurrentPlayerGuessed = players.some(
       p => p._id === playerId && p.isGuessed,
     );
-    const playersMoreThanThree = players.length > 3;
+    const isPlayersMoreThanThree = players.length > 3;
     const isCurrentPlayerStoryteller = storytellerId === playerId;
     const storyteller = players.find(p => p._id === storytellerId);
 
@@ -461,7 +461,7 @@ export default function Hand({
         }
 
         const isCanGuess = () => {
-          if (!playersMoreThanThree) {
+          if (!isPlayersMoreThanThree) {
             return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
           } else {
             return !!firstGuessCardSet?._id;
@@ -483,7 +483,7 @@ export default function Hand({
             return selectedCardId && selectedCardId !== currentCard._id;
 
           if (gameStatus === GUESSING) {
-            if (playersMoreThanThree)
+            if (isPlayersMoreThanThree)
               return (
                 firstGuessCardSet && firstGuessCardSet._id !== activeCard._id
               );
@@ -499,7 +499,7 @@ export default function Hand({
         };
 
         const isDisabledSecondBtn = () => {
-          return playersMoreThanThree
+          return isPlayersMoreThanThree
             ? secondGuessCardSet && secondGuessCardSet._id !== activeCard._id
             : (secondGuessCardSet &&
                 secondGuessCardSet._id !== activeCard._id) ||
@@ -547,7 +547,7 @@ export default function Hand({
                   {btnText}
                 </button>
 
-                {!playersMoreThanThree &&
+                {!isPlayersMoreThanThree &&
                   (gameStatus === LOBBY ? (
                     ""
                   ) : (

@@ -97,7 +97,7 @@
 //   const isCurrentPlayerGuessed = players.some(
 //     p => p._id === playerId && p.isGuessed,
 //   );
-//   const playersMoreThanThree = players.length > 3;
+//   const isPlayersMoreThanThree = players.length > 3;
 //   const isCurrentPlayerStoryteller = storytellerId === playerId;
 //   const storyteller = players.find(p => p._id === storytellerId);
 
@@ -111,7 +111,7 @@
 //     }
 
 //     const isCanGuess = () => {
-//       if (!playersMoreThanThree) {
+//       if (!isPlayersMoreThanThree) {
 //         return !!firstGuessCardSet?._id && !!secondGuessCardSet?._id;
 //       } else {
 //         return !!firstGuessCardSet?._id;
@@ -123,7 +123,7 @@
 //       if (!currentGame) return;
 
 //       const { isSingleCardMode, players, gameStatus } = currentGame;
-//       const playersMoreThanThree = players.length > 3;
+//       const isPlayersMoreThanThree = players.length > 3;
 
 //       if (isSingleCardMode && btnKey === "secondGuessCardSet") {
 //         // console.log("error: only one card allowed");
@@ -167,7 +167,7 @@
 //         // Якщо картки не обрані
 //         if (!firstGuessCardSet || !secondGuessCardSet) {
 //           // Коли гравців троє, то в комірках мають бути різні карти:
-//           if (!playersMoreThanThree && otherCard?._id === currentCard._id) {
+//           if (!isPlayersMoreThanThree && otherCard?._id === currentCard._id) {
 //             Notify.failure(t("err_cards_must_be_different"));
 //             // console.log("error: cards must be different");
 //           } else {
@@ -203,23 +203,23 @@
 //       if (!currentGame) return;
 
 //       const { players, gameStatus } = currentGame;
-//       const playersMoreThanThree = players.length > 3;
+//       const isPlayersMoreThanThree = players.length > 3;
 //       const { firstGuessCardSet, secondGuessCardSet } = cardsSet;
 
-//       if (playersMoreThanThree && !firstGuessCardSet) {
+//       if (isPlayersMoreThanThree && !firstGuessCardSet) {
 //         console.warn("Оберіть карту для голосування!");
 //         Notify.failure("Оберіть карту для голосування!");
 //         return;
 //       }
 
-//       if (!playersMoreThanThree && !firstGuessCardSet && !secondGuessCardSet) {
+//       if (!isPlayersMoreThanThree && !firstGuessCardSet && !secondGuessCardSet) {
 //         console.warn("Оберіть дві карти для голосування!");
 //         Notify.failure("Оберіть дві карти для голосування!");
 //         return;
 //       }
 
 //       if (
-//         !playersMoreThanThree &&
+//         !isPlayersMoreThanThree &&
 //         ((!firstGuessCardSet && secondGuessCardSet) ||
 //           (firstGuessCardSet && !secondGuessCardSet))
 //       ) {
@@ -286,7 +286,7 @@
 //         return selectedCardId && selectedCardId !== currentCard._id;
 
 //       if (gameStatus === GUESSING) {
-//         if (playersMoreThanThree)
+//         if (isPlayersMoreThanThree)
 //           return firstGuessCardSet && firstGuessCardSet._id !== activeCard._id;
 //         else
 //           return (
@@ -299,7 +299,7 @@
 //     };
 
 //     const isDisabledSecondBtn = () => {
-//       return playersMoreThanThree
+//       return isPlayersMoreThanThree
 //         ? secondGuessCardSet && secondGuessCardSet._id !== activeCard._id
 //         : (secondGuessCardSet && secondGuessCardSet._id !== activeCard._id) ||
 //             (!secondGuessCardSet &&
@@ -339,7 +339,7 @@
 //               {btnText}
 //             </button>
 
-//             {!playersMoreThanThree &&
+//             {!isPlayersMoreThanThree &&
 //               (gameStatus === LOBBY ? (
 //                 ""
 //               ) : (

@@ -71,7 +71,6 @@ export default function Table({
   const [isMounted, setIsMounted] = useState(false);
 
   const isCurrentPlayerStoryteller = storytellerId === playerId;
-  // const playersMoreThanThree = gamePlayers.length > 3;
   const playersMoreThanSix = gamePlayers.length > 6;
   const isReadyToVote = !gamePlayers.some(player => !player.isGuessed);
   const isReadyToCalculatePoints = gamePlayers.every(player => player.isVoted);

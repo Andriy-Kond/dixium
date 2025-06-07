@@ -59,7 +59,6 @@ export const useSetupSocketListeners = () => {
   const activeActions = useSelector(selectActiveActions);
   const activeActionsTest = useSelector(selectActiveActionsTest);
   const games = useSelector(selectLocalGames);
-  const currentGame = useSelector(selectLocalGame(gameId));
   const userActiveGameId = useSelector(selectUserActiveGameId);
   const currentFinishPoints = useSelector(selectFinishPoints(gameId));
 
